@@ -1,0 +1,73 @@
+server:
+  port: 80
+  tomcat:
+    accept-count: ${TOMCAT_ACCEPT_COUNT:4000}
+    max-threads: ${TOMCAT_MAX_THREADS:1000}
+
+spring:
+  application:
+    name: api-gateway
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://172.16.15.200:3306/cloud_oj}
+    type: com.zaxxer.hikari.HikariDataSource
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 10000
+      maximum-pool-size: ${DB_POOL_SIZE:16}
+      max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+
+zuul:
+  routes:
+    manager:
+      path: /api/manager/**
+      serviceId: manager-service
+    judge:
+      path: /api/judge/**
+      serviceId: judge-service
+    file-server:
+      path: /api/file/**
+      serviceId: file-server
+  host:
+    max-per-route-connections: 2000
+    max-total-connections: 4000
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 10000
+  semaphore:
+    max-semaphores: 2000
+
+ribbon:
+  ReadTimeout: 8000
+  ConnectTimeout: 8000
+
+logging:
+  file:
+    name: /app/log/api-gateway.log
+
+project:
+  token-valid-time: 4

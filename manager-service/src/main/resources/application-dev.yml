@@ -1,0 +1,48 @@
+server:
+  port: 8001
+  tomcat:
+    accept-count: 2000
+    max-threads: 800
+
+spring:
+  application:
+    name: manager-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      minimum-idle: 8
+      maximum-pool-size: 16
+      max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+project:
+  file-dir: /home/cloud/oj_file/

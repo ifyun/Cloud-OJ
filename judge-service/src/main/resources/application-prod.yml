@@ -1,0 +1,60 @@
+server:
+  port: 8000
+  tomcat:
+    accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
+    max-threads: ${TOMCAT_MAX_THREADS:800}
+
+spring:
+  application:
+    name: judge-service
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://172.16.15.200:3306/cloud_oj}
+    type: com.zaxxer.hikari.HikariDataSource
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 10000
+      maximum-pool-size: ${DB_POOL_SIZE:16}
+      max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    host: ${RABBIT_URL:172.16.15.200}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:cloud@oj}
+    password: ${RABBIT_PASSWORD:cloud@oj}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+logging:
+  file:
+    name: /app/log/judge-service.log
+
+project:
+  file-dir: /var/lib/cloud_oj/
+  code-dir: /tmp/code/
+  runner-image: ${RUNNER_IMAGE:runner}
+  core-pool-size: ${CORE_POOL_SIZE:8}
+  max-pool-size: ${MAX_POOL_SIZE:16}
+  queue-capacity: ${QUEUE_CAPACITY:200}

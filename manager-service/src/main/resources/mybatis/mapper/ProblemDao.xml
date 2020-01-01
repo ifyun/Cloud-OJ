@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.manager.dao.ProblemDao">
+    <select id="getAll" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows
+        p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
+        <choose>
+            <when test="userId != null">
+                , result, passed
+                from problem p
+                left join (select user_id, problem_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id) jr
+                on p.problem_id = jr.problem_id
+                left join
+                (select problem_id, count(problem_id) as passed
+                from (select problem_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+                group by problem_id) t on p.problem_id = t.problem_id
+            </when>
+            <otherwise>
+                from problem p
+            </otherwise>
+        </choose>
+        <if test="enable == true">
+            where enable = true
+        </if>
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <select id="backup" resultMap="Map.Problem">
+        select problem_id,
+               title,
+               description,
+               input,
+               output,
+               sample_input,
+               sample_output,
+               timeout,
+               score,
+               category
+        from problem;
+    </select>
+    <select id="getSingle" resultMap="Map.Problem">
+        select *
+        from problem
+        where
+        <if test="enable == true">
+            enable = true and
+        </if>
+        problem_id = #{problemId}
+    </select>
+    <select id="search" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
+        <choose>
+            <when test="userId != null">
+                , result, passed
+                from problem p
+                left join (select user_id, problem_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id) jr
+                on p.problem_id = jr.problem_id
+                left join
+                (select problem_id, count(problem_id) as passed
+                from (select problem_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+                group by problem_id) t on p.problem_id = t.problem_id
+            </when>
+            <otherwise>
+                from problem p
+            </otherwise>
+        </choose>
+        where
+        <if test="enable == true">
+            enable = true and
+        </if>
+        (title like concat(#{keyword}, '%') or find_in_set(#{keyword}, category))
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <insert id="add" parameterType="group._204.oj.manager.model.Problem">
+        insert into problem(title, description, input, output, sample_input, sample_output, enable, category, score)
+            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{enable},
+                   #{category}, #{score})
+    </insert>
+    <update id="update" parameterType="group._204.oj.manager.model.Problem">
+        update problem
+        set title         = #{title},
+            description   = #{description},
+            input         = #{input},
+            output        = #{output},
+            sample_input  = #{sampleInput},
+            sample_output = #{sampleOutput},
+            enable        = #{enable},
+            score         = #{score},
+            category      = #{category}
+        where problem_id = #{problemId}
+    </update>
+    <select id="inContest" resultType="java.lang.Integer">
+        select count(problem_id)
+        from `contest-problem`
+        where problem_id = #{problemId}
+        limit 1;
+    </select>
+    <delete id="delete">
+        delete
+        from problem
+        where problem_id = #{problemId}
+    </delete>
+    <update id="toggleEnable">
+        update problem
+        set enable = #{enable}
+        where problem_id = #{problemId}
+    </update>
+</mapper>

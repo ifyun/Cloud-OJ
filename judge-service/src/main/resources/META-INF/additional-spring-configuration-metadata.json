@@ -1,0 +1,38 @@
+{
+  "properties": [
+    {
+      "name": "project.code-dir",
+      "type": "java.lang.String",
+      "description": "代码临时目录."
+    },
+    {
+      "name": "project.max-wait-time",
+      "type": "java.lang.String",
+      "description": "判题执行的最长等待时间."
+    },
+    {
+      "name": "project.core-pool-size",
+      "type": "java.lang.Integer",
+      "description": "核心线程数量."
+    },
+    {
+      "name": "project.max-pool-size",
+      "type": "java.lang.Integer",
+      "description": "最大线程数量."
+    },
+    {
+      "name": "project.queue-capacity",
+      "type": "java.lang.Integer",
+      "description": "阻塞队列大小."
+    },
+    {
+      "name": "project.file-dir",
+      "type": "java.lang.String",
+      "description": "文件存放目录."
+    },
+    {
+      "name": "project.runner-image",
+      "type": "java.lang.String",
+      "description": "执行判题的Docker镜像."
+    }
+  ] }

@@ -1,0 +1,13 @@
+FROM openjdk:8-jre-alpine
+ENV TIME_ZONE Asia/Shanghai
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add tzdata && cp /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
+    && echo ${TIME_ZONE} > /etc/timezone \
+    && apk del tzdata \
+    && mkdir -p /app/log
+COPY ./api-gateway-*.jar /app/api-gateway.jar
+COPY ./*.yml /app/config/
+VOLUME [ "/app/log" ]
+WORKDIR /app
+EXPOSE 80
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "api-gateway.jar"]

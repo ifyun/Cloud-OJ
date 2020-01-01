@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>502 Bad Gateway</title>
+    <style>
+        body {
+            color: white;
+            background: #222222;
+        }
+
+        .back {
+            background: linear-gradient(#000000 50%, #222222 50%);
+            background-size: 100% 4px;
+        }
+
+        .container {
+            margin: 100px auto;
+            min-width: 600px;
+            width: 600px;
+        }
+
+        .code-block {
+            display: block;
+            margin: 10px 0;
+        }
+
+        code {
+            font-size: 13pt;
+        }
+
+        .blink {
+            background: orange;
+            width: 8px;
+            display: inline-block;
+            animation: blink 500ms infinite;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="back">
+<div class="container">
+    <h1 style="font-size: 26pt;">502 <span style="color: crimson;">BAD GATEWAY</span></h1>
+    <hr style="border-color: orange;">
+    <br>
+    <code class="code-block">> 网关[<span style="color: orange;">无法转发请求</span>].</code>
+    <code class="code-block">> [<span style="color: yellowgreen;">你可以稍后重试或者联系管理员.</span>]</code>
+    <code class="code-block">> 目标服务可能不在线.<span class="blink">&nbsp;</span></code>
+</div>
+</body>
+</html>

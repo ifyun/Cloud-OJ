@@ -1,0 +1,99 @@
+html, body {
+    height: 100%;
+    min-height: 800px;
+    padding: 0;
+    margin: 0;
+}
+
+.el-header {
+    min-width: 1100px;
+    margin: 0 auto;
+    padding: 0 !important;
+}
+
+.el-container {
+    min-width: 1100px !important;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-wrapper {
+    border-bottom: solid 1px #e6e6e6;
+}
+
+.logo {
+    height: 32px;
+    border-radius: 5px;
+}
+
+.logo-div {
+    display: flex;
+    align-items: center;
+}
+
+.app-name {
+    margin-left: 6px;
+    font-weight: bold !important;
+    font-size: 16pt !important;
+}
+
+.tag {
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 1px 10px;
+    margin: 3px 2px;
+    color: white;
+    display: inline-block;
+}
+
+.tag:hover {
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.tag-color-1 {
+    background: #5FB878;
+}
+
+.tag-color-2 {
+    background: #FFB800;
+}
+
+.tag-color-3 {
+    background: #01AAED;
+}
+
+.tag-color-4 {
+    background: #f17c67;
+}
+
+.tag-color-5 {
+    background: #6B4C7A;
+}
+
+.tag-color-6 {
+    background: #3AB2A6;
+}
+
+.tag-color-7 {
+    background: #FF7530;
+}
+
+.sample {
+    border-radius: 5px;
+    border: 1px solid rgb(231, 234, 237);
+    padding: 10px 8px;
+    background-color: rgb(248, 248, 248);
+    font-size: 12pt;
+    line-height: 1.2em;
+}
+
+.problem-content {
+    font-size: 12pt;
+    white-space: pre-wrap;
+    line-height: 1.5em;
+}
+
+.CodeMirror {
+    height: 800px !important;
+    font-size: 12pt;
+}

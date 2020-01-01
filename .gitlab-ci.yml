@@ -1,0 +1,82 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+  DOCKER_HOST: tcp://172.16.15.212:2375
+  # Image tag
+  WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
+  API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/api-gateway
+  REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/register-center
+  MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor-service
+  FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
+  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
+  JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
+  RUNNER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner
+  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
+cache:
+  key: maven
+  paths:
+    - .m2
+stages:
+  - npm-build
+  - mvn-package
+  - build-images
+  - deploy
+npm-build:
+  only:
+    - tags
+  image: node:14-alpine
+  stage: npm-build
+  script:
+    - cd web && ls
+    - npm install -g nrm
+    - nrm use taobao
+    - npm install --progress=false
+    - npm run build
+    - cd ../ && cp -r web/dist docker/web/
+  artifacts:
+    name: "Cloud-OJ_Dockerfile"
+    paths:
+      - docker
+mvn-package:
+  only:
+    - tags
+  image: maven-aliyun:3.6-jdk-8-alpine
+  stage: mvn-package
+  script:
+    - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
+    - cp -r api-gateway/target/*.jar docker/api-gateway/
+    - cp -r register-center/target/*.jar docker/register-center/
+    - cp -r monitor-service/target/*.jar docker/monitor-service/
+    - cp -r file-server/target/*.jar docker/file-server/
+    - cp -r manager-service/target/*.jar docker/manager-service/
+    - cp -r judge-service/target/*.jar docker/judge-service/
+    - cp -r mysql/init/*.sql docker/mysql/
+    - du -h docker
+  artifacts:
+    name: "Cloud-OJ_Dockerfile"
+    paths:
+      - docker
+docker-build:
+  only:
+    - tags
+  stage: build-images
+  script:
+    - docker -v
+    - docker build -t $WEB ./docker/web/
+    - docker build -t $API_GATEWAY ./docker/api-gateway/
+    - docker build -t $REGISTER_CENTER ./docker/register-center/
+    - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
+    - docker build -t $FILE_SERVER ./docker/file-server/
+    - docker build -t $MANAGER_SERVICE ./docker/manager-service/
+    - docker build -t $JUDGE_SERVICE ./docker/judge-service/
+    - docker build -t $RUNNER ./docker/runner/
+    - docker build -t $MYSQL ./docker/mysql/
+docker-deploy:
+  only:
+    - tags
+  stage: deploy
+  script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache docker-compose
+    - docker-compose -v
+    - cd ./docker/deploy/cloud_oj && docker-compose up -d
+    - docker rmi $(docker images -q -f dangling=true) || true
