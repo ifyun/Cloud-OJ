@@ -18,6 +18,7 @@
     <packaging>pom</packaging>
     <description>Cloud OJ 父模块</description>
 
+    <!-- 子模块配置 -->
     <modules>
         <!--module>register-center</module-->
     </modules>
