@@ -23,7 +23,7 @@ public class TestDataController {
     @PostMapping
     public Object uploadTestData(@RequestParam int problemId, @RequestParam MultipartFile[] files) {
         if (files.length == 0)
-            return new Result(204, "请选择文件.");
+            return new Result(204, "未选择文件.");
 
         // 根据题目 id 创建目录
         File dir = new File(testDataDir + problemId);
