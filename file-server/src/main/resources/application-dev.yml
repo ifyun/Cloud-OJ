@@ -9,7 +9,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: true
 
 project:
   test-data-dir: D:/test_data/
