@@ -2,8 +2,10 @@
 spring:
   application:
     name: register-center
+
 server:
   port: 8761
+
 eureka:
   client:
     # 检索服务选项, 当设置为 true(默认值) 时, 会进行服务检索,注册中心不负责检索服务
