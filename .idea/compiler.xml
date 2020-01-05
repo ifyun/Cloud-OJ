@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="register-center" />
-        <module name="manager-service" />
         <module name="manager-server" />
+        <module name="manager-service" />
+        <module name="register-center" />
         <module name="file-server" />
       </profile>
     </annotationProcessing>
