@@ -15,8 +15,8 @@
     </select>
 
     <insert id="add" parameterType="top.cloudli.managerservice.model.Problem">
-        insert into problem(title, description, input, output, sample_input, sample_output)
-            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput})
+        insert into problem(title, description, input, output, sample_input, sample_output, enable, score)
+            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{enable}, #{score})
     </insert>
 
     <update id="update" parameterType="top.cloudli.managerservice.model.Problem">
@@ -26,7 +26,8 @@
             input         = #{input},
             output        = #{output},
             sample_input  = #{sampleInput},
-            sample_output = #{sampleOutput}
+            sample_output = #{sampleOutput},
+            score         = #{score}
         where problem_id = #{problemId}
     </update>
 

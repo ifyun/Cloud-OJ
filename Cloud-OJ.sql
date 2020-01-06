@@ -8,9 +8,9 @@ create table problem
     output        text                                 not null comment '输出说明',
     sample_input  text                                 null comment '示例输入',
     sample_output text                                 null comment '示例输出',
+    score         int        default 0                 not null comment '分数',
     enable        tinyint(1) default 0                 null comment '是否可用',
-    create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间',
-    score         int        default 0                 not null comment '分数'
+    create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
 )
     comment '题目表';
 
