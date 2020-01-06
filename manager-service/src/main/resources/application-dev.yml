@@ -11,11 +11,17 @@ spring:
       connection-timeout: 3000
       minimum-idle: 10
       maximum-pool-size: 50
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8001
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: false
 
 
 mybatis:

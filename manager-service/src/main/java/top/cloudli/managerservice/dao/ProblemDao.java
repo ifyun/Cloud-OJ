@@ -13,5 +13,7 @@ public interface ProblemDao {
 
     int add(Problem problem);
 
+    int update(Problem problem);
+
     int delete(int problemId);
 }

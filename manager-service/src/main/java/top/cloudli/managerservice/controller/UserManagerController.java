@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/user")
 public class UserManagerController {
+
     @Resource
     private UserDao userDao;
 
@@ -23,8 +24,13 @@ public class UserManagerController {
         return new Result(200, "success", userDao.add(user));
     }
 
-    @DeleteMapping
-    public Result deleteUser(int userId) {
+    @PutMapping
+    public Result updateUser(@RequestBody User user) {
+        return new Result(200, "success", userDao.add(user));
+    }
+
+    @DeleteMapping("{userId}")
+    public Result deleteUser(@PathVariable int userId) {
         return new Result(200, "success", userDao.delete(userId));
     }
 }
