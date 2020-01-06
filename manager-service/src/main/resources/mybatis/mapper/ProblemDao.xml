@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.cloudli.managerservice.dao.ProblemDao">
+
+    <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
+        select * from problem;
+    </select>
+
+    <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
+        select * from problem where title like #{title}
+    </select>
+
+    <insert id="add" parameterType="top.cloudli.managerservice.model.Problem">
+        insert into `problem`(title, description, input, output, sample_input, sample_output)
+        value(#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput})
+    </insert>
+
+    <delete id="delete">
+        delete from problem where problem_id = #{problemId}
+    </delete>
+</mapper>
