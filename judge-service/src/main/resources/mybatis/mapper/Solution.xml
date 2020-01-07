@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.cloudli.judgeservice.dao.SolutionDao">
+    <select id="getSubmitted" resultType="top.cloudli.judgeservice.model.Solution">
+        select *
+        from solution
+        where state = 4
+    </select>
+
+    <select id="getCompiled" resultType="top.cloudli.judgeservice.model.Solution">
+        select *
+        from solution
+        where state = 2
+    </select>
+
+    <select id="getJudged" resultType="top.cloudli.judgeservice.model.Solution">
+        select *
+        from solution
+        where state = 0
+    </select>
+
+    <update id="updateState">
+        update solution
+        set state = #{state} where solution_id = #{id}
+    </update>
+
+    <update id="updateResult">
+        update solution
+        set result = #{result} where solution_id = #{id}
+    </update>
+</mapper>

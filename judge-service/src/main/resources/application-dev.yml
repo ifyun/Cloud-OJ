@@ -13,6 +13,11 @@ spring:
       maximum-pool-size: 50
   jackson:
     default-property-inclusion: non_null
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: cloud@oj
+    password: cloud@oj
 
 server:
   port: 8002
