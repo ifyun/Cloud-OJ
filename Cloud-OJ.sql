@@ -44,7 +44,8 @@ create table solution
         primary key,
     user_id     char(16)                             null,
     problem_id  int                                  null,
-    state       tinyint(1) default 3                 null comment '状态(4->已提交,3->编译中,2->正在执行,1->部分通过,0->完全正确,-1->答案错误,-2->编译错误',
+    state       tinyint(1) default 4                 null comment '状态(4->已提交,3->在编译队列,2->已编译,1->在判题队列,0->已判题)',
+    result      tinyint(1)                           null comment '结果(3->编译错误,2->答案错误,1->部分通过,0->完全正确)',
     pass_rate   double                               not null comment '通过率',
     submit_time datetime   default CURRENT_TIMESTAMP not null comment '提交时间',
     constraint solution_problem_problem_id_fk
