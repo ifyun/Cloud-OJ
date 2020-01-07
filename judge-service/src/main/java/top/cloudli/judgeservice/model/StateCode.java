@@ -6,7 +6,5 @@ package top.cloudli.judgeservice.model;
 public enum StateCode {
     JUDGED,
     IN_JUDGE_QUEUE,
-    COMPILED,
-    IN_COMPILE_QUEUE,
     COMMITTED
 }

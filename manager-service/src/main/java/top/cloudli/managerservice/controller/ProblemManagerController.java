@@ -3,7 +3,7 @@ package top.cloudli.managerservice.controller;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.ProblemDao;
 import top.cloudli.managerservice.model.Problem;
-import top.cloudli.managerservice.model.Result;
+import top.cloudli.managerservice.data.Result;
 
 import javax.annotation.Resource;
 

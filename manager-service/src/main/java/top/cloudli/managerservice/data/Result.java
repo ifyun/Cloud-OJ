@@ -1,4 +1,4 @@
-package top.cloudli.managerservice.model;
+package top.cloudli.managerservice.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

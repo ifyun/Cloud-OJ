@@ -4,7 +4,7 @@ import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import top.cloudli.managerservice.model.Result;
+import top.cloudli.managerservice.data.Result;
 
 import java.sql.SQLException;
 

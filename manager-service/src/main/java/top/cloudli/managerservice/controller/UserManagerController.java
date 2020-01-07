@@ -2,7 +2,7 @@ package top.cloudli.managerservice.controller;
 
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.UserDao;
-import top.cloudli.managerservice.model.Result;
+import top.cloudli.managerservice.data.Result;
 import top.cloudli.managerservice.model.User;
 
 import javax.annotation.Resource;

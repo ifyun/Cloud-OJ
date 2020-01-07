@@ -9,11 +9,17 @@ import java.util.List;
 public interface SolutionDao {
     List<Solution> getSubmitted();  // 获取已提交的答案
 
-    List<Solution> getCompiled();   // 获取已经过编译的答案
+    List<Solution> getJudged();     // 获取判题结果
 
-    List<Solution> getJudged();     // 获取已经过判题的答案
+    List<Solution> getJudgedByUserId(String userId);       // 获取指定用户的判题结果
 
-    int updateState(int id, int state);     // 更新状态
+    Solution getJudgedBySolutionId(int solutionId);        // 获取单条 solution
 
-    int updateResult(int id, int result);   // 更新结果
+    int add(Solution solution);
+
+    int updateState(Solution solution);     // 更新状态
+
+    int updateResult(Solution solution);    // 更新结果
+
+    int updatePassRate(Solution solution);  // 更新通过率
 }

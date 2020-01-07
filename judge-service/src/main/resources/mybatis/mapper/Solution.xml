@@ -5,12 +5,6 @@
     <select id="getSubmitted" resultType="top.cloudli.judgeservice.model.Solution">
         select *
         from solution
-        where state = 4
-    </select>
-
-    <select id="getCompiled" resultType="top.cloudli.judgeservice.model.Solution">
-        select *
-        from solution
         where state = 2
     </select>
 
@@ -20,13 +14,21 @@
         where state = 0
     </select>
 
-    <update id="updateState">
+    <insert id="add" useGeneratedKeys="true" keyProperty="solution_id"
+            parameterType="top.cloudli.judgeservice.model.Solution">
+        insert into solution(user_id, problem_id, language)
+            value (#{userId}, #{problemId}, #{language})
+    </insert>
+
+    <update id="updateState" parameterType="top.cloudli.judgeservice.model.Solution">
         update solution
-        set state = #{state} where solution_id = #{id}
+        set state = #{state}
+        where solution_id = #{solutionId}
     </update>
 
-    <update id="updateResult">
+    <update id="updateResult" parameterType="top.cloudli.judgeservice.model.Solution">
         update solution
-        set result = #{result} where solution_id = #{id}
+        set result = #{result}
+        where solution_id = #{solutionId}
     </update>
 </mapper>
