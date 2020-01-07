@@ -1,5 +1,6 @@
 package top.cloudli.managerservice.error;
 
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,10 +15,9 @@ import java.sql.SQLException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(SQLException.class)
-    public Result sqlErrorHandler(SQLException e) {
+    @ExceptionHandler({SQLException.class, CommunicationsException.class})
+    public Result sqlErrorHandler(Exception e) {
         log.error(e.getMessage());
         return new Result(500, e.getMessage(), null);
     }
-
 }

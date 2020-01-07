@@ -20,7 +20,7 @@ public class TestDataController {
     @Value("${project.test-data-dir}")
     private String testDataDir;
 
-    @PostMapping
+    @PostMapping("")
     public Object uploadTestData(@RequestParam int problemId, @RequestParam MultipartFile[] files) {
         if (files.length == 0)
             return new Result(204, "未选择文件.");
@@ -48,7 +48,7 @@ public class TestDataController {
         return new Result(200, "上传成功.");
     }
 
-    @DeleteMapping
+    @DeleteMapping("")
     public Object deleteTestData(String name) {
         File dest = new File(testDataDir + name);
 

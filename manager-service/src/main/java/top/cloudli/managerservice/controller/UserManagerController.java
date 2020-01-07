@@ -14,17 +14,17 @@ public class UserManagerController {
     @Resource
     private UserDao userDao;
 
-    @GetMapping
+    @GetMapping("")
     public Result getUsers() {
         return new Result(200, "success", userDao.getAll());
     }
 
-    @PostMapping
+    @PostMapping("")
     public Result addUser(@RequestBody User user) {
         return new Result(200, "success", userDao.add(user));
     }
 
-    @PutMapping
+    @PutMapping("")
     public Result updateUser(@RequestBody User user) {
         return new Result(200, "success", userDao.add(user));
     }

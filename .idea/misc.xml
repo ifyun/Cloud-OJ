@@ -11,6 +11,7 @@
         <option value="$PROJECT_DIR$/register-center/pom.xml" />
         <option value="$PROJECT_DIR$/file-server/pom.xml" />
         <option value="$PROJECT_DIR$/manager-service/pom.xml" />
+        <option value="$PROJECT_DIR$/judge-service/pom.xml" />
       </list>
     </option>
   </component>

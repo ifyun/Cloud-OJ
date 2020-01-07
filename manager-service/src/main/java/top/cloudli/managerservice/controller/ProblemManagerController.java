@@ -7,6 +7,9 @@ import top.cloudli.managerservice.model.Result;
 
 import javax.annotation.Resource;
 
+/**
+ * 题目管理接口
+ */
 @RestController
 @RequestMapping("/problem")
 public class ProblemManagerController {
@@ -14,7 +17,7 @@ public class ProblemManagerController {
     @Resource
     private ProblemDao problemDao;
 
-    @GetMapping
+    @GetMapping("")
     public Result getProblems() {
         return new Result(problemDao.getAll());
     }
@@ -24,12 +27,12 @@ public class ProblemManagerController {
         return new Result(problemDao.searchByTitle(String.format("%%%s%%", keyword)));
     }
 
-    @PutMapping
+    @PutMapping("")
     public Result updateProblem(@RequestBody Problem problem) {
         return new Result(problemDao.update(problem));
     }
 
-    @PostMapping
+    @PostMapping("")
     public Result addProblem(@RequestBody Problem problem) {
         return new Result(problemDao.add(problem));
     }
