@@ -35,7 +35,7 @@ public class TaskSender {
        for (Solution solution : solutions) {
            rabbitTemplate.convertAndSend(queue.getName(), solution);
            solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
-           solutionDao.updateState(solution);
+           solutionDao.update(solution);
        }
 
        log.info("RabbitMQ 已发送 {} 条 solution.", solutions.size());

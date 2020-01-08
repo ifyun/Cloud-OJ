@@ -12,14 +12,14 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 
 @Configuration
-public class RabbitConfig implements RabbitListenerConfigurer {
+public class RabbitConfig /*implements RabbitListenerConfigurer*/ {
 
     @Bean
     public Queue queue() {
         return new Queue("JudgeQueue");
     }
 
-    @Bean
+    /*@Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         // 设置 JSON 转换器
@@ -32,5 +32,5 @@ public class RabbitConfig implements RabbitListenerConfigurer {
         DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
         factory.setMessageConverter(new MappingJackson2MessageConverter());
         registrar.setMessageHandlerMethodFactory(factory);
-    }
+    }*/
 }

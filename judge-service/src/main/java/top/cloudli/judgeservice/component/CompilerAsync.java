@@ -27,8 +27,6 @@ public class CompilerAsync {
 
     @Async("ojExecutor")
     public CompletableFuture<Compile> compile(Solution solution) {
-        log.info("正在编译 {}", solution.getSolutionId());
-
         int solutionId = solution.getSolutionId();
         int languageId = solution.getLanguage();
 

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.judgeservice.dao.SourceCodeDao">
-    <select id="get">
+    <select id="get" resultType="top.cloudli.judgeservice.model.SourceCode">
         select *
         from source_code
         where solution_id = #{solutionId}

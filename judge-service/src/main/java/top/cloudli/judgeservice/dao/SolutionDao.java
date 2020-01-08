@@ -17,9 +17,5 @@ public interface SolutionDao {
 
     int add(Solution solution);
 
-    int updateState(Solution solution);     // 更新状态
-
-    int updateResult(Solution solution);    // 更新结果
-
-    int updatePassRate(Solution solution);  // 更新通过率
+    int update(Solution solution);
 }

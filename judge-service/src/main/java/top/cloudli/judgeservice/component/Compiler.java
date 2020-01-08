@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Language;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,21 @@ class Compiler {
 
     private ProcessBuilder processBuilder = new ProcessBuilder();
 
+    @PostConstruct
+    public void init() {
+        File dir= new File(targetDir);
+        if (!dir.exists()) {
+            if (dir.mkdirs()) {
+                log.info("目录 {} 不存在, 已创建.", targetDir);
+            } else {
+                log.info("无法创建目录.");
+                System.exit(-1);
+            }
+        }
+    }
+
     public Compile compile(int id, int languageId, String source) {
+        log.info("正在编译, solutionId: {}", id);
         String src = writeCode(id, languageId, source);
 
         if (src.isEmpty())
@@ -57,6 +72,7 @@ class Compiler {
             String error = getOutput(process.getErrorStream());
 
             if (error.isEmpty()) {
+                log.info("编译完成: {}", id);
                 return new Compile(id, 0, "file: " + src);
             }
 
@@ -85,15 +101,21 @@ class Compiler {
         File file = new File(targetDir + id + Language.getExt(language));
 
         try {
-            if (file.createNewFile()) {
+            if (file.exists() || file.createNewFile()) {
                 FileWriter writer = new FileWriter(file, false);
+                log.info(source);
                 writer.write(source);
+                writer.flush();
                 return file.getPath();
             } else {
                 log.error("无法创建文件 {}", file.getName());
             }
         } catch (IOException e) {
             log.error(e.getMessage());
+        }
+
+        if (file.delete()) {
+            log.info("已删除临时源代码文件.");
         }
 
         return "";

@@ -20,15 +20,12 @@
         values (#{userId}, #{problemId}, #{language})
     </insert>
 
-    <update id="updateState" parameterType="top.cloudli.judgeservice.model.Solution">
+    <update id="update" parameterType="top.cloudli.judgeservice.model.Solution">
         update solution
-        set state = #{state}
+        set state     = #{state},
+            result    = #{result},
+            pass_rate = #{passRate}
         where solution_id = #{solutionId}
     </update>
 
-    <update id="updateResult" parameterType="top.cloudli.judgeservice.model.Solution">
-        update solution
-        set result = #{result}
-        where solution_id = #{solutionId}
-    </update>
 </mapper>

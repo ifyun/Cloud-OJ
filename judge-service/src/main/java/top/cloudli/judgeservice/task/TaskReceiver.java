@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
-import top.cloudli.judgeservice.component.CompilerAsync;
-import top.cloudli.judgeservice.dao.SolutionDao;
+import top.cloudli.judgeservice.component.JudgementAsync;
 import top.cloudli.judgeservice.model.Solution;
 
 import javax.annotation.Resource;
@@ -15,21 +14,15 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-@RabbitListener(queues = "JudgeQueue")
 public class TaskReceiver {
 
     @Resource
-    private CompilerAsync compilerAsync;
-
-    @Resource
-    private SolutionDao solutionDao;
+    private JudgementAsync judgementAsync;
 
     @RabbitHandler
+    @RabbitListener(queues = "JudgeQueue")
     public void receiveTask(Solution solution) {
-        // TODO 判题
-    }
-
-    public void judge() {
-
+        log.info("正在判题, solutionId: {}", solution.getSolutionId());
+        judgementAsync.judge(solution);
     }
 }
