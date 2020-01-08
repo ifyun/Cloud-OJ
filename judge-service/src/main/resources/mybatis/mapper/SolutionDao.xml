@@ -14,10 +14,10 @@
         where state = 0
     </select>
 
-    <insert id="add" useGeneratedKeys="true" keyProperty="solution_id"
+    <insert id="add" useGeneratedKeys="true" keyProperty="solutionId" keyColumn="solution_id"
             parameterType="top.cloudli.judgeservice.model.Solution">
         insert into solution(user_id, problem_id, language)
-            value (#{userId}, #{problemId}, #{language})
+            values (#{userId}, #{problemId}, #{language})
     </insert>
 
     <update id="updateState" parameterType="top.cloudli.judgeservice.model.Solution">

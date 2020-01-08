@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.cloudli.judgeservice.dao.SourceCodeDao">
+    <select id="get">
+        select *
+        from source_code
+        where solution_id = #{solutionId}
+    </select>
+
+    <insert id="add" parameterType="top.cloudli.judgeservice.model.SourceCode">
+        insert into source_code (solution_id, code)
+        values (#{solutionId}, #{code});
+    </insert>
+</mapper>

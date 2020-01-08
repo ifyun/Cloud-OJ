@@ -21,7 +21,6 @@ public class CommitService {
     @Resource
     private SourceCodeDao sourceCodeDao;
 
-    @Transactional
     public int commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getUserId(),
@@ -29,7 +28,8 @@ public class CommitService {
                 commitData.getLanguage()
         );
 
-        int solutionId = solutionDao.add(solution);
+        solutionDao.add(solution);
+        int solutionId = solution.getSolutionId();
         SourceCode sourceCode = new SourceCode(solutionId, commitData.getSourceCode());
         log.info("提交 solution, solution_id = {}", solutionId);
 
