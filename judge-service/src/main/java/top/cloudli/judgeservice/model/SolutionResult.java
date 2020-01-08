@@ -1,6 +1,6 @@
 package top.cloudli.judgeservice.model;
 
-public enum ResultCode {
+public enum SolutionResult {
     ALL_PASSED,
     PARTLY_PASSED,
     WRONG,

@@ -6,5 +6,5 @@ import top.cloudli.judgeservice.model.Compile;
 @Mapper
 public interface CompileDao {
     int get(int solutionId);
-    int insert(Compile compile);
+    int add(Compile compile);
 }

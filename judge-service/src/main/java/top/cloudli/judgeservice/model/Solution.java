@@ -2,8 +2,10 @@ package top.cloudli.judgeservice.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Solution {
+public class Solution implements Serializable {
     private int solutionId;
     private int problemId;
     private int language;

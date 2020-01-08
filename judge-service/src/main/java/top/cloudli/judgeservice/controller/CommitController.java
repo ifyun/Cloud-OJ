@@ -24,7 +24,6 @@ public class CommitController {
 
     @GetMapping("")
     public Result getJudgeResult(int solutionId) {
-        // TODO 返回判题结果
-        return null;
+        return new Result(commitService.getResult(solutionId));
     }
 }
