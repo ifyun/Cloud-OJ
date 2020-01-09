@@ -74,9 +74,11 @@ create table runtime
 (
     id          int auto_increment
         primary key,
-    solution_id int null,
-    total       int null comment '总测试点数量',
-    passed      int null comment '通过的测试点数量',
+    solution_id int        null,
+    total       int        null comment '总测试点数量',
+    passed      int        null comment '通过的测试点数量',
+    time        mediumtext null comment '耗时（ms）',
+    info        text       null,
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
