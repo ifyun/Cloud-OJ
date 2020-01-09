@@ -42,12 +42,12 @@ create table solution
 (
     solution_id int auto_increment
         primary key,
-    user_id     varchar(16)                        null,
     problem_id  int                                null,
     language    int                                not null,
     state       int      default 2                 not null comment '状态(2->已提交,1->在判题队列,0->已判题)',
     result      int                                null comment '结果(3->编译错误,2->答案错误,1->部分通过,0->完全正确)',
     pass_rate   double   default 0                 not null comment '通过率',
+    user_id     varchar(16)                        null,
     submit_time datetime default CURRENT_TIMESTAMP not null comment '提交时间',
     constraint solution_problem_problem_id_fk
         foreign key (problem_id) references problem (problem_id)
@@ -74,11 +74,9 @@ create table runtime
 (
     id          int auto_increment
         primary key,
-    solution_id int  null,
-    state       int  null comment '状态，0表示正常退出',
-    info        text null,
-    total       int  null comment '总测试点数量',
-    passed      int  null comment '通过的测试点数量',
+    solution_id int null,
+    total       int null comment '总测试点数量',
+    passed      int null comment '通过的测试点数量',
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
