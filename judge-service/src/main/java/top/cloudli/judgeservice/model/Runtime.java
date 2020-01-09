@@ -12,8 +12,10 @@ public class Runtime {
     private int solutionId;
     private int total;
     private int passed;
+    private long time;
+    private String info;
 
-    public Runtime(int solutionId, int total, int passed) {
-        this(0, solutionId, total, passed);
+    public Runtime(int solutionId) {
+        this(0, solutionId, 0, 0, 0, null);
     }
 }

@@ -2,8 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.judgeservice.dao.RuntimeDao">
-    <insert id="add" parameterType="top.cloudli.judgeservice.model.Runtime">
-        insert into runtime (solution_id, total, passed)
-        values (#{solutionId}, #{total}, #{passed});
+    <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="top.cloudli.judgeservice.model.Runtime">
+        insert into runtime (solution_id)
+        values (#{solutionId});
     </insert>
+
+    <update id="update" parameterType="top.cloudli.judgeservice.model.Runtime">
+        update runtime
+        set total  = #{total},
+            passed = #{passed},
+            time   = #{time},
+            info   = #{info}
+        where id = #{id}
+    </update>
 </mapper>

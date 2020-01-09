@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.component.JudgementAsync;
+import top.cloudli.judgeservice.model.Language;
 import top.cloudli.judgeservice.model.Solution;
 
 import javax.annotation.Resource;
@@ -22,7 +23,8 @@ public class TaskReceiver {
     @RabbitHandler
     @RabbitListener(queues = "JudgeQueue")
     public void receiveTask(Solution solution) {
-        log.info("正在判题, solutionId: {}", solution.getSolutionId());
+        log.info("正在判题, solutionId: {}, 编程语言: {}",
+                solution.getSolutionId(), Language.get(solution.getLanguage()));
         judgementAsync.judge(solution);
     }
 }

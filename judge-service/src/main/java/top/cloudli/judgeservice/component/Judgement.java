@@ -3,11 +3,11 @@ package top.cloudli.judgeservice.component;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import top.cloudli.judgeservice.dao.RuntimeDao;
 import top.cloudli.judgeservice.dao.SolutionDao;
-import top.cloudli.judgeservice.model.Language;
+import top.cloudli.judgeservice.model.*;
 import top.cloudli.judgeservice.model.Runtime;
-import top.cloudli.judgeservice.model.Solution;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -31,8 +31,6 @@ public class Judgement {
     @Resource
     private SolutionDao solutionDao;
 
-    private ProcessBuilder processBuilder = new ProcessBuilder();
-
     private boolean isLinux;
 
     @PostConstruct
@@ -49,11 +47,14 @@ public class Judgement {
         List<String> input = getInputData(solution.getProblemId());
         List<String> expect = getOutputData(solution.getProblemId());
 
-        String[] cmd = buildCommand(solution);
+        ProcessBuilder cmd = buildCommand(solution);
         log.info("正在执行, solutionId: {}", solution.getSolutionId());
-        List<String> output = execute(cmd, input);  // 获取输出
 
-        compareResult(solution, expect, output);
+        Runtime runtime = new Runtime(solution.getSolutionId());
+        runtimeDao.add(runtime);
+        List<String> output = execute(cmd, input, runtime);  // 获取输出
+
+        compareResult(solution, runtime, expect, output);
     }
 
     /**
@@ -63,7 +64,7 @@ public class Judgement {
      * @param expect   期望输出
      * @param output   实际输出
      */
-    private void compareResult(Solution solution, List<String> expect, List<String> output) {
+    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<String> output) {
         int total = expect.size();
         int passed = 0;
 
@@ -72,19 +73,21 @@ public class Judgement {
                 passed++;
         }
 
-        Runtime runtime = new Runtime(solution.getSolutionId(), total, passed);
-        runtimeDao.add(runtime);
+        runtime.setTotal(total);
+        runtime.setPassed(passed);
+
+        runtimeDao.update(runtime);
 
         if (passed == 0)
-            solution.setResult(2);
+            solution.setResult(SolutionResult.WRONG.ordinal());
         else if (passed < total)
-            solution.setResult(1);
+            solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
         else {
-            solution.setResult(0);
+            solution.setResult(SolutionResult.ALL_PASSED.ordinal());
         }
 
         solution.setPassRate(((double) passed) / total);
-        solution.setState(0);
+        solution.setState(SolutionState.JUDGED.ordinal());
         solutionDao.update(solution);
     }
 
@@ -94,14 +97,18 @@ public class Judgement {
      * @param input 输入数据
      * @return 程序执行结果
      */
-    private List<String> execute(String[] cmd, List<String> input) {
+    private List<String> execute(ProcessBuilder cmd, List<String> input, Runtime runtime) {
         List<String> output = new ArrayList<>();
-        processBuilder.command(cmd);
 
         try {
+            StopWatch stopWatch = new StopWatch("GET-EXECUTE-TIME");
+
             if (input.size() == 0) {
                 // 执行程序
-                Process process = processBuilder.start();
+                stopWatch.start();
+                Process process = cmd.start();
+                stopWatch.stop();
+                runtime.setTime(stopWatch.getTotalTimeMillis());
                 // 获取错误流
                 String error = getOutput(process.getErrorStream());
 
@@ -109,27 +116,43 @@ public class Judgement {
                     // 获取标准输出流
                     String temp = getOutput(process.getInputStream());
                     output.add(temp);
+                } else {
+                    runtime.setInfo(error);
                 }
             } else {
+                long maxTime = 0;
+
                 for (String s : input) {
-                    Process process = processBuilder.start();
+                    stopWatch.start();
+                    Process process = cmd.start();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                     // 输入数据
                     writer.write(s);
                     writer.close();
+                    stopWatch.stop();
 
                     String error = getOutput(process.getErrorStream());
+
+                    long time = stopWatch.getTotalTimeMillis();
+                    maxTime = Math.max(time, maxTime);
 
                     if (error.isEmpty()) {
                         String temp = getOutput(process.getInputStream());
                         output.add(temp);
+                    } else {
+                        runtime.setInfo(error);
+                        break;
                     }
                 }
+
+                runtime.setTime(maxTime);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
+            runtime.setInfo(e.getMessage());
         }
 
+        runtimeDao.update(runtime);
         return output;
     }
 
@@ -145,19 +168,36 @@ public class Judgement {
      * @param solution {@link Solution}
      * @return 执行命令
      */
-    private String[] buildCommand(Solution solution) {
+    private ProcessBuilder buildCommand(Solution solution) {
         Language language = Language.get(solution.getLanguage());
         assert language != null;
 
+        String filePath = targetDir + solution.getSolutionId();
+        ProcessBuilder builder = new ProcessBuilder();
+
         switch (language) {
             case C_CPP:
-                String filePath = targetDir + solution.getSolutionId();
-                return isLinux ? new String[]{filePath + ".o"} : new String[]{filePath + ".exe"};
+                // NOTE Windows 和 Linux 生成的目标文件不一样
+                if (isLinux) {
+                    builder.command(filePath, ".o");
+                } else {
+                    builder.command(filePath, ".exe");
+                }
+                return builder;
             case JAVA:
-                // TODO Java 执行命令
+                builder.command("java", "Solution");
+                // NOTE Java 语言必须切换到 class 文件所在目录
+                builder.directory(new File(filePath));
+                return builder;
+            case PYTHON:
+                builder.command("python", filePath + ".py");
+                return builder;
+            case BASH:
+                builder.command("sh", filePath + ".sh");
+                return builder;
+            default:
+                return null;
         }
-
-        return null;
     }
 
     /**
@@ -180,6 +220,13 @@ public class Judgement {
         return getData(problemId, ".out");
     }
 
+    /**
+     * 读取测试数据
+     *
+     * @param problemId 问题 Id
+     * @param ext       文件扩展名
+     * @return 测试数据集合
+     */
     private List<String> getData(int problemId, String ext) {
         List<String> data = new ArrayList<>();
 

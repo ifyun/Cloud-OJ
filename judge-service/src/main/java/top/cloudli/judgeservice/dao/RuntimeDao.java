@@ -6,4 +6,5 @@ import top.cloudli.judgeservice.model.Runtime;
 @Mapper
 public interface RuntimeDao {
     int add(Runtime runtime);
+    int update(Runtime runtime);
 }
