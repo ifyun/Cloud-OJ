@@ -20,6 +20,9 @@ public class JudgementAsync {
     @Resource
     private SolutionDao solutionDao;
 
+    @Resource
+    private Judgement judgement;
+
     @Async("ojExecutor")
     public void judge(Solution solution) {
         CompletableFuture<Compile> future = compilerAsync.compile(solution);
@@ -29,8 +32,7 @@ public class JudgementAsync {
             if (compile.getState() == -1) {
                 solution.setResult(3);
             } else {
-                // TODO 判题
-                solution.setResult(0);
+                judgement.judge(solution);
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error(e.getMessage());

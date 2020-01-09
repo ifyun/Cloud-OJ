@@ -34,10 +34,11 @@ public class TaskSender {
 
        for (Solution solution : solutions) {
            rabbitTemplate.convertAndSend(queue.getName(), solution);
+
+           log.info("solution {} in JudgeQueue.", solution.getSolutionId());
+
            solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
            solutionDao.update(solution);
        }
-
-       log.info("RabbitMQ 已发送 {} 条 solution.", solutions.size());
     }
 }
