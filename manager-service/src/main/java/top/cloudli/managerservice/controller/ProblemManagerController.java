@@ -1,11 +1,13 @@
 package top.cloudli.managerservice.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.ProblemDao;
 import top.cloudli.managerservice.model.Problem;
-import top.cloudli.managerservice.data.Result;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 题目管理接口
@@ -18,27 +20,39 @@ public class ProblemManagerController {
     private ProblemDao problemDao;
 
     @GetMapping("")
-    public Result getProblems() {
-        return new Result(problemDao.getAll());
+    public ResponseEntity<List<Problem>> getProblems() {
+        List<Problem> problems = problemDao.getAll();
+        return problems.size() != 0 ?
+                ResponseEntity.ok(problems) :
+                ResponseEntity.noContent().build();
     }
 
     @GetMapping("search/{keyword}")
-    public Result searchProblems(@PathVariable String keyword) {
-        return new Result(problemDao.searchByTitle(String.format("%%%s%%", keyword)));
+    public ResponseEntity<List<Problem>> searchProblems(@PathVariable String keyword) {
+        List<Problem> problems = problemDao.searchByTitle(String.format("%%%s%%", keyword));
+        return problems.size() != 0 ?
+                ResponseEntity.ok(problems) :
+                ResponseEntity.noContent().build();
     }
 
     @PutMapping("")
-    public Result updateProblem(@RequestBody Problem problem) {
-        return new Result(problemDao.update(problem));
+    public ResponseEntity<Void> updateProblem(@RequestBody Problem problem) {
+        return problemDao.update(problem) == 1 ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
     }
 
     @PostMapping("")
-    public Result addProblem(@RequestBody Problem problem) {
-        return new Result(problemDao.add(problem));
+    public ResponseEntity<String> addProblem(@RequestBody Problem problem) {
+        return problemDao.add(problem) == 1 ?
+                ResponseEntity.status(HttpStatus.CREATED).body("添加成功.") :
+                ResponseEntity.badRequest().body("添加失败.");
     }
 
     @DeleteMapping("{problemId}")
-    public Result deleteProblem(@PathVariable int problemId) {
-        return new Result(problemDao.delete(problemId));
+    public ResponseEntity<Void> deleteProblem(@PathVariable int problemId) {
+        return problemDao.delete(problemId) == 1 ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.status(HttpStatus.GONE).build();
     }
 }

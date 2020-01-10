@@ -12,6 +12,7 @@
         <option value="$PROJECT_DIR$/file-server/pom.xml" />
         <option value="$PROJECT_DIR$/manager-service/pom.xml" />
         <option value="$PROJECT_DIR$/judge-service/pom.xml" />
+        <option value="$PROJECT_DIR$/load-balanced/pom.xml" />
       </list>
     </option>
   </component>

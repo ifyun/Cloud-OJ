@@ -1,11 +1,13 @@
 package top.cloudli.managerservice.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.UserDao;
-import top.cloudli.managerservice.data.Result;
 import top.cloudli.managerservice.model.User;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -15,22 +17,31 @@ public class UserManagerController {
     private UserDao userDao;
 
     @GetMapping("")
-    public Result getUsers() {
-        return new Result(200, "success", userDao.getAll());
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userDao.getAll();
+        return users.size() != 0 ?
+                ResponseEntity.ok(users) :
+                ResponseEntity.noContent().build();
     }
 
     @PostMapping("")
-    public Result addUser(@RequestBody User user) {
-        return new Result(200, "success", userDao.add(user));
+    public ResponseEntity<String> addUser(@RequestBody User user) {
+        return userDao.add(user) == 1 ?
+                ResponseEntity.ok("注册成功.") :
+                ResponseEntity.badRequest().body("注册失败.");
     }
 
     @PutMapping("")
-    public Result updateUser(@RequestBody User user) {
-        return new Result(200, "success", userDao.add(user));
+    public ResponseEntity<Void> updateUser(@RequestBody User user) {
+        return userDao.update(user) == 1 ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
     }
 
     @DeleteMapping("{userId}")
-    public Result deleteUser(@PathVariable int userId) {
-        return new Result(200, "success", userDao.delete(userId));
+    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+        return userDao.delete(userId) == 1 ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.status(HttpStatus.GONE).build();
     }
 }

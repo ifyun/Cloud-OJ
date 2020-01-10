@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="judge-service" />
-        <module name="register-center" />
+        <module name="load-balanced" />
         <module name="manager-service" />
-        <module name="manager-server" />
+        <module name="register-center" />
         <module name="file-server" />
+        <module name="judge-service" />
+        <module name="manager-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
@@ -21,6 +22,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="file-server" options="-parameters" />
       <module name="judge-service" options="-parameters" />
+      <module name="load-balanced" options="-parameters" />
       <module name="manager-server" options="-parameters" />
       <module name="manager-service" options="-parameters" />
       <module name="register-center" options="-parameters" />
