@@ -27,7 +27,7 @@ create table role
 
 create table user
 (
-    user_id  varchar(16) not null
+    user_id  varchar(32) not null
         primary key,
     name     varchar(16) not null comment '用户名',
     password char(32)    not null,
@@ -48,7 +48,7 @@ create table solution
     state       int      default 2                 not null comment '状态(2->已提交,1->在判题队列,0->已判题)',
     result      int                                null comment '结果(4->编译错误,3->答案错误,2->部分通过,1->时间超限,0->完全正确)',
     pass_rate   double   default 0                 not null comment '通过率',
-    user_id     varchar(16)                        null,
+    user_id     varchar(32)                        null,
     submit_time datetime default CURRENT_TIMESTAMP not null comment '提交时间',
     constraint solution_problem_problem_id_fk
         foreign key (problem_id) references problem (problem_id)
@@ -110,7 +110,7 @@ select `s`.`solution_id`               AS `solution_id`,
        `s`.`state`                     AS `state`,
        `s`.`result`                    AS `result`,
        `s`.`pass_rate`                 AS `pass_rate`,
-       `s`.user_id                   AS `user_id`,
+       `s`.`user_id`                   AS `user_id`,
        `s`.`submit_time`               AS `submit_time`,
        (`s`.`pass_rate` * `p`.`score`) AS `score`,
        `c`.`state`                     AS `compile_state`,
@@ -132,3 +132,4 @@ from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`proble
 -- comment on column judge_result.compile_info not supported: 编译信息
 
 -- comment on column judge_result.time not supported: 耗时（ms）
+
