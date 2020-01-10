@@ -8,6 +8,7 @@ create table problem
     output        text                                 not null comment '输出说明',
     sample_input  text                                 null comment '示例输入',
     sample_output text                                 null comment '示例输出',
+    timeout       bigint     default 1000              null comment '时间限制',
     score         int        default 0                 not null comment '分数',
     enable        tinyint(1) default 0                 null comment '是否可用',
     create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
@@ -45,7 +46,7 @@ create table solution
     problem_id  int                                null,
     language    int                                not null,
     state       int      default 2                 not null comment '状态(2->已提交,1->在判题队列,0->已判题)',
-    result      int                                null comment '结果(3->编译错误,2->答案错误,1->部分通过,0->完全正确)',
+    result      int                                null comment '结果(4->编译错误,3->答案错误,2->部分通过,1->时间超限,0->完全正确)',
     pass_rate   double   default 0                 not null comment '通过率',
     user_id     varchar(16)                        null,
     submit_time datetime default CURRENT_TIMESTAMP not null comment '提交时间',
@@ -74,11 +75,11 @@ create table runtime
 (
     id          int auto_increment
         primary key,
-    solution_id int        null,
-    total       int        null comment '总测试点数量',
-    passed      int        null comment '通过的测试点数量',
-    time        mediumtext null comment '耗时（ms）',
-    info        text       null,
+    solution_id int    null,
+    total       int    null comment '总测试点数量',
+    passed      int    null comment '通过的测试点数量',
+    time        bigint null comment '耗时（ms）',
+    info        text   null,
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
@@ -102,3 +103,32 @@ create index user_name_index
 create index user_section_index
     on user (section);
 
+create definer = root@`%` view judge_result as
+select `s`.`solution_id`               AS `solution_id`,
+       `s`.`problem_id`                AS `problem_id`,
+       `s`.`language`                  AS `language`,
+       `s`.`state`                     AS `state`,
+       `s`.`result`                    AS `result`,
+       `s`.`pass_rate`                 AS `pass_rate`,
+       `s`.user_id                   AS `user_id`,
+       `s`.`submit_time`               AS `submit_time`,
+       (`s`.`pass_rate` * `p`.`score`) AS `score`,
+       `c`.`state`                     AS `compile_state`,
+       `c`.`info`                      AS `compile_info`,
+       `r`.`time`                      AS `time`
+from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`)))
+         join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)));
+
+-- comment on column judge_result.state not supported: 状态(2->已提交,1->在判题队列,0->已判题)
+
+-- comment on column judge_result.result not supported: 结果(4->编译错误,3->答案错误,2->部分通过,1->时间超限,0->完全正确)
+
+-- comment on column judge_result.pass_rate not supported: 通过率
+
+-- comment on column judge_result.submit_time not supported: 提交时间
+
+-- comment on column judge_result.compile_state not supported: 编译状态(0->编译成功,-1->编译出错)
+
+-- comment on column judge_result.compile_info not supported: 编译信息
+
+-- comment on column judge_result.time not supported: 耗时（ms）

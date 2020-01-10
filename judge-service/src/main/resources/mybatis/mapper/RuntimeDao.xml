@@ -15,4 +15,10 @@
             info   = #{info}
         where id = #{id}
     </update>
+
+    <select id="getTimeout" resultType="java.lang.Long">
+        select timeout
+        from problem
+        where problem_id = #{problemId}
+    </select>
 </mapper>

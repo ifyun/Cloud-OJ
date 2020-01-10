@@ -24,27 +24,27 @@ class Compiler {
         File dir = new File(targetDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
-                log.info("目录 {} 不存在, 已创建.", targetDir);
+                log.info("目录 {} 不存在, 已创建", targetDir);
             } else {
-                log.info("无法创建目录.");
+                log.info("无法创建目录");
                 System.exit(-1);
             }
         }
     }
 
     public Compile compile(int solutionId, int languageId, String source) {
-        log.info("正在编译, solutionId: {}", solutionId);
+        log.info("正在编译, solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
         String src = writeCode(solutionId, languageId, source);
 
         if (src.isEmpty())
-            return new Compile(solutionId, -1, "无法写入源码.");
+            return new Compile(solutionId, -1, "无法写入源码");
 
         Language language = Language.get(languageId);
 
         if (language != null)
             return compileSource(solutionId, languageId, src);
         else
-            return new Compile(solutionId, -1, "不支持的语言.");
+            return new Compile(solutionId, -1, "不支持的语言");
     }
 
     /**
@@ -69,8 +69,9 @@ class Compiler {
                 processBuilder.command("javac", src);
                 break;
             case PYTHON:
+                return new Compile(solutionId, 0, "Python 无需编译");
             case BASH:
-                return new Compile(solutionId, 0, "无需编译.");
+                return new Compile(solutionId, 0, "Bash 无需编译");
         }
 
         try {
@@ -80,7 +81,7 @@ class Compiler {
 
             if (error.isEmpty()) {
                 log.info("编译完成: solutionId: {}", solutionId);
-                return new Compile(solutionId, 0, "file: " + src);
+                return new Compile(solutionId, 0, "编译成功");
             }
 
             return new Compile(solutionId, -1, error);

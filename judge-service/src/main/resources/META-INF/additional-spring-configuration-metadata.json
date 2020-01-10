@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "project.test-data-dir",
+      "type": "java.lang.String",
+      "description": "测试数据存放目录."
+    },
+    {
+      "name": "project.target-dir",
+      "type": "java.lang.String",
+      "description": "编译临时目录."
+    }
+  ] }

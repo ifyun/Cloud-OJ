@@ -1,15 +1,17 @@
 package top.cloudli.judgeservice.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.dao.SourceCodeDao;
 import top.cloudli.judgeservice.data.CommitData;
+import top.cloudli.judgeservice.model.JudgeResult;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SourceCode;
 
 import javax.annotation.Resource;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -21,7 +23,8 @@ public class CommitService {
     @Resource
     private SourceCodeDao sourceCodeDao;
 
-    public int commit(CommitData commitData) {
+    @Async
+    public CompletableFuture<JudgeResult> commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getUserId(),
                 commitData.getProblemId(),
@@ -34,10 +37,21 @@ public class CommitService {
         log.info("提交 solution, solution_id = {}", solutionId);
 
         sourceCodeDao.add(sourceCode);
-        return solutionId;
+        return CompletableFuture.completedFuture(getResult(solutionId));
     }
 
-    public Object getResult(int solutionId) {
-        return solutionDao.getJudged();
+    private JudgeResult getResult(int solutionId) {
+        int retry = 3;
+        JudgeResult judgeResult =  solutionDao.getJudgedBySolutionId(solutionId);
+
+        while (judgeResult == null && retry-- > 0) {
+            try {
+                Thread.sleep(1500);
+                judgeResult = solutionDao.getJudgedBySolutionId(solutionId);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        return judgeResult;
     }
 }

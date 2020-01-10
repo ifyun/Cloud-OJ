@@ -34,6 +34,7 @@ mybatis:
     map-underscore-to-camel-case: on
   mapper-locations: classpath:mybatis/mapper/*.xml
 
+
 project:
   test-data-dir: D:/test_data/
   target-dir: D:/target/

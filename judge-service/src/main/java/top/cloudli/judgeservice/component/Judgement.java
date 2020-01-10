@@ -65,6 +65,7 @@ public class Judgement {
      * @param output   实际输出
      */
     private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<String> output) {
+        long timeout = runtimeDao.getTimeout(solution.getProblemId());
         int total = expect.size();
         int passed = 0;
 
@@ -75,18 +76,24 @@ public class Judgement {
 
         runtime.setTotal(total);
         runtime.setPassed(passed);
-
         runtimeDao.update(runtime);
 
-        if (passed == 0)
+        if (passed == 0) {
             solution.setResult(SolutionResult.WRONG.ordinal());
-        else if (passed < total)
+        } else if (passed < total) {
             solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
-        else {
+        } else {
             solution.setResult(SolutionResult.ALL_PASSED.ordinal());
         }
 
-        solution.setPassRate(((double) passed) / total);
+        double passRate = (double) passed / total;
+
+        if (passed != 0 && runtime.getTime() > timeout) {
+            solution.setResult(SolutionResult.TIMEOUT.ordinal());
+            passRate /= 2;      // 时间超限降一半分
+        }
+
+        solution.setPassRate(passRate);
         solution.setState(SolutionState.JUDGED.ordinal());
         solutionDao.update(solution);
     }
@@ -102,6 +109,7 @@ public class Judgement {
 
         try {
             StopWatch stopWatch = new StopWatch("GET-EXECUTE-TIME");
+            log.info("cmd: {}", cmd.command());
 
             if (input.size() == 0) {
                 // 执行程序
@@ -179,9 +187,9 @@ public class Judgement {
             case C_CPP:
                 // NOTE Windows 和 Linux 生成的目标文件不一样
                 if (isLinux) {
-                    builder.command(filePath, ".o");
+                    builder.command(filePath + ".o");
                 } else {
-                    builder.command(filePath, ".exe");
+                    builder.command(filePath + ".exe");
                 }
                 return builder;
             case JAVA:

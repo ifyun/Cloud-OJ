@@ -26,7 +26,7 @@ public class AsyncConfig implements SchedulingConfigurer {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(20);
+        executor.setQueueCapacity(10);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("OJ-");
         executor.initialize();

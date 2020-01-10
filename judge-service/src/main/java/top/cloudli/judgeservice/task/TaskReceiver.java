@@ -23,8 +23,7 @@ public class TaskReceiver {
     @RabbitHandler
     @RabbitListener(queues = "JudgeQueue")
     public void receiveTask(Solution solution) {
-        log.info("正在判题, solutionId: {}, 编程语言: {}",
-                solution.getSolutionId(), Language.get(solution.getLanguage()));
+        log.info("Take solutionId: {} from JudgeQueue", solution.getSolutionId());
         judgementAsync.judge(solution);
     }
 }

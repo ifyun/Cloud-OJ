@@ -16,12 +16,7 @@ class SolutionDaoTest {
     private SolutionDao solutionDao;
 
     @Test
-    void getSubmitted() {
-        log.info(String.valueOf(solutionDao.getSubmitted()));
-    }
-
-    @Test
-    void getJudged() {
-        log.info(String.valueOf(solutionDao.getJudged()));
+    void getJudgeResult() {
+        log.info(String.valueOf(solutionDao.getJudgedByUserId("20164225133")));
     }
 }

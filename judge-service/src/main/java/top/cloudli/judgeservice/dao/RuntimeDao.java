@@ -7,4 +7,5 @@ import top.cloudli.judgeservice.model.Runtime;
 public interface RuntimeDao {
     int add(Runtime runtime);
     int update(Runtime runtime);
+    Long getTimeout(int problemId);
 }
