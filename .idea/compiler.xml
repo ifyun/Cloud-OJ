@@ -12,6 +12,7 @@
         <module name="file-server" />
         <module name="judge-service" />
         <module name="manager-server" />
+        <module name="api-gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
@@ -20,6 +21,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
       <module name="file-server" options="-parameters" />
       <module name="judge-service" options="-parameters" />
       <module name="load-balanced" options="-parameters" />
