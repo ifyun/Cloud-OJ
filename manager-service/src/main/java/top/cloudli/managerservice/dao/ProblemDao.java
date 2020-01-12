@@ -9,6 +9,8 @@ import java.util.List;
 public interface ProblemDao {
     List<Problem> getAll();
 
+    List<Problem> getEnable();
+
     List<Problem> searchByTitle(String title);
 
     int add(Problem problem);

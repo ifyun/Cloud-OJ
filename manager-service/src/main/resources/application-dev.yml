@@ -14,6 +14,11 @@ spring:
   jackson:
     default-property-inclusion: non_null
 
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
 server:
   port: 8011
 
@@ -23,12 +28,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
-
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: on
-  mapper-locations: classpath:mybatis/mapper/*.xml
 
 logging:
   level:

@@ -12,7 +12,6 @@
         <option value="$PROJECT_DIR$/file-server/pom.xml" />
         <option value="$PROJECT_DIR$/manager-service/pom.xml" />
         <option value="$PROJECT_DIR$/judge-service/pom.xml" />
-        <option value="$PROJECT_DIR$/load-balanced/pom.xml" />
         <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
       </list>
     </option>

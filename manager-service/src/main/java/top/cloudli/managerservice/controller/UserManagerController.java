@@ -14,7 +14,7 @@ public class UserManagerController {
     @Resource
     private ManagerService managerService;
 
-    @GetMapping("")
+    @GetMapping("pro")
     public ResponseEntity<?> getUsers() {
         return managerService.getUsers();
     }
@@ -24,12 +24,12 @@ public class UserManagerController {
         return managerService.addUser(user);
     }
 
-    @PutMapping("")
+    @PutMapping("pro")
     public ResponseEntity<Void> updateUser(@RequestBody User user) {
         return managerService.updateUser(user);
     }
 
-    @DeleteMapping("{userId}")
+    @DeleteMapping("pro/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
         return managerService.deleteUser(userId);
     }

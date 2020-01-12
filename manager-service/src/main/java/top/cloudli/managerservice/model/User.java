@@ -2,6 +2,8 @@ package top.cloudli.managerservice.model;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class User {
     private String userId;
@@ -9,5 +11,6 @@ public class User {
     private String password;
     private String email;
     private String section;
-    private int roleId = 3;
+
+    private List<Role> roles;
 }

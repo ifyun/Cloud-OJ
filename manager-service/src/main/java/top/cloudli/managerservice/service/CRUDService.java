@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CRUDService {
 
-    default ResponseEntity<Object> buildGETSingleResponse(Object object) {
+    default ResponseEntity<?> buildGETSingleResponse(Object object) {
         return object != null ?
                 ResponseEntity.ok(object) :
                 ResponseEntity.noContent().build();

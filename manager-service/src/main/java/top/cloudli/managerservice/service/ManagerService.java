@@ -29,8 +29,14 @@ public class ManagerService implements CRUDService {
     @Value("${spring.application.name}")
     private String app;
 
+    public ResponseEntity<?> getEnableProblems() {
+        log.debug("{}:{} 获取已启用题目.", app, port);
+        List<Problem> problems = problemDao.getEnable();
+        return buildGETResponse(problems);
+    }
+
     public ResponseEntity<?> getProblems() {
-        log.debug("{}:{} 获取题目.", app, port);
+        log.debug("{}:{} 获取所有题目.", app, port);
         List<Problem> problems = problemDao.getAll();
         return buildGETResponse(problems);
     }

@@ -8,6 +8,11 @@
         from problem;
     </select>
 
+    <select id="getEnable" resultType="top.cloudli.managerservice.model.Problem">
+        select *
+        from problem where enable = true;
+    </select>
+
     <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
         select *
         from problem

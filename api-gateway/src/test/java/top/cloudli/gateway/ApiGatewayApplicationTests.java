@@ -1,4 +1,4 @@
-package top.cloudli.apigateway;
+package top.cloudli.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

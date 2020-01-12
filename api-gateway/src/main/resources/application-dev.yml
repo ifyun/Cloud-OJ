@@ -4,6 +4,23 @@ server:
 spring:
   application:
     name: api-gateway
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloud_oj
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      minimum-idle: 10
+      maximum-pool-size: 50
+  jackson:
+    default-property-inclusion: non_null
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
 
 eureka:
   instance:
@@ -12,15 +29,17 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
 zuul:
   routes:
-    # 管理服务的路由
-    problem:
+    # 管理服务
+    manager:
       path: /api/manager/**
       serviceId: manager-service
+    # 判题服务
+    judge:
+      path: /api/judge/**
+      serviceId: judge-service
+    # 文件服务
+    file-server:
+      path: /api/manager/file/**
+      serviceId: file-server

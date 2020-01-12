@@ -18,27 +18,32 @@ public class ProblemManagerController {
     private ManagerService managerService;
 
     @GetMapping("")
-    public ResponseEntity<?> getProblems() {
+    public ResponseEntity<?> getEnable() {
+        return managerService.getEnableProblems();
+    }
+
+    @GetMapping("pro")
+    public ResponseEntity<?> getAll() {
         return managerService.getProblems();
     }
 
     @GetMapping("{keyword}")
-    public ResponseEntity<?> searchProblems(@PathVariable String keyword) {
+    public ResponseEntity<?> search(@PathVariable String keyword) {
         return managerService.searchProblems(keyword);
     }
 
-    @PutMapping("")
-    public ResponseEntity<Void> updateProblem(@RequestBody Problem problem) {
+    @PutMapping("pro")
+    public ResponseEntity<Void> update(@RequestBody Problem problem) {
         return managerService.updateProblem(problem);
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> addProblem(@RequestBody Problem problem) {
+    @PostMapping("pro")
+    public ResponseEntity<?> add(@RequestBody Problem problem) {
         return managerService.addProblem(problem);
     }
 
-    @DeleteMapping("{problemId}")
-    public ResponseEntity<Void> deleteProblem(@PathVariable int problemId) {
+    @DeleteMapping("pro/{problemId}")
+    public ResponseEntity<Void> delete(@PathVariable int problemId) {
         return managerService.deleteProblem(problemId);
     }
 }
