@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link rel="stylesheet" href="css/layui.css">
+    <style>
+        html {
+            background-image: url("img/back.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-text {
+            font-size: 16pt;
+        }
+
+        .menu-gap {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <ul th:fragment="nav-index" class="layui-nav">
+        <li class="layui-nav-item">
+            <a href="/index" style="font-size: 20pt">Cloud OJ</a>
+        </li>
+        <li class="layui-nav-item menu-gap"></li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="/index">帮 助</a>
+        </li>
+        <li class="layui-nav-item menu-gap"></li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="/problems">题目列表</a>
+        </li>
+        <li class="layui-nav-item menu-gap"></li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">提交列表</a>
+        </li>
+    </ul>
+</nav>
+<div class="layui-container">
+
+</div>
+</body>
+</html>

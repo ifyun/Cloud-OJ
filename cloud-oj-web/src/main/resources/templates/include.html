@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_head(title, links, style)">
+    <meta charset="UTF-8">
+    <title th:replace="${title}"></title>
+    <link rel="stylesheet" href="css/layui.css">
+    <style>
+        .menu-text {
+            font-size: 16pt;
+        }
+        .menu-gap {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <ul th:fragment="nav-index" class="layui-nav">
+        <li class="layui-nav-item">
+            <a href="#" style="font-size: 20pt">Cloud OJ</a>
+        </li>
+        <li class="layui-nav-item" style="width: 200px"></li>
+        <li class="layui-nav-item layui-this">
+            <a class="menu-text" href="#">首页</a>
+        </li>
+        <li class="layui-nav-item menu-gap"></li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">练习</a>
+        </li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">提交</a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>

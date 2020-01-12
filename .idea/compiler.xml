@@ -10,6 +10,7 @@
         <module name="manager-service" />
         <module name="register-center" />
         <module name="file-server" />
+        <module name="cloud-oj-web" />
         <module name="judge-service" />
         <module name="api-gateway" />
       </profile>
@@ -24,6 +25,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
+      <module name="cloud-oj-web" options="-parameters" />
       <module name="file-server" options="-parameters" />
       <module name="judge-service" options="-parameters" />
       <module name="load-balanced" options="-parameters" />
