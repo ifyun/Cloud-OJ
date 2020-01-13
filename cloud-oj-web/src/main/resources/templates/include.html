@@ -9,6 +9,9 @@
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
     <style>
+        body {
+            min-width: 900px;
+        }
         .menu-text {
             font-size: 12pt;
         }
@@ -18,12 +21,21 @@
         }
     </style>
     <script>
+        let userInfo = {
+            userId: 20164225133,
+            name: "Cloud",
+            token: null
+        };
+
         $(document).ready(() => {
             /*let userInfo = $.cookie('cloudOjToken');
             if (userInfo != null) {
                 let user = JSON.parse(userInfo);
                 console.log(user);
             }*/
+            if (userInfo != null) {
+                $('#user-name').text(userInfo.name);
+            }
         });
     </script>
 </head>
@@ -43,8 +55,12 @@
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li id="user-name" class="layui-nav-item menu-item">
-                <a class="menu-text" href="#">登录/注册</a>
+            <li class="layui-nav-item menu-item">
+                <a><span id="user-name" class="menu-text">未登录</span></a>
+                <dl class="layui-nav-child">
+                    <dd><a href="#">基本资料</a></dd>
+                    <dd><a href="#">退了</a></dd>
+                </dl>
             </li>
             <li id="logout" class="layui-nav-item menu-item" style="display: none">
                 <a class="menu-text">退出</a>

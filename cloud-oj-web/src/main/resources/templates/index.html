@@ -15,6 +15,7 @@
             height: 900px;
             background-image: url("img/back.jpg");
             background-repeat: no-repeat;
+            background-position: center top;
             background-size: cover;
         }
 
@@ -29,46 +30,85 @@
 <div class="container">
     <div class="left">
     </div>
-    <div style="float: left;width: 30%">
-        <div class="layui-collapse" lay-accordion>
+    <div style="float: left;width: 40%">
+        <div class="layui-collapse" style="margin: 10px" lay-accordion>
             <div class="layui-colla-item">
-                <h2 class="layui-colla-title">登录</h2>
+                <h2 class="layui-colla-title">登 录</h2>
                 <div class="layui-colla-content layui-show">
-                    <div class="layui-form" style="display: inline-block">
+                    <div class="layui-form layui-form-pane">
                         <div class="layui-form-item">
-                            <label for="userId" class="layui-form-label">用户ID:</label>
+                            <label for="userId" class="layui-form-label">ID</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" id="userId" type="text" name="userId" lay-verify="required"
-                                       placeholder="输入用户ID">
+                                       placeholder="输入ID（学号）">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="password" class="layui-form-label">密码:</label>
+                            <label for="password" class="layui-form-label">密码</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" id="password" type="password" name="password"
                                        lay-verify="required"
                                        placeholder="输入密码">
                             </div>
                         </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-lg layui-btn-normal" style="width: 100%">登 录</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="layui-colla-item">
-                <h2 class="layui-colla-title">注册</h2>
-                <div class="layui-colla-content layui-show">
-                    内容区域
+                <h2 class="layui-colla-title">注 册</h2>
+                <div class="layui-colla-content">
+                    <div class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label for="reg-userId" class="layui-form-label">ID</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="reg-userId" name="reg-userId" lay-verify="required"
+                                       placeholder="输入ID（学号）">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="reg-password" class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="reg-password" type="password" name="reg-password"
+                                       lay-verify="required"
+                                       placeholder="输入密码">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="reg-email" class="layui-form-label">邮箱</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="reg-email" type="email" name="reg-email"
+                                       lay-verify="required" placeholder="你的邮箱">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="reg-school" class="layui-form-label">学校</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="reg-school" type="text" name="reg-school"
+                                       lay-verify="required" placeholder="你的学校">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-lg" style="width: 100%">注册</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
-    layui.use('form', function () {
+    layui.use(['form', 'element'], function () {
         let form = layui.form;
         form.render();
-    });
-    layui.use('element', function(){
         let element = layui.element;
+        element.init();
     });
 </script>
 </body>
