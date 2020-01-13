@@ -10,7 +10,7 @@
     </parent>
     <artifactId>manager-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Manager-Service</name>
+    <name>Manager Service</name>
     <description>管理服务</description>
 
     <dependencies>
