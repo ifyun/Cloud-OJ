@@ -11,6 +11,10 @@ public interface ProblemDao {
 
     List<Problem> getEnable();
 
+    Problem getSingle(int problemId);
+
+    Problem getSingleEnable(int problemId);
+
     List<Problem> searchByTitle(String title);
 
     int add(Problem problem);

@@ -1,71 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
     <meta charset="UTF-8">
     <title>题目列表</title>
-    <link rel="stylesheet" href="css/layui.css">
-    <style>
-        .menu-text {
-            font-size: 16pt;
-        }
-
-        .menu-gap {
-            width: 50px;
-        }
-    </style>
 </head>
 <body>
-<nav>
-    <ul th:fragment="nav-index" class="layui-nav">
-        <li class="layui-nav-item">
-            <a href="/index" style="font-size: 20pt">Cloud OJ</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="/index">帮 助</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item layui-this">
-            <a class="menu-text" href="/problems">题目列表</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">提交列表</a>
-        </li>
-    </ul>
-</nav>
+<script src="http://localhost:8080/jquery-3.4.1.js"></script>
+<div th:replace="include::top"></div>
 <div class="layui-container">
     <div class="layui-form-item" style="margin-top: 10px">
         <label for="keyword" class="layui-form-label">搜索题目:</label>
         <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称或编号"  type="text">
+            <input id="keyword" class="layui-input" placeholder="输入题目名称或编号" type="text">
         </div>
         <button class="layui-btn">搜 索</button>
     </div>
-    <table class="layui-table" lay-skin="nob" lay-size="lg">
+    <!-- 题目列表 -->
+    <table class="layui-table" lay-size="lg" lay-skin="nob">
         <colgroup>
-            <col width="120">
-            <col width="300">
-            <col width="40%">
-            <col>
+            <col style="width: 15%">
+            <col style="width: 45%">
+            <col style="width: 20%">
+            <col style="width: 20%">
         </colgroup>
         <thead>
         <tr>
-            <th>题目编号</th>
-            <th>题目标题</th>
-            <th></th>
-            <th>创建时间</th>
+            <td>题目编号</td>
+            <td>题目标题</td>
+            <td>分 类</td>
+            <td>创建时间</td>
         </tr>
         </thead>
         <tbody>
         <tr th:each="problem: ${problemList}">
-            <td th:text="${problem.getProblemId()}"></td>
-            <td th:text="${problem.getTitle()}"></td>
-            <th></th>
-            <td th:text="${problem.getCreateAt()}"></td>
+            <th th:text="${problem.getProblemId()}"></th>
+            <th><a th:text="${problem.getTitle()}" th:href="@{'/commit/' + ${problem.getProblemId()}}"></a></th>
+            <th><a class="layui-badge-rim layui-bg-blue" th:text="${problem.getCategory()}" href="#"></a></th>
+            <th th:text="${problem.getCreateAt()}"></th>
         </tr>
         </tbody>
     </table>
 </div>
+<script>
+    $('#nav-problems').addClass("layui-this");
+</script>
 </body>
 </html>

@@ -1,53 +1,75 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="include::common_head(~{::title}, ~{}, ~{::style})">
     <meta charset="UTF-8">
     <title>主页</title>
-    <link rel="stylesheet" href="css/layui.css">
     <style>
-        html {
+        .container {
+            width: 100%;
+            background-color: #393D49;
+        }
+
+        .left {
+            float: left;
+            width: 60%;
+            height: 900px;
             background-image: url("img/back.jpg");
             background-repeat: no-repeat;
             background-size: cover;
-            height: 100%;
         }
 
-        body {
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-
-        .menu-text {
-            font-size: 16pt;
-        }
-
-        .menu-gap {
-            width: 50px;
+        .left:after {
+            content: ".";
+            display: block;
         }
     </style>
 </head>
 <body>
-<nav>
-    <ul th:fragment="nav-index" class="layui-nav">
-        <li class="layui-nav-item">
-            <a href="/index" style="font-size: 20pt">Cloud OJ</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="/index">帮 助</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="/problems">题目列表</a>
-        </li>
-        <li class="layui-nav-item menu-gap"></li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">提交列表</a>
-        </li>
-    </ul>
-</nav>
-<div class="layui-container">
-
+<div th:replace="include::top"></div>
+<div class="container">
+    <div class="left">
+    </div>
+    <div style="float: left;width: 30%">
+        <div class="layui-collapse" lay-accordion>
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title">登录</h2>
+                <div class="layui-colla-content layui-show">
+                    <div class="layui-form" style="display: inline-block">
+                        <div class="layui-form-item">
+                            <label for="userId" class="layui-form-label">用户ID:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="userId" type="text" name="userId" lay-verify="required"
+                                       placeholder="输入用户ID">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="password" class="layui-form-label">密码:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="password" type="password" name="password"
+                                       lay-verify="required"
+                                       placeholder="输入密码">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title">注册</h2>
+                <div class="layui-colla-content layui-show">
+                    内容区域
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+    layui.use('form', function () {
+        let form = layui.form;
+        form.render();
+    });
+    layui.use('element', function(){
+        let element = layui.element;
+    });
+</script>
 </body>
 </html>

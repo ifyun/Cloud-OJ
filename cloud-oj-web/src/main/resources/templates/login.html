@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+    <meta charset="UTF-8">
+    <title>登录/注册</title>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label for="userId" class="layui-form-label">用户ID:</label>
+            <div class="layui-input-block">
+                <input id="userId" type="text" name="userId" lay-verify="required" placeholder="输入用户ID">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="password" class="layui-form-label">密码:</label>
+            <div class="layui-input-block">
+                <input id="password" type="password" name="password" lay-verify="required" placeholder="输入密码">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

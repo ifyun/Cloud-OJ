@@ -11,6 +11,7 @@ public class Problem {
     private String output;
     private String sampleInput;
     private String sampleOutput;
+    private String category;
     private int score;
     private boolean enable;
     private String createAt;

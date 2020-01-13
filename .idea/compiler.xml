@@ -6,12 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="manager-server" />
         <module name="manager-service" />
         <module name="register-center" />
         <module name="file-server" />
         <module name="cloud-oj-web" />
         <module name="judge-service" />
+        <module name="manager-server" />
         <module name="api-gateway" />
       </profile>
     </annotationProcessing>

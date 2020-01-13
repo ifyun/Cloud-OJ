@@ -18,8 +18,18 @@ public class ProblemManagerController {
     private ManagerService managerService;
 
     @GetMapping("")
-    public ResponseEntity<?> getEnable() {
+    public ResponseEntity<?> getAllEnable() {
         return managerService.getEnableProblems();
+    }
+
+    @GetMapping("{problemId}")
+    public ResponseEntity<?> getEnable(@PathVariable int problemId) {
+        return managerService.getEnableProblem(problemId);
+    }
+
+    @GetMapping("pro/{problemId}")
+    public ResponseEntity<?> getSingle(@PathVariable int problemId) {
+        return managerService.getProblem(problemId);
     }
 
     @GetMapping("pro")
@@ -27,7 +37,7 @@ public class ProblemManagerController {
         return managerService.getProblems();
     }
 
-    @GetMapping("{keyword}")
+    @GetMapping("search/{keyword}")
     public ResponseEntity<?> search(@PathVariable String keyword) {
         return managerService.searchProblems(keyword);
     }

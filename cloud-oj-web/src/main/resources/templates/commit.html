@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{::link}, ~{::style})">
+    <meta charset="UTF-8">
+    <title th:text="'提交 ' + ${problem.getTitle()}"></title>
+    <link rel="stylesheet" href="http://localhost:8080/codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" href="http://localhost:8080/codemirror/theme/dracula.css"/>
+    <style>
+        .description {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #f2f2f2;
+        }
+
+        .sample {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+        }
+
+        html, body {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<script src="http://localhost:8080/codemirror/lib/codemirror.js"></script>
+<script src="http://localhost:8080/codemirror/mode/clike/clike.js"></script>
+<script src="http://localhost:8080/codemirror/mode/python/python.js"></script>
+
+<div th:replace="include::top"></div>
+
+<div class="layui-container" style="margin-top: 20px">
+    <div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <h2 th:text="${problem.getTitle()}"></h2>
+            </div>
+            <div class="layui-card-body">
+                <h2>题目描述：</h2>
+                <h3 class="description" th:text="${problem.getDescription()}"></h3>
+                <h2>输入说明：</h2>
+                <h3 class="description" th:text="${problem.getInput()}"></h3>
+                <h2>输出说明：</h2>
+                <h3 class="description" th:text="${problem.getOutput()}"></h3>
+                <h2>输入示例：</h2>
+                <h3 class="sample" th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></h3>
+                <h2>输出示例：</h2>
+                <h3 class="sample" th:text="${problem.getSampleOutput()}"></h3>
+            </div>
+        </div>
+    </div>
+    <!-- 代码区域 -->
+    <div style="margin-top: 10px; margin-bottom: 20px">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <h2>写下你的代码:</h2>
+            </div>
+            <div class="layui-card-body">
+                <label>
+                    <textarea id="code"></textarea>
+                </label>
+                <div class="layui-form" style="margin-top: 10px;display: inline-block">
+                    <div class="layui-form-item">
+                        <label for="lang" class="layui-form-label" style="font-size: 12pt">编程语言:</label>
+                        <div class="layui-input-block">
+                            <select id="lang" lay-filter="lang" onchange="langChange()">
+                                <option value="0" selected="selected">C/C++(Support C++ 14)</option>
+                                <option value="1">Java (1.8)</option>
+                                <option value="2">Python (3.8)</option>
+                                <option value="3">Bash</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="submit()" class="layui-btn layui-btn-normal" style="">提交代码</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let language = 0;
+    let codeLang = ['text/x-c++src', 'text/x-java', 'text/x-python', 'text/x-sh'];
+
+    let editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: 'text/x-c++src',
+        lineNumbers: true,
+        matchBrackets: true
+    });
+
+    editor.setSize('auto', '600px');
+    editor.setOption('theme', 'dracula');
+
+    layui.use('form', function () {
+        let form = layui.form;
+        form.render();
+        form.on('select(lang)', function (data) {
+            language = data.value;
+            console.log(language);
+            editor.setOption('mode', codeLang[language]);
+        })
+    });
+
+    function submit() {
+        // 提交
+        console.log(language);
+    }
+</script>
+</body>
+</html>

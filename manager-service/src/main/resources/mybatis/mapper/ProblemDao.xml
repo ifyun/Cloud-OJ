@@ -4,13 +4,27 @@
 <mapper namespace="top.cloudli.managerservice.dao.ProblemDao">
 
     <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
-        select *
+        select problem_id, title, enable, category, create_at
         from problem;
     </select>
 
     <select id="getEnable" resultType="top.cloudli.managerservice.model.Problem">
+        select problem_id, title, enable, category, create_at
+        from problem
+        where enable = true;
+    </select>
+
+    <select id="getSingle" resultType="top.cloudli.managerservice.model.Problem">
         select *
-        from problem where enable = true;
+        from problem
+        where problem_id = #{problemId}
+    </select>
+
+    <select id="getSingleEnable" resultType="top.cloudli.managerservice.model.Problem">
+        select *
+        from problem
+        where enable = true
+          and problem_id = #{problemId};
     </select>
 
     <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
@@ -32,7 +46,8 @@
             output        = #{output},
             sample_input  = #{sampleInput},
             sample_output = #{sampleOutput},
-            score         = #{score}
+            score         = #{score},
+            category      = #{category}
         where problem_id = #{problemId}
     </update>
 
