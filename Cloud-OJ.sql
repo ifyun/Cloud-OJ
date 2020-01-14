@@ -11,7 +11,7 @@ create table problem
     timeout       bigint     default 1000              null comment '时间限制',
     score         int        default 0                 not null comment '分数',
     enable        tinyint(1) default 0                 null comment '是否可用',
-    category      varchar(255)                         null comment '分类，多个用逗号隔开',
+    category      varchar(32)                          null comment '分类',
     create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
 )
     comment '题目表';
@@ -28,13 +28,13 @@ create table role
 
 create table user
 (
-    user_id  varchar(32)  not null
+    user_id  varchar(32)   not null
         primary key,
-    name     varchar(16)  not null comment '用户名',
-    password varchar(100) not null,
-    email    varchar(32)  null,
-    section  varchar(16)  null comment '班级',
-    role_id  int          null,
+    name     varchar(16)   not null comment '用户名',
+    password varchar(100)  not null,
+    email    varchar(32)   null,
+    section  varchar(16)   null comment '班级',
+    role_id  int default 0 not null,
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)
             on update cascade
