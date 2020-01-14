@@ -68,7 +68,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         String jwt = Jwts.builder()
                 .claim("authorities", authoritiesString)
                 .setSubject(authResult.getName())
-                .setExpiration(new Date(System.currentTimeMillis() + 1800000))  // 有效时间 30 分钟
+                .setExpiration(new Date(System.currentTimeMillis() + 180 * 60 * 1000))  // 有效时间 30 分钟
                 .signWith(SignatureAlgorithm.HS512, "cloudli.top")
                 .compact();
 

@@ -46,3 +46,7 @@ zuul:
     web:
       path: /oj/**
       serviceId: cloud-oj-web
+
+judge-service:
+  ribbon:
+    ReadTimeout: 6000
