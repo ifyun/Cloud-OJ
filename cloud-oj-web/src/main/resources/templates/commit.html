@@ -3,21 +3,21 @@
 <head th:replace="include::common_head(~{::title}, ~{::link}, ~{::style})">
     <meta charset="UTF-8">
     <title th:text="'提交 ' + ${problem.getTitle()}"></title>
-    <link rel="stylesheet" href="http://localhost:8080/codemirror/lib/codemirror.css"/>
-    <link rel="stylesheet" href="http://localhost:8080/codemirror/theme/dracula.css"/>
+    <link rel="stylesheet" href="./codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" href="./codemirror/theme/dracula.css"/>
     <style>
         .description {
             margin-top: 15px;
             margin-bottom: 15px;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid #f2f2f2;
+            border: 1px solid #f0f0f0;
         }
 
         .sample {
             margin-top: 15px;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             background-color: #f2f2f2;
         }
@@ -29,9 +29,9 @@
 </head>
 <body>
 
-<script src="http://localhost:8080/codemirror/lib/codemirror.js"></script>
-<script src="http://localhost:8080/codemirror/mode/clike/clike.js"></script>
-<script src="http://localhost:8080/codemirror/mode/python/python.js"></script>
+<script src="http://localhost/oj/codemirror/lib/codemirror.js"></script>
+<script src="http://localhost/oj/codemirror/mode/clike/clike.js"></script>
+<script src="http://localhost/oj/codemirror/mode/python/python.js"></script>
 
 <div th:replace="include::top"></div>
 
@@ -42,16 +42,16 @@
                 <h2 th:text="${problem.getTitle()}"></h2>
             </div>
             <div class="layui-card-body">
-                <h2>题目描述：</h2>
-                <h3 class="description" th:text="${problem.getDescription()}"></h3>
-                <h2>输入说明：</h2>
-                <h3 class="description" th:text="${problem.getInput()}"></h3>
-                <h2>输出说明：</h2>
-                <h3 class="description" th:text="${problem.getOutput()}"></h3>
-                <h2>输入示例：</h2>
-                <h3 class="sample" th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></h3>
-                <h2>输出示例：</h2>
-                <h3 class="sample" th:text="${problem.getSampleOutput()}"></h3>
+                <h3>题目描述：</h3>
+                <h4 class="description" th:text="${problem.getDescription()}"></h4>
+                <h3>输入说明：</h3>
+                <h4 class="description" th:text="${problem.getInput()}"></h4>
+                <h3>输出说明：</h3>
+                <h4 class="description" th:text="${problem.getOutput()}"></h4>
+                <h3>输入示例：</h3>
+                <h4 class="sample" th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></h4>
+                <h3>输出示例：</h3>
+                <h4 class="sample" th:text="${problem.getSampleOutput()}"></h4>
             </div>
         </div>
     </div>
@@ -97,14 +97,17 @@
     editor.setSize('auto', '600px');
     editor.setOption('theme', 'dracula');
 
-    layui.use('form', function () {
+    layui.use(['form', 'element'], function () {
         let form = layui.form;
         form.render();
         form.on('select(lang)', function (data) {
             language = data.value;
             console.log(language);
             editor.setOption('mode', codeLang[language]);
-        })
+        });
+
+        let element = layui.element;
+        element.init();
     });
 
     function submit() {

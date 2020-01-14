@@ -11,11 +11,16 @@ import java.util.List;
 public class User implements UserDetails {
 
     private String userId;
+    private String name;
     private String password;
+    private String section;
+    private String email;
     private int roleId;
     private String roleName;
 
     private List<Role> roles;
+
+    private String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

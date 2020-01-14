@@ -18,8 +18,11 @@ public class ProblemManagerController {
     private ManagerService managerService;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllEnable() {
+    public ResponseEntity<?> getAllEnable(String keyword) {
+        if (keyword != null)
+           return managerService.searchProblems(keyword);
         return managerService.getEnableProblems();
+
     }
 
     @GetMapping("{problemId}")
@@ -35,11 +38,6 @@ public class ProblemManagerController {
     @GetMapping("pro")
     public ResponseEntity<?> getAll() {
         return managerService.getProblems();
-    }
-
-    @GetMapping("search/{keyword}")
-    public ResponseEntity<?> search(@PathVariable String keyword) {
-        return managerService.searchProblems(keyword);
     }
 
     @PutMapping("pro")

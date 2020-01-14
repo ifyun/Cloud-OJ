@@ -1,5 +1,5 @@
 server:
-  port: 5000
+  port: 80
 
 spring:
   application:
@@ -43,3 +43,6 @@ zuul:
     file-server:
       path: /api/manager/file/**
       serviceId: file-server
+    web:
+      path: /oj/**
+      serviceId: cloud-oj-web

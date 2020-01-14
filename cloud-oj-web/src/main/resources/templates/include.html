@@ -3,15 +3,19 @@
 <head th:fragment="common_head(title, links, styles)">
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
-    <link rel="stylesheet" href="http://localhost:8080/css/layui.css">
-    <script src="http://localhost:8080/jquery-3.4.1.js"></script>
-    <script src="http://localhost:8080/layui.all.js"></script>
+    <link rel="stylesheet" href="./css/layui.css">
+    <script src="./jquery-3.4.1.js"></script>
+    <script src="./jquery.cookie.js"></script>
+    <script src="./layui.all.js"></script>
+    <script src="./jquery.md5.js"></script>
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
     <style>
         body {
             min-width: 900px;
+            height: 100%;
         }
+
         .menu-text {
             font-size: 12pt;
         }
@@ -19,36 +23,63 @@
         .menu-item {
             margin-left: 30px;
         }
+
+        .header {
+            height: 59px;
+            border-bottom: 1px solid #404553;
+            background-color: #393D49;
+        }
+
+        .logo {
+            position: absolute;
+            left: 0;
+            top: 16px;
+        }
     </style>
     <script>
-        let userInfo = {
-            userId: 20164225133,
-            name: "Cloud",
+        let user = {
+            userId: '',
+            name: '',
+            section: '',
+            email: '',
+            roleId: null,
             token: null
         };
 
         $(document).ready(() => {
-            /*let userInfo = $.cookie('cloudOjToken');
-            if (userInfo != null) {
-                let user = JSON.parse(userInfo);
-                console.log(user);
-            }*/
-            if (userInfo != null) {
-                $('#user-name').text(userInfo.name);
+            let userInfo = $.cookie('cloudOjToken');
+            if (userInfo !== 'null' && userInfo !== undefined) {
+                user = JSON.parse(userInfo);
+
+                if (user.token !== null) {
+                    $('#user-name').text(user.name);
+                    $('#info').show();
+                    $('#exit').show();
+                }
             }
         });
+
+        function exit() {
+            user = null;
+            $.cookie('cloudOjToken', null);
+            $('#user-name').text('未登录');
+            $('#info').hide();
+            $('#exit').hide();
+        }
     </script>
 </head>
 <body>
-<div th:fragment="top" class="layui-layout-admin">
-    <div class="layui-header">
-        <div class="layui-logo"><a href="/index" style="color: #5FB878; font-size: 18pt">Cloud OJ</a></div>
+<div th:fragment="top" class="layui-header header">
+    <div class="layui-main">
+        <div class="logo">
+            <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt">Cloud OJ</a>
+        </div>
         <ul class="layui-nav layui-layout-left">
             <li id="nav-help" class="layui-nav-item menu-item">
-                <a class="menu-text" href="/index">帮 助</a>
+                <a class="menu-text" href="./index">帮 助</a>
             </li>
             <li id="nav-problems" class="layui-nav-item menu-item">
-                <a class="menu-text" href="/problems">题目列表</a>
+                <a class="menu-text" href="./problems">题目列表</a>
             </li>
             <li id="nav-commit" class="layui-nav-item menu-item">
                 <a class="menu-text" href="#">提交列表</a>
@@ -58,8 +89,8 @@
             <li class="layui-nav-item menu-item">
                 <a><span id="user-name" class="menu-text">未登录</span></a>
                 <dl class="layui-nav-child">
-                    <dd><a href="#">基本资料</a></dd>
-                    <dd><a href="#">退了</a></dd>
+                    <dd id="info" style="display: none"><a href="#">基本资料</a></dd>
+                    <dd id="exit" style="display: none"><a href="javascript:exit()">退了</a></dd>
                 </dl>
             </li>
             <li id="logout" class="layui-nav-item menu-item" style="display: none">

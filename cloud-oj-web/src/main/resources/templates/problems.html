@@ -5,44 +5,70 @@
     <title>题目列表</title>
 </head>
 <body>
-<script src="http://localhost:8080/jquery-3.4.1.js"></script>
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <div class="layui-form-item" style="margin-top: 10px">
+    <div class="layui-form-item" style="margin-top: 25px">
         <label for="keyword" class="layui-form-label">搜索题目:</label>
         <div class="layui-input-inline">
             <input id="keyword" class="layui-input" placeholder="输入题目名称或编号" type="text">
         </div>
-        <button class="layui-btn">搜 索</button>
+        <button onclick="search(this.text)" class="layui-btn">搜 索</button>
     </div>
     <!-- 题目列表 -->
-    <table class="layui-table" lay-size="lg" lay-skin="nob">
-        <colgroup>
-            <col style="width: 15%">
-            <col style="width: 45%">
-            <col style="width: 20%">
-            <col style="width: 20%">
-        </colgroup>
-        <thead>
-        <tr>
-            <td>题目编号</td>
-            <td>题目标题</td>
-            <td>分 类</td>
-            <td>创建时间</td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="problem: ${problemList}">
-            <th th:text="${problem.getProblemId()}"></th>
-            <th><a th:text="${problem.getTitle()}" th:href="@{'/commit/' + ${problem.getProblemId()}}"></a></th>
-            <th><a class="layui-badge-rim layui-bg-blue" th:text="${problem.getCategory()}" href="#"></a></th>
-            <th th:text="${problem.getCreateAt()}"></th>
-        </tr>
-        </tbody>
+    <table id="problems">
+
     </table>
 </div>
+<script type="text/html" id="titleTpl">
+    <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
+</script>
+<script type="text/html" id="categoryTpl">
+    <a class="layui-badge-rim layui-bg-blue">
+        {{d.category}}
+    </a>
+</script>
 <script>
+    let problemsTable;
+    layui.use('table', () => {
+        let table = layui.table;
+        problemsTable = table.render({
+            elem: '#problems',
+            url: '../api/manager/problem',
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "data": res
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            even: true,
+            cols: [
+                [
+                    {field: 'problemId', title: '题目编号', width: '15%'},
+                    {field: 'title', title: '题目标题', width: '45%', templet: '#titleTpl'},
+                    {field: 'category', title: '分类/标签', width: '20%', templet: '#categoryTpl'},
+                    {field: 'createAt', title: '创建时间', width: '20%'}
+                ]
+            ]
+        });
+    });
+
+    function search() {
+        let keyword = $('#keyword').val();
+        console.log(keyword);
+        problemsTable.reload({
+            where: {
+                keyword: keyword
+            }
+        });
+    }
+
     $('#nav-problems').addClass("layui-this");
+    layui.use(['element'], function () {
+        let element = layui.element;
+        element.init();
+    });
 </script>
 </body>
 </html>

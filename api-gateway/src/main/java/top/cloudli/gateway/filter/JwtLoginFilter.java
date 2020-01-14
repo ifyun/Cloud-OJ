@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import top.cloudli.gateway.model.User;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +44,6 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         // 读取请求中的用户名和密码
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         log.info(String.format("user: %s, attempts login.", username));
@@ -62,6 +62,8 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         for (GrantedAuthority authority : authorities)
             authoritiesString.append(authority.getAuthority()).append(",");
 
+        User user = (User) authResult.getPrincipal();
+
         // 生成 jwt token
         String jwt = Jwts.builder()
                 .claim("authorities", authoritiesString)
@@ -70,8 +72,13 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
                 .signWith(SignatureAlgorithm.HS512, "cloudli.top")
                 .compact();
 
+        user.setPassword(null);
+        user.setRoles(null);
+        user.setToken(jwt);
+
+        response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();
-        writer.write(jwt);
+        writer.write(objectMapper.writeValueAsString(user));
         writer.flush();
         writer.close();
     }

@@ -18,8 +18,7 @@
         set name     = #{name},
             password = #{password},
             email    = #{email},
-            section  = #{section},
-            role_id  = #{roleId}
+            section  = #{section}
         where user_id = #{userId};
     </update>
 
