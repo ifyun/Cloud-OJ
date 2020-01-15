@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+    <meta charset="UTF-8">
+    <title>管理</title>
+</head>
+<body>
+<!-- nav -->
+<div th:replace="include::top"></div>
+<div class="layui-container">
+    <table id="problems">
+
+    </table>
+</div>
+<script type="text/html" id="titleTpl">
+    <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
+</script>
+<script type="text/html" id="enableTpl">
+    <input type="checkbox" name="enable" value="{{d.enable}}" title="开放" lay-filter="enable"
+           {{ d.enable ? 'checked' : ''}}>
+</script>
+<script type="text/html" id="categoryTpl">
+    <span class="label bg-green">
+        {{d.category}}
+    </span>
+</script>
+<script>
+    $(document).ready(() => {
+        layui.use(['element', 'table'], () => {
+            let element = layui.element;
+            element.init();
+            let table = layui.table;
+            table.render({
+                elem: '#problems',
+                url: '../api/manager/problem/pro',
+                headers: {token: user.token},
+                parseData: (res) => {
+                    return {
+                        "code": 0,
+                        "count": res.count,
+                        "data": res.data
+                    }
+                },
+                skin: 'nob',
+                size: 'lg',
+                even: true,
+                page: true,
+                limit: 30,
+                cols: [
+                    [
+                        {field: 'problemId', title: '题目编号', width: '15%'},
+                        {field: 'title', title: '题目标题', width: '40%', templet: '#titleTpl'},
+                        {field: 'category', title: '分类/标签', width: '15%', templet: '#categoryTpl'},
+                        {field: 'enable', title: '是否开放', width: '10%', templet: '#enableTpl'},
+                        {field: 'createAt', title: '创建时间', width: '20%'}
+                    ]
+                ]
+            });
+
+            let form = layui.form;
+            form.on('checkbox(enable)', (obj) => {
+                console.log(this.value);
+                console.log(obj.elem.checked);
+            });
+        });
+    });
+
+    $('#nav-manager').addClass("layui-this");
+</script>
+</body>
+</html>

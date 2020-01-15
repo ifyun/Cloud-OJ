@@ -37,10 +37,10 @@
 <div th:replace="include::top"></div>
 <div class="container">
     <div class="title-text">
-        <h2 style="font-size: 32pt"><b>THINK TWICE, CODE ONCE!</b></h2>
+        <h2 style="font-size: 32pt"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
         <button class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                 style="margin-top: 24px"
-                onclick="start()">开始练习
+                onclick="start()">去练习
         </button>
     </div>
 
@@ -196,7 +196,11 @@
                 },
                 error: (xhr) => {
                     console.log(xhr);
-                    layer.open(xhr.responseText);
+                    if (xhr.status === 400) {
+                        layer.open('用户已存在！');
+                    } else {
+                        layer.open();
+                    }
                 }
             });
         });
@@ -206,7 +210,7 @@
         if (user.token !== null) {
             window.location.href = './problems';
         } else {
-            $('#login-pane').show(1000);
+            $('#login-pane').show(500);
         }
     }
 

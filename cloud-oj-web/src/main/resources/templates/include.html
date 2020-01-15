@@ -37,8 +37,8 @@
         }
 
         .label {
-            border-radius: 5px;
-            padding: 5px;
+            border-radius: 10px;
+            padding: 5px 10px;
         }
 
         .bg-green {
@@ -115,7 +115,11 @@
                 <a class="menu-text" href="./results">提交记录</a>
             </li>
             <li id="nav-manager" class="layui-nav-item menu-item" style="display: none">
-                <a class="menu-text" href="./manager">管 理</a>
+                <a class="menu-text" style="cursor: pointer">管 理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="./manager_user">用户管理</a></dd>
+                    <dd><a href="./manager_problem">题目管理</a></dd>
+                </dl>
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">

@@ -30,9 +30,9 @@ public class OJController {
         return new ModelAndView("commit").addObject(problem);
     }
 
-    @RequestMapping("manager")
+    @RequestMapping("manager_problem")
     public String manager() {
-        return "manager";
+        return "manager/manager_problem";
     }
 
     @RequestMapping("results")

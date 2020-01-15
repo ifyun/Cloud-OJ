@@ -2,17 +2,22 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="include::common_head(~{::title}, ~{}, ~{})">
     <meta charset="UTF-8">
-    <title>管理</title>
+    <title>用户管理</title>
 </head>
 <body>
 <!-- nav -->
 <div th:replace="include::top"></div>
-<div th:replace="include::left-nav">
+<div class="layui-container">
+    <table id="users">
+
+    </table>
 </div>
 <script>
-    layui.use(['element'], () => {
+    layui.use(['element', 'table'], () => {
         let element = layui.element;
         element.init();
+        let table = layui.table;
+        table.render();
     });
 
     $('#nav-manager').addClass("layui-this");
