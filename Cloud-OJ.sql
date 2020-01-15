@@ -107,6 +107,7 @@ create index user_section_index
 create definer = root@`%` view judge_result as
 select `s`.`solution_id`               AS `solution_id`,
        `s`.`problem_id`                AS `problem_id`,
+       `p`.`title`                     AS `title`,
        `s`.`language`                  AS `language`,
        `s`.`state`                     AS `state`,
        `s`.`result`                    AS `result`,
@@ -114,11 +115,12 @@ select `s`.`solution_id`               AS `solution_id`,
        `s`.`user_id`                   AS `user_id`,
        `s`.`submit_time`               AS `submit_time`,
        (`s`.`pass_rate` * `p`.`score`) AS `score`,
+       `sc`.`code`                     AS `code`,
        `c`.`state`                     AS `compile_state`,
        `c`.`info`                      AS `compile_info`,
        `r`.`time`                      AS `time`
-from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`)))
-         join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)));
+from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
+         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)));
 
 -- comment on column judge_result.state not supported: 状态(2->已提交,1->在判题队列,0->已判题)
 
