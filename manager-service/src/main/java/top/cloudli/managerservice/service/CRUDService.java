@@ -2,6 +2,7 @@ package top.cloudli.managerservice.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import top.cloudli.managerservice.model.PagedResult;
 
 import java.util.List;
 
@@ -13,9 +14,9 @@ public interface CRUDService {
                 ResponseEntity.noContent().build();
     }
 
-    default ResponseEntity<List<?>> buildGETResponse(List<?> list) {
-        return list.size() > 0 ?
-                ResponseEntity.ok(list) :
+    default ResponseEntity<PagedResult<List<?>>> buildGETResponse(PagedResult<List<?>> result) {
+        return result.getData().size() > 0 ?
+                ResponseEntity.ok(result) :
                 ResponseEntity.noContent().build();
     }
 

@@ -15,8 +15,8 @@ public class UserManagerController {
     private ManagerService managerService;
 
     @GetMapping("pro")
-    public ResponseEntity<?> getUsers() {
-        return managerService.getUsers();
+    public ResponseEntity<?> getUsers(int page, int limit) {
+        return managerService.getUsers((page - 1) * limit, limit);
     }
 
     @PostMapping("")

@@ -37,12 +37,15 @@
             parseData: (res) => {
                 return {
                     "code": 0,
-                    "data": res
+                    "count": res.count,
+                    "data": res.data
                 }
             },
             skin: 'nob',
             size: 'lg',
             even: true,
+            page: true,
+            limit: 30,
             cols: [
                 [
                     {field: 'problemId', title: '题目编号', width: '15%'},

@@ -6,6 +6,7 @@
     <select id="getAll" resultType="top.cloudli.managerservice.model.User">
         select user_id, name, email, section, role_id
         from user
+        limit #{start},#{limit}
     </select>
 
     <insert id="add" parameterType="top.cloudli.managerservice.model.User">

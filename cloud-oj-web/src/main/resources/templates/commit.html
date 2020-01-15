@@ -5,6 +5,7 @@
     <title th:text="'提交 ' + ${problem.getTitle()}"></title>
     <link rel="stylesheet" href="./codemirror/lib/codemirror.css"/>
     <link rel="stylesheet" href="./codemirror/theme/monokai.css"/>
+    <link rel="stylesheet" href="./codemirror/addon/hint/show-hint.css"/>
     <style>
         .description {
             margin-top: 15px;
@@ -32,6 +33,9 @@
 <script src="./codemirror/lib/codemirror.js"></script>
 <script src="./codemirror/mode/clike/clike.js"></script>
 <script src="./codemirror/mode/python/python.js"></script>
+<script src="./codemirror/addon/hint/anyword-hint.js"></script>
+<script src="./codemirror/addon/edit/matchbrackets.js"></script>
+<script src="./codemirror/addon/edit/closebrackets.js"></script>
 
 <div th:replace="include::top"></div>
 
@@ -126,7 +130,12 @@
             if (user.token == null) {
                 console.log('未登录');
                 layer.open({
-                    content: '你还没有登录！'
+                    content: '你还没有登录！',
+                    btn: ['去登录'],
+                    yes: (index) => {
+                        window.location.href = './index';
+                        layer.close(index);
+                    }
                 });
             } else {
                 let loadIndex;

@@ -5,13 +5,15 @@
 
     <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
         select problem_id, title, enable, category, create_at
-        from problem;
+        from problem
+        limit #{start}, #{limit}
     </select>
 
     <select id="getEnable" resultType="top.cloudli.managerservice.model.Problem">
         select problem_id, title, enable, category, create_at
         from problem
-        where enable = true;
+        where enable = true
+        limit #{start}, #{limit}
     </select>
 
     <select id="getSingle" resultType="top.cloudli.managerservice.model.Problem">
@@ -24,13 +26,14 @@
         select *
         from problem
         where enable = true
-          and problem_id = #{problemId};
+          and problem_id = #{problemId}
     </select>
 
     <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
-        select *
+        select problem_id, title, enable, category, create_at
         from problem
         where title like #{title}
+        limit #{start}, #{limit}
     </select>
 
     <insert id="add" parameterType="top.cloudli.managerservice.model.Problem">

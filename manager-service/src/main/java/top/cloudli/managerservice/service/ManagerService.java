@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.ProblemDao;
 import top.cloudli.managerservice.dao.UserDao;
+import top.cloudli.managerservice.model.PagedResult;
 import top.cloudli.managerservice.model.Problem;
 import top.cloudli.managerservice.model.User;
 
@@ -23,14 +24,14 @@ public class ManagerService implements CRUDService {
     @Resource
     private UserDao userDao;
 
-    public ResponseEntity<?> getEnableProblems() {
-        List<Problem> problems = problemDao.getEnable();
-        return buildGETResponse(problems);
+    public ResponseEntity<?> getEnableProblems(int start, int limit) {
+        List<Problem> problems = problemDao.getEnable(start, limit);
+        return buildGETResponse(new PagedResult<>(problems.size(), problems));
     }
 
-    public ResponseEntity<?> getProblems() {
-        List<Problem> problems = problemDao.getAll();
-        return buildGETResponse(problems);
+    public ResponseEntity<?> getProblems(int start, int limit) {
+        List<Problem> problems = problemDao.getAll(start, limit);
+        return buildGETResponse(new PagedResult<>(problems.size(), problems));
     }
 
     public ResponseEntity<?> getProblem(int problemId) {
@@ -41,9 +42,9 @@ public class ManagerService implements CRUDService {
         return buildGETSingleResponse(problemDao.getSingleEnable(problemId));
     }
 
-    public ResponseEntity<?> searchProblems(String keyword) {
-        List<Problem> problems = problemDao.searchByTitle(String.format("%%%s%%", keyword));
-        return buildGETResponse(problems);
+    public ResponseEntity<?> searchProblems(String keyword, int start, int limit) {
+        List<Problem> problems = problemDao.searchByTitle(String.format("%%%s%%", keyword), start, limit);
+        return buildGETResponse(new PagedResult<>(problems.size(), problems));
     }
 
     public ResponseEntity<Void> updateProblem(Problem problem) {
@@ -62,9 +63,9 @@ public class ManagerService implements CRUDService {
 
     // 用户管理部分
 
-    public ResponseEntity<?> getUsers() {
-        List<User> users = userDao.getAll();
-        return buildGETResponse(users);
+    public ResponseEntity<?> getUsers(int start, int limit) {
+        List<User> users = userDao.getAll(start, limit);
+        return buildGETResponse(new PagedResult<>(users.size(), users));
     }
 
     public ResponseEntity<?> addUser(User user) {

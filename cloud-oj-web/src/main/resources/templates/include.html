@@ -3,10 +3,10 @@
 <head th:fragment="common_head(title, links, styles)">
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
-    <link rel="stylesheet" href="./css/layui.css">
+    <link rel="stylesheet" href="./layui/css/layui.css">
+    <script src="./layui/layui.all.js"></script>
     <script src="./jquery-3.4.1.js"></script>
     <script src="./jquery.cookie.js"></script>
-    <script src="./layui.all.js"></script>
     <script src="./jquery.md5.js"></script>
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
@@ -21,7 +21,7 @@
         }
 
         .menu-item {
-            margin-left: 30px;
+            margin-left: 20px;
         }
 
         .header {

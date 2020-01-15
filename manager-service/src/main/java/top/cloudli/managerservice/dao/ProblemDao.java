@@ -7,15 +7,15 @@ import java.util.List;
 
 @Mapper
 public interface ProblemDao {
-    List<Problem> getAll();
+    List<Problem> getAll(int start, int limit);
 
-    List<Problem> getEnable();
+    List<Problem> getEnable(int start, int limit);
 
     Problem getSingle(int problemId);
 
     Problem getSingleEnable(int problemId);
 
-    List<Problem> searchByTitle(String title);
+    List<Problem> searchByTitle(String title, int start, int limit);
 
     int add(Problem problem);
 
