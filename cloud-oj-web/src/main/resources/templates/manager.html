@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+    <meta charset="UTF-8">
+    <title>管理</title>
+</head>
+<body>
+<!-- nav -->
+<div th:replace="include::top"></div>
+<div th:replace="include::left-nav">
+</div>
+<script>
+    layui.use(['element'], () => {
+        let element = layui.element;
+        element.init();
+    });
+
+    $('#nav-manager').addClass("layui-this");
+</script>
+</body>
+</html>

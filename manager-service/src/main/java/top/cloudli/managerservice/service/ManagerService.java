@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import top.cloudli.managerservice.dao.JudgeResultDao;
 import top.cloudli.managerservice.dao.ProblemDao;
 import top.cloudli.managerservice.dao.UserDao;
+import top.cloudli.managerservice.model.JudgeResult;
 import top.cloudli.managerservice.model.PagedResult;
 import top.cloudli.managerservice.model.Problem;
 import top.cloudli.managerservice.model.User;
@@ -24,14 +26,19 @@ public class ManagerService implements CRUDService {
     @Resource
     private UserDao userDao;
 
+    @Resource
+    private JudgeResultDao judgeResultDao;
+
+    // 题目管理部分
+
     public ResponseEntity<?> getEnableProblems(int start, int limit) {
         List<Problem> problems = problemDao.getEnable(start, limit);
-        return buildGETResponse(new PagedResult<>(problems.size(), problems));
+        return buildGETResponse(new PagedResult<>(problemDao.getEnableCount(), problems));
     }
 
     public ResponseEntity<?> getProblems(int start, int limit) {
         List<Problem> problems = problemDao.getAll(start, limit);
-        return buildGETResponse(new PagedResult<>(problems.size(), problems));
+        return buildGETResponse(new PagedResult<>(problemDao.getCount(), problems));
     }
 
     public ResponseEntity<?> getProblem(int problemId) {
@@ -43,8 +50,9 @@ public class ManagerService implements CRUDService {
     }
 
     public ResponseEntity<?> searchProblems(String keyword, int start, int limit) {
-        List<Problem> problems = problemDao.searchByTitle(String.format("%%%s%%", keyword), start, limit);
-        return buildGETResponse(new PagedResult<>(problems.size(), problems));
+        String title = String.format("%%%s%%", keyword);
+        List<Problem> problems = problemDao.searchByTitle(title, start, limit);
+        return buildGETResponse(new PagedResult<>(problemDao.getSearchCount(title), problems));
     }
 
     public ResponseEntity<Void> updateProblem(Problem problem) {
@@ -65,7 +73,7 @@ public class ManagerService implements CRUDService {
 
     public ResponseEntity<?> getUsers(int start, int limit) {
         List<User> users = userDao.getAll(start, limit);
-        return buildGETResponse(new PagedResult<>(users.size(), users));
+        return buildGETResponse(new PagedResult<>(userDao.getCount(), users));
     }
 
     public ResponseEntity<?> addUser(User user) {
@@ -79,5 +87,12 @@ public class ManagerService implements CRUDService {
 
     public ResponseEntity<Void> deleteUser(int userId) {
         return buildDELETEResponse(userDao.delete(userId) == 1);
+    }
+
+    // 获取提交记录
+
+    public ResponseEntity<?> getJudged(String userId, int start, int limit) {
+        List<JudgeResult> results = judgeResultDao.getByUserId(userId, start, limit);
+        return buildGETResponse(new PagedResult<>(judgeResultDao.getCount(userId), results));
     }
 }

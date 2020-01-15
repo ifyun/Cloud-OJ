@@ -203,7 +203,7 @@
     });
 
     function start() {
-        if (user !== null && user.token !== null) {
+        if (user.token !== null) {
             window.location.href = './problems';
         } else {
             $('#login-pane').show(1000);

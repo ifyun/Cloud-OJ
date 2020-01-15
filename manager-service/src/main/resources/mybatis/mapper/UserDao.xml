@@ -3,6 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.managerservice.dao.UserDao">
 
+    <select id="getCount" resultType="java.lang.Long">
+        select count(user_id)
+        from user;
+    </select>
+
     <select id="getAll" resultType="top.cloudli.managerservice.model.User">
         select user_id, name, email, section, role_id
         from user

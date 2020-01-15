@@ -19,7 +19,7 @@ public class OJController {
     }
 
     @RequestMapping("problems")
-    public String problem() {
+    public String problems() {
         return "problems";
     }
 
@@ -28,5 +28,15 @@ public class OJController {
         Problem problem = restTemplate.getForObject("http://localhost/api/manager/problem/" + problemId, Problem.class);
         assert problem != null;
         return new ModelAndView("commit").addObject(problem);
+    }
+
+    @RequestMapping("manager")
+    public String manager() {
+        return "manager";
+    }
+
+    @RequestMapping("results")
+    public String results() {
+        return "results";
     }
 }

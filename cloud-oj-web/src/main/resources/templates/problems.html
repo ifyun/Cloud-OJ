@@ -10,7 +10,7 @@
     <div class="layui-form-item" style="margin-top: 25px">
         <label for="keyword" class="layui-form-label">搜索题目:</label>
         <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称或编号" type="text">
+            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text">
         </div>
         <button onclick="search(this.text)" class="layui-btn">搜 索</button>
     </div>
@@ -29,7 +29,10 @@
 </script>
 <script>
     let problemsTable;
-    layui.use('table', () => {
+
+    layui.use(['table', 'element'], () => {
+        let element = layui.element;
+        element.init();
         let table = layui.table;
         problemsTable = table.render({
             elem: '#problems',
@@ -57,8 +60,15 @@
         });
     });
 
+    let $search = $('#keyword');
+
+    $search.keydown((e) => {
+        if (e.keyCode === 13)
+            search();
+    });
+
     function search() {
-        let keyword = $('#keyword').val();
+        let keyword = $search.val();
         console.log(keyword);
         problemsTable.reload({
             where: {
@@ -68,10 +78,6 @@
     }
 
     $('#nav-problems').addClass("layui-this");
-    layui.use(['element'], function () {
-        let element = layui.element;
-        element.init();
-    });
 </script>
 </body>
 </html>

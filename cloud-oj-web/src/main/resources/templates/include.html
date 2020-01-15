@@ -35,6 +35,31 @@
             left: 0;
             top: 16px;
         }
+
+        .label {
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .bg-green {
+            color: white;
+            background: #5FB878;
+        }
+
+        .bg-red {
+            color: white;
+            background: #FF5722;
+        }
+
+        .bg-yellow {
+            color: white;
+            background: #FFB800;
+        }
+
+        .bg-blue {
+            color: white;
+            background: #1E9FFF;
+        }
     </style>
     <script>
         let user = {
@@ -48,23 +73,28 @@
 
         $(document).ready(() => {
             let userInfo = $.cookie('cloudOjToken');
-            if (userInfo !== 'null' && userInfo !== undefined) {
+            if (userInfo != null) {
                 user = JSON.parse(userInfo);
-
-                if (user.token !== null) {
-                    $('#user-name').text(user.name);
-                    $('#info').show();
-                    $('#exit').show();
+                $('#user-name').text(user.name);
+                $('#nav-commit').show();
+                if (user.roleId > 0) {
+                    $('#nav-manager').show();
                 }
+            } else {
+                $('#user').attr('href', 'javascript:start()');
+                $('#user-menu').removeClass('layui-nav-child');
             }
         });
 
         function exit() {
             user = null;
-            $.cookie('cloudOjToken', null);
+            $.removeCookie('cloudOjToken');
             $('#user-name').text('未登录');
-            $('#info').hide();
-            $('#exit').hide();
+            window.location.href = './index';
+        }
+
+        function start() {
+            window.location.href = './index';
         }
     </script>
 </head>
@@ -81,23 +111,40 @@
             <li id="nav-problems" class="layui-nav-item menu-item">
                 <a class="menu-text" href="./problems">题目列表</a>
             </li>
-            <li id="nav-commit" class="layui-nav-item menu-item">
-                <a class="menu-text" href="#">提交列表</a>
+            <li id="nav-commit" class="layui-nav-item menu-item" style="display: none">
+                <a class="menu-text" href="./results">提交记录</a>
+            </li>
+            <li id="nav-manager" class="layui-nav-item menu-item" style="display: none">
+                <a class="menu-text" href="./manager">管 理</a>
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item menu-item">
-                <a><span id="user-name" class="menu-text">未登录</span></a>
-                <dl class="layui-nav-child">
-                    <dd id="info" style="display: none"><a href="#">基本资料</a></dd>
-                    <dd id="exit" style="display: none"><a href="javascript:exit()">退了</a></dd>
+                <a id="user" style="cursor: pointer;"><span id="user-name" class="menu-text">未登录</span></a>
+                <dl id="user-menu" class="layui-nav-child" style="display: none">
+                    <dd id="info"><a href="#">基本资料</a></dd>
+                    <dd id="exit"><a href="javascript:exit()">退了</a></dd>
                 </dl>
-            </li>
-            <li id="logout" class="layui-nav-item menu-item" style="display: none">
-                <a class="menu-text">退出</a>
             </li>
         </ul>
     </div>
+</div>
+
+<div th:fragment="left-nav" class="layui-side">
+    <ul class="layui-nav layui-nav-tree layui-nav-side" style="top: 60px">
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">用户管理</a>
+        </li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">题目管理</a>
+        </li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">上传题目</a>
+        </li>
+        <li class="layui-nav-item">
+            <a class="menu-text" href="#">测试数据管理</a>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

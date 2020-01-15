@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+    <meta charset="UTF-8">
+    <title>提交记录</title>
+</head>
+<body>
+<div th:replace="include::top"></div>
+<div class="layui-container">
+    <table id="results"></table>
+</div>
+<script type="text/html" id="titleTpl">
+    <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
+</script>
+<script type="text/html" id="resultTpl">
+    {{# if (d.result == '完全正确') { }}
+    <span class="bg-green label">{{d.result + '(' + d.passRate * 100 + ')'}}</span>
+    {{# } else if (d.result == '答案错误') { }}
+    <span class="bg-red label">{{d.result}}</span>
+    {{# } else { }}
+    <span class="bg-yellow label">{{d.result}}({{d.score * 100}})</span>
+    {{# } }}
+</script>
+<script type="text/html" id="languageTpl">
+    <span class="bg-blue label">{{d.language}}</span>
+</script>
+<script>
+
+    $(document).ready(() => {
+        console.log(user);
+        layui.use(['table', 'element'], () => {
+            let element = layui.element;
+            element.init();
+
+            let table = layui.table;
+            table.render({
+                elem: '#results',
+                url: '../api/manager/result',
+                where: {
+                    userId: user.userId
+                },
+                headers: {token: user.token},
+                parseData: (res) => {
+                    return {
+                        "code": 0,
+                        "count": res.count,
+                        "data": res.data
+                    }
+                },
+                skin: 'nob',
+                size: 'lg',
+                even: true,
+                page: true,
+                limit: 30,
+                cols: [
+                    [
+                        {field: 'problemId', title: '题目编号', width: '15%'},
+                        {field: 'title', title: '题目标题', width: '30%', templet: '#titleTpl'},
+                        {field: 'language', title: '编程语言', width: '15%', templet: '#languageTpl'},
+                        {field: 'result', title: '结果', width: '15%', templet: '#resultTpl'},
+                        {field: 'time', title: '运行时间', width: '10%'},
+                        {field: 'submitTime', title: '提交时间', width: '15%'}
+                    ]
+                ]
+            });
+        });
+    });
+
+    $('#nav-commit').addClass('layui-this');
+</script>
+</body>
+</html>
