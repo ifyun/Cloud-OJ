@@ -18,7 +18,7 @@
             <div id="edit-pane" class="layui-colla-content">
                 <div id="problem-form" class="layui-form layui-form-pane" lay-filter="edit-problem">
                     <fieldset class="layui-elem-field">
-                        <legend>基本信息</legend>
+                        <legend style="color: #5FB878">基本信息</legend>
                         <div class="layui-field-box">
                             <input type="hidden" class="layui-input" name="problemId">
                             <!-- title -->
@@ -126,19 +126,25 @@
     {{# } }}
 </script>
 <script type="text/html" id="categoryTpl">
+    {{# if (d.category != null && d.category !== '') { }}
     <span class="label bg-yellow">
         {{d.category}}
     </span>
+    {{# } }}
+</script>
+<script type="text/html" id="optToolbar">
+    <a class="layui-btn layui-btn-sm" lay-event="edit">编辑数据</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
 </script>
 <script>
-    let add = true;
-    let layer, form;
+    let isAddMode = true;
+    let layer, form, table;
     $(document).ready(() => {
         layui.use(['element', 'layer', 'table', 'carousel', 'form'], () => {
             layer = layui.layer;
             let carousel = layui.carousel;
             let element = layui.element;
-            let table = layui.table;
+            table = layui.table;
 
             form = layui.form;
             form.render();
@@ -156,30 +162,54 @@
                         "data": res.data
                     }
                 },
-                skin: 'nob',
+                skin: 'row',
                 size: 'lg',
                 page: true,
                 limit: 10,
                 limits: [10, 15, 20],
                 cols: [
                     [
-                        {field: 'problemId', title: '编号', width: '15%'},
-                        {field: 'title', title: '题目名称', width: '35%', templet: '#titleTpl'},
-                        {field: 'category', title: '标签', width: '25%', templet: '#categoryTpl'},
+                        {field: 'problemId', title: '编号', width: '10%'},
+                        {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
+                        {field: 'category', title: '标签', width: '20%', templet: '#categoryTpl'},
                         {field: 'enable', title: '状态', width: '10%', templet: '#enableTpl'},
+                        {title: '操作', width: '15%', toolbar: '#optToolbar'},
                         {field: 'createAt', title: '创建时间', width: '15%', sort: true}
                     ]
                 ]
             });
+        });
 
-            table.on('row(problems)', (obj) => {
-                obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
-                add = false;
-                $('#save').text('保 存');
-                $('#form-title').text('编辑题目');
-                form.val('edit-problem', obj.data);
-                $('#edit-pane').addClass('layui-show');
-            });
+        table.on('rowDouble(problems)', (obj) => {
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            isAddMode = false;
+            $('#save').text('保 存');
+            $('#form-title').text('编辑题目');
+            form.val('edit-problem', obj.data);
+            $('#edit-pane').addClass('layui-show');
+        });
+
+        table.on('tool(problems)', (obj) => {
+            if (obj.event === 'edit') {
+
+            } else if (obj.event === 'del') {
+                layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
+                    $.ajax({
+                        url: 'http://localhost/api/manager/problem/pro/' + obj.data.problemId,
+                        method: 'delete',
+                        success: () => {
+                            layer.msg('删除成功');
+                            $(".layui-laypage-btn").click();
+                        },
+                        error: (xhr) => {
+                            layer.open({
+                                content: xhr.status + ' 删除失败！'
+                            });
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
         });
 
         form.on('submit(save)', (data) => {
@@ -188,7 +218,7 @@
             problem.enable = (problem.enable === 'on');
 
             let loadIndex;
-            let method = add ? 'post' : 'put';
+            let method = isAddMode ? 'post' : 'put';
             $.ajax({
                 url: 'http://localhost/api/manager/problem/pro',
                 method: method,
@@ -200,17 +230,18 @@
                 beforeSend: () => {
                     loadIndex = layer.load(1);
                 },
-                success: (data) => {
-                    console.log(data);
+                success: () => {
                     layer.close(loadIndex);
                     layer.open({
-                        content: data
+                        content: '保存成功！'
                     });
+                    $(".layui-laypage-btn").click();
+                    if (isAddMode) reset();
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
                     layer.open({
-                        content: xhr.responseText
+                        content: xhr.status + ' 保存失败！'
                     });
                 }
             });
