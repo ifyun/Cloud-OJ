@@ -9,7 +9,7 @@
     </select>
 
     <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
-        select problem_id, title, enable, category, create_at
+        select *
         from problem
         limit #{start}, #{limit}
     </select>
@@ -68,6 +68,7 @@
             output        = #{output},
             sample_input  = #{sampleInput},
             sample_output = #{sampleOutput},
+            enable        = #{enable},
             score         = #{score},
             category      = #{category}
         where problem_id = #{problemId}

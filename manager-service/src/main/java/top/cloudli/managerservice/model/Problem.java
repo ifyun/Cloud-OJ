@@ -13,6 +13,7 @@ public class Problem {
     private String sampleInput;
     private String sampleOutput;
     private String category;
+    private long timeout;
     private int score;
     private boolean enable;
     private String createAt;
