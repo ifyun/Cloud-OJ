@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户管理权限设置
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole("USER_ADMIN", "ROOT")
                 // 题目管理权限设置
-                .antMatchers("/api/manager/file").hasAnyRole("PROBLEM_ADMIN", "ROOT")
+                .antMatchers("/api/file/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 .antMatchers("/api/manager/problem").permitAll()
                 .antMatchers("/api/manager/result").hasAnyRole("USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT")
                 .antMatchers("/api/manager/problem/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")

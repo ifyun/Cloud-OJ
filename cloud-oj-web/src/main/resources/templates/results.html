@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+<head th:replace="include::common_head(~{::title}, ~{::link}, ~{})">
     <meta charset="UTF-8">
     <title>提交记录</title>
+    <link rel="stylesheet" href="./codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" href="./codemirror/theme/monokai.css"/>
+    <link rel="stylesheet" href="./codemirror/addon/hint/show-hint.css"/>
 </head>
+<script src="./codemirror/lib/codemirror.js"></script>
+<script src="./codemirror/mode/clike/clike.js"></script>
+<script src="./codemirror/mode/python/python.js"></script>
+<script src="./codemirror/addon/hint/anyword-hint.js"></script>
+<script src="./codemirror/addon/edit/matchbrackets.js"></script>
+<script src="./codemirror/addon/edit/closebrackets.js"></script>
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <table id="results"></table>
+    <table id="results" lay-filter="results">
+
+    </table>
 </div>
 <script type="text/html" id="titleTpl">
     <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
@@ -24,45 +35,63 @@
 <script type="text/html" id="languageTpl">
     <span class="bg-blue label">{{d.language}}</span>
 </script>
+<script type="text/html" id="opt-toolbar">
+    <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="see-code">查看代码</button>
+</script>
 <script>
-
+    let layer, table;
     $(document).ready(() => {
-        console.log(user);
-        layui.use(['table', 'element'], () => {
+        layui.use(['table', 'element', 'layer'], () => {
             let element = layui.element;
+            layer = layui.layer;
+            table = layui.table;
             element.init();
+        });
 
-            let table = layui.table;
-            table.render({
-                elem: '#results',
-                url: '../api/manager/result',
-                where: {
-                    userId: user.userId
-                },
-                headers: {token: user.token},
-                parseData: (res) => {
-                    return {
-                        "code": 0,
-                        "count": res.count,
-                        "data": res.data
-                    }
-                },
-                skin: 'nob',
-                size: 'lg',
-                even: true,
-                page: true,
-                limit: 30,
-                cols: [
-                    [
-                        {field: 'problemId', title: '题目编号', width: '15%'},
-                        {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
-                        {field: 'language', title: '编程语言', width: '15%', templet: '#languageTpl'},
-                        {field: 'result', title: '结果', width: '15%', templet: '#resultTpl'},
-                        {field: 'time', title: '运行时间', width: '10%'},
-                        {field: 'submitTime', title: '提交时间', width: '15%'}
-                    ]
+        table.render({
+            elem: '#results',
+            url: '../api/manager/result',
+            where: {
+                userId: user.userId
+            },
+            headers: {token: user.token},
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "count": res.count,
+                    "data": res.data
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            even: true,
+            page: true,
+            limit: 30,
+            cols: [
+                [
+                    {field: 'problemId', title: '题目编号', width: '10%'},
+                    {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
+                    {title: '操作', width: '15%', align: 'center', toolbar: '#opt-toolbar'},
+                    {field: 'language', title: '编程语言', width: '10%', templet: '#languageTpl'},
+                    {field: 'result', title: '结果', width: '15%', align: 'center', templet: '#resultTpl'},
+                    {field: 'time', title: '运行时间', width: '10%'},
+                    {field: 'submitTime', title: '提交时间', width: '15%'}
                 ]
-            });
+            ]
+        });
+
+        table.on('tool(results)', (obj) => {
+            if (obj.event === 'see-code') {
+                layer.open({
+                    type: 1,
+                    title: '代码',
+                    area: ['520px', '460px'],
+                    closeButton: true,
+                    content: '<textarea readonly="readonly" class="layui-textarea"' +
+                        ' style="margin: 5px auto; width: 500px; height: 400px" id="code">'
+                        + obj.data.code + '</textarea>'
+                });
+            }
         });
     });
 

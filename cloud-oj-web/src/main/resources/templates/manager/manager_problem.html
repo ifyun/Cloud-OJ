@@ -142,17 +142,17 @@
 <script type="text/html" id="titleTpl">
     <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
 </script>
-<!--script type="text/html" id="enableTpl">
-    <input type="checkbox" value="{{d.enable}}" title="开放" onclick="return false"
-           {{ d.enable ? 'checked' : ''}}>
-</script-->
 <script type="text/html" id="enableTpl">
+    <input type="checkbox" name="enable" lay-skin="switch" lay-filter="enable" value="{{d.problemId}}" title="开放"
+           {{ d.enable ? 'checked' : ''}}>
+</script>
+<!--script type="text/html" id="enableTpl">
     {{# if (d.enable) { }}
     <span class="label bg-green">开放</span>
     {{# } else { }}
     <span class="label bg-grey">开放</span>
     {{# } }}
-</script>
+</script-->
 <script type="text/html" id="categoryTpl">
     {{# if (d.category != null && d.category !== '') { }}
     <span class="label bg-yellow">
@@ -205,8 +205,8 @@
                     [
                         {field: 'problemId', title: '编号', width: '10%'},
                         {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
-                        {field: 'category', title: '标签', width: '20%', templet: '#categoryTpl'},
-                        {field: 'enable', title: '状态', width: '10%', templet: '#enableTpl'},
+                        {field: 'category', title: '标签', width: '20%', align: 'center', templet: '#categoryTpl'},
+                        {field: 'enable', title: '开放', width: '10%', align: 'center', templet: '#enableTpl'},
                         {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
                         {field: 'createAt', title: '创建时间', width: '15%', sort: true}
                     ]
@@ -291,6 +291,10 @@
                     layer.close(index);
                 });
             }
+        });
+
+        form.on('switch(enable)', (obj) => {
+            console.log(obj.value, obj.elem.checked);
         });
 
         form.on('submit(save)', (data) => {

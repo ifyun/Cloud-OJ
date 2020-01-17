@@ -79,4 +79,10 @@
         from problem
         where problem_id = #{problemId}
     </delete>
+
+    <update id="updateEnable">
+        update problem
+        set enable = #{enable}
+        where problem_id = #{problemId}
+    </update>
 </mapper>

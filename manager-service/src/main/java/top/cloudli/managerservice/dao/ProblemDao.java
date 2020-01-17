@@ -28,4 +28,6 @@ public interface ProblemDao {
     int update(Problem problem);
 
     int delete(int problemId);
+
+    int updateEnable(int problemId, boolean enable);
 }

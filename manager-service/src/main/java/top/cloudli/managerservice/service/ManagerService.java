@@ -59,6 +59,10 @@ public class ManagerService implements CRUDService {
         return buildPUTResponse(problemDao.update(problem) == 1);
     }
 
+    public ResponseEntity<Void> updateProblemEnable(int problemId, boolean enable) {
+        return buildPUTResponse(problemDao.updateEnable(problemId, enable) == 1);
+    }
+
     public ResponseEntity<?> addProblem(Problem problem) {
         String error = problemDao.add(problem) == 1 ? null : "添加失败.";
         return buildPOSTResponse(error);
