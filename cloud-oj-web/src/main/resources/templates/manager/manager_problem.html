@@ -13,6 +13,34 @@
     </table>
 
     <div class="layui-collapse">
+        <div class="layui-colla-item" id="test-data-pane" style="display: none">
+            <h2 class="layui-colla-title">编辑测试数据</h2>
+            <div id="test-data-table" class="layui-colla-content">
+                <table id="test-data" lay-filter="test-data">
+
+                </table>
+                <!-- 上传测试数据 -->
+                <div class="layui-upload">
+                    <div class="layui-upload-list">
+                        <table id="upload-file-table" class="layui-table" style="display: none">
+                            <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="file-list"></tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-normal" id="select-files">选择文件</button>
+                    <button type="button" class="layui-btn" id="upload-files" style="display: none"><i
+                            class="layui-icon"></i>开始上传
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="layui-colla-item">
             <h2 class="layui-colla-title"><span id="form-title">添加题目</span></h2>
             <div id="edit-pane" class="layui-colla-content">
@@ -57,7 +85,7 @@
                         </div>
                     </fieldset>
                     <fieldset class="layui-elem-field">
-                        <legend>说明</legend>
+                        <legend style="color: #5FB878">说明</legend>
                         <div class="layui-field-box">
                             <!-- input -->
                             <div class="layui-form-item layui-form-text">
@@ -78,7 +106,7 @@
                         </div>
                     </fieldset>
                     <fieldset class="layui-elem-field">
-                        <legend>样例</legend>
+                        <legend style="color: #5FB878">样例</legend>
                         <div class="layui-field-box">
                             <!-- sample input -->
                             <div class="layui-form-item layui-form-text">
@@ -103,7 +131,7 @@
                                 class="layui-btn layui-btn-normal">添 加
                         </button>
                         <button id="reset" class="layui-btn layui-btn-primary"
-                                onclick="reset()">重 置
+                                onclick="reset()">重 置/切换到添加模式
                         </button>
                     </div>
                 </div>
@@ -133,24 +161,30 @@
     {{# } }}
 </script>
 <script type="text/html" id="optToolbar">
-    <a class="layui-btn layui-btn-sm" lay-event="edit">编辑数据</a>
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">编辑题目</a>
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="test-data-toolbar">
+    <a class="layui-btn layui-btn-sm" lay-event="edit-content">查看内容</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del-file">删除文件</a>
 </script>
 <script>
     let isAddMode = true;
-    let layer, form, table;
+    let problemId;
+    let layer, form, table, upload;
     $(document).ready(() => {
-        layui.use(['element', 'layer', 'table', 'carousel', 'form'], () => {
+        layui.use(['element', 'layer', 'table', 'carousel', 'form', 'upload'], () => {
             layer = layui.layer;
             let carousel = layui.carousel;
             let element = layui.element;
             table = layui.table;
-
+            upload = layui.upload;
             form = layui.form;
             form.render();
 
             element.init();
 
+            // 问题列表
             table.render({
                 elem: '#problems',
                 url: '../api/manager/problem/pro',
@@ -162,7 +196,7 @@
                         "data": res.data
                     }
                 },
-                skin: 'row',
+                skin: 'nob',
                 size: 'lg',
                 page: true,
                 limit: 10,
@@ -173,25 +207,72 @@
                         {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
                         {field: 'category', title: '标签', width: '20%', templet: '#categoryTpl'},
                         {field: 'enable', title: '状态', width: '10%', templet: '#enableTpl'},
-                        {title: '操作', width: '15%', toolbar: '#optToolbar'},
+                        {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
                         {field: 'createAt', title: '创建时间', width: '15%', sort: true}
                     ]
                 ]
             });
         });
 
-        table.on('rowDouble(problems)', (obj) => {
-            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
-            isAddMode = false;
-            $('#save').text('保 存');
-            $('#form-title').text('编辑题目');
-            form.val('edit-problem', obj.data);
-            $('#edit-pane').addClass('layui-show');
-        });
-
         table.on('tool(problems)', (obj) => {
+            problemId = obj.data.problemId;
             if (obj.event === 'edit') {
+                obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+                isAddMode = false;
+                $('#save').text('保 存');
+                $('#form-title').text('编辑题目');
+                form.val('edit-problem', obj.data);
+                $('#edit-pane').addClass('layui-show');
 
+                // 显示测试数据
+                $('#test-data-pane').show();
+                $('#test-data-table').addClass('layui-show');
+
+                table.render({
+                    elem: '#test-data',
+                    url: '../api/file/test_data/' + obj.data.problemId,
+                    headers: {token: user.token},
+                    parseData: (res) => {
+                        return {
+                            "code": 0,
+                            "data": res
+                        }
+                    },
+                    skin: 'row',
+                    cols: [
+                        [
+                            {field: 'fileName', title: '文件名', width: '35%'},
+                            {field: 'size', title: '文件长度', width: '35%'},
+                            {title: '操作', width: '30%', align: 'center', toolbar: '#test-data-toolbar'},
+                        ]
+                    ]
+                });
+
+                table.on('tool(test-data)', (obj) => {
+                    console.log(obj.data);
+                    if (obj.event === 'edit-content') {
+                        console.log('编辑内容');
+                    } else if (obj.event === 'del-file') {
+                        layer.confirm('确定要删除文件吗？', {icon: 3, title: '提示'}, (index) => {
+                                $.ajax({
+                                    url: 'http://localhost/api/file/test_data/' + problemId + '?name=' + obj.data.fileName,
+                                    method: 'delete',
+                                    headers: {
+                                        token: user.token
+                                    },
+                                    success: () => {
+                                        layer.msg("删除成功", {icon: 6});
+                                        table.reload('test-data');
+                                    },
+                                    error: (xhr) => {
+                                        layer.msg("删除失败: " + xhr.responseText, {icon: 5});
+                                    }
+                                });
+                                layer.close(index);
+                            }
+                        )
+                    }
+                });
             } else if (obj.event === 'del') {
                 layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
                     $.ajax({
@@ -248,6 +329,71 @@
 
             return false;
         });
+
+        let fileListView = $('#file-list');
+        let uploadListIns = upload.render({
+            elem: '#select-files',
+            url: 'http://localhost/api/file/test_data',
+            headers: {
+                token: user.token
+            },
+            data: {
+                problemId: () => {
+                    return problemId
+                }
+            },
+            accept: 'file',
+            exts: 'in|out',
+            multiple: true,
+            auto: false,
+            bindAction: '#upload-files',
+            choose: function (obj) {
+                $('#upload-file-table').show();
+                $('#upload-files').show();
+                let files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    let tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                        , '<td>等待上传</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+
+                    fileListView.append(tr);
+                });
+            }
+            , done: function (res, index, upload) {
+                //上传成功
+                table.reload('test-data');
+                let tr = fileListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                tds.eq(3).html(''); //清空操作
+                return delete this.files[index]; //删除文件队列已经上传成功的文件
+            }
+            , error: function (index, upload) {
+                let tr = fileListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+        });
     });
 
     function reset() {
@@ -265,7 +411,12 @@
             sampleOutput: null,
         });
 
-        layer.msg('现在是添加模式');
+        $('#test-data-pane').hide();
+
+        if (!isAddMode) {
+            isAddMode = true;
+            layer.msg('现在是添加模式');
+        }
     }
 
     $('#nav-manager').addClass("layui-this");

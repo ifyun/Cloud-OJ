@@ -41,7 +41,7 @@ zuul:
       serviceId: judge-service
     # 文件服务
     file-server:
-      path: /api/manager/file/**
+      path: /api/file/**
       serviceId: file-server
     web:
       path: /oj/**

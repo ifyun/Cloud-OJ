@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Result {
-    private int code;
-    private String info;
+public class TestData {
+    private String fileName;
+    private String content;
+    private long size;
 }

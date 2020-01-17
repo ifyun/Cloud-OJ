@@ -20,7 +20,12 @@
 
     <!-- 子模块配置 -->
     <modules>
-        <!--module>register-center</module-->
+        <module>register-center</module>
+        <module>manager-service</module>
+        <module>file-server</module>
+        <module>judge-service</module>
+        <module>api-gateway</module>
+        <module>cloud-oj-web</module>
     </modules>
 
     <properties>
