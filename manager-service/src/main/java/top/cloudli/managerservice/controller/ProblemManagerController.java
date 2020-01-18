@@ -45,6 +45,11 @@ public class ProblemManagerController {
         return managerService.updateProblem(problem);
     }
 
+    @PutMapping("pro/{problemId}")
+    public ResponseEntity<Void> updateEnable(@PathVariable int problemId, boolean enable) {
+        return managerService.updateProblemEnable(problemId, enable);
+    }
+
     @PostMapping("pro")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
         return managerService.addProblem(problem);

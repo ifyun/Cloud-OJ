@@ -143,7 +143,8 @@
     <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
 </script>
 <script type="text/html" id="enableTpl">
-    <input type="checkbox" name="enable" lay-skin="switch" lay-filter="enable" value="{{d.problemId}}" title="开放"
+    <input id="enable" type="checkbox" name="enable" lay-skin="switch" lay-text="开放|关闭" lay-filter="enable"
+           value="{{d.problemId}}"
            {{ d.enable ? 'checked' : ''}}>
 </script>
 <!--script type="text/html" id="enableTpl">
@@ -210,7 +211,10 @@
                         {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
                         {field: 'createAt', title: '创建时间', width: '15%', sort: true}
                     ]
-                ]
+                ],
+                done: (res, curr, count) => {
+                    console.log(res);
+                }
             });
         });
 
@@ -251,7 +255,16 @@
                 table.on('tool(test-data)', (obj) => {
                     console.log(obj.data);
                     if (obj.event === 'edit-content') {
-                        console.log('编辑内容');
+                        // TODO 查看内容
+                        layer.open({
+                            type: 1,
+                            title: obj.data.fileName,
+                            area: ['500px', '450px'],
+                            closeButton: true,
+                            content: '<textarea readonly="readonly" class="layui-textarea"' +
+                                ' style="position: absolute; top: 0; bottom: 0;">'
+                                + obj.data.content + '</textarea>'
+                        });
                     } else if (obj.event === 'del-file') {
                         layer.confirm('确定要删除文件吗？', {icon: 3, title: '提示'}, (index) => {
                                 $.ajax({
@@ -293,8 +306,26 @@
             }
         });
 
+        // 切换开放/关闭
         form.on('switch(enable)', (obj) => {
-            console.log(obj.value, obj.elem.checked);
+            let problemId = obj.value, enable = obj.elem.checked;
+            $.ajax({
+                url: 'http://localhost/api/manager/problem/pro/' + problemId + '?enable=' + enable,
+                method: 'put',
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": user.token
+                },
+                success: () => {
+                    let msg = enable ? '已开放' : '已关闭';
+                    layer.msg(msg, {icon: 6});
+                },
+                error: (xhr) => {
+                    layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
+                    obj.elem.checked = !enable;
+                    form.render('checkbox');
+                }
+            });
         });
 
         form.on('submit(save)', (data) => {
@@ -317,17 +348,13 @@
                 },
                 success: () => {
                     layer.close(loadIndex);
-                    layer.open({
-                        content: '保存成功！'
-                    });
+                    layer.msg('保存成功！', {icon: 6});
                     $(".layui-laypage-btn").click();
                     if (isAddMode) reset();
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
-                    layer.open({
-                        content: xhr.status + ' 保存失败！'
-                    });
+                    layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
                 }
             });
 
@@ -359,7 +386,7 @@
                 obj.preview(function (index, file, result) {
                     let tr = $(['<tr id="upload-' + index + '">'
                         , '<td>' + file.name + '</td>'
-                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                        , '<td>' + file.size + '字节</td>'
                         , '<td>等待上传</td>'
                         , '<td>'
                         , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
