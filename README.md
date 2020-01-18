@@ -20,7 +20,7 @@ register-center | 8761
 file-server     | 8000
 manager-service | 8001
 judge-service   | 8002
-api-gateway     | 5000
+api-gateway     | 80
 cloud-oj-web    | 8080
 
 生产环境的服务统一使用 `8000` 端口，Docker 部署。

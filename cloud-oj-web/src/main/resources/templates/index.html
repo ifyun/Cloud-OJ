@@ -11,7 +11,7 @@
         .container {
             border-top: 1px solid #404553;
             height: calc(100% - 61px);
-            min-height: 900px;
+            min-height: 800px;
             background-image: url('img/back-1.jpg');
             background-position: center top;
             background-size: cover;
@@ -19,10 +19,11 @@
         }
 
         .title-text {
-            margin-top: 15%;
+            margin-top: 20%;
             text-align: center;
             width: 100%;
             color: white;
+            transition: margin-top 500ms;
         }
 
         #login-pane {
@@ -36,9 +37,9 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="container">
-    <div class="title-text">
+    <div id="title-text" class="title-text">
         <h2 style="font-size: 32pt"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
-        <button class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
+        <button id="start-btn" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                 style="margin-top: 24px"
                 onclick="start()">去练习
         </button>
@@ -70,7 +71,7 @@
                         <div class="layui-form-item">
                             <div class="layui-input-block">
                                 <button lay-submit lay-filter="login" id="login"
-                                        class="layui-btn layui-btn-lg layui-btn-normal"
+                                        class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                                         style="width: 100%">登 录
                                 </button>
                             </div>
@@ -120,7 +121,7 @@
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-input-block">
-                                <button lay-submit lay-filter="register" class="layui-btn layui-btn-lg"
+                                <button lay-submit lay-filter="register" class="layui-btn layui-btn-radius layui-btn-lg"
                                         style="width: 100%">注册
                                 </button>
                             </div>
@@ -171,7 +172,7 @@
                 },
                 error: (xhr) => {
                     layer.open({
-                        content: '用户名或密码错误！'
+                        content: xhr.status === 400 ? '用户名或密码错误！' : '出现了错误！'
                     });
                 }
             });
@@ -188,19 +189,15 @@
                     "Content-Type": "application/json"
                 },
                 data: JSON.stringify(register),
-                success: (data) => {
-                    console.log(data);
+                success: () => {
                     layer.open({
                         content: '注册成功'
                     });
                 },
                 error: (xhr) => {
-                    console.log(xhr);
-                    if (xhr.status === 400) {
-                        layer.open('用户已存在！');
-                    } else {
-                        layer.open('发生了错误！');
-                    }
+                    layer.open({
+                        content: xhr.status === 400 ? '用户已存在！' : xhr.status + ': 发生了错误！'
+                    });
                 }
             });
         });
@@ -210,6 +207,8 @@
         if (user.token !== null) {
             window.location.href = './problems';
         } else {
+            $('#start-btn').hide();
+            $('#title-text').css('margin-top', '10%');
             $('#login-pane').show(500);
         }
     }
