@@ -41,7 +41,7 @@
         <h2 style="font-size: 32pt"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
         <button id="start-btn" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                 style="margin-top: 24px"
-                onclick="start()">去练习
+                onclick="start()">
         </button>
     </div>
 
@@ -133,6 +133,9 @@
     </div>
 </div>
 <script>
+    let $startBtn = $('#start-btn');
+    $startBtn.text(user.token === null ? '登录去练习' : '去练习');
+
     layui.use(['form', 'element', 'carousel', 'layer'], function () {
         let form = layui.form;
         form.render();
@@ -207,7 +210,7 @@
         if (user.token !== null) {
             window.location.href = './problems';
         } else {
-            $('#start-btn').hide();
+            $startBtn.hide();
             $('#title-text').css('margin-top', '10%');
             $('#login-pane').show(500);
         }
