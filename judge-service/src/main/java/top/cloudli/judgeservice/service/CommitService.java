@@ -46,7 +46,7 @@ public class CommitService {
 
         while (judgeResult == null && retry-- > 0) {
             try {
-                Thread.sleep(1500);
+                Thread.sleep(1000);
                 judgeResult = solutionDao.getJudgedBySolutionId(solutionId);
             } catch (InterruptedException ignored) {
             }

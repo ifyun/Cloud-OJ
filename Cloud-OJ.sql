@@ -81,6 +81,7 @@ create table runtime
     passed      int    null comment '通过的测试点数量',
     time        bigint null comment '耗时（ms）',
     info        text   null,
+    output      text   null comment '输出',
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade

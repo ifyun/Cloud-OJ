@@ -7,7 +7,7 @@
 <body>
 <!-- nav -->
 <div th:replace="include::top"></div>
-<div class="layui-container" style="padding-bottom: 20px;min-width: 900px">
+<div class="layui-container" style="padding-bottom: 20px;min-width: 1150px">
     <table id="problems" lay-filter="problems">
 
     </table>
@@ -49,29 +49,35 @@
                         <legend style="color: #5FB878">基本信息</legend>
                         <div class="layui-field-box">
                             <input type="hidden" class="layui-input" name="problemId">
-                            <!-- title -->
                             <div class="layui-form-item">
+                                <!-- title -->
                                 <label for="title" class="layui-form-label">题目名称</label>
                                 <div class="layui-input-inline" style="width: 30%">
                                     <input id="title" name="title" class="layui-input" lay-verify="required"
                                            placeholder="输入标题">
                                 </div>
-                                <div class="layui-input-inline">
-                                    <input type="checkbox" name="enable" class="layui-input" title="开放">
-                                </div>
-                            </div>
-                            <!-- category -->
-                            <div class="layui-form-item">
+                                <!-- category -->
                                 <label for="category" class="layui-form-label">题目分类</label>
                                 <div class="layui-input-inline" style="width: 30%">
                                     <input id="category" name="category" class="layui-input" placeholder="可选输入分类">
                                 </div>
                             </div>
-                            <!-- timeout -->
                             <div class="layui-form-item">
-                                <label for="timeout" class="layui-form-label">时限(ms)</label>
-                                <div class="layui-input-inline">
-                                    <input id="timeout" name="timeout" class="layui-input" lay-verify="number">
+                                <!-- timeout -->
+                                <label for="timeout" class="layui-form-label">时限</label>
+                                <div class="layui-input-inline" style="width: 30%">
+                                    <input id="timeout" name="timeout" class="layui-input" lay-verify="number"
+                                           placeholder="单位：ms">
+                                </div>
+                                <!-- score -->
+                                <label for="score" class="layui-form-label">分值</label>
+                                <div class="layui-input-inline" style="width: 30%">
+                                    <input id="score" name="score" class="layui-input" lay-verify="number"
+                                           placeholder="此题的分值">
+                                </div>
+                                <!-- enable -->
+                                <div class="layui-input-inline" style="width: 15%">
+                                    <input type="checkbox" name="enable" class="layui-input" title="开放">
                                 </div>
                             </div>
                             <!-- description -->
@@ -193,15 +199,15 @@
                 parseData: (res) => {
                     return {
                         "code": 0,
-                        "count": res.count,
-                        "data": res.data
+                        "count": res === undefined ? 0 : res.count,
+                        "data": res === undefined ? null : res.data
                     }
                 },
                 skin: 'nob',
                 size: 'lg',
                 page: true,
-                limit: 10,
-                limits: [10, 15, 20],
+                limit: 15,
+                limits: [10, 15, 20, 25, 30],
                 cols: [
                     [
                         {field: 'problemId', title: '编号', width: '10%'},

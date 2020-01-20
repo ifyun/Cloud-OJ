@@ -144,14 +144,15 @@ public class Judgement {
                     stopWatch.start();
                     Process process = cmd.start();
 
-                    if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
-                        throw new InterruptedException("等待时间过长，可能存在死循环.");
-                    }
-
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                     // 输入数据
                     writer.write(s);
                     writer.close();
+
+                    if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
+                        throw new InterruptedException("等待时间过长，可能存在死循环.");
+                    }
+
                     stopWatch.stop();
 
                     String error = getOutput(process.getErrorStream());

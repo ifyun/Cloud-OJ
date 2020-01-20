@@ -33,9 +33,11 @@
 <script src="./codemirror/lib/codemirror.js"></script>
 <script src="./codemirror/mode/clike/clike.js"></script>
 <script src="./codemirror/mode/python/python.js"></script>
+<script src="./codemirror/mode/shell/shell.js"></script>
 <script src="./codemirror/addon/hint/anyword-hint.js"></script>
 <script src="./codemirror/addon/edit/matchbrackets.js"></script>
 <script src="./codemirror/addon/edit/closebrackets.js"></script>
+<script src="./codemirror/addon/mode/loadmode.js"></script>
 
 <div th:replace="include::top"></div>
 
@@ -48,15 +50,16 @@
             </div>
             <div class="layui-card-body">
                 <h3>题目描述：</h3>
-                <h4 class="description" th:text="${problem.getDescription()}"></h4>
+                <pre class="description" th:text="${problem.getDescription()}"></pre>
                 <h3>输入说明：</h3>
-                <h4 class="description" th:text="${problem.getInput()}"></h4>
+                <pre class="description" th:text="${problem.getInput()}"></pre>
                 <h3>输出说明：</h3>
-                <h4 class="description" th:text="${problem.getOutput()}"></h4>
+                <pre class="description" th:text="${problem.getOutput()}"></pre>
                 <h3>输入示例：</h3>
-                <h4 class="sample" th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></h4>
+                <pre class="sample"
+                     th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></pre>
                 <h3>输出示例：</h3>
-                <h4 class="sample" th:text="${problem.getSampleOutput()}"></h4>
+                <pre class="sample" th:text="${problem.getSampleOutput()}"></pre>
             </div>
         </div>
     </div>
@@ -119,7 +122,7 @@
         element.init();
         let layer = layui.layer;
 
-        form.on('select(lang)', function (data) {
+        form.on('select(language)', (data) => {
             language = data.value;
             editor.setOption('mode', codeLang[language]);
         });
@@ -142,6 +145,7 @@
                 $.ajax({
                     url: 'http://localhost/api/judge/commit',
                     method: 'post',
+                    timeout: 10000,
                     headers: {
                         "Content-Type": "application/json",
                         "token": user.token
@@ -177,14 +181,14 @@
                         }
                         layer.close(loadIndex);
                         layer.open({
-                            content: result
+                            content: result === undefined ? data : result
                         });
                     },
                     error: (xhr) => {
                         console.log(xhr);
                         layer.close(loadIndex);
                         layer.open({
-                            content: xhr.responseText
+                            content: xhr.status + ': ' + xhr.responseText
                         });
                     }
                 });

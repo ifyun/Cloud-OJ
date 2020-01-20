@@ -58,15 +58,16 @@
             parseData: (res) => {
                 return {
                     "code": 0,
-                    "count": res.count,
-                    "data": res.data
+                    "count": res === undefined ? 0 : res.count,
+                    "data": res === undefined ? null : res.data
                 }
             },
             skin: 'nob',
             size: 'lg',
             even: true,
             page: true,
-            limit: 30,
+            limit: 15,
+            limits: [10, 15, 20, 25, 30],
             cols: [
                 [
                     {field: 'problemId', title: '题目编号', width: '10%'},

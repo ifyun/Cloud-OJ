@@ -24,9 +24,10 @@ public class CommitController {
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         CompletableFuture<JudgeResult> future = commitService.commit(data);
         try {
-            return ResponseEntity.ok(future.get());
+            JudgeResult result = future.get();
+            return ResponseEntity.ok(result != null ? result : "你的答案已提交，若等待时间过长，可到提交记录查看结果");
         } catch (InterruptedException | ExecutionException e) {
-            return ResponseEntity.accepted().body("正在处理.");
+            return ResponseEntity.accepted().body("你的答案已提交，若等待时间过长，可到提交记录查看结果.");
         }
     }
 }

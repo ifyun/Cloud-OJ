@@ -49,4 +49,4 @@ zuul:
 
 judge-service:
   ribbon:
-    ReadTimeout: 6000
+    ReadTimeout: 10000
