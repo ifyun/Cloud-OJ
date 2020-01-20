@@ -12,7 +12,8 @@
         set total  = #{total},
             passed = #{passed},
             time   = #{time},
-            info   = #{info}
+            info   = #{info},
+            output = #{output}
         where id = #{id}
     </update>
 

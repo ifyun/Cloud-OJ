@@ -1,5 +1,6 @@
 package top.cloudli.judgeservice.component;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,6 +26,9 @@ public class Judgement {
 
     @Value("${project.target-dir}")
     private String targetDir;
+
+    @Value("${project.max-wait-time}")
+    private long maxWaitTime;
 
     @Resource
     private RuntimeDao runtimeDao;
@@ -115,6 +120,11 @@ public class Judgement {
                 // 执行程序
                 stopWatch.start();
                 Process process = cmd.start();
+
+                if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
+                    throw new InterruptedException("等待时间过长，可能存在死循环.");
+                }
+
                 stopWatch.stop();
                 runtime.setTime(stopWatch.getTotalTimeMillis());
                 // 获取错误流
@@ -133,6 +143,11 @@ public class Judgement {
                 for (String s : input) {
                     stopWatch.start();
                     Process process = cmd.start();
+
+                    if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
+                        throw new InterruptedException("等待时间过长，可能存在死循环.");
+                    }
+
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                     // 输入数据
                     writer.write(s);
@@ -158,14 +173,20 @@ public class Judgement {
         } catch (IOException e) {
             log.error(e.getMessage());
             runtime.setInfo(e.getMessage());
+        } catch (InterruptedException e2) {
+            log.error(e2.getMessage());
+            runtime.setTime(maxWaitTime);
+            runtime.setInfo(e2.getMessage());
         }
 
+        runtime.setOutput(String.join("\n", output));
         runtimeDao.update(runtime);
         return output;
     }
 
+    @SneakyThrows
     private String getOutput(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream))
+        return new BufferedReader(new InputStreamReader(inputStream, isLinux ? "utf-8" : "gbk"))
                 .lines()
                 .collect(Collectors.joining("\n"));
     }

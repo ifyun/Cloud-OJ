@@ -35,5 +35,6 @@ mybatis:
 
 
 project:
+  max-wait-time: 5000
   test-data-dir: D:/test_data/
   target-dir: D:/target/

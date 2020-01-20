@@ -66,7 +66,7 @@ class Compiler {
                 processBuilder.command("g++", src, "-o", src.substring(0, src.indexOf(".")));
                 break;
             case JAVA:
-                processBuilder.command("javac", src);
+                processBuilder.command("javac", "-encoding", "UTF-8", src);
                 break;
             case PYTHON:
                 return new Compile(solutionId, 0, "Python 无需编译");
@@ -113,8 +113,7 @@ class Compiler {
             File dir = new File(targetDir + id);
             if (dir.mkdirs()) {
                 file = new File(targetDir + id + "/Solution.java");
-            }
-            else {
+            } else {
                 log.error("无法创建目录 {}", dir.getName());
                 return "";
             }

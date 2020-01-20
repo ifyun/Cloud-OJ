@@ -9,5 +9,10 @@
       "name": "project.target-dir",
       "type": "java.lang.String",
       "description": "编译临时目录."
+    },
+    {
+      "name": "project.max-wait-time",
+      "type": "java.lang.String",
+      "description": "判题执行的最长等待时间."
     }
   ] }
