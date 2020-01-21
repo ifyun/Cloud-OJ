@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.JudgeResultDao;
 import top.cloudli.managerservice.dao.ProblemDao;
+import top.cloudli.managerservice.dao.RankingDao;
 import top.cloudli.managerservice.dao.UserDao;
-import top.cloudli.managerservice.model.JudgeResult;
-import top.cloudli.managerservice.model.PagedResult;
-import top.cloudli.managerservice.model.Problem;
-import top.cloudli.managerservice.model.User;
+import top.cloudli.managerservice.model.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,6 +26,9 @@ public class ManagerService implements CRUDService {
 
     @Resource
     private JudgeResultDao judgeResultDao;
+
+    @Resource
+    private RankingDao rankingDao;
 
     // 题目管理部分
 
@@ -98,5 +99,12 @@ public class ManagerService implements CRUDService {
     public ResponseEntity<?> getJudged(String userId, int start, int limit) {
         List<JudgeResult> results = judgeResultDao.getByUserId(userId, start, limit);
         return buildGETResponse(new PagedResult<>(judgeResultDao.getCount(userId), results));
+    }
+
+    // 获取排行
+
+    public ResponseEntity<?> getRanking(int start, int limit) {
+        List<Ranking> rankingList = rankingDao.getRanking(start, limit);
+        return buildGETResponse(new PagedResult<>(rankingDao.getCount(), rankingList));
     }
 }

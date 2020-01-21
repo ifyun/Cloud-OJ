@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/judge-service/pom.xml" />
         <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/cloud-oj-web/pom.xml" />
+        <option value="$PROJECT_DIR$/monitor-service/pom.xml" />
       </list>
     </option>
   </component>

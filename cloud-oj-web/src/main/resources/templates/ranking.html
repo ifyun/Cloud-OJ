@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{})">
+    <meta charset="UTF-8">
+    <title>排行榜</title>
+</head>
+<body>
+<div th:replace="include::top"></div>
+<div class="layui-container">
+    <table id="ranking" lay-filter="ranking">
+
+    </table>
+</div>
+<script>
+    let table;
+    $(document).ready(() => {
+        layui.use(['table', 'element'], () => {
+            table = layui.table;
+            let element = layui.element;
+            element.init();
+        });
+
+        table.render({
+            elem: '#ranking',
+            url: '../api/manager/ranking',
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "count": res === undefined ? 0 : res.count,
+                    "data": res === undefined ? null : res.data
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            even: true,
+            page: true,
+            limit: 15,
+            limits: [10, 15, 20, 25, 30],
+            cols: [
+                [
+                    {field: 'userId', title: '用户ID', width: '20%'},
+                    {field: 'name', title: '用户名', width: '20%'},
+                    {field: 'committed', title: '提交次数', width: '20%'},
+                    {field: 'passed', title: '通过题目数', width: '20%'},
+                    {field: 'totalScore', title: '总分数', width: '20%'}
+                ]
+            ]
+        });
+    });
+
+    $('#nav-ranking').addClass('layui-this');
+</script>
+</body>
+</html>

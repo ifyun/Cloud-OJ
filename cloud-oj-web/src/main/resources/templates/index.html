@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="include::common_head(~{::title}, ~{}, ~{::style})">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{::style})">
     <meta charset="UTF-8">
     <title>主页</title>
     <style>
@@ -134,7 +134,10 @@
 </div>
 <script>
     let $startBtn = $('#start-btn');
-    $startBtn.text(user.token === null ? '登录去练习' : '去练习');
+
+    $(document).ready(() => {
+        $startBtn.text(user.token === null ? '登录去练习' : '去练习');
+    });
 
     layui.use(['form', 'element', 'carousel', 'layer'], function () {
         let form = layui.form;

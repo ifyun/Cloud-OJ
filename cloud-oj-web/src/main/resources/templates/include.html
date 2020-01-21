@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="common_head(title, links, styles)">
+<head th:fragment="common_head(title, links, scripts, styles)">
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
     <link rel="stylesheet" href="./layui/css/layui.css">
@@ -8,6 +8,7 @@
     <script src="./jquery-3.4.1.js"></script>
     <script src="./jquery.cookie.js"></script>
     <script src="./jquery.md5.js"></script>
+    <th:block th:replace="${scripts}"/>
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
     <style>
@@ -18,10 +19,6 @@
 
         .menu-text {
             font-size: 12pt;
-        }
-
-        .menu-item {
-            margin-left: 20px;
         }
 
         .header {
@@ -110,16 +107,19 @@
             <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt">Cloud OJ</a>
         </div>
         <ul class="layui-nav layui-layout-left">
-            <li id="nav-help" class="layui-nav-item menu-item">
+            <li id="nav-help" class="layui-nav-item" style="margin-left: 20px">
                 <a class="menu-text" href="./index">帮 助</a>
             </li>
-            <li id="nav-problems" class="layui-nav-item menu-item">
+            <li id="nav-problems" class="layui-nav-item">
                 <a class="menu-text" href="./problems">题目列表</a>
             </li>
-            <li id="nav-commit" class="layui-nav-item menu-item" style="display: none">
+            <li id="nav-commit" class="layui-nav-item" style="display: none">
                 <a class="menu-text" href="./results">提交记录</a>
             </li>
-            <li id="nav-manager" class="layui-nav-item menu-item" style="display: none">
+            <li id="nav-ranking" class="layui-nav-item">
+                <a class="menu-text" href="./ranking">排行榜</a>
+            </li>
+            <li id="nav-manager" class="layui-nav-item" style="display: none">
                 <a class="menu-text" style="cursor: pointer">管 理</a>
                 <dl class="layui-nav-child">
                     <dd><a href="./manager_user">用户管理</a></dd>
@@ -128,7 +128,7 @@
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item menu-item">
+            <li class="layui-nav-item">
                 <a id="user" style="cursor: pointer;"><span id="user-name" class="menu-text">未登录</span></a>
                 <dl id="user-menu" class="layui-nav-child" style="display: none">
                     <dd id="info"><a href="#">基本资料</a></dd>

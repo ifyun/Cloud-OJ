@@ -1,9 +1,19 @@
+server:
+  port: 8000
+
 spring:
   application:
     name: file-server
+  boot:
+    admin:
+      client:
+        url: http://localhost:5000
 
-server:
-  port: 8000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 eureka:
   client:

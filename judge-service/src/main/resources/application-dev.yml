@@ -1,3 +1,6 @@
+server:
+  port: 8002
+
 spring:
   application:
     name: judge-service
@@ -18,9 +21,16 @@ spring:
     port: 5672
     username: cloud@oj
     password: cloud@oj
+  boot:
+    admin:
+      client:
+        url: http://localhost:5000
 
-server:
-  port: 8002
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 eureka:
   client:

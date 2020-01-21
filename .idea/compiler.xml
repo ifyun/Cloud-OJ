@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="manager-service" />
         <module name="register-center" />
+        <module name="monitor-service" />
         <module name="file-server" />
         <module name="cloud-oj-web" />
         <module name="judge-service" />
@@ -31,6 +32,7 @@
       <module name="load-balanced" options="-parameters" />
       <module name="manager-server" options="-parameters" />
       <module name="manager-service" options="-parameters" />
+      <module name="monitor-service" options="-parameters" />
       <module name="register-center" options="-parameters" />
     </option>
   </component>

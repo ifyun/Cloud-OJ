@@ -39,4 +39,9 @@ public class OJController {
     public String results() {
         return "results";
     }
+
+    @RequestMapping("ranking")
+    public String ranking() {
+        return "ranking";
+    }
 }

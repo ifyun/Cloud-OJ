@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.cloudli.managerservice.dao.RankingDao">
+
+    <select id="getCount" resultType="java.lang.Long">
+        select count(user_id)
+        from ranking_list
+    </select>
+
+    <select id="getRanking" resultType="top.cloudli.managerservice.model.Ranking">
+        select *
+        from ranking_list
+        limit #{start}, #{limit}
+    </select>
+
+</mapper>

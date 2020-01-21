@@ -20,6 +20,7 @@
 
     <!-- 子模块配置 -->
     <modules>
+        <module>monitor-service</module>
         <module>register-center</module>
         <module>manager-service</module>
         <module>file-server</module>
@@ -46,6 +47,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

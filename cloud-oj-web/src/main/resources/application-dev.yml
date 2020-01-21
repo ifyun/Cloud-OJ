@@ -6,6 +6,16 @@ spring:
     name: cloud-oj-web
   thymeleaf:
     cache: false
+  boot:
+    admin:
+      client:
+        url: http://localhost:5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 eureka:
   instance:
