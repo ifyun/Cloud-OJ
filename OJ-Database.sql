@@ -137,3 +137,22 @@ from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`probl
 
 -- comment on column judge_result.time not supported: 耗时（ms）
 
+create definer = root@`%` view ranking_list as
+select `problem_score`.`user_id`                                    AS `user_id`,
+       `problem_score`.`name`                                       AS `name`,
+       sum(`problem_score`.`committed`)                             AS `committed`,
+       count((case when (`problem_score`.`result` = 0) then 1 end)) AS `passed`,
+       sum(`problem_score`.`score`)                                 AS `total_score`
+from (select `s`.`user_id`                        AS `user_id`,
+             `u`.`name`                           AS `name`,
+             count(`p`.`problem_id`)              AS `committed`,
+             `s`.`result`                         AS `result`,
+             max((`s`.`pass_rate` * `p`.`score`)) AS `score`
+      from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+               join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+      group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`result`) `problem_score`
+group by `problem_score`.`user_id`
+order by `total_score` desc;
+
+-- comment on column ranking_list.name not supported: 用户名
+
