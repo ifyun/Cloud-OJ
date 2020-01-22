@@ -2,15 +2,18 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{})">
     <meta charset="UTF-8">
-    <title>排行榜</title>
+    <title>竞赛/作业</title>
 </head>
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <table id="ranking" lay-filter="ranking">
+    <table id="contests" lay-filter="contests">
 
     </table>
 </div>
+<script type="text/html" id="contestTpl">
+    <a href="./problems?contestId={{d.contestId}}" class="layui-table-link">{{d.contestName}}</a>
+</script>
 <script>
     let table;
     $(document).ready(() => {
@@ -21,8 +24,8 @@
         });
 
         table.render({
-            elem: '#ranking',
-            url: baseUrl + '/api/manager/ranking',
+            elem: '#contests',
+            url: baseUrl + '/api/manager/contest',
             parseData: (res) => {
                 return {
                     "code": 0,
@@ -38,17 +41,16 @@
             limits: [10, 15, 20, 25, 30],
             cols: [
                 [
-                    {field: 'userId', title: '用户ID', width: '20%'},
-                    {field: 'name', title: '用户名', width: '20%'},
-                    {field: 'committed', title: '提交次数', width: '20%'},
-                    {field: 'passed', title: '通过题目数', width: '20%'},
-                    {field: 'totalScore', title: '总分数', width: '20%'}
+                    {field: 'contestId', title: '竞赛/作业编号', width: '15%', align: 'center'},
+                    {field: 'contestName', title: '竞赛/作业名称', width: '35%', align: 'center', templet: '#contestTpl'},
+                    {field: 'startAt', title: '开始时间', width: '25%'},
+                    {field: 'endAt', title: '结束时间', width: '25%'},
                 ]
             ]
         });
     });
 
-    $('#nav-ranking').addClass('layui-this');
+    $('#nav-contests').addClass('layui-this');
 </script>
 </body>
 </html>

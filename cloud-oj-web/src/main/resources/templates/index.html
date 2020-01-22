@@ -161,14 +161,14 @@
         form.on('submit(login)', (data) => {
             let login = data.field;
             $.ajax({
-                url: "http://localhost/login",
-                method: "post",
+                url: baseUrl + '/login',
+                method: 'post',
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 data: {
-                    "username": login.userId,
-                    "password": $.md5(login.password)
+                    username: login.userId,
+                    password: $.md5(login.password)
                 },
                 success: (data) => {
                     user = data;

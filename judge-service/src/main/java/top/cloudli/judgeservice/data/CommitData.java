@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class CommitData {
     private String userId;
-    private int problemId;
-    private int contestId;
+    private Integer problemId;
+    private Integer contestId;
     private String sourceCode;
-    private int language;
+    private Integer language;
 }

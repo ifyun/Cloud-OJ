@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.managerservice.dao.ContestDao">
-    <select id="getCount">
+    <select id="getCount" resultType="java.lang.Long">
         select count(contest_id)
         from contest
     </select>
@@ -13,16 +13,16 @@
         limit #{start}, #{limit}
     </select>
 
-    <select id="getProblemsCount">
+    <select id="getProblemsCount" resultType="java.lang.Long">
         select count(*)
         from contest_problem
         where contest_id = #{contestId}
     </select>
 
-    <select id="getProblems">
+    <select id="getProblems" resultType="top.cloudli.managerservice.model.Problem">
         select *
         from contest_problem
-        where contest_id = #{constestId}
+        where contest_id = #{contestId}
         limit #{start}, #{limit}
     </select>
 

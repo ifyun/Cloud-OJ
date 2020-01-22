@@ -43,7 +43,6 @@ mybatis:
     map-underscore-to-camel-case: on
   mapper-locations: classpath:mybatis/mapper/*.xml
 
-
 project:
   max-wait-time: 5000
   test-data-dir: D:/test_data/

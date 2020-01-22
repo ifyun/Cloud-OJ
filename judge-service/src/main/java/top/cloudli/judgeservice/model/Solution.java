@@ -6,16 +6,16 @@ import java.io.Serializable;
 
 @Data
 public class Solution implements Serializable {
-    private int solutionId;
-    private int problemId;
-    private int contestId;
+    private Integer solutionId;
+    private Integer problemId;
+    private Integer contestId;
     private String userId;
-    private int language;
-    private int state;
-    private int result;
+    private Integer language;
+    private Integer state;
+    private Integer result;
     private double passRate;
 
-    public Solution(String userId, int problemId, int contestId, int language) {
+    public Solution(String userId, Integer problemId, Integer contestId, Integer language) {
         this.userId = userId;
         this.problemId = problemId;
         this.contestId = contestId;

@@ -65,6 +65,7 @@
         }
     </style>
     <script>
+        let baseUrl = 'http://localhost';
         let user = {
             userId: '',
             name: '',
@@ -108,11 +109,14 @@
             <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt">Cloud OJ</a>
         </div>
         <ul class="layui-nav layui-layout-left">
-            <li id="nav-help" class="layui-nav-item" style="margin-left: 20px">
+            <li id="nav-help" class="layui-nav-item" style="margin-left: 10px">
                 <a class="menu-text" href="./index">帮 助</a>
             </li>
             <li id="nav-problems" class="layui-nav-item">
                 <a class="menu-text" href="./problems">题目列表</a>
+            </li>
+            <li id="nav-contests" class="layui-nav-item">
+                <a class="menu-text" href="./contests">竞赛/作业</a>
             </li>
             <li id="nav-commit" class="layui-nav-item" style="display: none">
                 <a class="menu-text" href="./results">提交记录</a>

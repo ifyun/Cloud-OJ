@@ -24,7 +24,7 @@ public class OJController {
     }
 
     @RequestMapping("commit")
-    public ModelAndView commit(int problemId) {
+    public ModelAndView commit(int problemId, Integer contestId) {
         Problem problem = restTemplate.getForObject("http://localhost/api/manager/problem/" + problemId, Problem.class);
         assert problem != null;
         return new ModelAndView("commit").addObject(problem);
@@ -43,5 +43,10 @@ public class OJController {
     @RequestMapping("ranking")
     public String ranking() {
         return "ranking";
+    }
+
+    @RequestMapping("contests")
+    public String contests() {
+        return "contests";
     }
 }

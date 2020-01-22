@@ -1,10 +1,8 @@
 package top.cloudli.managerservice.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import top.cloudli.managerservice.dao.*;
 import top.cloudli.managerservice.model.*;
 
@@ -30,7 +28,7 @@ public class ManagerService implements CRUDService {
     @Resource
     private RankingDao rankingDao;
 
-    // NOTE 题目管理部分
+    // NOTE 题目
 
     public ResponseEntity<?> getEnableProblems(int start, int limit) {
         List<Problem> problems = problemDao.getEnable(start, limit);
@@ -74,7 +72,7 @@ public class ManagerService implements CRUDService {
     }
 
 
-    // NOTE 用户管理部分
+    // NOTE 用户
 
     public ResponseEntity<?> getUsers(int start, int limit) {
         List<User> users = userDao.getAll(start, limit);
@@ -108,7 +106,7 @@ public class ManagerService implements CRUDService {
         return buildGETResponse(new PagedResult<>(rankingDao.getCount(), rankingList));
     }
 
-    // NOTE 竞赛/作业管理
+    // NOTE 竞赛/作业
 
     public ResponseEntity<?> getAllContest(int start, int limit) {
         List<Contest> contests = contestDao.getAllContest(start, limit);
