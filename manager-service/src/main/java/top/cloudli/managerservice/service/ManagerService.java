@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import top.cloudli.managerservice.dao.JudgeResultDao;
-import top.cloudli.managerservice.dao.ProblemDao;
-import top.cloudli.managerservice.dao.RankingDao;
-import top.cloudli.managerservice.dao.UserDao;
+import top.cloudli.managerservice.dao.*;
 import top.cloudli.managerservice.model.*;
 
 import javax.annotation.Resource;
@@ -25,12 +22,15 @@ public class ManagerService implements CRUDService {
     private UserDao userDao;
 
     @Resource
+    private ContestDao contestDao;
+
+    @Resource
     private JudgeResultDao judgeResultDao;
 
     @Resource
     private RankingDao rankingDao;
 
-    // 题目管理部分
+    // NOTE 题目管理部分
 
     public ResponseEntity<?> getEnableProblems(int start, int limit) {
         List<Problem> problems = problemDao.getEnable(start, limit);
@@ -74,7 +74,7 @@ public class ManagerService implements CRUDService {
     }
 
 
-    // 用户管理部分
+    // NOTE 用户管理部分
 
     public ResponseEntity<?> getUsers(int start, int limit) {
         List<User> users = userDao.getAll(start, limit);
@@ -94,17 +94,47 @@ public class ManagerService implements CRUDService {
         return buildDELETEResponse(userDao.delete(userId) == 1);
     }
 
-    // 获取提交记录
+    // NOTE 获取提交记录
 
     public ResponseEntity<?> getJudged(String userId, int start, int limit) {
         List<JudgeResult> results = judgeResultDao.getByUserId(userId, start, limit);
         return buildGETResponse(new PagedResult<>(judgeResultDao.getCount(userId), results));
     }
 
-    // 获取排行
+    // NOTE 获取排行
 
     public ResponseEntity<?> getRanking(int start, int limit) {
         List<Ranking> rankingList = rankingDao.getRanking(start, limit);
         return buildGETResponse(new PagedResult<>(rankingDao.getCount(), rankingList));
+    }
+
+    // NOTE 竞赛/作业管理
+
+    public ResponseEntity<?> getAllContest(int start, int limit) {
+        List<Contest> contests = contestDao.getAllContest(start, limit);
+        return buildGETResponse(new PagedResult<>(contestDao.getCount(), contests));
+    }
+
+    public ResponseEntity<?> addContest(Contest contest) {
+        String error = contestDao.addContest(contest) == 1 ? null : "添加失败.";
+        return buildPOSTResponse(error);
+    }
+
+    public ResponseEntity<?> getProblemsFromContest(int contestId, int start, int limit) {
+        List<Problem> problems = contestDao.getProblems(contestId, start, limit);
+        return buildGETResponse(new PagedResult<>(contestDao.getProblemsCount(contestId), problems));
+    }
+
+    public ResponseEntity<?> deleteContest(int contestId) {
+        return buildDELETEResponse(contestDao.deleteContest(contestId) == 1);
+    }
+
+    public ResponseEntity<?> addProblemToContest(int contestId, int problemId) {
+        String error = contestDao.addProblem(contestId, problemId) == 1 ? null : "添加失败.";
+        return buildPOSTResponse(error);
+    }
+
+    public ResponseEntity<?> deleteProblemFromContest(int contestId, int problemId) {
+        return buildDELETEResponse(contestDao.deleteProblem(contestId, problemId) == 1);
     }
 }

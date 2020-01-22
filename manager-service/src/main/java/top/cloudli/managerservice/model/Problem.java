@@ -1,10 +1,15 @@
 package top.cloudli.managerservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import java.sql.Date;
 
 @Data
 public class Problem {
+    private Integer contestId;
+    private String contestName;
+    private Date startAt;
+    private Date endAt;
     private int problemId;
     private String title;
     private String description;
@@ -16,5 +21,5 @@ public class Problem {
     private long timeout;
     private int score;
     private boolean enable;
-    private String createAt;
+    private Date createAt;
 }

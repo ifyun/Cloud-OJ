@@ -11,19 +11,26 @@
     <select id="getJudgedByUserId" resultType="top.cloudli.judgeservice.model.JudgeResult">
         select *
         from judge_result
-        where user_id = #{userId} and state = 0
+        where user_id = #{userId}
+          and state = 0
     </select>
 
     <select id="getJudgedBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
         select *
         from judge_result
-        where solution_id = #{solutionId} and state = 0;
+        where solution_id = #{solutionId}
+          and state = 0;
     </select>
 
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
             parameterType="top.cloudli.judgeservice.model.Solution">
-        insert into solution(user_id, problem_id, language)
-        values (#{userId}, #{problemId}, #{language})
+        insert into solution(user_id, problem_id, contest_id, language)
+        values (#{userId}, #{problemId},
+        <choose>
+            <when test="contestId != null">#{contestId}</when>
+            <otherwise>null</otherwise>
+        </choose>
+        , #{language})
     </insert>
 
     <update id="update" parameterType="top.cloudli.judgeservice.model.Solution">

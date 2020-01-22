@@ -97,6 +97,10 @@
 </div>
 
 <script>
+    $(document).ready(() => {
+        console.log(getQueryVariable('problemId'))
+    });
+
     let language = 0;
     let codeLang = ['text/x-c++src', 'text/x-java', 'text/x-python', 'text/x-sh'];
 

@@ -28,6 +28,7 @@ public class CommitService {
         Solution solution = new Solution(
                 commitData.getUserId(),
                 commitData.getProblemId(),
+                commitData.getContestId(),
                 commitData.getLanguage()
         );
 

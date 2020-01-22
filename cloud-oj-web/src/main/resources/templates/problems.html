@@ -20,7 +20,11 @@
     </table>
 </div>
 <script type="text/html" id="titleTpl">
+    {{# if (d.contestId !== undefined) { }}
+    <a href="./commit?problemId={{d.problemId}}&contestId={{d.contestId}}" class="layui-table-link">{{d.title}}</a>
+    {{# } else { }}
     <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
+    {{# } }}
 </script>
 <script type="text/html" id="categoryTpl">
     <span class="label bg-green">
@@ -38,6 +42,7 @@
             elem: '#problems',
             url: '../api/manager/problem',
             parseData: (res) => {
+                console.log(res);
                 return {
                     "code": 0,
                     "count": res === undefined ? 0 : res.count,
