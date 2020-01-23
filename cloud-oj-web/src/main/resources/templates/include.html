@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
     <link rel="stylesheet" href="./layui/css/layui.css">
+    <link rel="stylesheet" href="./css/iconfont.css">
     <script src="./common.js"></script>
     <script src="./layui/layui.all.js"></script>
     <script src="./jquery-3.4.1.js"></script>
@@ -61,10 +62,16 @@
 
         .bg-grey {
             color: white;
-            background: #d2d2d2;
+            background: #c2c2c2;
         }
     </style>
     <script>
+        let iconMap = new Map();
+        iconMap.set('C/C++', 'icon-cpp');
+        iconMap.set('Java', 'icon-java');
+        iconMap.set('Python', 'icon-python');
+        iconMap.set('Shell', 'icon-shell');
+
         let baseUrl = 'http://localhost';
         let user = {
             userId: '',

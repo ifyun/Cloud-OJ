@@ -30,7 +30,7 @@ public class JudgementAsync {
             Compile compile = future.get();
             solution.setState(0);
             if (compile.getState() == -1) {
-                solution.setResult(3);
+                solution.setResult(4);
             } else {
                 judgement.judge(solution);
             }

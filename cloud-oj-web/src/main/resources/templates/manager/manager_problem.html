@@ -162,9 +162,9 @@
 </script-->
 <script type="text/html" id="categoryTpl">
     {{# if (d.category != null && d.category !== '') { }}
-    <span class="label bg-yellow">
-        {{d.category}}
-    </span>
+    {{# layui.each(d.category.split(','), (index, item) => { }}
+    <span class="label bg-green">{{ item }}</span>
+    {{# }); }}
     {{# } }}
 </script>
 <script type="text/html" id="optToolbar">

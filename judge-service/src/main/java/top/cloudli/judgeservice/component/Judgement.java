@@ -13,6 +13,7 @@ import top.cloudli.judgeservice.model.Runtime;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -181,9 +182,10 @@ public class Judgement {
 
     @SneakyThrows
     private String getOutput(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream, isLinux ? "utf-8" : "gbk"))
-                .lines()
-                .collect(Collectors.joining("\n"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String out = reader.lines().collect(Collectors.joining("\n"));
+        reader.close();
+        return out;
     }
 
     /**

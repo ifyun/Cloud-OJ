@@ -1,5 +1,6 @@
 package top.cloudli.judgeservice.component;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -91,10 +92,12 @@ class Compiler {
         }
     }
 
+    @SneakyThrows
     private String getOutput(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream))
-                .lines()
-                .collect(Collectors.joining("\n"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String out = reader.lines().collect(Collectors.joining("\n"));
+        reader.close();
+        return out;
     }
 
     /**
@@ -126,6 +129,7 @@ class Compiler {
                 FileWriter writer = new FileWriter(file, false);
                 writer.write(source);
                 writer.flush();
+                writer.close();
                 return file.getPath();
             } else {
                 log.error("无法创建文件 {}", file.getName());

@@ -16,15 +16,20 @@
 </script>
 <script type="text/html" id="resultTpl">
     {{# if (d.result == '完全正确') { }}
-    <span class="bg-green label">{{d.result + '(' + d.passRate * 100 + ')'}}</span>
+    <span class="bg-green label">{{d.result}}({{d.passRate * 100}})</span>
     {{# } else if (d.result == '答案错误') { }}
-    <span class="bg-red label">{{d.result}}</span>
+    <span class="bg-red label">{{d.result}}(0)</span>
+    {{# } else if (d.result == '编译错误') { }}
+    <span class="bg-grey label">{{d.result}}</span>
     {{# } else { }}
-    <span class="bg-yellow label">{{d.result}}({{d.score * 100}})</span>
+    <span class="bg-yellow label">{{d.result}}({{d.passRate * 100}})</span>
     {{# } }}
 </script>
 <script type="text/html" id="languageTpl">
-    <span class="bg-blue label">{{d.language}}</span>
+    <span class="bg-blue label">
+        <span class="iconfont {{iconMap.get(d.language)}}"></span>
+        {{d.language}}
+    </span>
 </script>
 <script type="text/html" id="opt-toolbar">
     <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="see-code">查看代码</button>
@@ -47,6 +52,7 @@
             },
             headers: {token: user.token},
             parseData: (res) => {
+                console.log(res);
                 return {
                     "code": 0,
                     "count": res === undefined ? 0 : res.count,
@@ -64,10 +70,10 @@
                     {field: 'problemId', title: '题目编号', width: '10%'},
                     {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
                     {title: '操作', width: '15%', align: 'center', toolbar: '#opt-toolbar'},
-                    {field: 'language', title: '编程语言', width: '10%', templet: '#languageTpl'},
+                    {field: 'language', title: '编程语言', width: '15%', templet: '#languageTpl'},
                     {field: 'result', title: '结果', width: '15%', align: 'center', templet: '#resultTpl'},
                     {field: 'time', title: '运行时间', width: '10%'},
-                    {field: 'submitTime', title: '提交时间', width: '15%'}
+                    {field: 'submitTime', title: '提交时间', width: '10%'}
                 ]
             ]
         });
