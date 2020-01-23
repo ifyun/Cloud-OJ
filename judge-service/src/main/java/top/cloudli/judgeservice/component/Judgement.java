@@ -98,7 +98,7 @@ public class Judgement {
             passRate /= 2;      // 时间超限降一半分
         }
 
-        solution.setPassRate(passRate);
+        solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         solution.setState(SolutionState.JUDGED.ordinal());
         solutionDao.update(solution);
     }
@@ -118,36 +118,36 @@ public class Judgement {
 
             if (input.size() == 0) {
                 // 执行程序
-                stopWatch.start();
                 Process process = cmd.start();
+                stopWatch.start();
 
                 if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
                     throw new InterruptedException("等待时间过长，可能存在死循环.");
                 }
 
                 stopWatch.stop();
-                runtime.setTime(stopWatch.getTotalTimeMillis());
-                // 获取错误流
-                String error = getOutput(process.getErrorStream());
+                // 计算运行时间
+                runtime.setTime(stopWatch.getTotalTimeMillis() / 8);
 
-                if (error.isEmpty()) {
-                    // 获取标准输出流
-                    String temp = getOutput(process.getInputStream());
-                    output.add(temp);
-                } else {
-                    runtime.setInfo(error);
-                }
+                // 获取标准输出流
+                String stdout = getOutput(process.getInputStream());
+
+                output.add(stdout);
+
+                // 获取标准错误流
+                String stderr = getOutput(process.getErrorStream());
+                runtime.setInfo(stderr);
             } else {
                 long maxTime = 0;
 
                 for (String s : input) {
-                    stopWatch.start();
                     Process process = cmd.start();
-
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                     // 输入数据
                     writer.write(s);
                     writer.close();
+
+                    stopWatch.start();
 
                     if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
                         throw new InterruptedException("等待时间过长，可能存在死循环.");
@@ -155,29 +155,23 @@ public class Judgement {
 
                     stopWatch.stop();
 
-                    String error = getOutput(process.getErrorStream());
-
                     long time = stopWatch.getTotalTimeMillis();
                     maxTime = Math.max(time, maxTime);
 
-                    if (error.isEmpty()) {
-                        String temp = getOutput(process.getInputStream());
-                        output.add(temp);
-                    } else {
-                        runtime.setInfo(error);
-                        break;
-                    }
+                    // 获取标准输出流
+                    String stdout = getOutput(process.getInputStream());
+                    output.add(stdout);
+
+                    // 获取标准错误流
+                    String stderr = getOutput(process.getErrorStream());
+                    runtime.setInfo(stderr);
                 }
 
-                runtime.setTime(maxTime);
+                runtime.setTime(maxTime / 8);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
             runtime.setInfo(e.getMessage());
-        } catch (InterruptedException e2) {
-            log.error(e2.getMessage());
-            runtime.setTime(maxWaitTime);
-            runtime.setInfo(e2.getMessage());
         }
 
         runtime.setOutput(String.join("\n", output));

@@ -11,8 +11,8 @@ public class Solution implements Serializable {
     private Integer contestId;
     private String userId;
     private Integer language;
-    private Integer state;
-    private Integer result;
+    private int state;
+    private int result;
     private double passRate;
 
     public Solution(String userId, Integer problemId, Integer contestId, Integer language) {

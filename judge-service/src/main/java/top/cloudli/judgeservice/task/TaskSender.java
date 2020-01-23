@@ -28,7 +28,7 @@ public class TaskSender {
     /**
      * 发送已提交的 solution 到消息队列
      */
-    @Scheduled(fixedDelay = 1500, initialDelay = 500)
+    @Scheduled(fixedDelay = 500, initialDelay = 1000)
     public void sendCommitted() {
        List<Solution> solutions = solutionDao.getSubmitted();
 
