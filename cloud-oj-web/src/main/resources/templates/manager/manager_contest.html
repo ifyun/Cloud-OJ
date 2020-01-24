@@ -7,11 +7,12 @@
 <body>
 <!-- nav -->
 <div th:replace="include::top"></div>
-<div class="layui-container">
+<div class="layui-container" style="padding-bottom: 20px;min-width: 1150px">
     <table id="contests" lay-filter="contests">
 
     </table>
 </div>
+<!-- create contest -->
 <div id="contest-form" class="layui-form layui-form-pane" lay-filter="add-contest"
      style="display: none; position: absolute; top: 0; bottom: 0; left: 0; right:0; padding: 15px">
     <!-- contest name -->
@@ -45,10 +46,21 @@
         </div>
     </div>
 </div>
+<!-- contest problems -->
+<div id="contest-problem-table"
+     style="display: none;  position: absolute; top: 0; bottom: 0; left: 0; right:0; padding: 15px">
+    <table id="contest-problems" lay-filter="contest-problems">
+
+    </table>
+</div>
+
 <script type="text/html" id="top-bar">
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="create-contest">创建竞赛/作业</button>
     </div>
+</script>
+<script type="text/html" id="contestProblemToolbar">
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="remove">移除</a>
 </script>
 <script type="text/html" id="optToolbar">
     <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">编辑题目</a>
@@ -69,7 +81,7 @@
             element.init();
         });
 
-        // 用户列表
+        // 竞赛/作业列表
         table.render({
             elem: '#contests',
             url: '../api/manager/contest/pro',
@@ -163,31 +175,11 @@
         });
 
         table.on('tool(contests)', (obj) => {
-            let loadIndex;
+            if (obj.event === 'edit') {
+                showContestProblems(obj.data.contestId, obj.data.contestName);
+            }
             if (obj.event === 'del') {
-                layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
-                    $.ajax({
-                        url: baseUrl + '/api/manager/contest/pro/' + obj.data.contestId,
-                        method: 'delete',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "token": user.token
-                        },
-                        beforeSend: () => {
-                            loadIndex = layer.load(1);
-                        },
-                        success: () => {
-                            layer.close(loadIndex);
-                            layer.msg('已删除！', {icon: 6});
-                            $(".layui-laypage-btn").click();
-                        },
-                        error: (xhr) => {
-                            layer.close(loadIndex);
-                            layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
-                        }
-                    });
-                    layer.close(index);
-                });
+                delContest(obj.data);
             }
         });
 
@@ -223,6 +215,105 @@
             }
         });
     });
+
+    function showContestProblems(contestId, contestName) {
+        layer.open({
+            type: 1,
+            title: contestName,
+            resize: false,
+            content: $('#contest-problem-table'),
+            area: ['650px', '600px'],
+            closeButton: true,
+            cancel: () => {
+                $('#contest-problem-table').hide();
+            }
+        });
+
+        table.render({
+            elem: '#contest-problems',
+            url: baseUrl + '/api/manager/contest/' + contestId,
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "count": res === undefined ? 0 : res.count,
+                    "data": res === undefined ? null : res.data
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            height: '500px',
+            page: true,
+            limit: 15,
+            limits: [10, 15, 20, 25, 30],
+            cols: [
+                [
+                    {field: 'problemId', title: '编号', width: '15%', align: 'center'},
+                    {field: 'title', title: '题目名称', width: '65%'},
+                    {title: '操作', width: '20%', align: 'center', toolbar: '#contestProblemToolbar'}
+                ]
+            ]
+        });
+
+        table.on('tool(contest-problems)', (obj) => {
+            if (obj.event === 'remove') {
+                removeProblems(contestId, obj.data.problemId);
+            }
+        });
+    }
+
+    function removeProblems(contestId, problemId) {
+        let loadIndex;
+        layer.confirm('确定要从竞赛中移除此题吗？（题目不会被删除）', {icon: 3, title: '提示'}, (index) => {
+            $.ajax({
+                url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId,
+                method: 'delete',
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": user.token
+                },
+                beforeSend: () => {
+                    loadIndex = layer.load(1);
+                },
+                success: () => {
+                    layer.close(loadIndex);
+                    layer.msg('已移除！', {icon: 6});
+                    $(".layui-laypage-btn").click();
+                },
+                error: (xhr) => {
+                    layer.close(loadIndex);
+                    layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
+                }
+            });
+            layer.close(index);
+        });
+    }
+
+    function delContest(data) {
+        let loadIndex;
+        layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
+            $.ajax({
+                url: baseUrl + '/api/manager/contest/pro/' + data.contestId,
+                method: 'delete',
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": user.token
+                },
+                beforeSend: () => {
+                    loadIndex = layer.load(1);
+                },
+                success: () => {
+                    layer.close(loadIndex);
+                    layer.msg('已删除！', {icon: 6});
+                    $(".layui-laypage-btn").click();
+                },
+                error: (xhr) => {
+                    layer.close(loadIndex);
+                    layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
+                }
+            });
+            layer.close(index);
+        });
+    }
 </script>
 </body>
 </html>
