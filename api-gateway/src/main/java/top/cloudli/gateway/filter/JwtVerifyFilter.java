@@ -66,6 +66,8 @@ public class JwtVerifyFilter extends GenericFilterBean {
                 // Jwt 解析异常的处理
                 log.error(e.getMessage());
                 ((HttpServletResponse)servletResponse).setStatus(401);
+                servletResponse.setContentType("text/plain;charset=utf-8");
+                servletResponse.getWriter().write("未授权，Token 可能已过期，请重新登录.");
             }
         }
     }

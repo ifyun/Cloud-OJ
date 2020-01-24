@@ -35,6 +35,11 @@ public class OJController {
         return "manager/manager_problem";
     }
 
+    @RequestMapping("manager_user")
+    public String managerUser() {
+        return "manager/manager_user";
+    }
+
     @RequestMapping("results")
     public String results() {
         return "results";

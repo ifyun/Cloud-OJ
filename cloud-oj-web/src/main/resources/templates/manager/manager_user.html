@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="include::common_head(~{::title}, ~{}, ~{})">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{})">
     <meta charset="UTF-8">
     <title>用户管理</title>
 </head>
@@ -8,19 +8,171 @@
 <!-- nav -->
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <table id="users">
+    <table id="users" lay-filter="users">
 
     </table>
 </div>
-<script>
-    layui.use(['element', 'table'], () => {
-        let element = layui.element;
-        element.init();
-        let table = layui.table;
-        table.render();
-    });
+<script id="roleTpl" type="text/html">
+    <span class="label bg-green">{{roles[d.roleId]}}</span>
+</script>
 
-    $('#nav-manager').addClass("layui-this");
+<script type="text/html" id="optToolbar">
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">修改信息</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+
+<div id="user-form" class="layui-form layui-form-pane" lay-filter="user-info"
+     style="display: none; position: absolute; top: 0; bottom: 0; left: 0; right:0; padding: 15px">
+    <input type="hidden" class="layui-input" name="userId">
+    <!-- name -->
+    <div class="layui-form-item">
+        <label for="name" class="layui-form-label">用户名</label>
+        <div class="layui-input-block">
+            <input id="name" name="name" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <!-- email -->
+    <div class="layui-form-item">
+        <label for="email" class="layui-form-label">邮 箱</label>
+        <div class="layui-input-block">
+            <input id="email" type="email" name="email" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <!-- password -->
+    <div class="layui-form-item">
+        <label for="password" class="layui-form-label">密 码</label>
+        <div class="layui-input-block">
+            <input id="password" type="password" name="password" class="layui-input" placeholder="设置新密码">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label for="section" class="layui-form-label">学校/班级</label>
+        <div class="layui-input-block">
+            <input id="section" name="section" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <!-- role -->
+    <div class="layui-form-item">
+        <label for="role" class="layui-form-label">角色/权限</label>
+        <div class="layui-input-block">
+            <select id="role" name="roleId" lay-filter="role">
+                <option value="0">普通用户</option>
+                <option value="1">用户管理员</option>
+                <option value="2">题目管理员</option>
+                <option value="3">ROOT</option>
+            </select>
+        </div>
+    </div>
+    <!-- button -->
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button lay-submit lay-filter="save" id="save" class="layui-btn layui-btn-normal" style="width: 100%;">
+                保 存
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    let table, form, layer;
+    $(document).ready(() => {
+        $('#nav-manager').addClass("layui-this");
+
+        layui.use(['element', 'table', 'form', 'layer'], () => {
+            let element = layui.element;
+            table = layui.table;
+            form = layui.form;
+            layer = layui.layer;
+
+            element.init();
+        });
+
+        // 用户列表
+        table.render({
+            elem: '#users',
+            url: '../api/manager/user/pro',
+            headers: {token: user.token},
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "count": res === undefined ? 0 : res.count,
+                    "data": res === undefined ? null : res.data,
+                    "msg": res.msg
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            page: true,
+            limit: 15,
+            limits: [10, 15, 20, 25, 30],
+            cols: [
+                [
+                    {field: 'userId', title: 'ID/学号', width: '20%'},
+                    {field: 'name', title: '用户名', width: '20%'},
+                    {field: 'roleId', title: '角色/权限', width: '20%', align: 'center', templet: '#roleTpl'},
+                    {title: '操作', width: '20%', align: 'center', toolbar: '#optToolbar'},
+                    {field: 'createAt', title: '创建时间', width: '20%', sort: true}
+                ]
+            ]
+        });
+
+        let editUserIndex;
+        table.on('tool(users)', (obj) => {
+            if (obj.event === 'edit') {
+                form.val('user-info', obj.data);
+                editUserIndex = layer.open({
+                    type: 1,
+                    title: '编辑用户信息',
+                    content: $('#user-form'),
+                    area: ['450px', '400px'],
+                    closeButton: true,
+                    cancel: () => {
+                        $('#user-form').hide();
+                    }
+                });
+            }
+        });
+
+        form.on('submit(save)', (data) => {
+            let userInfo = data.field;
+            if (userInfo.password.toString().trim() === '')
+                delete userInfo.password;
+            else
+                userInfo.password = $.md5(userInfo.password);
+
+            let loadIndex;
+
+            $.ajax({
+                url: baseUrl + '/api/manager/user/pro',
+                method: 'put',
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": user.token
+                },
+                data: JSON.stringify(userInfo),
+                beforeSend: () => {
+                    loadIndex = layer.load(1);
+                },
+                success: (data, status, xhr) => {
+                    console.log(xhr.status);
+                    if (xhr.status === 304) {
+                        layer.msg('未修改任何数据！', {icon: 5});
+                    } else {
+                        layer.msg('保存成功！', {icon: 6});
+                        $('#user-form').hide();
+                        layer.close(loadIndex);
+                        layer.close(editUserIndex);
+                    }
+                    $(".layui-laypage-btn").click();
+                },
+                error: (xhr) => {
+                    layer.close(loadIndex);
+                    layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
+                }
+            });
+
+            return false;
+        });
+    });
 </script>
 </body>
 </html>

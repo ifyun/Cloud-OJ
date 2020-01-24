@@ -66,6 +66,8 @@
         }
     </style>
     <script>
+        let roles = ['普通用户', '用户管理员', '题目管理员', 'ROOT'];
+
         let iconMap = new Map();
         iconMap.set('C/C++', 'icon-cpp');
         iconMap.set('Java', 'icon-java');
@@ -79,16 +81,35 @@
             section: '',
             email: '',
             roleId: null,
-            token: null
+            token: null,
+            expire: null
         };
 
         $(document).ready(() => {
+            let layer;
+            layui.use('layer', () => {
+                layer = layui.layer;
+            });
+
             let userInfo = $.cookie('cloudOjToken');
             if (userInfo != null) {
                 user = JSON.parse(userInfo);
+                if (new Date(Date.parse(user.expire)) <= new Date()) {
+                    layer.open({
+                        content: '你的登录已经过期，请重新登录！',
+                        yes: () => {
+                            exit();
+                        }
+                    });
+                }
+
                 $('#user-name').text(user.name);
                 $('#nav-commit').show();
                 if (user.roleId > 0) {
+                    if (user.roleId === 1)
+                        $('#problem_manager').hide();
+                    else if (user.roleId === 2)
+                        $('#user_manager').hide();
                     $('#nav-manager').show();
                 }
             } else {
@@ -105,7 +126,7 @@
         }
 
         function start() {
-            window.location.href = './index';
+            window.location.href = './index?login=true';
         }
     </script>
 </head>
@@ -134,8 +155,8 @@
             <li id="nav-manager" class="layui-nav-item" style="display: none">
                 <a class="menu-text" style="cursor: pointer">管 理</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="./manager_user">用户管理</a></dd>
-                    <dd><a href="./manager_problem">题目管理</a></dd>
+                    <dd id="user_manager"><a href="./manager_user">用户管理</a></dd>
+                    <dd id="problem_manager"><a href="./manager_problem">题目管理</a></dd>
                 </dl>
             </li>
         </ul>
@@ -149,23 +170,6 @@
             </li>
         </ul>
     </div>
-</div>
-
-<div th:fragment="left-nav" class="layui-side">
-    <ul class="layui-nav layui-nav-tree layui-nav-side" style="top: 60px">
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">用户管理</a>
-        </li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">题目管理</a>
-        </li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">上传题目</a>
-        </li>
-        <li class="layui-nav-item">
-            <a class="menu-text" href="#">测试数据管理</a>
-        </li>
-    </ul>
 </div>
 </body>
 </html>

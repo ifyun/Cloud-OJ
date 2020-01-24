@@ -12,7 +12,7 @@
             border-top: 1px solid #404553;
             height: calc(100% - 61px);
             min-height: 800px;
-            background-image: url('img/back-1.jpg');
+            background-image: url('img/background.jpg');
             background-position: center top;
             background-size: cover;
             background-repeat: no-repeat;
@@ -41,7 +41,7 @@
         <h2 style="font-size: 32pt"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
         <button id="start-btn" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                 style="margin-top: 24px"
-                onclick="start()">
+                onclick="startCodding()">
         </button>
     </div>
 
@@ -137,6 +137,11 @@
 
     $(document).ready(() => {
         $startBtn.text(user.token === null ? '登录去练习' : '去练习');
+        if (getQueryVariable('login') === 'true') {
+            setTimeout(() => {
+                startCodding()
+            }, 1000);
+        }
     });
 
     layui.use(['form', 'element', 'carousel', 'layer'], function () {
@@ -209,7 +214,7 @@
         });
     });
 
-    function start() {
+    function startCodding() {
         if (user.token !== null) {
             window.location.href = './problems';
         } else {

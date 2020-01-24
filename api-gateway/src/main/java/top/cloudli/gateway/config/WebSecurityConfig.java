@@ -1,5 +1,6 @@
 package top.cloudli.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,9 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${project.token-valid-time:3}")
+    private int validTime;
+
     @Resource
     private UserService userService;
 
@@ -34,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .addFilterBefore(new JwtLoginFilter("/login", authenticationManager()),
+                .addFilterBefore(new JwtLoginFilter(validTime, "/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()

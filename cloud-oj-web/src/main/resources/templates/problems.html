@@ -60,7 +60,6 @@
                 elem: '#problems',
                 url: apiUrl,
                 parseData: (res) => {
-                    console.log(res);
                     return {
                         "code": 0,
                         "count": res === undefined ? 0 : res.count,

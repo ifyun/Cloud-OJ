@@ -21,10 +21,14 @@
 
     <update id="update" parameterType="top.cloudli.managerservice.model.User">
         update user
-        set name     = #{name},
-            password = #{password},
-            email    = #{email},
-            section  = #{section}
+        set name = #{name},
+        <choose>
+            <when test="password != null">
+                password = #{password},
+            </when>
+        </choose>
+        email = #{email},
+        section = #{section}
         where user_id = #{userId};
     </update>
 

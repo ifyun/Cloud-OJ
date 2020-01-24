@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,14 +30,17 @@ import java.util.Date;
 @Slf4j
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
+    private int validTime;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    public JwtLoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
+    public JwtLoginFilter(int validTime, String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher(defaultFilterProcessesUrl, "POST"));
+        this.validTime = validTime;
         setAuthenticationManager(authenticationManager);
     }
 
@@ -65,16 +69,16 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         User user = (User) authResult.getPrincipal();
 
         // 生成 jwt token
+        Date expireAt = new Date(System.currentTimeMillis() + validTime * 3600000);
         String jwt = Jwts.builder()
                 .claim("authorities", authoritiesString)
                 .setSubject(authResult.getName())
-                .setExpiration(new Date(System.currentTimeMillis() + 180 * 60 * 1000))  // 有效时间 30 分钟
+                .setExpiration(expireAt)
                 .signWith(SignatureAlgorithm.HS512, "cloudli.top")
                 .compact();
 
-        user.setPassword(null);
-        user.setRoles(null);
         user.setToken(jwt);
+        user.setExpire(expireAt);
 
         response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();

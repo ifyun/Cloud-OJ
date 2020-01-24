@@ -59,4 +59,7 @@ zuul:
 
 judge-service:
   ribbon:
-    ReadTimeout: 10000
+    ReadTimeout: 5000
+
+project:
+  token-valid-time: 4
