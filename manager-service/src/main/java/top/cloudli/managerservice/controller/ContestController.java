@@ -15,7 +15,12 @@ public class ContestController {
     private ManagerService managerService;
 
     @GetMapping("")
-    public ResponseEntity<?> contests(int page, int limit) {
+    public ResponseEntity<?> startedContests(int page, int limit) {
+        return managerService.getStartedContest((page - 1) * limit, limit);
+    }
+
+    @GetMapping("pro")
+    public ResponseEntity<?> allContests(int page, int limit) {
         return managerService.getAllContest((page - 1) * limit, limit);
     }
 
@@ -27,6 +32,11 @@ public class ContestController {
     @PostMapping("pro")
     public ResponseEntity<?> addContest(@RequestBody Contest contest) {
         return managerService.addContest(contest);
+    }
+
+    @PutMapping("pro")
+    public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
+        return managerService.updateContest(contest);
     }
 
     @DeleteMapping("pro/{contestId}")

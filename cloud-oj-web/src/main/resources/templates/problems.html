@@ -37,6 +37,8 @@
 </script>
 <script>
     $(document).ready(() => {
+        $('#nav-problems').addClass("layui-this");
+
         let contestId = getQueryVariable('contestId');
 
         if (contestId != null) {
@@ -46,8 +48,6 @@
         let apiUrl = contestId == null ?
             baseUrl + '/api/manager/problem' :
             baseUrl + '/api/manager/contest/' + contestId;
-
-        $('#nav-problems').addClass("layui-this");
 
         let problemsTable;
         let $search = $('#keyword');

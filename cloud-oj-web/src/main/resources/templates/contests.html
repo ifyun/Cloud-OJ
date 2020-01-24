@@ -17,6 +17,8 @@
 <script>
     let table;
     $(document).ready(() => {
+        $('#nav-contests').addClass('layui-this');
+
         layui.use(['table', 'element'], () => {
             table = layui.table;
             let element = layui.element;
@@ -49,8 +51,6 @@
             ]
         });
     });
-
-    $('#nav-contests').addClass('layui-this');
 </script>
 </body>
 </html>

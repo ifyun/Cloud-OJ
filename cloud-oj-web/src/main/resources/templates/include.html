@@ -106,10 +106,12 @@
                 $('#user-name').text(user.name);
                 $('#nav-commit').show();
                 if (user.roleId > 0) {
-                    if (user.roleId === 1)
+                    if (user.roleId === 1) {
                         $('#problem_manager').hide();
-                    else if (user.roleId === 2)
+                        $('#contest_manager').hide();
+                    } else if (user.roleId === 2) {
                         $('#user_manager').hide();
+                    }
                     $('#nav-manager').show();
                 }
             } else {
@@ -157,6 +159,7 @@
                 <dl class="layui-nav-child">
                     <dd id="user_manager"><a href="./manager_user">用户管理</a></dd>
                     <dd id="problem_manager"><a href="./manager_problem">题目管理</a></dd>
+                    <dd id="contest_manager"><a href="./manager_contest">竞赛/作业管理</a></dd>
                 </dl>
             </li>
         </ul>

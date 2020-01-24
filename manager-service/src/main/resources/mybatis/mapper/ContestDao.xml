@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.managerservice.dao.ContestDao">
-    <select id="getCount" resultType="java.lang.Long">
+    <select id="getAllCount" resultType="java.lang.Long">
         select count(contest_id)
         from contest
     </select>
@@ -10,6 +10,19 @@
     <select id="getAllContest" resultType="top.cloudli.managerservice.model.Contest">
         select *
         from contest
+        limit #{start}, #{limit}
+    </select>
+
+    <select id="getStartedCount" resultType="java.lang.Long">
+        select count(contest_id)
+        from contest
+        where start_at &lt;= now()
+    </select>
+
+    <select id="getStartedContest" resultType="top.cloudli.managerservice.model.Contest">
+        select *
+        from contest
+        where start_at &lt;= now()
         limit #{start}, #{limit}
     </select>
 
@@ -30,6 +43,14 @@
         insert into contest(contest_name, start_at, end_at)
             value (#{contestName}, #{startAt}, #{endAt})
     </insert>
+
+    <update id="updateContest" parameterType="top.cloudli.managerservice.model.Contest">
+        update contest
+        set contest_name = #{contestName},
+            start_at     = #{startAt},
+            end_at       = #{endAt}
+        where contest_id = #{contestId}
+    </update>
 
     <delete id="deleteContest">
         delete

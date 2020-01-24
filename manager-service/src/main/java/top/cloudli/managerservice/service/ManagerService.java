@@ -110,7 +110,12 @@ public class ManagerService implements CRUDService {
 
     public ResponseEntity<?> getAllContest(int start, int limit) {
         List<Contest> contests = contestDao.getAllContest(start, limit);
-        return buildGETResponse(new PagedResult<>(contestDao.getCount(), contests));
+        return buildGETResponse(new PagedResult<>(contestDao.getAllCount(), contests));
+    }
+
+    public ResponseEntity<?> getStartedContest(int start, int limit) {
+        List<Contest> contests = contestDao.getStartedContest(start, limit);
+        return buildGETResponse(new PagedResult<>(contestDao.getStartedCount(), contests));
     }
 
     public ResponseEntity<?> addContest(Contest contest) {
@@ -118,13 +123,17 @@ public class ManagerService implements CRUDService {
         return buildPOSTResponse(error);
     }
 
-    public ResponseEntity<?> getProblemsFromContest(int contestId, int start, int limit) {
-        List<Problem> problems = contestDao.getProblems(contestId, start, limit);
-        return buildGETResponse(new PagedResult<>(contestDao.getProblemsCount(contestId), problems));
+    public ResponseEntity<?> updateContest(Contest contest) {
+        return buildPUTResponse(contestDao.updateContest(contest) == 1);
     }
 
     public ResponseEntity<?> deleteContest(int contestId) {
         return buildDELETEResponse(contestDao.deleteContest(contestId) == 1);
+    }
+
+    public ResponseEntity<?> getProblemsFromContest(int contestId, int start, int limit) {
+        List<Problem> problems = contestDao.getProblems(contestId, start, limit);
+        return buildGETResponse(new PagedResult<>(contestDao.getProblemsCount(contestId), problems));
     }
 
     public ResponseEntity<?> addProblemToContest(int contestId, int problemId) {
