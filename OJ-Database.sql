@@ -50,13 +50,14 @@ create table role
 
 create table user
 (
-    user_id  varchar(32)   not null
+    user_id   varchar(32)                         not null
         primary key,
-    name     varchar(16)   not null comment '用户名',
-    password varchar(100)  not null,
-    email    varchar(32)   null,
-    section  varchar(16)   null comment '班级',
-    role_id  int default 0 not null,
+    name      varchar(16)                         not null comment '用户名',
+    password  varchar(100)                        not null,
+    email     varchar(32)                         null,
+    section   varchar(16)                         null comment '班级',
+    role_id   int       default 0                 not null,
+    create_at timestamp default CURRENT_TIMESTAMP null,
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)
             on update cascade
@@ -190,8 +191,9 @@ select `s`.`solution_id`               AS `solution_id`,
        `c`.`state`                     AS `compile_state`,
        `c`.`info`                      AS `compile_info`,
        `r`.`time`                      AS `time`
-from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
-         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)));
+from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
+         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
+order by `s`.`submit_time`;
 
 -- comment on column judge_result.state not supported: 状态(2->已提交,1->在判题队列,0->已判题)
 
