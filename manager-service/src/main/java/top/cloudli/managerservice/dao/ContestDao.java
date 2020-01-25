@@ -20,6 +20,10 @@ public interface ContestDao {
 
     List<Problem> getProblems(int contestId, int start, int limit);
 
+    long getNotInContestCount(int contestId);
+
+    List<Problem> getProblemsNotInContest(int contestId, int start, int limit);
+
     int addContest(Contest contest);
 
     int updateContest(Contest contest);

@@ -2,6 +2,7 @@ package top.cloudli.managerservice.model;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -13,4 +14,5 @@ public class User {
     private String section;
     private int roleId;
     private String roleName;
+    private Date createAt;
 }

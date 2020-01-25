@@ -1,6 +1,9 @@
 package top.cloudli.cloudojweb.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
@@ -24,8 +27,18 @@ public class OJController {
     }
 
     @GetMapping("commit")
-    public ModelAndView commit(int problemId, Integer contestId) {
-        Problem problem = restTemplate.getForObject("http://localhost/api/manager/problem/" + problemId, Problem.class);
+    public ModelAndView commit(Integer problemId, Integer contestId) {
+        Problem problem = restTemplate.getForObject("http://localhost/api/manager/problem/" + problemId + "/" + contestId, Problem.class);
+        assert problem != null;
+        return new ModelAndView("commit").addObject(problem);
+    }
+
+    @GetMapping("pro_commit")
+    public ModelAndView commitPro(Integer problemId, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("token", token);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        Problem problem = restTemplate.exchange("http://localhost/api/manager/problem/pro/" + problemId, HttpMethod.GET, httpEntity, Problem.class).getBody();
         assert problem != null;
         return new ModelAndView("commit").addObject(problem);
     }

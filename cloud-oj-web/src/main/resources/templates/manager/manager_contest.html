@@ -53,18 +53,31 @@
 
     </table>
 </div>
+<!-- problems -->
+<div id="problems-table" style="display: none;  position: absolute; top: 0; bottom: 0; left: 0; right:0; padding: 15px">
+    <table id="problems" lay-filter="problems">
 
+    </table>
+</div>
 <script type="text/html" id="top-bar">
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="create-contest">创建竞赛/作业</button>
+    </div>
+</script>
+<script type="text/html" id="contest-problem-toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add-problem">添加题目</button>
     </div>
 </script>
 <script type="text/html" id="contestProblemToolbar">
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="remove">移除</a>
 </script>
 <script type="text/html" id="optToolbar">
-    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">编辑题目</a>
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">管理题目</a>
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="addProblemToolbar">
+    <a class="layui-btn bg-green layui-btn-sm" lay-event="add">添加</a>
 </script>
 <script>
     let table, form, layer, laydate;
@@ -216,6 +229,7 @@
         });
     });
 
+    // 显示竞赛/作业的题目
     function showContestProblems(contestId, contestName) {
         layer.open({
             type: 1,
@@ -245,6 +259,8 @@
             page: true,
             limit: 15,
             limits: [10, 15, 20, 25, 30],
+            toolbar: '#contest-problem-toolbar',
+            defaultToolbar: [],
             cols: [
                 [
                     {field: 'problemId', title: '编号', width: '15%', align: 'center'},
@@ -259,8 +275,82 @@
                 removeProblems(contestId, obj.data.problemId);
             }
         });
+
+        table.on('toolbar(contest-problems)', (obj) => {
+            if (obj.event === 'add-problem') {
+                showProblems(contestId);
+            }
+        });
     }
 
+    function showProblems(contestId) {
+        layer.open({
+            type: 1,
+            title: '题目列表',
+            resize: false,
+            content: $('#problems-table'),
+            area: ['700px', '600px'],
+            closeButton: true,
+            cancel: () => {
+                $('#problems-table').hide();
+            }
+        });
+
+        table.render({
+            elem: '#problems',
+            url: '../api/manager/contest/pro/' + contestId,
+            headers: {token: user.token},
+            parseData: (res) => {
+                return {
+                    "code": 0,
+                    "count": res === undefined ? 0 : res.count,
+                    "data": res === undefined ? null : res.data
+                }
+            },
+            skin: 'nob',
+            size: 'lg',
+            height: '500px',
+            page: true,
+            limit: 10,
+            limits: [10, 15, 20, 25],
+            cols: [
+                [
+                    {field: 'problemId', title: '编号', width: '15%'},
+                    {field: 'title', title: '题目名称', width: '35%'},
+                    {title: '操作', width: '25%', align: 'center', toolbar: '#addProblemToolbar'},
+                    {field: 'createAt', title: '创建时间', width: '25%', align: 'center'}
+                ]
+            ]
+        });
+
+        table.on('tool(problems)', (obj) => {
+            if (obj.event === 'add') {
+                addProblem(contestId, obj.data.problemId);
+            }
+        });
+    }
+
+    function addProblem(contestId, problemId) {
+        let loadIndex;
+        $.ajax({
+            url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId,
+            method: 'post',
+            beforeSend: () => {
+                loadIndex = layer.load(1);
+            },
+            success: () => {
+                layer.close(loadIndex);
+                layer.msg('添加成功！', {icon: 6});
+                $(".layui-laypage-btn").click();
+            },
+            error: (xhr) => {
+                layer.close(loadIndex);
+                layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
+            }
+        });
+    }
+
+    // 从竞赛/作业中移除题目
     function removeProblems(contestId, problemId) {
         let loadIndex;
         layer.confirm('确定要从竞赛中移除此题吗？（题目不会被删除）', {icon: 3, title: '提示'}, (index) => {
@@ -288,9 +378,10 @@
         });
     }
 
+    // 删除竞赛/作业
     function delContest(data) {
         let loadIndex;
-        layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
+        layer.confirm('确定要删除 [' + data.contestName + '] 吗？', {icon: 3, title: '提示'}, (index) => {
             $.ajax({
                 url: baseUrl + '/api/manager/contest/pro/' + data.contestId,
                 method: 'delete',

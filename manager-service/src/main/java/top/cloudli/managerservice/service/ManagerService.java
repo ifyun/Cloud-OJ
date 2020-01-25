@@ -3,6 +3,7 @@ package top.cloudli.managerservice.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.managerservice.dao.*;
 import top.cloudli.managerservice.model.*;
 
@@ -30,14 +31,18 @@ public class ManagerService implements CRUDService {
 
     // NOTE 题目
 
+    @Transactional
     public ResponseEntity<?> getEnableProblems(int start, int limit) {
+        long total = problemDao.getEnableCount();
         List<Problem> problems = problemDao.getEnable(start, limit);
-        return buildGETResponse(new PagedResult<>(problemDao.getEnableCount(), problems));
+        return buildGETResponse(new PagedResult<>(total, problems));
     }
 
+    @Transactional
     public ResponseEntity<?> getProblems(int start, int limit) {
+        long total = problemDao.getCount();
         List<Problem> problems = problemDao.getAll(start, limit);
-        return buildGETResponse(new PagedResult<>(problemDao.getCount(), problems));
+        return buildGETResponse(new PagedResult<>(total, problems));
     }
 
     public ResponseEntity<?> getProblem(int problemId) {
@@ -48,10 +53,12 @@ public class ManagerService implements CRUDService {
         return buildGETSingleResponse(problemDao.getSingleEnable(problemId));
     }
 
+    @Transactional
     public ResponseEntity<?> searchProblems(String keyword, int start, int limit) {
         String title = String.format("%%%s%%", keyword);
+        long total = problemDao.getSearchCount(title);
         List<Problem> problems = problemDao.searchByTitle(title, start, limit);
-        return buildGETResponse(new PagedResult<>(problemDao.getSearchCount(title), problems));
+        return buildGETResponse(new PagedResult<>(total, problems));
     }
 
     public ResponseEntity<Void> updateProblem(Problem problem) {
@@ -74,9 +81,11 @@ public class ManagerService implements CRUDService {
 
     // NOTE 用户
 
+    @Transactional
     public ResponseEntity<?> getUsers(int start, int limit) {
+        long total = userDao.getCount();
         List<User> users = userDao.getAll(start, limit);
-        return buildGETResponse(new PagedResult<>(userDao.getCount(), users));
+        return buildGETResponse(new PagedResult<>(total, users));
     }
 
     public ResponseEntity<?> addUser(User user) {
@@ -94,28 +103,36 @@ public class ManagerService implements CRUDService {
 
     // NOTE 获取提交记录
 
+    @Transactional
     public ResponseEntity<?> getJudged(String userId, int start, int limit) {
+        long total = judgeResultDao.getCount(userId);
         List<JudgeResult> results = judgeResultDao.getByUserId(userId, start, limit);
-        return buildGETResponse(new PagedResult<>(judgeResultDao.getCount(userId), results));
+        return buildGETResponse(new PagedResult<>(total, results));
     }
 
     // NOTE 获取排行
 
+    @Transactional
     public ResponseEntity<?> getRanking(int start, int limit) {
+        long total = rankingDao.getCount();
         List<Ranking> rankingList = rankingDao.getRanking(start, limit);
-        return buildGETResponse(new PagedResult<>(rankingDao.getCount(), rankingList));
+        return buildGETResponse(new PagedResult<>(total, rankingList));
     }
 
     // NOTE 竞赛/作业
 
+    @Transactional
     public ResponseEntity<?> getAllContest(int start, int limit) {
+        long total = contestDao.getAllCount();
         List<Contest> contests = contestDao.getAllContest(start, limit);
-        return buildGETResponse(new PagedResult<>(contestDao.getAllCount(), contests));
+        return buildGETResponse(new PagedResult<>(total, contests));
     }
 
+    @Transactional
     public ResponseEntity<?> getStartedContest(int start, int limit) {
+        long total = contestDao.getStartedCount();
         List<Contest> contests = contestDao.getStartedContest(start, limit);
-        return buildGETResponse(new PagedResult<>(contestDao.getStartedCount(), contests));
+        return buildGETResponse(new PagedResult<>(total, contests));
     }
 
     public ResponseEntity<?> addContest(Contest contest) {
@@ -131,9 +148,18 @@ public class ManagerService implements CRUDService {
         return buildDELETEResponse(contestDao.deleteContest(contestId) == 1);
     }
 
+    @Transactional
+    public ResponseEntity<?> getProblemsNotInContest(int contestId, int start, int limit) {
+        long total = contestDao.getNotInContestCount(contestId);
+        List<Problem> problems = contestDao.getProblemsNotInContest(contestId, start, limit);
+        return buildGETResponse(new PagedResult<>(total, problems));
+    }
+
+    @Transactional
     public ResponseEntity<?> getProblemsFromContest(int contestId, int start, int limit) {
+        long total = contestDao.getProblemsCount(contestId);
         List<Problem> problems = contestDao.getProblems(contestId, start, limit);
-        return buildGETResponse(new PagedResult<>(contestDao.getProblemsCount(contestId), problems));
+        return buildGETResponse(new PagedResult<>(total, problems));
     }
 
     public ResponseEntity<?> addProblemToContest(int contestId, int problemId) {

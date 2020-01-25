@@ -39,6 +39,21 @@
         limit #{start}, #{limit}
     </select>
 
+    <select id="getNotInContestCount" resultType="java.lang.Long">
+        select count(problem_id)
+        from problem
+        where problem_id not in (select problem_id from contest_problem where contest_id = #{contestId})
+          and enable = false
+    </select>
+
+    <select id="getProblemsNotInContest" resultType="top.cloudli.managerservice.model.Problem">
+        select *
+        from problem
+        where problem_id not in (select problem_id from contest_problem where contest_id = #{contestId})
+          and enable = false
+        limit #{start}, #{limit}
+    </select>
+
     <insert id="addContest" parameterType="top.cloudli.managerservice.model.Contest">
         insert into contest(contest_name, start_at, end_at)
             value (#{contestName}, #{startAt}, #{endAt})

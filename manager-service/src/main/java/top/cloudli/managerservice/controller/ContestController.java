@@ -29,6 +29,11 @@ public class ContestController {
         return managerService.getProblemsFromContest(contestId, (page - 1) * limit, limit);
     }
 
+    @GetMapping("pro/{contestId}")
+    public ResponseEntity<?> getProblemsNotInContest(@PathVariable int contestId, int page, int limit) {
+        return managerService.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
+    }
+
     @PostMapping("pro")
     public ResponseEntity<?> addContest(@RequestBody Contest contest) {
         return managerService.addContest(contest);
