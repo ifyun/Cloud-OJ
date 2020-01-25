@@ -20,7 +20,7 @@
                 on p.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select problem_id, title, enable, category, create_at
+                select *
                 from problem
             </otherwise>
         </choose>

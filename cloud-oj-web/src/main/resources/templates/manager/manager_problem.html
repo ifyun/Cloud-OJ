@@ -173,6 +173,7 @@
     let problemId;
     let layer, form, table, upload;
     $(document).ready(() => {
+        $('#nav-manager').addClass("layui-this");
         layui.use(['element', 'layer', 'table', 'carousel', 'form', 'upload'], () => {
             layer = layui.layer;
             let carousel = layui.carousel;
@@ -292,7 +293,7 @@
                         method: 'delete',
                         success: () => {
                             layer.msg('删除成功');
-                            $(".layui-laypage-btn").click();
+                            refresh('problems');
                         },
                         error: (xhr) => {
                             layer.open({
@@ -348,7 +349,7 @@
                 success: () => {
                     layer.close(loadIndex);
                     layer.msg('保存成功！', {icon: 6});
-                    $(".layui-laypage-btn").click();
+                    refresh('problems');
                     if (isAddMode) reset();
                 },
                 error: (xhr) => {
@@ -450,7 +451,12 @@
         }
     }
 
-    $('#nav-manager').addClass("layui-this");
+    function refresh(tableId) {
+        if (table.cache[tableId].length === 0)
+            table.reload(tableId);
+        else
+            $(".layui-laypage-btn").click();
+    }
 </script>
 </body>
 </html>

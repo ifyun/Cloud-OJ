@@ -13,7 +13,6 @@ import top.cloudli.judgeservice.model.Runtime;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,11 +36,11 @@ public class Judgement {
     @Resource
     private SolutionDao solutionDao;
 
-    private boolean isLinux;
+    private boolean isWindows;
 
     @PostConstruct
     public void init() {
-        isLinux = System.getProperty("os.name").equals("Linux");
+        isWindows = System.getProperty("os.name").equals("Windows");
     }
 
     /**
@@ -204,10 +203,10 @@ public class Judgement {
         switch (language) {
             case C_CPP:
                 // NOTE Windows 和 Linux 生成的目标文件不一样
-                if (isLinux) {
-                    builder.command(filePath);
-                } else {
+                if (isWindows) {
                     builder.command(filePath + ".exe");
+                } else {
+                    builder.command(filePath);
                 }
                 return builder;
             case JAVA:

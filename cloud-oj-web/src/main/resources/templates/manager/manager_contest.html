@@ -130,7 +130,7 @@
 
             if (Date.parse(contest.startAt) >= Date.parse(contest.endAt)) {
                 layer.msg('开始时间不能大于结束时间!', {icon: 5});
-                $(".layui-laypage-btn").click();
+                refresh('contests');
                 return;
             }
 
@@ -150,12 +150,12 @@
                 success: () => {
                     layer.close(loadIndex);
                     layer.msg('已保存！', {icon: 6});
-                    $(".layui-laypage-btn").click();
+                    refresh('contests');
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
                     layer.msg(xhr.status + ': ' + xhr.responseText, {icon: 5});
-                    $(".layui-laypage-btn").click();
+                    refresh('contests');
                 }
             });
         });
@@ -218,7 +218,7 @@
                         layer.msg('已创建！', {icon: 6});
                         $('#contest-form').hide();
                         layer.close(createContestIndex);
-                        $(".layui-laypage-btn").click();
+                        refresh('contests');
                     },
                     error: (xhr) => {
                         layer.close(loadIndex);
@@ -341,7 +341,8 @@
             success: () => {
                 layer.close(loadIndex);
                 layer.msg('添加成功！', {icon: 6});
-                $(".layui-laypage-btn").click();
+                refresh('problems');
+                refresh('contest-problems');
             },
             error: (xhr) => {
                 layer.close(loadIndex);
@@ -367,7 +368,7 @@
                 success: () => {
                     layer.close(loadIndex);
                     layer.msg('已移除！', {icon: 6});
-                    $(".layui-laypage-btn").click();
+                    refresh('contest-problems');
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
@@ -395,7 +396,7 @@
                 success: () => {
                     layer.close(loadIndex);
                     layer.msg('已删除！', {icon: 6});
-                    $(".layui-laypage-btn").click();
+                    refresh('contests');
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
@@ -404,6 +405,13 @@
             });
             layer.close(index);
         });
+    }
+
+    function refresh(tableId) {
+        if (table.cache[tableId].length === 0)
+            table.reload(tableId);
+        else
+            $(".layui-laypage-btn").click();
     }
 </script>
 </body>

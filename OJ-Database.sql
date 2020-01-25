@@ -179,6 +179,7 @@ from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`
 create definer = root@`%` view judge_result as
 select `s`.`solution_id`               AS `solution_id`,
        `s`.`problem_id`                AS `problem_id`,
+       `s`.`contest_id`                AS `contest_id`,
        `p`.`title`                     AS `title`,
        `s`.`language`                  AS `language`,
        `s`.`state`                     AS `state`,
