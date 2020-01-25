@@ -18,15 +18,14 @@ public class ProblemManagerController {
     private ManagerService managerService;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllEnable(String keyword, int page, int limit) {
+    public ResponseEntity<?> getAllEnable(String userId, String keyword, int page, int limit) {
         if (keyword != null)
-            return managerService.searchProblems(keyword, (page - 1) * limit, limit);
-        return managerService.getEnableProblems((page - 1) * limit, limit);
-
+            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit);
+        return managerService.getEnableProblems(userId, (page - 1) * limit, limit);
     }
 
-    @GetMapping("{problemId}/{contestId}")
-    public ResponseEntity<?> getEnable(@PathVariable Integer problemId, @PathVariable Integer contestId) {
+    @GetMapping("{problemId}")
+    public ResponseEntity<?> getEnable(@PathVariable Integer problemId, Integer contestId) {
         return contestId == null ? managerService.getEnableProblem(problemId) : managerService.getProblem(problemId);
     }
 
@@ -36,8 +35,8 @@ public class ProblemManagerController {
     }
 
     @GetMapping("pro")
-    public ResponseEntity<?> getAll(int page, int limit) {
-        return managerService.getProblems((page - 1) * limit, limit);
+    public ResponseEntity<?> getAll(String userId, int page, int limit) {
+        return managerService.getProblems(userId, (page - 1) * limit, limit);
     }
 
     @PutMapping("pro")

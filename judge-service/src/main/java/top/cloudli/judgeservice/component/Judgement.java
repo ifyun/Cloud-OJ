@@ -205,7 +205,7 @@ public class Judgement {
             case C_CPP:
                 // NOTE Windows 和 Linux 生成的目标文件不一样
                 if (isLinux) {
-                    builder.command(filePath + ".out");
+                    builder.command(filePath);
                 } else {
                     builder.command(filePath + ".exe");
                 }

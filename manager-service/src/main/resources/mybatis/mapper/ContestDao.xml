@@ -33,9 +33,22 @@
     </select>
 
     <select id="getProblems" resultType="top.cloudli.managerservice.model.Problem">
-        select *
-        from contest_problem
-        where contest_id = #{contestId}
+        <choose>
+            <when test="userId != null">
+                select cp.*, result
+                from contest_problem cp
+                left join (select user_id, problem_id, contest_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id, contest_id) jr
+                on cp.contest_id = jr.contest_id and cp.problem_id = jr.problem_id
+            </when>
+            <otherwise>
+                select *
+                from contest_problem cp
+            </otherwise>
+        </choose>
+        where cp.contest_id = #{contestId}
         limit #{start}, #{limit}
     </select>
 

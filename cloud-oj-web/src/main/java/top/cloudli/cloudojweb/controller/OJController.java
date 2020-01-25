@@ -28,7 +28,11 @@ public class OJController {
 
     @GetMapping("commit")
     public ModelAndView commit(Integer problemId, Integer contestId) {
-        Problem problem = restTemplate.getForObject("http://localhost/api/manager/problem/" + problemId + "/" + contestId, Problem.class);
+        String url = "http://localhost/api/manager/problem/" + problemId;
+        if (contestId != null) {
+            url += "?contestId=" + contestId;
+        }
+        Problem problem = restTemplate.getForObject(url, Problem.class);
         assert problem != null;
         return new ModelAndView("commit").addObject(problem);
     }

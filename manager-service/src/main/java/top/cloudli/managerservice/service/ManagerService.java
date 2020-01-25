@@ -32,16 +32,16 @@ public class ManagerService implements CRUDService {
     // NOTE 题目
 
     @Transactional
-    public ResponseEntity<?> getEnableProblems(int start, int limit) {
+    public ResponseEntity<?> getEnableProblems(String userId, int start, int limit) {
         long total = problemDao.getEnableCount();
-        List<Problem> problems = problemDao.getEnable(start, limit);
+        List<Problem> problems = problemDao.getEnable(userId, start, limit);
         return buildGETResponse(new PagedResult<>(total, problems));
     }
 
     @Transactional
-    public ResponseEntity<?> getProblems(int start, int limit) {
+    public ResponseEntity<?> getProblems(String userId, int start, int limit) {
         long total = problemDao.getCount();
-        List<Problem> problems = problemDao.getAll(start, limit);
+        List<Problem> problems = problemDao.getAll(userId, start, limit);
         return buildGETResponse(new PagedResult<>(total, problems));
     }
 
@@ -54,10 +54,10 @@ public class ManagerService implements CRUDService {
     }
 
     @Transactional
-    public ResponseEntity<?> searchProblems(String keyword, int start, int limit) {
+    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit) {
         String title = String.format("%%%s%%", keyword);
         long total = problemDao.getSearchCount(title);
-        List<Problem> problems = problemDao.searchByTitle(title, start, limit);
+        List<Problem> problems = problemDao.searchByTitle(userId, title, start, limit);
         return buildGETResponse(new PagedResult<>(total, problems));
     }
 
@@ -156,9 +156,9 @@ public class ManagerService implements CRUDService {
     }
 
     @Transactional
-    public ResponseEntity<?> getProblemsFromContest(int contestId, int start, int limit) {
+    public ResponseEntity<?> getProblemsFromContest(String userId, int contestId, int start, int limit) {
         long total = contestDao.getProblemsCount(contestId);
-        List<Problem> problems = contestDao.getProblems(contestId, start, limit);
+        List<Problem> problems = contestDao.getProblems(userId, contestId, start, limit);
         return buildGETResponse(new PagedResult<>(total, problems));
     }
 

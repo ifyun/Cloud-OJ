@@ -18,7 +18,7 @@ public interface ContestDao {
 
     long getProblemsCount(int contestId);
 
-    List<Problem> getProblems(int contestId, int start, int limit);
+    List<Problem> getProblems(String userId, int contestId, int start, int limit);
 
     long getNotInContestCount(int contestId);
 

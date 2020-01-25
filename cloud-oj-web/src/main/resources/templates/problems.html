@@ -27,12 +27,25 @@
     {{# } }}
 </script>
 <script type="text/html" id="categoryTpl">
-    {{# if (d.contestName === undefined) { }}
+    {{# if (d.contestName === undefined && d.category != undefined) { }}
     {{# layui.each(d.category.split(','), (index, item) => { }}
     <span class="label bg-green">{{ item }}</span>
     {{# }); }}
-    {{# } else { }}
+    {{# } else if (d.contestName != undefined) { }}
     <span class="label bg-yellow">{{ d.contestName }}</span>
+    {{# } }}
+</script>
+<script type="text/html" id="resultTpl">
+    {{# if (d.result == 0) { }}
+    <span class="bg-green label">通过</span>
+    {{# } else if (d.result == 1) { }}
+    <span class="bg-yellow label">超时</span>
+    {{# } else if (d.result == 2) { }}
+    <span class="bg-yellow label">部分通过</span>
+    {{# } else if (d.result == 3) { }}
+    <span class="bg-red label">答案错误</span>
+    {{# } else if (d.result == 4) { }}
+    <span class="bg-grey label">编译错误</span>
     {{# } }}
 </script>
 <script>
@@ -49,6 +62,8 @@
             baseUrl + '/api/manager/problem' :
             baseUrl + '/api/manager/contest/' + contestId;
 
+        if (user.userId != null) apiUrl += '?userId=' + user.userId;
+
         let problemsTable;
         let $search = $('#keyword');
 
@@ -56,10 +71,12 @@
             let element = layui.element;
             element.init();
             let table = layui.table;
+
             problemsTable = table.render({
                 elem: '#problems',
                 url: apiUrl,
                 parseData: (res) => {
+                    console.log(res);
                     return {
                         "code": 0,
                         "count": res === undefined ? 0 : res.count,
@@ -75,8 +92,9 @@
                 cols: [
                     [
                         {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                        {field: 'title', title: '题目名称', width: '35%', templet: '#titleTpl'},
-                        {field: 'category', title: '标签', width: '40%', align: 'center', templet: '#categoryTpl'},
+                        {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
+                        {field: 'result', title: '状态', width: '15%', align: 'center', templet: '#resultTpl'},
+                        {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
                         {field: 'createAt', title: '创建时间', width: '15%'}
                     ]
                 ]
@@ -91,6 +109,7 @@
         function search() {
             let keyword = $search.val();
             console.log(keyword);
+
             problemsTable.reload({
                 where: {
                     keyword: keyword

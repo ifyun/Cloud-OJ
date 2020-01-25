@@ -11,6 +11,7 @@ public class Problem {
     private Date startAt;
     private Date endAt;
     private int problemId;
+    private Integer result;
     private String title;
     private String description;
     private String input;

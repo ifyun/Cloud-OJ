@@ -9,11 +9,11 @@ import java.util.List;
 public interface ProblemDao {
     long getCount();
 
-    List<Problem> getAll(int start, int limit);
+    List<Problem> getAll(String userId, int start, int limit);
 
     long getEnableCount();
 
-    List<Problem> getEnable(int start, int limit);
+    List<Problem> getEnable(String userId, int start, int limit);
 
     Problem getSingle(int problemId);
 
@@ -21,7 +21,7 @@ public interface ProblemDao {
 
     long getSearchCount(String title);
 
-    List<Problem> searchByTitle(String title, int start, int limit);
+    List<Problem> searchByTitle(String userId, String title, int start, int limit);
 
     int add(Problem problem);
 

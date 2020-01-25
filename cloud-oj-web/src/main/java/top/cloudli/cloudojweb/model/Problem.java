@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class Problem {
     private int problemId;
+    private Integer result;
     private String title;
     private String description;
     private String input;

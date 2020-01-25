@@ -25,8 +25,8 @@ public class ContestController {
     }
 
     @GetMapping("{contestId}")
-    public ResponseEntity<?> getProblems(@PathVariable int contestId, int page, int limit) {
-        return managerService.getProblemsFromContest(contestId, (page - 1) * limit, limit);
+    public ResponseEntity<?> getProblems(@PathVariable int contestId, String userId, int page, int limit) {
+        return managerService.getProblemsFromContest(userId, contestId, (page - 1) * limit, limit);
     }
 
     @GetMapping("pro/{contestId}")

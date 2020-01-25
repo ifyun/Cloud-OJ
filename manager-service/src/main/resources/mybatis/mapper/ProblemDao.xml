@@ -9,8 +9,21 @@
     </select>
 
     <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
-        select *
-        from problem
+        <choose>
+            <when test="userId != null">
+                select p.*, result
+                from problem p
+                left join (select user_id, problem_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id) jr
+                on p.problem_id = jr.problem_id
+            </when>
+            <otherwise>
+                select problem_id, title, enable, category, create_at
+                from problem
+            </otherwise>
+        </choose>
         limit #{start}, #{limit}
     </select>
 
@@ -21,8 +34,21 @@
     </select>
 
     <select id="getEnable" resultType="top.cloudli.managerservice.model.Problem">
-        select problem_id, title, enable, category, create_at
-        from problem
+        <choose>
+            <when test="userId != null">
+                select p.*, result
+                from problem p
+                left join (select user_id, problem_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id) jr
+                on p.problem_id = jr.problem_id
+            </when>
+            <otherwise>
+                select problem_id, title, enable, category, create_at
+                from problem
+            </otherwise>
+        </choose>
         where enable = true
         limit #{start}, #{limit}
     </select>
@@ -48,10 +74,23 @@
     </select>
 
     <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
-        select problem_id, title, enable, category, create_at
-        from problem
+        <choose>
+            <when test="userId != null">
+                select p.*, result
+                from problem p
+                left join (select user_id, problem_id, min(result) result
+                from judge_result
+                where user_id = #{userId}
+                group by user_id, problem_id) jr
+                on p.problem_id = jr.problem_id
+            </when>
+            <otherwise>
+                select problem_id, title, enable, category, create_at
+                from problem
+            </otherwise>
+        </choose>
         where enable = true
-          and title like #{title}
+        and title like #{title}
         limit #{start}, #{limit}
     </select>
 
