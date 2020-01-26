@@ -1,0 +1,38 @@
+body {
+	color: white;
+	background: #222222;
+}
+
+.container {
+	margin: 100px auto; width: 600px;
+}
+
+.code-block {
+	display: block;
+	margin: 10px 0;
+}
+
+code {
+	font-size: 13pt;
+}
+
+.blink {
+	background: orange;
+	width: 8px;
+	display: inline-block;
+	animation: blink 500ms infinite;
+}
+
+@keyframes blink {
+	from {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
