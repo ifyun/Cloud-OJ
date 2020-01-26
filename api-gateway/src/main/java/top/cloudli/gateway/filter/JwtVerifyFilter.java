@@ -36,11 +36,18 @@ public class JwtVerifyFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws ServletException, IOException {
+
+        SecurityContextHolder.clearContext();
+
+        // 先获取 url 中的 jwt token
+        String jwtToken = servletRequest.getParameter("token");
+
         // 获取 Header 中的 jwt token
-        String jwtToken = ((HttpServletRequest) servletRequest).getHeader("token");
+        if (jwtToken == null)
+            jwtToken = ((HttpServletRequest) servletRequest).getHeader("token");
 
         if (jwtToken == null) {
-            // 没有 token 时交给 Spring Security 去处理，会返回 403
+            // 没有 token 时交给 Spring Security 去处理
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             try {
@@ -51,7 +58,7 @@ public class JwtVerifyFilter extends GenericFilterBean {
 
                 String username = claims.getSubject();
 
-                log.info("验证用户 {} Token.", username);
+                log.info("用户 {} 通过验证.", username);
 
                 List<GrantedAuthority> authorities = AuthorityUtils
                         .commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
@@ -65,7 +72,7 @@ public class JwtVerifyFilter extends GenericFilterBean {
             } catch (JwtException e) {
                 // Jwt 解析异常的处理
                 log.error(e.getMessage());
-                ((HttpServletResponse)servletResponse).setStatus(401);
+                ((HttpServletResponse) servletResponse).setStatus(401);
                 servletResponse.setContentType("text/plain;charset=utf-8");
                 servletResponse.getWriter().write("未授权，Token 可能已过期，请重新登录.");
             }

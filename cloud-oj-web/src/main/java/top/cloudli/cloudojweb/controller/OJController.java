@@ -21,6 +21,7 @@ public class OJController {
         return "index";
     }
 
+
     @GetMapping("problems")
     public String problems() {
         return "problems";

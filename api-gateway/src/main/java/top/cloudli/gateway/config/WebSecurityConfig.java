@@ -9,9 +9,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import top.cloudli.gateway.filter.JwtLoginFilter;
 import top.cloudli.gateway.filter.JwtVerifyFilter;
 import top.cloudli.gateway.service.UserService;
@@ -46,16 +46,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户管理权限设置
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole("USER_ADMIN", "ROOT")
                 // 题目管理权限设置
-                .antMatchers("/api/manager/problem").permitAll()
                 .antMatchers("/api/manager/problem/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 .antMatchers("/api/manager/result").hasAnyRole("USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT")
                 // 竞赛/作业管理权限设置
-                .antMatchers("/api/manager/contest").permitAll()
                 .antMatchers("/api/manager/contest/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 // 文件上传权限设置
                 .antMatchers("/api/file/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 // 判题服务权限设置
-                .antMatchers("/api/judge/**").hasAnyRole("USER", "PROBLEM_ADMIN", "ROOT");
+                .antMatchers("/api/judge/**").hasAnyRole("USER", "PROBLEM_ADMIN", "ROOT")
+                // WEB 页面的权限设置
+                .antMatchers("/oj/manager_user").hasAnyRole("USER_ADMIN", "ROOT")
+                .antMatchers("/oj/manager_problem", "/oj/manager_contest").hasAnyRole("PROBLEM_ADMIN", "ROOT")
+                .and()
+                .exceptionHandling().accessDeniedPage("/error/401.html");
     }
 
     @Override

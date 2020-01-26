@@ -154,9 +154,13 @@
             <li id="nav-manager" class="layui-nav-item" style="display: none">
                 <a class="menu-text" style="cursor: pointer">管 理</a>
                 <dl class="layui-nav-child">
-                    <dd id="user_manager"><a href="./manager_user">用户管理</a></dd>
-                    <dd id="problem_manager"><a href="./manager_problem">题目管理</a></dd>
-                    <dd id="contest_manager"><a href="./manager_contest">竞赛/作业管理</a></dd>
+                    <dd id="user_manager"><a
+                            href="javascript:window.location.href='./manager_user?token=' + user.token">用户管理</a></dd>
+                    <dd id="problem_manager"><a
+                            href="javascript:window.location.href='./manager_problem?token=' + user.token">题目管理</a></dd>
+                    <dd id="contest_manager"><a
+                            href="javascript:window.location.href='./manager_contest?token=' + user.token">竞赛/作业管理</a>
+                    </dd>
                 </dl>
             </li>
             <li id="nav-help" class="layui-nav-item">

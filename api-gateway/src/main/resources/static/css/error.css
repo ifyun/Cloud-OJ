@@ -5,7 +5,7 @@ body {
 
 .back {
 	background: linear-gradient(#000000 50%, #222222 50%);
-	background-size: 100% 6px;
+	background-size: 100% 4px;
 }
 
 .container {
