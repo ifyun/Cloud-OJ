@@ -25,3 +25,6 @@ eureka:
 logging:
   file:
     name: /log/oj-web.log
+
+project:
+  gateway-host: ${GATEWAY_HOST}

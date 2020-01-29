@@ -1,6 +1,7 @@
 package top.cloudli.cloudojweb.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,9 @@ public class OJController {
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${gateway-host:localhost}")
+    private String gatewayHost;
+
     @GetMapping("index")
     public String index() {
         return "index";
@@ -29,7 +33,7 @@ public class OJController {
 
     @GetMapping("commit")
     public ModelAndView commit(Integer problemId, Integer contestId) {
-        String url = "http://localhost/api/manager/problem/" + problemId;
+        String url = String.format("http://%s/api/manager/problem/", gatewayHost) + problemId;
         if (contestId != null) {
             url += "?contestId=" + contestId;
         }

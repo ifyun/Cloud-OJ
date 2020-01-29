@@ -13,7 +13,7 @@
 
     <groupId>top.cloudli</groupId>
     <artifactId>cloud-online-judge</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <name>Cloud OJ</name>
     <packaging>pom</packaging>
     <description>Cloud OJ 父模块</description>
