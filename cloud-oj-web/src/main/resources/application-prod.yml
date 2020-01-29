@@ -1,23 +1,27 @@
+# OJ WEB UI
 server:
   port: 8080
 
 spring:
   application:
     name: cloud-oj-web
-  boot:
-    admin:
-      client:
-        url: http://localhost:5000
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+
+logging:
+  file:
+    name: /log/oj-web.log

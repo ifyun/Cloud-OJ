@@ -1,12 +1,19 @@
+# 服务监控中心
+server:
+  port: 5000
+
 spring:
   application:
     name: monitor-service
-  boot:
-    admin:
-      probed-endpoints: "*"
 
-server:
-  port: 5000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 eureka:
   instance:
@@ -14,3 +21,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
+logging:
+  file:
+    name: /log/monitor-service.log

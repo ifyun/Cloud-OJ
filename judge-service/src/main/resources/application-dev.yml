@@ -21,22 +21,22 @@ spring:
     port: 5672
     username: cloud@oj
     password: cloud@oj
-  boot:
-    admin:
-      client:
-        url: http://localhost:5000
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-
 
 mybatis:
   configuration:
@@ -44,6 +44,6 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 
 project:
-  max-wait-time: 5000
+  max-wait-time: 6000
   test-data-dir: D:/test_data/
   target-dir: D:/target/

@@ -1,12 +1,18 @@
+server:
+  port: 5000
+
 spring:
   application:
     name: monitor-service
-  boot:
-    admin:
-      probed-endpoints: "*"
 
-server:
-  port: 5000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 eureka:
   instance:

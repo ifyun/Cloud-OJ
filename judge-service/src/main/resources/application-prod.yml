@@ -1,14 +1,14 @@
 server:
-  port: 8002
+  port: 8000
 
 spring:
   application:
     name: judge-service
   datasource:
-    url: jdbc:mysql://172.16.15.200:3306/cloud_oj
+    url: ${MYSQL_URL:jdbc:mysql://172.16.15.200:3306/cloud_oj}
     type: com.zaxxer.hikari.HikariDataSource
-    username: root
-    password: root
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 3000
@@ -17,33 +17,37 @@ spring:
   jackson:
     default-property-inclusion: non_null
   rabbitmq:
-    host: 172.16.15.200
-    port: 5672
-    username: cloud@oj
-    password: cloud@oj
-  boot:
-    admin:
-      client:
-        url: http://localhost:5000
+    host: ${RABBIT_URL:172.16.15.200}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:cloud@oj}
+    password: ${RABBIT_PASSWORD:cloud@oj}
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 
 mybatis:
   configuration:
     map-underscore-to-camel-case: on
   mapper-locations: classpath:mybatis/mapper/*.xml
 
+logging:
+  file:
+    name: /log/judge-service.log
+
 project:
-  max-wait-time: 5000
-  test-data-dir: /home/test_data/
-  target-dir: /home/target/
+  max-wait-time: 6000
+  test-data-dir: /test_data/
+  target-dir: /target/
