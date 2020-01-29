@@ -17,7 +17,7 @@ public class OJController {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${gateway-host:localhost}")
+    @Value("${project.gateway-host:localhost}")
     private String gatewayHost;
 
     @GetMapping("index")

@@ -18,6 +18,7 @@ management:
 eureka:
   instance:
     prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
@@ -27,4 +28,4 @@ logging:
     name: /log/oj-web.log
 
 project:
-  gateway-host: ${GATEWAY_HOST}
+  gateway-host: ${GATEWAY_HOST:localhost}
