@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{})">
     <meta charset="UTF-8">
     <title>题目管理</title>
@@ -188,7 +188,7 @@
             // 问题列表
             table.render({
                 elem: '#problems',
-                url: '../api/manager/problem/pro',
+                url: baseUrl + '/api/manager/problem/pro',
                 headers: {token: user.token},
                 parseData: (res) => {
                     return {
@@ -231,7 +231,7 @@
 
                 table.render({
                     elem: '#test-data',
-                    url: '../api/file/test_data/' + obj.data.problemId,
+                    url: baseUrl + '/api/file/test_data/' + obj.data.problemId,
                     headers: {token: user.token},
                     parseData: (res) => {
                         return {
@@ -268,7 +268,7 @@
                     } else if (obj.event === 'del-file') {
                         layer.confirm('确定要删除文件吗？', {icon: 3, title: '提示'}, (index) => {
                                 $.ajax({
-                                    url: 'http://localhost/api/file/test_data/' + problemId + '?name=' + obj.data.fileName,
+                                    url: baseUrl + '/api/file/test_data/' + problemId + '?name=' + obj.data.fileName,
                                     method: 'delete',
                                     headers: {
                                         token: user.token
@@ -289,8 +289,11 @@
             } else if (obj.event === 'del') {
                 layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
                     $.ajax({
-                        url: 'http://localhost/api/manager/problem/pro/' + obj.data.problemId,
+                        url: baseUrl + '/api/manager/problem/pro/' + obj.data.problemId,
                         method: 'delete',
+                        headers: {
+                            token: user.token
+                        },
                         success: () => {
                             layer.msg('删除成功');
                             refresh('problems');
@@ -310,11 +313,10 @@
         form.on('switch(enable)', (obj) => {
             let problemId = obj.value, enable = obj.elem.checked;
             $.ajax({
-                url: 'http://localhost/api/manager/problem/pro/' + problemId + '?enable=' + enable,
+                url: baseUrl + '/api/manager/problem/pro/' + problemId + '?enable=' + enable,
                 method: 'put',
                 headers: {
-                    "Content-Type": "application/json",
-                    "token": user.token
+                    token: user.token
                 },
                 success: () => {
                     let msg = enable ? '已开放' : '已关闭';
@@ -336,11 +338,10 @@
             let loadIndex;
             let method = isAddMode ? 'post' : 'put';
             $.ajax({
-                url: 'http://localhost/api/manager/problem/pro',
+                url: baseUrl + '/api/manager/problem/pro',
                 method: method,
                 headers: {
-                    "Content-Type": "application/json",
-                    "token": user.token
+                    token: user.token
                 },
                 data: JSON.stringify(problem),
                 beforeSend: () => {
@@ -364,7 +365,7 @@
         let fileListView = $('#file-list');
         let uploadListIns = upload.render({
             elem: '#select-files',
-            url: 'http://localhost/api/file/test_data',
+            url: baseUrl + '/api/file/test_data',
             headers: {
                 token: user.token
             },

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{})">
     <meta charset="UTF-8">
     <title>用户管理</title>
@@ -89,7 +89,7 @@
         // 用户列表
         table.render({
             elem: '#users',
-            url: '../api/manager/user/pro',
+            url: baseUrl + '/api/manager/user/pro',
             headers: {token: user.token},
             parseData: (res) => {
                 return {
@@ -145,8 +145,7 @@
                 url: baseUrl + '/api/manager/user/pro',
                 method: 'put',
                 headers: {
-                    "Content-Type": "application/json",
-                    "token": user.token
+                    token: user.token
                 },
                 data: JSON.stringify(userInfo),
                 beforeSend: () => {
