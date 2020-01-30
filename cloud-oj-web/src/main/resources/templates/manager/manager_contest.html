@@ -140,7 +140,8 @@
                 url: baseUrl + '/api/manager/contest/pro',
                 method: 'put',
                 headers: {
-                    token: user.token
+                    "Content-Type": "application/json",
+                    "token": user.token
                 },
                 data: JSON.stringify(contest),
                 beforeSend: () => {
@@ -205,7 +206,8 @@
                     url: baseUrl + '/api/manager/contest/pro',
                     method: 'post',
                     headers: {
-                        token: user.token
+                        "Content-Type": "application/json",
+                        "token": user.token
                     },
                     data: JSON.stringify(contest),
                     beforeSend: () => {

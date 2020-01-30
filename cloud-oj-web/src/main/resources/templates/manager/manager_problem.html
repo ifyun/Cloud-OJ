@@ -271,7 +271,8 @@
                                     url: baseUrl + '/api/file/test_data/' + problemId + '?name=' + obj.data.fileName,
                                     method: 'delete',
                                     headers: {
-                                        token: user.token
+                                        "Content-Type": "application/json",
+                                        "token": user.token
                                     },
                                     success: () => {
                                         layer.msg("删除成功", {icon: 6});
@@ -316,7 +317,8 @@
                 url: baseUrl + '/api/manager/problem/pro/' + problemId + '?enable=' + enable,
                 method: 'put',
                 headers: {
-                    token: user.token
+                    "Content-Type": "application/json",
+                    "token": user.token
                 },
                 success: () => {
                     let msg = enable ? '已开放' : '已关闭';
@@ -341,7 +343,8 @@
                 url: baseUrl + '/api/manager/problem/pro',
                 method: method,
                 headers: {
-                    token: user.token
+                    "Content-Type": "application/json",
+                    "token": user.token
                 },
                 data: JSON.stringify(problem),
                 beforeSend: () => {

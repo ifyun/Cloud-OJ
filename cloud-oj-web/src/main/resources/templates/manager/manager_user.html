@@ -145,7 +145,8 @@
                 url: baseUrl + '/api/manager/user/pro',
                 method: 'put',
                 headers: {
-                    token: user.token
+                    "Content-Type": "application/json",
+                    "token": user.token
                 },
                 data: JSON.stringify(userInfo),
                 beforeSend: () => {

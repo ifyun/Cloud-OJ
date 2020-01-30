@@ -18,10 +18,10 @@ Service         | Port(Dev) | Port(Prod)
 ----------------|-----------|-------------
 register-center | 8761      | 8761:8761
 monitor-service | 5000      | 5000:5000
-manager-service | 8001      | 8000:8000
-file-server     | 8000      | 8000:8000
-judge-service   | 8002      | 8000:8010
+manager-service | 8001      | none:8000
+file-server     | 8000      | none:8000
+judge-service   | 8002      | none:8000
 api-gateway     | 80        | 80:80
-cloud-oj-web    | 8080      | 8080:8080
+cloud-oj-web    | 8080      | none:8000
 
 部署时，`file-server` 和 `judge-service` 要在同一个主机上，且测试数据目录必须是同一个。

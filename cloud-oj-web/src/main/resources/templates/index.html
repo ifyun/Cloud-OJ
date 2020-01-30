@@ -190,7 +190,7 @@
             let register = data.field;
             register.password = $.md5(register.password);
             $.ajax({
-                url: "http://localhost/api/manager/user",
+                url: baseUrl + '/api/manager/user',
                 method: "post",
                 headers: {
                     "Content-Type": "application/json"
