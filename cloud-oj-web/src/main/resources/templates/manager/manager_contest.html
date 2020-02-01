@@ -104,7 +104,6 @@
                     "code": 0,
                     "count": res === undefined ? 0 : res.count,
                     "data": res === undefined ? null : res.data,
-                    "msg": res.msg
                 }
             },
             skin: 'nob',
@@ -401,7 +400,8 @@
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
-                    layer.msg(xhr.status + ': ' + '请确认竞赛中是否还存在题目！', {icon: 5});
+                    layer.msg(xhr.status === 400 ? xhr.status + ': ' + '请确认竞赛中是否还存在题目！' : '请求失败！',
+                        {icon: 5});
                 }
             });
             layer.close(index);

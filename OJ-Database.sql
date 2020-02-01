@@ -1,3 +1,5 @@
+create database cloud_oj character set utf8mb4;
+
 create table contest
 (
     contest_id   int auto_increment
@@ -176,6 +178,30 @@ from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`
 
 -- comment on column contest_problem.create_at not supported: 创建时间
 
+create definer = root@`%` view contest_ranking_list as
+select `problem_score`.`user_id`                                    AS `user_id`,
+       `problem_score`.`name`                                       AS `name`,
+       sum(`problem_score`.`committed`)                             AS `committed`,
+       count((case when (`problem_score`.`result` = 0) then 1 end)) AS `passed`,
+       sum(`problem_score`.`score`)                                 AS `total_score`,
+       `problem_score`.`contest_id`                                 AS `contest_id`,
+       `problem_score`.`contest_name`                               AS `contest_name`
+from (select `s`.`user_id`                        AS `user_id`,
+             `u`.`name`                           AS `name`,
+             count(`p`.`problem_id`)              AS `committed`,
+             `s`.`result`                         AS `result`,
+             max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
+             `s`.`contest_id`                     AS `contest_id`,
+             `c`.`contest_name`                   AS `contest_name`
+      from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+               join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
+      group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`result`, `s`.`contest_id`,
+               `c`.`contest_name`) `problem_score`
+group by `problem_score`.`user_id`, `problem_score`.`contest_id`
+order by `total_score` desc;
+
+-- comment on column contest_ranking_list.name not supported: 用户名
+
 create definer = root@`%` view judge_result as
 select `s`.`solution_id`               AS `solution_id`,
        `s`.`problem_id`                AS `problem_id`,
@@ -229,3 +255,8 @@ order by `total_score` desc;
 
 -- comment on column ranking_list.name not supported: 用户名
 
+# 初始化角色/权限表
+INSERT INTO cloud_oj.role (role_id, role_name) VALUES (0, 'ROLE_USER');
+INSERT INTO cloud_oj.role (role_id, role_name) VALUES (1, 'ROLE_USER_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name) VALUES (2, 'ROLE_PROBLEM_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name) VALUES (3, 'ROLE_ROOT');
