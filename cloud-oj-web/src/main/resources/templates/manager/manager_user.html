@@ -91,6 +91,9 @@
             elem: '#users',
             url: baseUrl + '/api/manager/user/pro',
             headers: {token: user.token},
+            where: {
+                userId: user.userId
+            },
             parseData: (res) => {
                 return {
                     "code": 0,
@@ -142,7 +145,7 @@
             let loadIndex;
 
             $.ajax({
-                url: baseUrl + '/api/manager/user/pro',
+                url: baseUrl + '/api/manager/user/pro?userId=' + user.userId,
                 method: 'put',
                 headers: {
                     "Content-Type": "application/json",

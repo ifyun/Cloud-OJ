@@ -158,7 +158,7 @@
                 console.log(commitData);
 
                 $.ajax({
-                    url: baseUrl + '/api/judge/commit',
+                    url: baseUrl + '/api/judge/commit?userId=' + user.userId,
                     method: 'post',
                     timeout: 10000,
                     headers: {

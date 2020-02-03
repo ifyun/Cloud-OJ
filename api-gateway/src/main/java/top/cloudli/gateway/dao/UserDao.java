@@ -6,4 +6,5 @@ import top.cloudli.gateway.model.User;
 @Mapper
 public interface UserDao {
     User findUserById(String userId);
+    String getSecret(String userId);
 }

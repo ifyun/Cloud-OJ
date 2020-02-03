@@ -18,6 +18,10 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private String password;
+
+    @JsonIgnore
+    private String secret;
+
     private String section;
     private String email;
     private int roleId;

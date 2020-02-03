@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+import top.cloudli.gateway.dao.UserDao;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,10 +28,16 @@ import java.util.List;
 @Slf4j
 public class JwtVerifyFilter extends GenericFilterBean {
 
+    private UserDao userDao;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+    public JwtVerifyFilter(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
@@ -41,24 +48,24 @@ public class JwtVerifyFilter extends GenericFilterBean {
 
         // 先获取 url 中的 jwt token
         String jwtToken = servletRequest.getParameter("token");
+        String userId = servletRequest.getParameter("userId");
 
         // 获取 Header 中的 jwt token
         if (jwtToken == null)
             jwtToken = ((HttpServletRequest) servletRequest).getHeader("token");
 
-        if (jwtToken == null) {
+        if (userId == null || jwtToken == null) {
             // 没有 token 时交给 Spring Security 去处理
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
+            String secret = userDao.getSecret(userId);
             try {
                 Claims claims = Jwts.parser()
-                        .setSigningKey("cloudli.top")
+                        .setSigningKey(secret)
                         .parseClaimsJws(jwtToken)
                         .getBody();
 
                 String username = claims.getSubject();
-
-                log.info("用户 {} 通过验证.", username);
 
                 List<GrantedAuthority> authorities = AuthorityUtils
                         .commaSeparatedStringToAuthorityList((String) claims.get("authorities"));

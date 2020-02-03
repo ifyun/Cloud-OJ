@@ -98,6 +98,9 @@
         table.render({
             elem: '#contests',
             url: '../api/manager/contest/pro',
+            where: {
+                userId: user.userId
+            },
             headers: {token: user.token},
             parseData: (res) => {
                 return {
@@ -136,7 +139,7 @@
             let loadIndex;
 
             $.ajax({
-                url: baseUrl + '/api/manager/contest/pro',
+                url: baseUrl + '/api/manager/contest/pro?userId=' + user.userId,
                 method: 'put',
                 headers: {
                     "Content-Type": "application/json",
@@ -202,7 +205,7 @@
             } else {
                 let loadIndex;
                 $.ajax({
-                    url: baseUrl + '/api/manager/contest/pro',
+                    url: baseUrl + '/api/manager/contest/pro?userId=' + user.userId,
                     method: 'post',
                     headers: {
                         "Content-Type": "application/json",
@@ -299,6 +302,9 @@
             elem: '#problems',
             url: '../api/manager/contest/pro/' + contestId,
             headers: {token: user.token},
+            where: {
+                userId: user.userId
+            },
             parseData: (res) => {
                 return {
                     "code": 0,
@@ -332,7 +338,7 @@
     function addProblem(contestId, problemId) {
         let loadIndex;
         $.ajax({
-            url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId,
+            url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId + '?userId=' + user.userId,
             method: 'post',
             headers: {
                 token: user.token
@@ -358,7 +364,7 @@
         let loadIndex;
         layer.confirm('确定要从竞赛中移除此题吗？（题目不会被删除）', {icon: 3, title: '提示'}, (index) => {
             $.ajax({
-                url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId,
+                url: baseUrl + '/api/manager/contest/pro/problem/' + contestId + '/' + problemId + '?userId=' + user.userId,
                 method: 'delete',
                 headers: {
                     token: user.token
@@ -385,7 +391,7 @@
         let loadIndex;
         layer.confirm('确定要删除 [' + data.contestName + '] 吗？', {icon: 3, title: '提示'}, (index) => {
             $.ajax({
-                url: baseUrl + '/api/manager/contest/pro/' + data.contestId,
+                url: baseUrl + '/api/manager/contest/pro/' + data.contestId + '?userId=' + user.userId,
                 method: 'delete',
                 headers: {
                     token: user.token

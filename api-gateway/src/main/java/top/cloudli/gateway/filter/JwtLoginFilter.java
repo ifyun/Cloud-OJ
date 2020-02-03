@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -74,7 +73,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
                 .claim("authorities", authoritiesString)
                 .setSubject(authResult.getName())
                 .setExpiration(expireAt)
-                .signWith(SignatureAlgorithm.HS512, "cloudli.top")
+                .signWith(SignatureAlgorithm.HS512, user.getSecret())
                 .compact();
 
         user.setToken(jwt);

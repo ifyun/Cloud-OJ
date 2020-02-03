@@ -56,6 +56,7 @@ create table user
         primary key,
     name      varchar(16)                         not null comment '用户名',
     password  varchar(100)                        not null,
+    secret    char(8)                             not null comment '秘钥',
     email     varchar(32)                         null,
     section   varchar(16)                         null comment '班级',
     role_id   int       default 0                 not null,
@@ -133,6 +134,17 @@ create index user_name_index
 
 create index user_section_index
     on user (section);
+
+create definer = root@`%` trigger tr_user_update
+    before update
+    on user
+    for each row
+begin
+    if OLD.role_id <> NEW.role_id or OLD.password <> NEW.password
+    then
+        set NEW.secret = LEFT(UUID(), 8);
+    end if;
+end;
 
 create definer = root@`%` view contest_problem as
 select `c`.`contest_id`    AS `contest_id`,
@@ -255,8 +267,16 @@ order by `total_score` desc;
 
 -- comment on column ranking_list.name not supported: 用户名
 
-# 初始化角色/权限表
-INSERT INTO cloud_oj.role (role_id, role_name) VALUES (0, 'ROLE_USER');
-INSERT INTO cloud_oj.role (role_id, role_name) VALUES (1, 'ROLE_USER_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name) VALUES (2, 'ROLE_PROBLEM_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name) VALUES (3, 'ROLE_ROOT');
+-- 初始化角色/权限表
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (0, 'ROLE_USER');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (1, 'ROLE_USER_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (2, 'ROLE_PROBLEM_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (3, 'ROLE_ROOT');
+
+-- 初始 ROOT 用户
+INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
+values ('root', '初始管理员', '63a9f0ea7bb98050796b649e85481845', LEFT(UUID(), 8), 3)

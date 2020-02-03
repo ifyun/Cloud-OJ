@@ -15,8 +15,8 @@
     </select>
 
     <insert id="add" parameterType="top.cloudli.managerservice.model.User">
-        insert into `user`(user_id, name, password, email, section, role_id)
-            value (#{userId}, #{name}, #{password}, #{email}, #{section}, #{roleId})
+        insert into `user`(user_id, name, password, secret, email, section, role_id)
+            value (#{userId}, #{name}, #{password}, LEFT(UUID(), 8), #{email}, #{section}, #{roleId})
     </insert>
 
     <update id="update" parameterType="top.cloudli.managerservice.model.User">

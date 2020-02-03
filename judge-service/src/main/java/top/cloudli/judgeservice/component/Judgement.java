@@ -9,6 +9,7 @@ import top.cloudli.judgeservice.dao.RuntimeDao;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.*;
 import top.cloudli.judgeservice.model.Runtime;
+import top.cloudli.judgeservice.task.FileCleaner;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -36,6 +37,9 @@ public class Judgement {
     @Resource
     private SolutionDao solutionDao;
 
+    @Resource
+    private FileCleaner fileCleaner;
+
     private boolean isWindows;
 
     @PostConstruct
@@ -57,9 +61,12 @@ public class Judgement {
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
-        List<String> output = execute(cmd, input, runtime);  // 获取输出
-
+        // 执行并获取输出
+        List<String> output = execute(cmd, input, runtime);
+        // 比较结果
         compareResult(solution, runtime, expect, output);
+        // 删除临时文件
+        fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage(), isWindows);
     }
 
     /**

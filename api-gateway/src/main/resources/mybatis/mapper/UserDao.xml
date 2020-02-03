@@ -4,8 +4,15 @@
 <mapper namespace="top.cloudli.gateway.dao.UserDao">
 
     <select id="findUserById" resultType="top.cloudli.gateway.model.User">
-        select u.user_id, name, password, email, section, r.*
+        select u.user_id, name, password, secret, email, section, r.*
         from user u
-                 join role r on u.role_id = r.role_id where user_id = #{userId};
+                 join role r on u.role_id = r.role_id
+        where user_id = #{userId};
+    </select>
+
+    <select id="getSecret" resultType="java.lang.String">
+        select secret
+        from user
+        where user_id = #{userId}
     </select>
 </mapper>

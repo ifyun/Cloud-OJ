@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.NullRequestCache;
+import top.cloudli.gateway.dao.UserDao;
 import top.cloudli.gateway.filter.JwtLoginFilter;
 import top.cloudli.gateway.filter.JwtVerifyFilter;
 import top.cloudli.gateway.service.UserService;
@@ -29,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private UserService userService;
 
+    @Resource
+    private UserDao userDao;
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -40,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .addFilterBefore(new JwtLoginFilter(validTime, "/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtVerifyFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/login", "/logout").permitAll()
                 // 用户管理权限设置

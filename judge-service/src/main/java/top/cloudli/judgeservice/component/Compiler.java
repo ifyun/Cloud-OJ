@@ -59,7 +59,8 @@ class Compiler {
     public Compile compileSource(int solutionId, int languageId, String src) {
         Language language = Language.get(languageId);
 
-        assert language != null;
+        if (language == null)
+            return new Compile(solutionId, -1, "不支持的语言.");
 
         // 构造编译命令
         switch (language) {
@@ -70,9 +71,9 @@ class Compiler {
                 processBuilder.command("javac", "-encoding", "UTF-8", src);
                 break;
             case PYTHON:
-                return new Compile(solutionId, 0, "Python 无需编译");
+                return new Compile(solutionId, 0, "Python 无需编译.");
             case BASH:
-                return new Compile(solutionId, 0, "Bash 无需编译");
+                return new Compile(solutionId, 0, "Shell 无需编译.");
         }
 
         try {

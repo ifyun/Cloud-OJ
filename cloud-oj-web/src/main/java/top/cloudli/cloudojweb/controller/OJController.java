@@ -43,11 +43,12 @@ public class OJController {
     }
 
     @GetMapping("pro_commit")
-    public ModelAndView commitPro(Integer problemId, String token) {
+    public ModelAndView commitPro(Integer problemId, String userId, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("token", token);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        Problem problem = restTemplate.exchange("http://localhost/api/manager/problem/pro/" + problemId, HttpMethod.GET, httpEntity, Problem.class).getBody();
+        Problem problem = restTemplate.exchange("http://localhost/api/manager/problem/pro/" + problemId + "?userId=" + userId,
+                HttpMethod.GET, httpEntity, Problem.class).getBody();
         assert problem != null;
         return new ModelAndView("commit").addObject(problem);
     }

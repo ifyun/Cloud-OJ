@@ -154,11 +154,13 @@
                 <a class="menu-text" style="cursor: pointer">管 理</a>
                 <dl class="layui-nav-child">
                     <dd id="user_manager"><a
-                            href="javascript:window.location.href='./manager_user?token=' + user.token">用户管理</a></dd>
+                            href="javascript:window.location.href='./manager_user?userId=' + user.userId + '&token=' + user.token">用户管理</a>
+                    </dd>
                     <dd id="problem_manager"><a
-                            href="javascript:window.location.href='./manager_problem?token=' + user.token">题目管理</a></dd>
+                            href="javascript:window.location.href='./manager_problem?userId=' +user.userId + '&token=' + user.token">题目管理</a>
+                    </dd>
                     <dd id="contest_manager"><a
-                            href="javascript:window.location.href='./manager_contest?token=' + user.token">竞赛/作业管理</a>
+                            href="javascript:window.location.href='./manager_contest?userId=' +user.userId + '&token=' + user.token">竞赛/作业管理</a>
                     </dd>
                 </dl>
             </li>
@@ -170,7 +172,7 @@
             <li class="layui-nav-item">
                 <a id="user" style="cursor: pointer;"><span id="user-name" class="menu-text">未登录</span></a>
                 <dl id="user-menu" class="layui-nav-child" style="display: none">
-                    <dd id="info"><a href="#">基本资料</a></dd>
+                    <dd style="display: none" id="info"><a href="#">基本资料</a></dd>
                     <dd id="exit"><a href="javascript:exit()">退了</a></dd>
                 </dl>
             </li>
