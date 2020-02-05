@@ -17,7 +17,6 @@ public class FileCleaner {
 
     @Async
     public void deleteTempFile(int solutionId, int languageId, boolean isWindows) {
-        File file = null;
         Language language = Language.get(languageId);
 
         if (language == null)
@@ -25,20 +24,23 @@ public class FileCleaner {
 
         switch (language) {
             case JAVA:
-                file = new File(targetDir + solutionId);
+                delete(new File(targetDir + solutionId));
                 break;
             case PYTHON:
-                file = new File(targetDir + solutionId + ".py");
+                delete(new File(targetDir + solutionId + ".py"));
                 break;
             case BASH:
-                file = new File(targetDir + solutionId + ".sh");
+                delete(new File(targetDir + solutionId + ".sh"));
                 break;
             case C_CPP:
-                file = isWindows ? new File(targetDir + solutionId + ".exe")
-                        : new File(targetDir + solutionId);
+                delete(isWindows ? new File(targetDir + solutionId + ".exe")
+                        : new File(targetDir + solutionId));
+                delete(new File(targetDir + solutionId + ".cpp"));
                 break;
         }
+    }
 
+    private void delete(File file) {
         if (file.delete())
             log.info("{} 已删除.", file.getName());
         else

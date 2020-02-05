@@ -8,5 +8,10 @@ import java.util.List;
 @Mapper
 public interface RankingDao {
     long getCount();
+
     List<Ranking> getRanking(int start, int limit);
+
+    long getContestRankingCount(int contestId);
+
+    List<Ranking> getContestRanking(int contestId, int start, int limit);
 }

@@ -14,4 +14,17 @@
         limit #{start}, #{limit}
     </select>
 
+    <select id="getContestRankingCount" resultType="java.lang.Long">
+        select count(*)
+        from contest_ranking_list
+        where contest_id = #{contestId}
+    </select>
+
+    <select id="getContestRanking" resultType="top.cloudli.managerservice.model.Ranking">
+        select *
+        from contest_ranking_list
+        where contest_id = #{contestId}
+        limit #{start}, #{limit}
+    </select>
+
 </mapper>

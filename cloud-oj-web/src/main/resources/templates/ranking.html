@@ -14,6 +14,13 @@
 <script>
     let table;
     $(document).ready(() => {
+        let apiUrl = baseUrl + '/api/manager/ranking';
+        let contestId = getQueryVariable('contestId');
+
+        if (contestId != null) {
+            apiUrl += '/contest/' + contestId;
+        }
+
         layui.use(['table', 'element'], () => {
             table = layui.table;
             let element = layui.element;
@@ -22,7 +29,7 @@
 
         table.render({
             elem: '#ranking',
-            url: baseUrl + '/api/manager/ranking',
+            url: apiUrl,
             parseData: (res) => {
                 return {
                     "code": 0,

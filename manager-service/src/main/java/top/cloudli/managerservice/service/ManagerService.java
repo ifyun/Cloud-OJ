@@ -110,7 +110,7 @@ public class ManagerService implements CRUDService {
         return buildGETResponse(new PagedResult<>(total, results));
     }
 
-    // NOTE 获取排行
+    // NOTE 排行
 
     @Transactional
     public ResponseEntity<?> getRanking(int start, int limit) {
@@ -119,6 +119,14 @@ public class ManagerService implements CRUDService {
         return buildGETResponse(new PagedResult<>(total, rankingList));
     }
 
+    // NOTE 竞赛排行
+
+    @Transactional
+    public ResponseEntity<?> getContestRanking(int contestId, int start, int limit) {
+        long total = rankingDao.getContestRankingCount(contestId);
+        List<Ranking> rankingList = rankingDao.getContestRanking(contestId, start, limit);
+        return buildGETResponse(new PagedResult<>(total, rankingList));
+    }
     // NOTE 竞赛/作业
 
     @Transactional

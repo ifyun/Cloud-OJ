@@ -24,7 +24,7 @@ import java.util.Date;
 
 /**
  * Jwt 登录过滤器
- * 用户通过验证后生成 token 在 Header 中返回
+ * 用户通过验证后生成 token
  */
 @Slf4j
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {

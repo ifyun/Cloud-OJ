@@ -50,12 +50,13 @@
 </script>
 <script>
     $(document).ready(() => {
-        $('#nav-problems').addClass("layui-this");
-
         let contestId = getQueryVariable('contestId');
 
         if (contestId != null) {
             $('#search-box').hide();
+            $('#nav-contests').addClass("layui-this");
+        } else {
+            $('#nav-problems').addClass("layui-this");
         }
 
         let apiUrl = contestId == null ?

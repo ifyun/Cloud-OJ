@@ -1,5 +1,5 @@
 create database cloud_oj character set utf8mb4;
-
+use cloud_oj;
 create table contest
 (
     contest_id   int auto_increment
@@ -279,4 +279,4 @@ VALUES (3, 'ROLE_ROOT');
 
 -- 初始 ROOT 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-values ('root', '初始管理员', '63a9f0ea7bb98050796b649e85481845', LEFT(UUID(), 8), 3)
+values ('root', '初始管理员', '63a9f0ea7bb98050796b649e85481845', LEFT(UUID(), 8), 3);
