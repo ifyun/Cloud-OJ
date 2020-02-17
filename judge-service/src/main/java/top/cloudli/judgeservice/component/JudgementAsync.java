@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Solution;
+import top.cloudli.judgeservice.model.SolutionResult;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +31,8 @@ public class JudgementAsync {
             Compile compile = future.get();
             solution.setState(0);
             if (compile.getState() == -1) {
-                solution.setResult(4);
+                solution.setResult(SolutionResult
+                        .COMPILE_ERROR.ordinal());
             } else {
                 judgement.judge(solution);
             }

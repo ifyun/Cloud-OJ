@@ -24,4 +24,4 @@ judge-service   | 8002      | none:8000
 api-gateway     | 80        | 80:80
 cloud-oj-web    | 8080      | none:8000
 
-部署时，`file-server` 和 `judge-service` 要在同一个主机上，且测试数据目录必须是同一个。
+使用 Docker 部署时，`file-server` 和 `judge-service` 要在同一个主机上，且测试数据目录必须是同一个。
