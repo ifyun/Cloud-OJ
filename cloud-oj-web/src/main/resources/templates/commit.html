@@ -153,9 +153,11 @@
                     sourceCode: editor.getValue()
                 };
 
-                if (contestId !== null) commitData.contestId = contestId;
+                if (commitData.sourceCode.length === 0) {
+                    return;
+                }
 
-                console.log(commitData);
+                if (contestId !== null) commitData.contestId = contestId;
 
                 $.ajax({
                     url: baseUrl + '/api/judge/commit?userId=' + user.userId,

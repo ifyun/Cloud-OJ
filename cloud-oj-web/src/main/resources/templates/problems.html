@@ -7,6 +7,7 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
+    <p id="contest_name" style="margin-top: 10px; font-size: 12pt; color: #393D49"></p>
     <div id="search-box" class="layui-form-item" style="margin-top: 25px">
         <label for="keyword" class="layui-form-label">搜索题目:</label>
         <div class="layui-input-inline">
@@ -77,10 +78,12 @@
                 elem: '#problems',
                 url: apiUrl,
                 parseData: (res) => {
+                    if (res.count > 0 && res.data[0].contestName !== undefined)
+                        $('#contest_name').text(res.data[0].contestName + ':');
                     return {
                         "code": 0,
-                        "count": res === undefined ? 0 : res.count,
-                        "data": res === undefined ? null : res.data
+                        "count": res.count,
+                        "data": res.data
                     }
                 },
                 skin: 'nob',
