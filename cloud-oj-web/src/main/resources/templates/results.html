@@ -31,6 +31,9 @@
         {{d.language}}
     </span>
 </script>
+<script type="text/html" id="timeTpl">
+    <span>{{d.time}} ms</span>
+</script>
 <script type="text/html" id="opt-toolbar">
     <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="see-code">查看代码</button>
 </script>
@@ -72,7 +75,7 @@
                     {title: '操作', width: '15%', align: 'center', toolbar: '#opt-toolbar'},
                     {field: 'language', title: '编程语言', width: '15%', templet: '#languageTpl'},
                     {field: 'result', title: '结果', width: '15%', align: 'center', templet: '#resultTpl'},
-                    {field: 'time', title: '运行时间', width: '10%'},
+                    {field: 'time', title: '运行时间', width: '10%', templet: '#timeTpl'},
                     {field: 'submitTime', title: '提交时间', width: '10%'}
                 ]
             ]

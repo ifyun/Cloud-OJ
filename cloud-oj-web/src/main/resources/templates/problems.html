@@ -49,6 +49,7 @@
     {{# } }}
 </script>
 <script>
+    let problemsTable;
     $(document).ready(() => {
         let contestId = getQueryVariable('contestId');
 
@@ -65,7 +66,6 @@
 
         if (user.userId != null) apiUrl += '?userId=' + user.userId;
 
-        let problemsTable;
         let $search = $('#keyword');
 
         layui.use(['table', 'element'], () => {
@@ -105,18 +105,18 @@
             if (e.keyCode === 13)
                 search();
         });
-
-        function search() {
-            let keyword = $search.val();
-            console.log(keyword);
-
-            problemsTable.reload({
-                where: {
-                    keyword: keyword
-                }
-            });
-        }
     });
+
+    function search() {
+        let keyword = $('#keyword').val();
+        console.log(keyword);
+
+        problemsTable.reload({
+            where: {
+                keyword: keyword
+            }
+        });
+    }
 </script>
 </body>
 </html>
