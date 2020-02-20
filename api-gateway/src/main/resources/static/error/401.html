@@ -1,17 +1,64 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<head>
-		<meta charset="utf-8">
-		<title>401 Unauthorized</title>
-		<link rel="stylesheet" href="./css/error.css" />
-	</head>
-	<body class="back">
-		<div class="container">
-			<h1 style="font-size: 26pt;">401 <span style="color: crimson;">UNAUTHORIZED</span></h1>
-			<hr style="border-color: orange;">
-			<br>
-			<code class="code-block">> 你<span style="color: orange;">没有被授权</span>访问此页面.</code>
-			<code class="code-block">> 你可以返回上一页或者使用一个<span style="color: yellowgreen;">正确的账号</span>登录.<span class="blink">&nbsp;</span></code>
-		</div>
-	</body>
+<head>
+    <meta charset="utf-8">
+    <title>401 Unauthorized</title>
+    <style>
+        body {
+            color: white;
+            background: #222222;
+        }
+
+        .back {
+            background: linear-gradient(#000000 50%, #222222 50%);
+            background-size: 100% 4px;
+        }
+
+        .container {
+            margin: 100px auto;
+            min-width: 600px;
+            width: 600px;
+        }
+
+        .code-block {
+            display: block;
+            margin: 10px 0;
+        }
+
+        code {
+            font-size: 13pt;
+        }
+
+        .blink {
+            background: orange;
+            width: 8px;
+            display: inline-block;
+            animation: blink 500ms infinite;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="back">
+<div class="container">
+    <h1 style="font-size: 26pt;">401 <span style="color: crimson;">UNAUTHORIZED</span></h1>
+    <hr style="border-color: orange;">
+    <br>
+    <code class="code-block">> 你<span style="color: orange;">没有被授权</span>访问此页面.</code>
+    <code class="code-block">> 你可以返回上一页或者使用一个<span style="color: yellowgreen;">正确的账号</span>登录.<span
+            class="blink">&nbsp;</span></code>
+</div>
+</body>
 </html>

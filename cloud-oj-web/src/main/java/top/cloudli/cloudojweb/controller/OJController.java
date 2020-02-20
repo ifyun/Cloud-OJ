@@ -82,4 +82,9 @@ public class OJController {
     public String contests() {
         return "contests";
     }
+
+    @GetMapping("help")
+    public String help() {
+        return "help";
+    }
 }

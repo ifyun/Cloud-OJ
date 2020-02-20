@@ -85,39 +85,40 @@
         };
 
         $(document).ready(() => {
-            let layer;
-            layui.use('layer', () => {
-                layer = layui.layer;
-            });
+                let layer;
+                layui.use('layer', () => {
+                    layer = layui.layer;
+                });
 
-            let userInfo = $.cookie('cloudOjToken');
-            if (userInfo != null) {
-                user = JSON.parse(userInfo);
-                if (new Date(Date.parse(user.expire)) <= new Date()) {
-                    layer.open({
-                        content: '你的登录已经过期，请重新登录！',
-                        yes: () => {
-                            exit();
-                        }
-                    });
-                }
-
-                $('#user-name').text(user.name);
-                $('#nav-commit').show();
-                if (user.roleId > 0) {
-                    if (user.roleId === 1) {
-                        $('#problem_manager').hide();
-                        $('#contest_manager').hide();
-                    } else if (user.roleId === 2) {
-                        $('#user_manager').hide();
+                let userInfo = $.cookie('cloudOjToken');
+                if (userInfo != null) {
+                    user = JSON.parse(userInfo);
+                    if (new Date(Date.parse(user.expire)) <= new Date()) {
+                        layer.open({
+                            content: '你的登录已经过期，请重新登录！',
+                            yes: () => {
+                                exit();
+                            }
+                        });
                     }
-                    $('#nav-manager').show();
+
+                    $('#user-name').text(user.name);
+                    $('#nav-commit').show();
+                    if (user.roleId > 0) {
+                        if (user.roleId === 1) {
+                            $('#problem_manager').hide();
+                            $('#contest_manager').hide();
+                        } else if (user.roleId === 2) {
+                            $('#user_manager').hide();
+                        }
+                        $('#nav-manager').show();
+                    }
+                } else {
+                    $('#user').attr('href', 'javascript:start()');
+                    $('#user-menu').removeClass('layui-nav-child');
                 }
-            } else {
-                $('#user').attr('href', 'javascript:start()');
-                $('#user-menu').removeClass('layui-nav-child');
             }
-        });
+        );
 
         function exit() {
             user = null;
@@ -132,7 +133,7 @@
     </script>
 </head>
 <body>
-<div th:fragment="top" class="layui-header header">
+<div id="nav" th:fragment="top" class="layui-header header">
     <div class="layui-main">
         <div class="logo">
             <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt">Cloud OJ</a>
@@ -165,7 +166,7 @@
                 </dl>
             </li>
             <li id="nav-help" class="layui-nav-item">
-                <a class="menu-text" href="./index">帮 助</a>
+                <a class="menu-text" href="./help">帮 助</a>
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">

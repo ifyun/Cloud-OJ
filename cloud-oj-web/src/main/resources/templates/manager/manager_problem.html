@@ -166,6 +166,7 @@
 </script>
 <script type="text/html" id="test-data-toolbar">
     <a class="layui-btn layui-btn-sm" lay-event="edit-content">查看内容</a>
+    <a class="layui-btn layui-btn-sm bg-green" lay-event="download-file">下载</a>
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del-file">删除文件</a>
 </script>
 <script>
@@ -205,7 +206,6 @@
                 page: true,
                 limit: 10,
                 limits: [10, 15, 20, 25, 30],
-                toolbar: true,
                 cols: [
                     [
                         {field: 'problemId', title: '编号', width: '10%'},
@@ -222,6 +222,7 @@
         table.on('tool(problems)', (obj) => {
             problemId = obj.data.problemId;
             if (obj.event === 'edit') {
+                $("#upload-file-table tr:not(:first)").empty();
                 obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
                 isAddMode = false;
                 $('#save').text('保 存');
@@ -261,7 +262,6 @@
                 }, 1000);
 
                 table.on('tool(test-data)', (obj) => {
-                    console.log(obj.data);
                     if (obj.event === 'edit-content') {
                         layer.open({
                             type: 1,
@@ -293,6 +293,9 @@
                                 layer.close(index);
                             }
                         )
+                    } else if (obj.event === 'download-file') {
+                        window.open('/api/file/test_data/file/' + problemId + '/' + obj.data.fileName
+                            + '?userId=' + user.userId + '&token=' + user.token, '_blank')
                     }
                 });
             } else if (obj.event === 'del') {

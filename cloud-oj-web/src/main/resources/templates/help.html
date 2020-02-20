@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="include::common_head(~{::title}, ~{}, ~{}, ~{::style})">
+    <meta charset='UTF-8'>
+    <title>帮助</title>
+    <style>
+        iframe {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="include::top"></div>
+<iframe onload="on_iframe_load()" id="help" width="100%" src="./doc/help_doc.html">
+
+</iframe>
+<script>
+    $('#nav-help').addClass('layui-this');
+
+    layui.use(['element'], () => {
+        let element = layui.element;
+        element.init();
+    });
+
+    function on_iframe_load() {
+        document.getElementById("help").height =
+            document.getElementById("help").contentWindow.document.body.scrollHeight;
+    }
+</script>
+</body>
