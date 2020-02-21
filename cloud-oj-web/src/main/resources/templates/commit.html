@@ -97,7 +97,7 @@
 </div>
 
 <script>
-    let form, layer;
+    let form;
     $(document).ready(() => {
         let contestId = getQueryVariable('contestId');
 
@@ -117,9 +117,8 @@
 
         editor.setSize('auto', '600px');
 
-        layui.use(['form', 'element', 'layer'], function () {
+        layui.use(['form', 'element'], function () {
             form = layui.form;
-            layer = layui.layer;
             let element = layui.element;
 
             form.render();

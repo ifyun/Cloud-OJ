@@ -80,15 +80,14 @@
     <a class="layui-btn bg-green layui-btn-sm" lay-event="add">添加</a>
 </script>
 <script>
-    let table, form, layer, laydate;
+    let table, form, laydate;
     $(document).ready(() => {
         $('#nav-manager').addClass("layui-this");
 
-        layui.use(['element', 'table', 'form', 'layer', 'laydate'], () => {
+        layui.use(['element', 'table', 'form', 'laydate'], () => {
             let element = layui.element;
             table = layui.table;
             form = layui.form;
-            layer = layui.layer;
             laydate = layui.laydate;
 
             element.init();

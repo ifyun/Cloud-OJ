@@ -172,11 +172,10 @@
 <script>
     let isAddMode = true;
     let problemId;
-    let layer, form, table, upload;
+    let form, table, upload;
     $(document).ready(() => {
         $('#nav-manager').addClass("layui-this");
-        layui.use(['element', 'layer', 'table', 'carousel', 'form', 'upload'], () => {
-            layer = layui.layer;
+        layui.use(['element', 'table', 'carousel', 'form', 'upload'], () => {
             let carousel = layui.carousel;
             let element = layui.element;
             table = layui.table;

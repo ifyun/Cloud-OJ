@@ -73,15 +73,14 @@
     </div>
 </div>
 <script>
-    let table, form, layer;
+    let table, form;
     $(document).ready(() => {
         $('#nav-manager').addClass("layui-this");
 
-        layui.use(['element', 'table', 'form', 'layer'], () => {
+        layui.use(['element', 'table', 'form'], () => {
             let element = layui.element;
             table = layui.table;
             form = layui.form;
-            layer = layui.layer;
 
             element.init();
         });
