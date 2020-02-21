@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtVerifyFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/login", "/logout").permitAll()
+                .antMatchers("/login", "/logoff").permitAll()
                 // 用户管理权限设置
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole("USER_ADMIN", "ROOT")
                 // 题目管理权限设置

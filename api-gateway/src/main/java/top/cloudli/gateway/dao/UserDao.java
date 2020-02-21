@@ -7,4 +7,5 @@ import top.cloudli.gateway.model.User;
 public interface UserDao {
     User findUserById(String userId);
     String getSecret(String userId);
+    int updateSecret(String userId);
 }

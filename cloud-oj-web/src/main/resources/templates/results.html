@@ -38,11 +38,10 @@
     <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="see-code">查看代码</button>
 </script>
 <script>
-    let layer, table;
+    let table;
     $(document).ready(() => {
-        layui.use(['table', 'element', 'layer'], () => {
+        layui.use(['table', 'element'], () => {
             let element = layui.element;
-            layer = layui.layer;
             table = layui.table;
             element.init();
         });

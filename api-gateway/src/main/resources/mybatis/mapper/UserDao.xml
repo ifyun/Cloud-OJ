@@ -15,4 +15,11 @@
         from user
         where user_id = #{userId}
     </select>
+
+    <update id="updateSecret">
+        update user
+        set secret = LEFT(UUID(), 8)
+        where user_id = #{userId}
+    </update>
+
 </mapper>
