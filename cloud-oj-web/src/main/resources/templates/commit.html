@@ -171,7 +171,6 @@
                         loadIndex = layer.load(1);
                     },
                     success: (data) => {
-                        console.log(data);
                         let result;
                         switch (data.result) {
                             case 4:
@@ -196,11 +195,16 @@
                         });
                     },
                     error: (xhr) => {
-                        console.log(xhr);
                         layer.close(loadIndex);
-                        layer.open({
-                            content: xhr.status + ': ' + xhr.responseText
-                        });
+                        if (xhr.status === 401) {
+                            layer.open({
+                                content: '你的登录可能已过期！'
+                            });
+                        } else {
+                            layer.open({
+                                content: xhr.status + ': ' + xhr.responseText
+                            });
+                        }
                     }
                 });
             }
