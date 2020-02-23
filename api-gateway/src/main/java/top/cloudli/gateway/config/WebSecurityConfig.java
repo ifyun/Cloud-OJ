@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.savedrequest.NullRequestCache;
 import top.cloudli.gateway.dao.UserDao;
 import top.cloudli.gateway.filter.JwtLoginFilter;
 import top.cloudli.gateway.filter.JwtVerifyFilter;

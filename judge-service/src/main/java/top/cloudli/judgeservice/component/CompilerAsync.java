@@ -24,10 +24,10 @@ public class CompilerAsync {
 
     @Async("ojExecutor")
     public CompletableFuture<Compile> compile(Solution solution) {
-        int solutionId = solution.getSolutionId();
-        int languageId = solution.getLanguage();
-
-        Compile compile = compiler.compile(solutionId, languageId, solution.getSourceCode());
+        Compile compile = compiler.compile(
+                solution.getSolutionId(),
+                solution.getLanguage(),
+                solution.getSourceCode());
         compileDao.add(compile);
 
         return CompletableFuture.completedFuture(compile);

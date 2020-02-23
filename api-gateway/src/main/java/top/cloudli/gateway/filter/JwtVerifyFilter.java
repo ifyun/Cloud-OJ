@@ -76,7 +76,7 @@ public class JwtVerifyFilter extends GenericFilterBean {
                 SecurityContextHolder.getContext().setAuthentication(token);
 
                 filterChain.doFilter(servletRequest, servletResponse);
-            } catch (JwtException e) {
+            } catch (JwtException | IllegalArgumentException e) {
                 // Jwt 解析异常的处理
                 log.error(e.getMessage());
                 ((HttpServletResponse) servletResponse).setStatus(401);

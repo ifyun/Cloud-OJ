@@ -138,7 +138,9 @@
                     layer.msg(data, {icon: 6});
                 },
                 error: (xhr) => {
-                    layer.msg(xhr.status === 400 ? '错误请求！' : '未知错误！', {icon: 5});
+                    if (xhr.status === 401)
+                        clearToken();
+                    layer.msg('请求错误，已退出！', {icon: 5});
                 }
             });
         }
