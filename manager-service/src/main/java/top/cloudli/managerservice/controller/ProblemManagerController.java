@@ -20,7 +20,7 @@ public class ProblemManagerController {
     @GetMapping("")
     public ResponseEntity<?> getAllEnable(String userId, String keyword, int page, int limit) {
         if (keyword != null)
-            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit);
+            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, false);
         return managerService.getEnableProblems(userId, (page - 1) * limit, limit);
     }
 
@@ -35,7 +35,9 @@ public class ProblemManagerController {
     }
 
     @GetMapping("pro")
-    public ResponseEntity<?> getAll(String userId, int page, int limit) {
+    public ResponseEntity<?> getAll(String userId, String keyword, int page, int limit) {
+        if (keyword != null)
+            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, false);
         return managerService.getProblems(userId, (page - 1) * limit, limit);
     }
 

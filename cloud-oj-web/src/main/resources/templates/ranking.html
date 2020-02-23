@@ -11,6 +11,11 @@
 
     </table>
 </div>
+<script type="text/html" id="top-bar">
+    {{# if (getQueryVariable('contestId') != null) { }}
+    <label id="contest_name" style="font-size: 14pt;"></label>
+    {{# } }}
+</script>
 <script>
     let table;
     $(document).ready(() => {
@@ -31,6 +36,8 @@
             elem: '#ranking',
             url: apiUrl,
             parseData: (res) => {
+                if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined)
+                    $('#contest_name').text(res.data[0].contestName + '排行榜');
                 return {
                     "code": 0,
                     "count": res === undefined ? 0 : res.count,
@@ -43,10 +50,13 @@
             page: true,
             limit: 15,
             limits: [10, 15, 20, 25, 30],
+            toolbar: '#top-bar',
+            defaultToolbar: ['print', 'exports'],
             cols: [
                 [
-                    {field: 'userId', title: '用户ID', width: '20%'},
-                    {field: 'name', title: '用户名', width: '20%'},
+                    {title: '排名', type: 'numbers', width: '10%'},
+                    {field: 'userId', title: '用户ID', width: '15%'},
+                    {field: 'name', title: '用户名', width: '15%'},
                     {field: 'committed', title: '提交次数', width: '20%', style: 'color: #1E9FFF'},
                     {field: 'passed', title: '通过题目数', width: '20%', style: 'color: #5FB878'},
                     {field: 'totalScore', title: '总分数', width: '20%'}

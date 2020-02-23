@@ -89,7 +89,9 @@
                 from problem
             </otherwise>
         </choose>
-        where enable = true
+        <if test="pro != true">
+            where enable = true
+        </if>
         and title like #{title}
         limit #{start}, #{limit}
     </select>

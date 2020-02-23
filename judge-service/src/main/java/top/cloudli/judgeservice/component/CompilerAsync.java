@@ -17,9 +17,6 @@ import java.util.concurrent.CompletableFuture;
 public class CompilerAsync {
 
     @Resource
-    private SourceCodeDao sourceCodeDao;
-
-    @Resource
     private CompileDao compileDao;
 
     @Resource
@@ -30,9 +27,7 @@ public class CompilerAsync {
         int solutionId = solution.getSolutionId();
         int languageId = solution.getLanguage();
 
-        SourceCode sourceCode = sourceCodeDao.get(solutionId);
-
-        Compile compile = compiler.compile(solutionId, languageId, sourceCode.getCode());
+        Compile compile = compiler.compile(solutionId, languageId, solution.getSourceCode());
         compileDao.add(compile);
 
         return CompletableFuture.completedFuture(compile);

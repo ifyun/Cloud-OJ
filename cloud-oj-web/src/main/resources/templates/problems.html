@@ -7,14 +7,6 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <p id="contest_name" style="margin-top: 10px; font-size: 12pt; color: #393D49"></p>
-    <div id="search-box" class="layui-form-item" style="margin-top: 25px">
-        <label for="keyword" class="layui-form-label">搜索题目:</label>
-        <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off">
-        </div>
-        <button onclick="search(this.text)" class="layui-btn">搜 索</button>
-    </div>
     <!-- 题目列表 -->
     <table id="problems">
 
@@ -49,6 +41,18 @@
     <span class="bg-grey label">编译错误</span>
     {{# } }}
 </script>
+<script type="text/html" id="top-bar">
+    {{# if (getQueryVariable('contestId') == null) { }}
+    <div class="layui-form-item" style="margin-bottom: 0">
+        <div class="layui-input-inline">
+            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off">
+        </div>
+        <button onclick="search(this.text)" class="layui-btn layui-icon layui-icon-search">&nbsp;&nbsp;搜索</button>
+    </div>
+    {{# } else { }}
+    <label id="contest_name" style="font-size: 14pt;"></label>
+    {{# } }}
+</script>
 <script>
     let problemsTable;
     $(document).ready(() => {
@@ -67,8 +71,6 @@
 
         if (user.userId != null) apiUrl += '?userId=' + user.userId;
 
-        let $search = $('#keyword');
-
         layui.use(['table', 'element'], () => {
             let element = layui.element;
             element.init();
@@ -78,12 +80,12 @@
                 elem: '#problems',
                 url: apiUrl,
                 parseData: (res) => {
-                    if (res.count > 0 && res.data[0].contestName !== undefined)
-                        $('#contest_name').text(res.data[0].contestName + ':');
+                    if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined)
+                        $('#contest_name').text(res.data[0].contestName);
                     return {
                         "code": 0,
-                        "count": res.count,
-                        "data": res.data
+                        "count": res === undefined ? 0 : res.count,
+                        "data": res === undefined ? null : res.data
                     }
                 },
                 skin: 'nob',
@@ -92,19 +94,21 @@
                 page: true,
                 limit: 15,
                 limits: [10, 15, 20, 25, 30],
+                defaultToolbar: [],
+                toolbar: '#top-bar',
                 cols: [
                     [
                         {field: 'problemId', title: '编号', width: '10%', align: 'center'},
                         {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
                         {field: 'result', title: '状态', width: '15%', align: 'center', templet: '#resultTpl'},
-                        {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
+                        {field: 'category', title: '标签/分类', width: '30%', align: 'center', templet: '#categoryTpl'},
                         {field: 'createAt', title: '创建时间', width: '15%'}
                     ]
                 ]
             });
         });
 
-        $search.keydown((e) => {
+        $('#keyword').keydown((e) => {
             if (e.keyCode === 13)
                 search();
         });

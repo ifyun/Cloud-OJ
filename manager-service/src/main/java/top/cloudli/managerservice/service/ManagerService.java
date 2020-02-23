@@ -54,10 +54,10 @@ public class ManagerService implements CRUDService {
     }
 
     @Transactional
-    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit) {
+    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit, boolean pro) {
         String title = String.format("%%%s%%", keyword);
         long total = problemDao.getSearchCount(title);
-        List<Problem> problems = problemDao.searchByTitle(userId, title, start, limit);
+        List<Problem> problems = problemDao.searchByTitle(userId, title, start, limit, pro);
         return buildGETResponse(new PagedResult<>(total, problems));
     }
 
