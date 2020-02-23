@@ -7,6 +7,7 @@ import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SolutionResult;
+import top.cloudli.judgeservice.task.FileCleaner;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CompletableFuture;
@@ -24,6 +25,9 @@ public class JudgementAsync {
     @Resource
     private Judgement judgement;
 
+    @Resource
+    private FileCleaner fileCleaner;
+
     @Async("ojExecutor")
     public void judge(Solution solution) {
         CompletableFuture<Compile> future = compilerAsync.compile(solution);
@@ -40,6 +44,9 @@ public class JudgementAsync {
             log.error(e.getMessage());
             solution.setResult(3);
         }
+
+        // 删除临时文件
+        fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage(), Judgement.isWindows);
 
         if (solutionDao.update(solution) != 0)
             log.info("判题完成, solutionId: {}", solution.getSolutionId());

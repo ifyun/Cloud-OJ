@@ -37,15 +37,7 @@ public class Judgement {
     @Resource
     private SolutionDao solutionDao;
 
-    @Resource
-    private FileCleaner fileCleaner;
-
-    private boolean isWindows;
-
-    @PostConstruct
-    public void init() {
-        isWindows = System.getProperty("os.name").equals("Windows");
-    }
+    public static boolean isWindows = System.getProperty("os.name").equals("Windows");
 
     /**
      * 判题
@@ -65,8 +57,6 @@ public class Judgement {
         List<String> output = execute(cmd, input, runtime);
         // 比较结果
         compareResult(solution, runtime, expect, output);
-        // 删除临时文件
-        fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage(), isWindows);
     }
 
     /**

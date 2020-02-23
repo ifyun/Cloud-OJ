@@ -6,7 +6,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.model.Language;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -14,6 +16,15 @@ public class FileCleaner {
 
     @Value("${project.target-dir}")
     private String targetDir;
+
+    @PostConstruct
+    public void init() {
+        File dir = new File(targetDir);
+
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            delete(file);
+        }
+    }
 
     @Async
     public void deleteTempFile(int solutionId, int languageId, boolean isWindows) {
