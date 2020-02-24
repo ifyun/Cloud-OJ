@@ -3,6 +3,8 @@
 <head th:fragment="common_head(title, links, scripts, styles)">
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
+    <link class="fav-icon" rel="shortcut icon"/>
+    <link class="fav-icon" rel="bookmark"/>
     <link rel="stylesheet" href="./layui/css/layui.css">
     <link rel="stylesheet" href="./css/iconfont.css">
     <script src="./common.js"></script>
@@ -85,6 +87,7 @@
         };
         let layer;
         $(document).ready(() => {
+            $('.fav-icon').attr('href', baseUrl + '/oj/favicon.ico');
                 layui.use('layer', () => {
                     layer = layui.layer;
                 });
