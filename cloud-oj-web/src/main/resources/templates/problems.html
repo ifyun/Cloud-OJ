@@ -22,10 +22,10 @@
 <script type="text/html" id="categoryTpl">
     {{# if (d.contestName === undefined && d.category != undefined) { }}
     {{# layui.each(d.category.split(','), (index, item) => { }}
-    <span class="label bg-green">{{ item }}</span>
+    <span class="category {{getColor(item)}}" onclick="search(this.innerHTML)">{{ item }}</span>
     {{# }); }}
     {{# } else if (d.contestName != undefined) { }}
-    <span class="label bg-yellow">{{ d.contestName }}</span>
+    <span class="label bg-blue">{{ d.contestName }}</span>
     {{# } }}
 </script>
 <script type="text/html" id="resultTpl">
@@ -45,12 +45,14 @@
     {{# if (getQueryVariable('contestId') == null) { }}
     <div class="layui-form-item" style="margin-bottom: 0">
         <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off">
+            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off"
+                   onkeydown="onSearch(event)">
         </div>
-        <button onclick="search(this.text)" class="layui-btn layui-icon layui-icon-search">&nbsp;&nbsp;搜索</button>
+        <button class="layui-btn layui-icon layui-icon-search" onclick="search($('#keyword').val())">&nbsp;&nbsp;搜索
+        </button>
     </div>
     {{# } else { }}
-    <label id="contest_name" style="font-size: 14pt;"></label>
+    <label id="contest_name" style="color: #5FB878; font-size: 14pt; font-weight: bold"></label>
     {{# } }}
 </script>
 <script>
@@ -99,25 +101,22 @@
                 cols: [
                     [
                         {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                        {field: 'title', title: '题目名称', width: '30%', templet: '#titleTpl'},
+                        {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
                         {field: 'result', title: '状态', width: '15%', align: 'center', templet: '#resultTpl'},
-                        {field: 'category', title: '标签/分类', width: '30%', align: 'center', templet: '#categoryTpl'},
-                        {field: 'createAt', title: '创建时间', width: '15%'}
+                        {field: 'category', title: '标签/分类', width: '40%', align: 'center', templet: '#categoryTpl'},
+                        {field: 'createAt', title: '创建时间', width: '10%'}
                     ]
                 ]
             });
         });
-
-        $('#keyword').keydown((e) => {
-            if (e.keyCode === 13)
-                search();
-        });
     });
 
-    function search() {
-        let keyword = $('#keyword').val();
-        console.log(keyword);
+    function onSearch(e) {
+        if (e.keyCode === 13)
+            search($('#keyword').val());
+    }
 
+    function search(keyword) {
         problemsTable.reload({
             where: {
                 keyword: keyword

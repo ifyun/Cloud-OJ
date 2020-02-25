@@ -55,7 +55,7 @@
                 <pre class="description" th:text="${problem.getOutput()}"></pre>
                 <h3>输入示例：</h3>
                 <pre class="sample"
-                     th:text="${problem.getSampleInput() == null ? '无输入':problem.getSampleInput()}"></pre>
+                     th:text="${problem.getSampleInput() == null ? '无':problem.getSampleInput()}"></pre>
                 <h3>输出示例：</h3>
                 <pre class="sample" th:text="${problem.getSampleOutput()}"></pre>
             </div>

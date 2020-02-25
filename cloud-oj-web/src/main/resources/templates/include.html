@@ -42,6 +42,43 @@
             padding: 5px 10px;
         }
 
+        .category {
+            cursor: pointer;
+            border-radius: 20px;
+            padding: 3px 10px;
+            color: white;
+            transition: all 100ms;
+        }
+
+        .category:hover {
+            font-size: 12pt;
+            transition: all 100ms;
+        }
+
+        .color-1 {
+            background: #5FB878;
+        }
+
+        .color-2 {
+            background: #FFB800;
+        }
+
+        .color-3 {
+            background: #01AAED;
+        }
+
+        .color-4 {
+            background: #666666;
+        }
+
+        .color-5 {
+            background: #009688;
+        }
+
+        .color-6 {
+            background: #01AAED;
+        }
+
         .bg-green {
             color: white;
             background: #5FB878;
@@ -70,11 +107,21 @@
     <script>
         let roles = ['普通用户', '用户管理员', '题目管理员', 'ROOT'];
         let baseUrl = 'http://' + '[[${gateway_host}]]';
-        let iconMap = new Map();
-        iconMap.set('C/C++', 'icon-cpp');
-        iconMap.set('Java', 'icon-java');
-        iconMap.set('Python', 'icon-python');
-        iconMap.set('Shell', 'icon-shell');
+        let iconMap = new Map([
+            ['C/C++', 'icon-cpp'],
+            ['Java', 'icon-java'],
+            ['Python', 'icon-python'],
+            ['Shell', 'icon-shell']
+        ]);
+        let color = 0;
+        let colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', "color-6"];
+        let colorMap = new Map();
+
+        function getColor(tag) {
+            if (colorMap[tag] === undefined)
+                colorMap[tag] = colors[color++ % colors.length];
+            return colorMap[tag];
+        }
 
         let user = {
             userId: '',
@@ -87,7 +134,7 @@
         };
         let layer;
         $(document).ready(() => {
-            $('.fav-icon').attr('href', baseUrl + '/oj/favicon.ico');
+                $('.fav-icon').attr('href', baseUrl + '/oj/favicon.ico');
                 layui.use('layer', () => {
                     layer = layui.layer;
                 });
@@ -164,7 +211,7 @@
 <div id="nav" th:fragment="top" class="layui-header header">
     <div class="layui-main">
         <div class="logo">
-            <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt">Cloud OJ</a>
+            <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt; font-weight: bold;">Cloud OJ</a>
         </div>
         <ul class="layui-nav layui-layout-left">
             <li id="nav-problems" class="layui-nav-item">

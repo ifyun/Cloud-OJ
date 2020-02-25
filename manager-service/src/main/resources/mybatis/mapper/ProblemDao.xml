@@ -73,7 +73,7 @@
           and title like #{title}
     </select>
 
-    <select id="searchByTitle" resultType="top.cloudli.managerservice.model.Problem">
+    <select id="search" resultType="top.cloudli.managerservice.model.Problem">
         <choose>
             <when test="userId != null">
                 select p.*, result
@@ -92,7 +92,7 @@
         <if test="pro != true">
             where enable = true
         </if>
-        and title like #{title}
+        and title like #{keyword} or category like #{keyword}
         limit #{start}, #{limit}
     </select>
 

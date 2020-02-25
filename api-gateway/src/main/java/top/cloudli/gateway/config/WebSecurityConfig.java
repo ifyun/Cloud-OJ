@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/oj/manager_user").hasAnyRole("USER_ADMIN", "ROOT")
                 .antMatchers("/oj/manager_problem", "/oj/manager_contest").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 .and()
-                .exceptionHandling().accessDeniedPage("/error/401.html");
+                .exceptionHandling().accessDeniedPage("/error/403.html");
     }
 
     @Override

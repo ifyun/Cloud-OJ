@@ -16,9 +16,9 @@
 </script>
 <script type="text/html" id="resultTpl">
     {{# if (d.result == '完全正确') { }}
-    <span class="bg-green label">{{d.result}}({{d.passRate * 100}})</span>
+    <span class="bg-green label">{{d.result}}</span>
     {{# } else if (d.result == '答案错误') { }}
-    <span class="bg-red label">{{d.result}}(0)</span>
+    <span class="bg-red label">{{d.result}}</span>
     {{# } else if (d.result == '编译错误') { }}
     <span class="bg-grey label">{{d.result}}</span>
     {{# } else { }}

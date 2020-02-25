@@ -1,63 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<head>
-		<meta charset="utf-8">
-		<title>500 Internal Error</title>
-		<style>
-			body {
-				color: white;
-				background: #222222;
-			}
+<head>
+    <meta charset="utf-8">
+    <title>500 Internal Error</title>
+    <style>
+        body {
+            color: white;
+            background: #222222;
+        }
 
-			.back {
-				background: linear-gradient(#000000 50%, #222222 50%);
-				background-size: 100% 4px;
-			}
+        h1 {
+            font-family: sans-serif;
+        }
 
-			.container {
-				margin: 100px auto;
-				min-width: 600px;
-				width: 600px;
-			}
+        .back {
+            background: linear-gradient(#000000 50%, #222222 50%);
+            background-size: 100% 4px;
+        }
 
-			.code-block {
-				display: block;
-				margin: 10px 0;
-			}
+        .container {
+            margin: 100px auto;
+            min-width: 600px;
+            width: 600px;
+        }
 
-			code {
-				font-size: 13pt;
-			}
+        .code-block {
+            display: block;
+            margin: 10px 0;
+        }
 
-			.blink {
-				background: orange;
-				width: 8px;
-				display: inline-block;
-				animation: blink 500ms infinite;
-			}
+        code {
+            font-size: 13pt;
+        }
 
-			@keyframes blink {
-				from {
-					opacity: 1;
-				}
+        .blink {
+            background: orange;
+            width: 8px;
+            display: inline-block;
+            animation: blink 500ms infinite;
+        }
 
-				50% {
-					opacity: 0;
-				}
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
 
-				to {
-					opacity: 1;
-				}
-			}
-		</style>
-	</head>
-	<body class="back">
-		<div class="container">
-			<h1 style="font-size: 26pt;">500 <span style="color: crimson;">INTERNAL ERROR</span></h1>
-			<hr style="border-color: orange;">
-			<br>
-			<code class="code-block">> 服务器出现了<span style="color: orange;">错误</span>.</code>
-			<code class="code-block">> [<span style="color: yellowgreen;">请稍后重试或者联系管理员.</span>]<span class="blink">&nbsp;</span></code>
-		</div>
-	</body>
+            50% {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="back">
+<div class="container">
+    <h1 style="font-size: 26pt;">500 <span style="color: crimson;">INTERNAL ERROR</span></h1>
+    <hr style="border-color: orange;">
+    <br>
+    <code class="code-block">> 服务器出现了[<span style="color: orange;">错误</span>].</code>
+    <code class="code-block">> [<span style="color: yellowgreen;">请稍后重试或者联系管理员.</span>]</code>
+    <code class="code-block">> 你现在可以返回[<span style="color: yellowgreen;">上一页</span>]或者[<span
+            style="color: yellowgreen;">主页</span>].<span class="blink">&nbsp;</span></code>
+</div>
+</body>
 </html>

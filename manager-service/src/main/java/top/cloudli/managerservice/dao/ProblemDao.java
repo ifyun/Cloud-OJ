@@ -21,7 +21,7 @@ public interface ProblemDao {
 
     long getSearchCount(String title);
 
-    List<Problem> searchByTitle(String userId, String title, int start, int limit, boolean pro);
+    List<Problem> search(String userId, String keyword, int start, int limit, boolean pro);
 
     int add(Problem problem);
 

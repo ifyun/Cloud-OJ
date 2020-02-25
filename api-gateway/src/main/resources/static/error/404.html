@@ -1,64 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh">
-	<head>
-		<meta charset="utf-8">
-		<title>404 Not Found</title>
-		<style>
-			body {
-				color: white;
-				background: #222222;
-			}
+<head>
+    <meta charset="utf-8">
+    <title>404 Not Found</title>
+    <style>
+        body {
+            color: white;
+            background: #222222;
+        }
 
-			.back {
-				background: linear-gradient(#000000 50%, #222222 50%);
-				background-size: 100% 4px;
-			}
+        h1 {
+            font-family: sans-serif;
+        }
 
-			.container {
-				margin: 100px auto;
-				min-width: 600px;
-				width: 600px;
-			}
+        .back {
+            background: linear-gradient(#000000 50%, #222222 50%);
+            background-size: 100% 4px;
+        }
 
-			.code-block {
-				display: block;
-				margin: 10px 0;
-			}
+        .container {
+            margin: 100px auto;
+            min-width: 600px;
+            width: 600px;
+        }
 
-			code {
-				font-size: 13pt;
-			}
+        .code-block {
+            display: block;
+            margin: 10px 0;
+        }
 
-			.blink {
-				background: orange;
-				width: 8px;
-				display: inline-block;
-				animation: blink 500ms infinite;
-			}
+        code {
+            font-size: 13pt;
+        }
 
-			@keyframes blink {
-				from {
-					opacity: 1;
-				}
+        .blink {
+            background: orange;
+            width: 8px;
+            display: inline-block;
+            animation: blink 500ms infinite;
+        }
 
-				50% {
-					opacity: 0;
-				}
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
 
-				to {
-					opacity: 1;
-				}
-			}
-		</style>
-	</head>
-	<body class="back">
-		<div class="container">
-			<h1 style="font-size: 26pt;">404 <span style="color: crimson;">NOT FOUND</span></h1>
-			<hr style="border-color: orange;">
-			<br>
-			<code class="code-block">> 你访问的页面<span style="color: orange;">不存在</span>.</code>
-			<code class="code-block">> 你可以返回上一页或者
-				[<a href="./index" style="color: yellowgreen;">主页</a>].<span class="blink">&nbsp;</span></code>
-		</div>
-	</body>
+            50% {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="back">
+<div class="container">
+    <h1 style="font-size: 26pt;">404 <span style="color: crimson;">NOT FOUND</span></h1>
+    <hr style="border-color: orange;">
+    <br>
+    <code class="code-block">> 你访问的页面[<span style="color: orange;">不存在</span>].</code>
+    <code class="code-block">> [<span style="color: orange;">请确认你输入的URL是否正确</span>].</code>
+    <code class="code-block">> 你可以返回[<span style="color: yellowgreen;">上一页</span>]或者[<span style="color: yellowgreen;">主页</span>].<span
+            class="blink">&nbsp;</span></code>
+</div>
+</body>
 </html>
