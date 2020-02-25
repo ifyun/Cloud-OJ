@@ -22,7 +22,7 @@
 <script type="text/html" id="categoryTpl">
     {{# if (d.contestName === undefined && d.category != undefined) { }}
     {{# layui.each(d.category.split(','), (index, item) => { }}
-    <span class="category {{getColor(item)}}" onclick="search(this.innerHTML)">{{ item }}</span>
+    <span class="category {{getColor(item)}}" onclick="addTag(this.innerHTML)">{{ item }}</span>
     {{# }); }}
     {{# } else if (d.contestName != undefined) { }}
     <span class="label bg-blue">{{ d.contestName }}</span>
@@ -43,13 +43,16 @@
 </script>
 <script type="text/html" id="top-bar">
     {{# if (getQueryVariable('contestId') == null) { }}
-    <div class="layui-form-item" style="margin-bottom: 0">
+    <div class="layui-form-item" style="margin-bottom: 0; display: inline-block">
         <div class="layui-input-inline">
             <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off"
                    onkeydown="onSearch(event)">
         </div>
         <button class="layui-btn layui-icon layui-icon-search" onclick="search($('#keyword').val())">&nbsp;&nbsp;搜索
         </button>
+    </div>
+    <div id="tag" style="float: right; display: inline-block">
+
     </div>
     {{# } else { }}
     <label id="contest_name" style="color: #5FB878; font-size: 14pt; font-weight: bold"></label>
@@ -120,6 +123,23 @@
         problemsTable.reload({
             where: {
                 keyword: keyword
+            }
+        });
+    }
+
+    function addTag(text) {
+        search(text);
+        let tag = $('<span class="tag">' + text + '</span>')
+            .addClass(getColor(text))
+            .append($('<span style="cursor: pointer">&nbsp;&nbsp;X</span>').on('click', clear));
+        $('#tag').text('当前分类：')
+            .append(tag);
+    }
+
+    function clear() {
+        problemsTable.reload({
+            where: {
+                keyword: null
             }
         });
     }
