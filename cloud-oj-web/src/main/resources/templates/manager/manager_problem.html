@@ -223,7 +223,7 @@
                 toolbar: '#top-bar',
                 cols: [
                     [
-                        {field: 'problemId', title: '编号', width: '10%'},
+                        {field: 'problemId', title: '编号', width: '10%', align: 'center'},
                         {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
                         {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
                         {field: 'enable', title: '开放', width: '10%', align: 'center', templet: '#enableTpl'},
@@ -496,7 +496,7 @@
     function search(keyword) {
         problemsTable.reload({
             where: {
-                keyword: keyword
+                keyword: keyword.trim()
             }
         });
     }

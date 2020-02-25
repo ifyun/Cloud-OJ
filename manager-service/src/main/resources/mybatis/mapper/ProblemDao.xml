@@ -89,10 +89,11 @@
                 from problem
             </otherwise>
         </choose>
+        where
         <if test="pro != true">
-            where enable = true
+            enable = true and
         </if>
-        and title like #{keyword} or category like #{keyword}
+        (title like #{keyword} or category like #{keyword})
         limit #{start}, #{limit}
     </select>
 
