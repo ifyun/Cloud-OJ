@@ -7,21 +7,12 @@ import java.util.List;
 
 @Mapper
 public interface ProblemDao {
-    long getCount();
 
-    List<Problem> getAll(String userId, int start, int limit);
+    List<List<?>> getAll(String userId, int start, int limit, boolean enable);
 
-    long getEnableCount();
+    List<List<?>> search(String userId, String keyword, int start, int limit, boolean enable);
 
-    List<Problem> getEnable(String userId, int start, int limit);
-
-    Problem getSingle(int problemId);
-
-    Problem getSingleEnable(int problemId);
-
-    long getSearchCount(String title);
-
-    List<Problem> search(String userId, String keyword, int start, int limit, boolean pro);
+    Problem getSingle(int problemId, boolean enable);
 
     int add(Problem problem);
 

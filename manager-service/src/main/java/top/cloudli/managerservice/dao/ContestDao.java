@@ -2,27 +2,19 @@ package top.cloudli.managerservice.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.cloudli.managerservice.model.Contest;
-import top.cloudli.managerservice.model.Problem;
 
 import java.util.List;
 
 @Mapper
 public interface ContestDao {
-    long getAllCount();
 
-    List<Contest> getAllContest(int start, int limit);
+    List<List<?>> getAllContest(int start, int limit);
 
-    long getStartedCount();
+    List<List<?>> getStartedContest(int start, int limit);
 
-    List<Contest> getStartedContest(int start, int limit);
+    List<List<?>> getProblems(String userId, int contestId, int start, int limit);
 
-    long getProblemsCount(int contestId);
-
-    List<Problem> getProblems(String userId, int contestId, int start, int limit);
-
-    long getNotInContestCount(int contestId);
-
-    List<Problem> getProblemsNotInContest(int contestId, int start, int limit);
+    List<List<?>> getProblemsNotInContest(int contestId, int start, int limit);
 
     int addContest(Contest contest);
 

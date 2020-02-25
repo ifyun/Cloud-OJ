@@ -3,12 +3,10 @@ package top.cloudli.managerservice.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.managerservice.dao.*;
 import top.cloudli.managerservice.model.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -31,34 +29,25 @@ public class ManagerService implements CRUDService {
 
     // NOTE 题目
 
-    @Transactional
     public ResponseEntity<?> getEnableProblems(String userId, int start, int limit) {
-        long total = problemDao.getEnableCount();
-        List<Problem> problems = problemDao.getEnable(userId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, problems));
+        return buildGETResponse(problemDao.getAll(userId, start, limit, true));
     }
 
-    @Transactional
     public ResponseEntity<?> getProblems(String userId, int start, int limit) {
-        long total = problemDao.getCount();
-        List<Problem> problems = problemDao.getAll(userId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, problems));
+        return buildGETResponse(problemDao.getAll(userId, start, limit, false));
     }
 
     public ResponseEntity<?> getProblem(int problemId) {
-        return buildGETSingleResponse(problemDao.getSingle(problemId));
+        return buildGETSingleResponse(problemDao.getSingle(problemId, false));
     }
 
     public ResponseEntity<?> getEnableProblem(int problemId) {
-        return buildGETSingleResponse(problemDao.getSingleEnable(problemId));
+        return buildGETSingleResponse(problemDao.getSingle(problemId, true));
     }
 
-    @Transactional
-    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit, boolean pro) {
+    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit, boolean enable) {
         String title = String.format("%%%s%%", keyword);
-        long total = problemDao.getSearchCount(title);
-        List<Problem> problems = problemDao.search(userId, title, start, limit, pro);
-        return buildGETResponse(new PagedResult<>(total, problems));
+        return buildGETResponse(problemDao.search(userId, title, start, limit, enable));
     }
 
     public ResponseEntity<Void> updateProblem(Problem problem) {
@@ -78,14 +67,10 @@ public class ManagerService implements CRUDService {
         return buildDELETEResponse(problemDao.delete(problemId) == 1);
     }
 
-
     // NOTE 用户
 
-    @Transactional
     public ResponseEntity<?> getUsers(int start, int limit) {
-        long total = userDao.getCount();
-        List<User> users = userDao.getAll(start, limit);
-        return buildGETResponse(new PagedResult<>(total, users));
+        return buildGETResponse(userDao.getAll(start, limit));
     }
 
     public ResponseEntity<?> addUser(User user) {
@@ -103,44 +88,30 @@ public class ManagerService implements CRUDService {
 
     // NOTE 获取提交记录
 
-    @Transactional
     public ResponseEntity<?> getJudged(String userId, int start, int limit) {
-        long total = judgeResultDao.getCount(userId);
-        List<JudgeResult> results = judgeResultDao.getByUserId(userId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, results));
+        return buildGETResponse(judgeResultDao.getByUserId(userId, start, limit));
     }
 
     // NOTE 排行
 
-    @Transactional
     public ResponseEntity<?> getRanking(int start, int limit) {
-        long total = rankingDao.getCount();
-        List<Ranking> rankingList = rankingDao.getRanking(start, limit);
-        return buildGETResponse(new PagedResult<>(total, rankingList));
+        return buildGETResponse(rankingDao.getRanking(start, limit));
     }
 
     // NOTE 竞赛排行
 
-    @Transactional
     public ResponseEntity<?> getContestRanking(int contestId, int start, int limit) {
-        long total = rankingDao.getContestRankingCount(contestId);
-        List<Ranking> rankingList = rankingDao.getContestRanking(contestId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, rankingList));
+        return buildGETResponse(rankingDao.getContestRanking(contestId, start, limit));
     }
+
     // NOTE 竞赛/作业
 
-    @Transactional
     public ResponseEntity<?> getAllContest(int start, int limit) {
-        long total = contestDao.getAllCount();
-        List<Contest> contests = contestDao.getAllContest(start, limit);
-        return buildGETResponse(new PagedResult<>(total, contests));
+        return buildGETResponse(contestDao.getAllContest(start, limit));
     }
 
-    @Transactional
     public ResponseEntity<?> getStartedContest(int start, int limit) {
-        long total = contestDao.getStartedCount();
-        List<Contest> contests = contestDao.getStartedContest(start, limit);
-        return buildGETResponse(new PagedResult<>(total, contests));
+        return buildGETResponse(contestDao.getStartedContest(start, limit));
     }
 
     public ResponseEntity<?> addContest(Contest contest) {
@@ -156,18 +127,12 @@ public class ManagerService implements CRUDService {
         return buildDELETEResponse(contestDao.deleteContest(contestId) == 1);
     }
 
-    @Transactional
     public ResponseEntity<?> getProblemsNotInContest(int contestId, int start, int limit) {
-        long total = contestDao.getNotInContestCount(contestId);
-        List<Problem> problems = contestDao.getProblemsNotInContest(contestId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, problems));
+        return buildGETResponse(contestDao.getProblemsNotInContest(contestId, start, limit));
     }
 
-    @Transactional
     public ResponseEntity<?> getProblemsFromContest(String userId, int contestId, int start, int limit) {
-        long total = contestDao.getProblemsCount(contestId);
-        List<Problem> problems = contestDao.getProblems(userId, contestId, start, limit);
-        return buildGETResponse(new PagedResult<>(total, problems));
+        return buildGETResponse(contestDao.getProblems(userId, contestId, start, limit));
     }
 
     public ResponseEntity<?> addProblemToContest(int contestId, int problemId) {

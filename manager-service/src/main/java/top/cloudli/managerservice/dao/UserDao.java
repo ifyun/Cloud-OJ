@@ -7,9 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface UserDao {
-    long getCount();
 
-    List<User> getAll(int start, int limit);
+    List<List<?>> getAll(int start, int limit);
 
     int add(User user);
 

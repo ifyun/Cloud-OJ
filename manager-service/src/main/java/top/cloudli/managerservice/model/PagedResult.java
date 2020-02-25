@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PagedResult<T extends List<?>> {
+public class PagedResult {
+    private List<?> data;
     private long count;
-    private T data;
 }

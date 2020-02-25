@@ -220,11 +220,15 @@
             user = null;
             $.removeCookie('cloudOjToken');
             $('#user-name').text('未登录');
-            window.location.href = './index?login=true';
+            window.location.href = './index';
         }
 
         function start() {
-            window.location.href = './index?login=true';
+            try {
+                startCodding();
+            } catch (e) {
+                window.location.href = './index?login=true';
+            }
         }
     </script>
 </head>

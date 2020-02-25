@@ -14,9 +14,9 @@ public interface CRUDService {
                 ResponseEntity.noContent().build();
     }
 
-    default ResponseEntity<PagedResult<List<?>>> buildGETResponse(PagedResult<List<?>> result) {
-        return result.getData().size() > 0 ?
-                ResponseEntity.ok(result) :
+    default ResponseEntity<?> buildGETResponse(List<List<?>> data) {
+        return data.get(0).size() > 0 ?
+                ResponseEntity.ok(new PagedResult(data.get(0), (Long) data.get(1).get(0))) :
                 ResponseEntity.noContent().build();
     }
 

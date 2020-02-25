@@ -3,15 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.managerservice.dao.ProblemDao">
 
-    <select id="getCount" resultType="java.lang.Long">
-        select count(problem_id)
-        from problem
-    </select>
-
-    <select id="getAll" resultType="top.cloudli.managerservice.model.Problem">
+    <select id="getAll" resultMap="Map.Problem, Map.Total">
         <choose>
             <when test="userId != null">
-                select p.*, result
+                select sql_calc_found_rows p.*, result
                 from problem p
                 left join (select user_id, problem_id, min(result) result
                 from judge_result
@@ -20,23 +15,31 @@
                 on p.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select *
+                select sql_calc_found_rows *
                 from problem
             </otherwise>
         </choose>
-        limit #{start}, #{limit}
+        <if test="enable == true">
+            where enable = true
+        </if>
+        limit #{start}, #{limit};
+        select found_rows()
     </select>
 
-    <select id="getEnableCount" resultType="java.lang.Long">
-        select count(problem_id)
+    <select id="getSingle" resultMap="Map.Problem">
+        select *
         from problem
-        where enable = true
+        where
+        <if test="enable == true">
+            enable = true and
+        </if>
+        problem_id = #{problemId}
     </select>
 
-    <select id="getEnable" resultType="top.cloudli.managerservice.model.Problem">
+    <select id="search" resultMap="Map.Problem, Map.Total">
         <choose>
             <when test="userId != null">
-                select p.*, result
+                select sql_calc_found_rows p.*, result
                 from problem p
                 left join (select user_id, problem_id, min(result) result
                 from judge_result
@@ -45,56 +48,17 @@
                 on p.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select problem_id, title, enable, category, create_at
-                from problem
-            </otherwise>
-        </choose>
-        where enable = true
-        limit #{start}, #{limit}
-    </select>
-
-    <select id="getSingle" resultType="top.cloudli.managerservice.model.Problem">
-        select *
-        from problem
-        where problem_id = #{problemId}
-    </select>
-
-    <select id="getSingleEnable" resultType="top.cloudli.managerservice.model.Problem">
-        select *
-        from problem
-        where enable = true
-          and problem_id = #{problemId}
-    </select>
-
-    <select id="getSearchCount" resultType="java.lang.Long">
-        select count(problem_id)
-        from problem
-        where enable = true
-          and title like #{title}
-    </select>
-
-    <select id="search" resultType="top.cloudli.managerservice.model.Problem">
-        <choose>
-            <when test="userId != null">
-                select p.*, result
-                from problem p
-                left join (select user_id, problem_id, min(result) result
-                from judge_result
-                where user_id = #{userId}
-                group by user_id, problem_id) jr
-                on p.problem_id = jr.problem_id
-            </when>
-            <otherwise>
-                select problem_id, title, enable, category, create_at
+                select sql_calc_found_rows problem_id, title, enable, category, create_at
                 from problem
             </otherwise>
         </choose>
         where
-        <if test="pro != true">
+        <if test="enable == true">
             enable = true and
         </if>
         (title like #{keyword} or category like #{keyword})
-        limit #{start}, #{limit}
+        limit #{start}, #{limit};
+        select found_rows()
     </select>
 
     <insert id="add" parameterType="top.cloudli.managerservice.model.Problem">

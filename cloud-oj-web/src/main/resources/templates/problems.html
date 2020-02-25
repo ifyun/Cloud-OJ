@@ -116,7 +116,7 @@
 
     function onSearch(e) {
         if (e.keyCode === 13)
-            search($('#keyword').val());
+            search($('#keyword').val().trim());
     }
 
     function search(keyword) {

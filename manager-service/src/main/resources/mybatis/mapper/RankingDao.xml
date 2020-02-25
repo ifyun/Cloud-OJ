@@ -2,29 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.cloudli.managerservice.dao.RankingDao">
-
-    <select id="getCount" resultType="java.lang.Long">
-        select count(user_id)
+    <select id="getRanking" resultMap="Map.Ranking, Map.Total">
+        select sql_calc_found_rows *
         from ranking_list
+        limit #{start}, #{limit};
+        select found_rows()
     </select>
 
-    <select id="getRanking" resultType="top.cloudli.managerservice.model.Ranking">
-        select *
-        from ranking_list
-        limit #{start}, #{limit}
-    </select>
-
-    <select id="getContestRankingCount" resultType="java.lang.Long">
-        select count(*)
+    <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
+        select sql_calc_found_rows *
         from contest_ranking_list
         where contest_id = #{contestId}
+        limit #{start}, #{limit};
+        select found_rows()
     </select>
-
-    <select id="getContestRanking" resultType="top.cloudli.managerservice.model.Ranking">
-        select *
-        from contest_ranking_list
-        where contest_id = #{contestId}
-        limit #{start}, #{limit}
-    </select>
-
 </mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Map">
+    <resultMap id="Total" type="java.lang.Long">
+    </resultMap>
+
+    <resultMap id="User" type="top.cloudli.managerservice.model.User">
+    </resultMap>
+
+    <resultMap id="Problem" type="top.cloudli.managerservice.model.Problem">
+    </resultMap>
+
+    <resultMap id="Contest" type="top.cloudli.managerservice.model.Contest">
+    </resultMap>
+
+    <resultMap id="Ranking" type="top.cloudli.managerservice.model.Ranking">
+    </resultMap>
+
+    <resultMap id="JudgeResult" type="top.cloudli.managerservice.model.JudgeResult">
+        <result column="language" property="language"
+                typeHandler="top.cloudli.managerservice.converter.ResultConverter"/>
+        <result column="result" property="result" typeHandler="top.cloudli.managerservice.converter.ResultConverter"/>
+    </resultMap>
+</mapper>
