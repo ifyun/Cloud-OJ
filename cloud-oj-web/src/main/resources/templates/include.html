@@ -21,8 +21,19 @@
             height: 100%;
         }
 
+        .container {
+            border-top: 1px solid #404553;
+            height: calc(100% - 61px);
+            min-height: 800px;
+            background-image: url('img/background.jpg');
+            background-position: center top;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
         .menu-text {
             font-size: 12pt;
+            font-weight: bold;
         }
 
         .header {
@@ -209,7 +220,7 @@
             user = null;
             $.removeCookie('cloudOjToken');
             $('#user-name').text('未登录');
-            window.location.href = './index';
+            window.location.href = './index?login=true';
         }
 
         function start() {
@@ -256,7 +267,7 @@
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
-                <a id="user" style="cursor: pointer;"><span id="user-name" class="menu-text">未登录</span></a>
+                <a id="user" style="cursor: pointer;"><span id="user-name">未登录</span></a>
                 <dl id="user-menu" class="layui-nav-child" style="display: none">
                     <dd style="display: none" id="info"><a href="#">基本资料</a></dd>
                     <dd id="exit"><a href="javascript:exit()">退了</a></dd>
