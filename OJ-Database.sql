@@ -166,11 +166,13 @@ from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`
          join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
 create definer = root@`%` view contest_ranking_list as
-select `ranking`.`user_id`     AS `user_id`,
-       `ranking`.`name`        AS `name`,
-       `ranking`.`committed`   AS `committed`,
-       `passed`.`passed`       AS `passed`,
-       `ranking`.`total_score` AS `total_score`
+select `ranking`.`user_id`      AS `user_id`,
+       `ranking`.`name`         AS `name`,
+       `ranking`.`committed`    AS `committed`,
+       `passed`.`passed`        AS `passed`,
+       `ranking`.`total_score`  AS `total_score`,
+       `ranking`.`contest_id`   AS `contest_id`,
+       `ranking`.`contest_name` AS `contest_name`
 from ((select `problem_score`.`user_id`        AS `user_id`,
               `problem_score`.`name`           AS `name`,
               sum(`problem_score`.`committed`) AS `committed`,
@@ -183,7 +185,8 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                     max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
                     `s`.`contest_id`                     AS `contest_id`,
                     `c`.`contest_name`                   AS `contest_name`
-             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+                 join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
                       join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
        group by `problem_score`.`user_id`, `problem_score`.`contest_id`
