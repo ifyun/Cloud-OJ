@@ -52,6 +52,12 @@ public class FileCleaner {
     }
 
     private void delete(File file) {
+        if (file.isDirectory()) {
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                delete(f);
+            }
+        }
+
         if (file.delete())
             log.info("{} 已删除.", file.getName());
         else

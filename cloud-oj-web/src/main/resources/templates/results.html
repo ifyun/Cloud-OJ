@@ -12,7 +12,7 @@
     </table>
 </div>
 <script type="text/html" id="titleTpl">
-    <a href="./commit?problemId={{d.problemId}}" class="layui-table-link">{{d.title}}</a>
+    <a href="./commit?problemId={{d.problemId}}" class="layui-table-link"><b>{{d.title}}</b></a>
 </script>
 <script type="text/html" id="resultTpl">
     {{# if (d.result == '完全正确') { }}
@@ -26,7 +26,7 @@
     {{# } }}
 </script>
 <script type="text/html" id="languageTpl">
-    <span class="bg-blue label">
+    <span class="{{langColorMap.get(d.language)}} label">
         <span class="iconfont {{iconMap.get(d.language)}}"></span>
         {{d.language}}
     </span>
@@ -85,7 +85,7 @@
                     type: 1,
                     title: '代码',
                     area: ['600px', '700px'],
-                    closeButton: true,
+                    closeBtn: 2,
                     content: '<textarea readonly="readonly" class="layui-textarea"' +
                         ' style="position: absolute; top: 0; bottom: 0;" id="code">'
                         + obj.data.code + '</textarea>'

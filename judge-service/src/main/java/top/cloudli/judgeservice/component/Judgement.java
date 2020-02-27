@@ -9,9 +9,7 @@ import top.cloudli.judgeservice.dao.RuntimeDao;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.*;
 import top.cloudli.judgeservice.model.Runtime;
-import top.cloudli.judgeservice.task.FileCleaner;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
@@ -54,7 +52,7 @@ public class Judgement {
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
         // 执行并获取输出
-        List<String> output = execute(cmd, input, runtime);
+        List<String> output = execute(Objects.requireNonNull(cmd), input, runtime);
         // 比较结果
         compareResult(solution, runtime, expect, output);
     }
@@ -124,7 +122,7 @@ public class Judgement {
 
                 stopWatch.stop();
                 // 计算运行时间
-                runtime.setTime(stopWatch.getTotalTimeMillis() / 8);
+                runtime.setTime(stopWatch.getTotalTimeMillis());
 
                 // 获取标准输出流
                 String stdout = getOutput(process.getInputStream());
@@ -164,10 +162,12 @@ public class Judgement {
                     runtime.setInfo(stderr);
                 }
 
-                runtime.setTime(maxTime / 8);
+                runtime.setTime(maxTime);
             }
         } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
+            output.clear();
+            runtime.setTime(maxWaitTime);
             runtime.setInfo(e.getMessage());
         }
 

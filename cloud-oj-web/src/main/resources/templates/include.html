@@ -5,8 +5,9 @@
     <title th:replace="${title}"></title>
     <link class="fav-icon" rel="shortcut icon"/>
     <link class="fav-icon" rel="bookmark"/>
-    <link rel="stylesheet" href="./layui/css/layui.css">
+    <link rel="stylesheet" href="./css/common.css">
     <link rel="stylesheet" href="./css/iconfont.css">
+    <link rel="stylesheet" href="./layui/css/layui.css">
     <script src="./common.js"></script>
     <script src="./layui/layui.all.js"></script>
     <script src="./jquery-3.4.1.js"></script>
@@ -19,16 +20,6 @@
         body {
             min-width: 900px;
             height: 100%;
-        }
-
-        .container {
-            border-top: 1px solid #404553;
-            height: calc(100% - 61px);
-            min-height: 800px;
-            background-image: url('img/background.jpg');
-            background-position: center top;
-            background-size: cover;
-            background-repeat: no-repeat;
         }
 
         .menu-text {
@@ -47,103 +38,9 @@
             left: 0;
             top: 16px;
         }
-
-        .label {
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-
-        .tag {
-            border-radius: 20px;
-            padding: 3px 10px;
-            color: white;
-        }
-
-        .category {
-            cursor: pointer;
-            border-radius: 20px;
-            padding: 3px 10px;
-            color: white;
-            transition: all 100ms;
-        }
-
-        .category:hover {
-            font-size: 12pt;
-            transition: all 100ms;
-        }
-
-        .color-1 {
-            background: #5FB878;
-        }
-
-        .color-2 {
-            background: #FFB800;
-        }
-
-        .color-3 {
-            background: #01AAED;
-        }
-
-        .color-4 {
-            background: #f17c67;
-        }
-
-        .color-5 {
-            background: #6B4C7A;
-        }
-
-        .color-6 {
-            background: #3AB2A6;
-        }
-
-        .color-7 {
-            background: #FF7530;
-        }
-
-        .bg-green {
-            color: white;
-            background: #5FB878;
-        }
-
-        .bg-red {
-            color: white;
-            background: #FF5722;
-        }
-
-        .bg-yellow {
-            color: white;
-            background: #FFB800;
-        }
-
-        .bg-blue {
-            color: white;
-            background: #1E9FFF;
-        }
-
-        .bg-grey {
-            color: white;
-            background: #a2a2a2;
-        }
     </style>
     <script>
-        let roles = ['普通用户', '用户管理员', '题目管理员', 'ROOT'];
         let baseUrl = 'http://' + '[[${gateway_host}]]';
-        let iconMap = new Map([
-            ['C/C++', 'icon-cpp'],
-            ['Java', 'icon-java'],
-            ['Python', 'icon-python'],
-            ['Shell', 'icon-shell']
-        ]);
-        let color = 0;
-        let colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6', 'color-7'];
-        let colorMap = new Map();
-
-        function getColor(tag) {
-            if (colorMap[tag] === undefined)
-                colorMap[tag] = colors[color++ % colors.length];
-            return colorMap[tag];
-        }
-
         let user = {
             userId: '',
             name: '',

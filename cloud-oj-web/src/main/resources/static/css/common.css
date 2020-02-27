@@ -1,0 +1,93 @@
+.label {
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: white;
+}
+
+.tag {
+    border-radius: 20px;
+    padding: 3px 10px;
+    color: white;
+}
+
+.category {
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 3px 10px;
+    color: white;
+    transition: all 100ms;
+}
+
+.category:hover {
+    font-size: 12pt;
+    transition: all 100ms;
+}
+
+.tag-color-1 {
+    background: #5FB878;
+}
+
+.tag-color-2 {
+    background: #FFB800;
+}
+
+.tag-color-3 {
+    background: #01AAED;
+}
+
+.tag-color-4 {
+    background: #f17c67;
+}
+
+.tag-color-5 {
+    background: #6B4C7A;
+}
+
+.tag-color-6 {
+    background: #3AB2A6;
+}
+
+.tag-color-7 {
+    background: #FF7530;
+}
+
+.shell-color {
+    background: #3f3f3f;
+}
+
+.py-color {
+    background: #3AB2A6;
+}
+
+.java-color {
+    background: #1E9FFF;
+}
+
+.cpp-color {
+    background: #6B4C7A;
+}
+
+.bg-green {
+    color: white;
+    background: #5FB878;
+}
+
+.bg-red {
+    color: white;
+    background: #FF5722;
+}
+
+.bg-yellow {
+    color: white;
+    background: #FFB800;
+}
+
+.bg-blue {
+    color: white;
+    background: #1E9FFF;
+}
+
+.bg-grey {
+    color: white;
+    background: #a2a2a2;
+}

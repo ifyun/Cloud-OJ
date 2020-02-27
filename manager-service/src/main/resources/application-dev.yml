@@ -24,6 +24,7 @@ management:
     web:
       exposure:
         include: "*"
+        exclude: "info"
   endpoint:
     health:
       show-details: ALWAYS

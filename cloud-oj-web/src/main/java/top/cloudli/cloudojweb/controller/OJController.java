@@ -51,7 +51,8 @@ public class OJController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("token", token);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        Problem problem = restTemplate.exchange("http://localhost/api/manager/problem/pro/" + problemId + "?userId=" + userId,
+        Problem problem = restTemplate.exchange(String.format("http://%s/api/manager/problem/pro/", gatewayHost)
+                        + problemId + "?userId=" + userId,
                 HttpMethod.GET, httpEntity, Problem.class).getBody();
         if (problem == null)
             return new ModelAndView("forward:/error/404.html");
