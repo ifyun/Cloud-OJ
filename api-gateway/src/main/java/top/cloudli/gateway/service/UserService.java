@@ -31,10 +31,4 @@ public class UserService implements UserDetailsService {
 
         return user;
     }
-
-    public void login(String userId, String password) {
-        User user = userDao.findUserById(userId);
-        if (password.equals(user.getPassword()))
-            log.debug("Login success.");
-    }
 }

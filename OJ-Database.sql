@@ -7,8 +7,7 @@ create table contest
     contest_name varchar(64) null,
     start_at     timestamp   not null comment '开始时间',
     end_at       timestamp   not null comment '结束时间'
-)
-    comment '竞赛和作业';
+);
 
 create table problem
 (
@@ -25,8 +24,7 @@ create table problem
     enable        tinyint(1) default 0                 null comment '是否可用',
     category      varchar(32)                          null comment '分类',
     create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
-)
-    comment '题目表';
+);
 
 create table `contest-problem`
 (
@@ -42,6 +40,9 @@ create table `contest-problem`
 
 create index problem_title_index
     on problem (title);
+
+create index problem_category_index
+    on problem (category);
 
 create table role
 (
@@ -99,8 +100,7 @@ create table compile
     constraint compile_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
-)
-    comment '存储编译信息';
+);
 
 create table runtime
 (
@@ -115,8 +115,7 @@ create table runtime
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
-)
-    comment '代码运行信息';
+);
 
 create table source_code
 (
@@ -166,53 +165,35 @@ select `c`.`contest_id`    AS `contest_id`,
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`.`problem_id` = `p`.`problem_id`)))
          join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
--- comment on column contest_problem.start_at not supported: 开始时间
-
--- comment on column contest_problem.end_at not supported: 结束时间
-
--- comment on column contest_problem.description not supported: 题目描述
-
--- comment on column contest_problem.input not supported: 输入说明
-
--- comment on column contest_problem.output not supported: 输出说明
-
--- comment on column contest_problem.sample_input not supported: 示例输入
-
--- comment on column contest_problem.sample_output not supported: 示例输出
-
--- comment on column contest_problem.timeout not supported: 时间限制
-
--- comment on column contest_problem.score not supported: 分数
-
--- comment on column contest_problem.enable not supported: 是否可用
-
--- comment on column contest_problem.category not supported: 分类
-
--- comment on column contest_problem.create_at not supported: 创建时间
-
 create definer = root@`%` view contest_ranking_list as
-select `problem_score`.`user_id`                                    AS `user_id`,
-       `problem_score`.`name`                                       AS `name`,
-       sum(`problem_score`.`committed`)                             AS `committed`,
-       count((case when (`problem_score`.`result` = 0) then 1 end)) AS `passed`,
-       sum(`problem_score`.`score`)                                 AS `total_score`,
-       `problem_score`.`contest_id`                                 AS `contest_id`,
-       `problem_score`.`contest_name`                               AS `contest_name`
-from (select `s`.`user_id`                        AS `user_id`,
-             `u`.`name`                           AS `name`,
-             count(`p`.`problem_id`)              AS `committed`,
-             `s`.`result`                         AS `result`,
-             max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
-             `s`.`contest_id`                     AS `contest_id`,
-             `c`.`contest_name`                   AS `contest_name`
-      from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
-               join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
-      group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`result`, `s`.`contest_id`,
-               `c`.`contest_name`) `problem_score`
-group by `problem_score`.`user_id`, `problem_score`.`contest_id`
-order by `total_score` desc;
-
--- comment on column contest_ranking_list.name not supported: 用户名
+select `ranking`.`user_id`     AS `user_id`,
+       `ranking`.`name`        AS `name`,
+       `ranking`.`committed`   AS `committed`,
+       `passed`.`passed`       AS `passed`,
+       `ranking`.`total_score` AS `total_score`
+from ((select `problem_score`.`user_id`        AS `user_id`,
+              `problem_score`.`name`           AS `name`,
+              sum(`problem_score`.`committed`) AS `committed`,
+              sum(`problem_score`.`score`)     AS `total_score`,
+              `problem_score`.`contest_id`     AS `contest_id`,
+              `problem_score`.`contest_name`   AS `contest_name`
+       from (select `s`.`user_id`                        AS `user_id`,
+                    `u`.`name`                           AS `name`,
+                    count(`p`.`problem_id`)              AS `committed`,
+                    max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
+                    `s`.`contest_id`                     AS `contest_id`,
+                    `c`.`contest_name`                   AS `contest_name`
+             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+                      join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
+             group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
+       group by `problem_score`.`user_id`, `problem_score`.`contest_id`
+       order by `total_score` desc) `ranking`
+         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
+               from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
+                     from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+                              join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
+                     group by `s`.`problem_id`, `s`.`user_id`, `c`.`contest_id`, `s`.`result`) `t`
+               group by `t`.`user_id`) `passed` on ((`ranking`.`user_id` = `passed`.`user_id`)));
 
 create definer = root@`%` view judge_result as
 select `s`.`solution_id`               AS `solution_id`,
@@ -234,38 +215,35 @@ from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`probl
          join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
 order by `s`.`submit_time`;
 
--- comment on column judge_result.state not supported: 状态(2->已提交,1->在判题队列,0->已判题)
-
--- comment on column judge_result.result not supported: 结果(4->编译错误,3->答案错误,2->部分通过,1->时间超限,0->完全正确)
-
--- comment on column judge_result.pass_rate not supported: 通过率
-
--- comment on column judge_result.submit_time not supported: 提交时间
-
--- comment on column judge_result.compile_state not supported: 编译状态(0->编译成功,-1->编译出错)
-
--- comment on column judge_result.compile_info not supported: 编译信息
-
--- comment on column judge_result.time not supported: 耗时（ms）
-
 create definer = root@`%` view ranking_list as
-select `problem_score`.`user_id`                                    AS `user_id`,
-       `problem_score`.`name`                                       AS `name`,
-       sum(`problem_score`.`committed`)                             AS `committed`,
-       count((case when (`problem_score`.`result` = 0) then 1 end)) AS `passed`,
-       sum(`problem_score`.`score`)                                 AS `total_score`
-from (select `s`.`user_id`                        AS `user_id`,
-             `u`.`name`                           AS `name`,
-             count(`p`.`problem_id`)              AS `committed`,
-             `s`.`result`                         AS `result`,
-             max((`s`.`pass_rate` * `p`.`score`)) AS `score`
-      from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
-               join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
-      group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`result`) `problem_score`
-group by `problem_score`.`user_id`
-order by `total_score` desc;
-
--- comment on column ranking_list.name not supported: 用户名
+select `ranking`.`user_id`     AS `user_id`,
+       `ranking`.`name`        AS `name`,
+       `ranking`.`committed`   AS `committed`,
+       `passed`.`passed`       AS `passed`,
+       `ranking`.`total_score` AS `total_score`
+from ((select `problem_score`.`user_id`        AS `user_id`,
+              `problem_score`.`name`           AS `name`,
+              sum(`problem_score`.`committed`) AS `committed`,
+              sum(`problem_score`.`score`)     AS `total_score`,
+              `problem_score`.`contest_id`     AS `contest_id`,
+              `problem_score`.`contest_name`   AS `contest_name`
+       from (select `s`.`user_id`                        AS `user_id`,
+                    `u`.`name`                           AS `name`,
+                    count(`p`.`problem_id`)              AS `committed`,
+                    max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
+                    `s`.`contest_id`                     AS `contest_id`,
+                    `c`.`contest_name`                   AS `contest_name`
+             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+                      join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
+             group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
+       group by `problem_score`.`user_id`, `problem_score`.`contest_id`
+       order by `total_score` desc) `ranking`
+         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
+               from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
+                     from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+                              join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
+                     group by `s`.`problem_id`, `s`.`user_id`, `c`.`contest_id`, `s`.`result`) `t`
+               group by `t`.`user_id`) `passed` on ((`ranking`.`user_id` = `passed`.`user_id`)));
 
 -- 初始化角色/权限表
 INSERT INTO cloud_oj.role (role_id, role_name)

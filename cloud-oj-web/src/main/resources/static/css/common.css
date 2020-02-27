@@ -1,12 +1,17 @@
 .label {
     border-radius: 5px;
     padding: 5px 10px;
-    color: white;
 }
 
 .tag {
     border-radius: 20px;
     padding: 3px 10px;
+    color: white;
+}
+
+.language-tag {
+    border-radius: 20px;
+    padding: 5px 10px;
     color: white;
 }
 
@@ -90,4 +95,8 @@
 .bg-grey {
     color: white;
     background: #a2a2a2;
+}
+
+.layui-table-tool {
+    border: none !important;
 }
