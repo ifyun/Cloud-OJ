@@ -134,6 +134,7 @@ create index user_name_index
 create index user_section_index
     on user (section);
 
+DELIMITER //
 create definer = root@`%` trigger tr_user_update
     before update
     on user
@@ -143,7 +144,8 @@ begin
     then
         set NEW.secret = LEFT(UUID(), 8);
     end if;
-end;
+end //
+DELIMITER ;
 
 create definer = root@`%` view contest_problem as
 select `c`.`contest_id`    AS `contest_id`,
@@ -259,5 +261,6 @@ INSERT INTO cloud_oj.role (role_id, role_name)
 VALUES (3, 'ROLE_ROOT');
 
 -- 初始 ROOT 用户
+set character set utf8;
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
 values ('root', '初始管理员', '63a9f0ea7bb98050796b649e85481845', LEFT(UUID(), 8), 3);

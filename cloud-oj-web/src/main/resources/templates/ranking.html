@@ -14,7 +14,9 @@
 <div th:replace="include::foot"></div>
 <script type="text/html" id="top-bar">
     {{# if (getQueryVariable('contestId') != null) { }}
-    <label id="contest_name" style="font-size: 14pt;"></label>
+    <label id="contest_name" style="color: #5FB878; font-size: 14pt; font-weight: bold"></label>
+    {{# } else { }}
+    <label style="color: #5FB878; font-size: 14pt; font-weight: bold">总排行榜</label>
     {{# } }}
 </script>
 <script>
@@ -38,7 +40,7 @@
             url: apiUrl,
             parseData: (res) => {
                 if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined)
-                    $('#contest_name').text(res.data[0].contestName + '排行榜');
+                    $('#contest_name').text(res.data[0].contestName + '——排行榜');
                 return {
                     "code": 0,
                     "count": res === undefined ? 0 : res.count,
