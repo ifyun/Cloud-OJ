@@ -40,6 +40,14 @@
 
 <div th:replace="include::top"></div>
 <div class="layui-container" style="margin-top: 20px">
+    <div id="breadcrumb" style="margin-bottom: 15px; display: none">
+        <span class="layui-breadcrumb" lay-separator="-">
+            <a style="font-size: 12pt" href="./contests">竞赛/作业</a>
+            <a id="problem-list" style="font-size: 12pt"></a>
+            <a style="font-size: 13pt;"><cite id="current" style="color: #333333" th:text="${problem.getTitle()}"></cite></a>
+        </span>
+    </div>
+    <!-- problem -->
     <div>
         <div class="layui-card">
             <div class="layui-card-header">
@@ -73,10 +81,10 @@
                         <label for="lang" class="layui-form-label">编程语言：</label>
                         <div class="layui-input-block">
                             <select id="lang" name="language" lay-filter="language">
-                                <option value="0" selected="selected">C/C++（支持 C++ 14 标准）</option>
-                                <option value="1">Java (支持 1.8 特性)</option>
-                                <option value="2">Python（3.5）</option>
-                                <option value="3">Bash Shell</option>
+                                <option class="lang" value="0" selected="selected">C/C++（支持 C++ 14 标准）</option>
+                                <option class="lang" value="1">Java (支持 1.8 特性)</option>
+                                <option class="lang" value="2">Python（3.5）</option>
+                                <option class="lang" value="3">Bash Shell</option>
                             </select>
                         </div>
                     </div>
@@ -120,10 +128,30 @@
         layui.use(['form', 'element'], function () {
             form = layui.form;
             let element = layui.element;
-
             form.render();
             element.init();
         });
+
+        let contestName;
+
+        if (contestId != null) {
+            $.ajax({
+                url: baseUrl + '/api/manager/contest/lang/' + contestId,
+                method: 'get',
+                success: (data) => {
+                    let languages = data.languages;
+                    contestName = data.contestName;
+                    $('.lang').each((index, item) => {
+                        let t = Math.pow(2, index);
+                        if ((languages & t) !== t)
+                            $(item).remove();
+                    });
+                    form.render('select');
+                    $('#problem-list').attr('href', './problems?contestId=' + contestId).text(contestName);
+                    $('#breadcrumb').show();
+                }
+            });
+        }
 
         form.on('select(language)', (data) => {
             language = data.value;

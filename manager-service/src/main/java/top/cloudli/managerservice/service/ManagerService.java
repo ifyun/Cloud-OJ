@@ -1,16 +1,16 @@
 package top.cloudli.managerservice.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import top.cloudli.managerservice.dao.*;
 import top.cloudli.managerservice.model.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Slf4j
 @Service
-public class ManagerService implements CRUDService {
+public class ManagerService {
 
     @Resource
     private ProblemDao problemDao;
@@ -29,118 +29,118 @@ public class ManagerService implements CRUDService {
 
     // NOTE 题目
 
-    public ResponseEntity<?> getEnableProblems(String userId, int start, int limit) {
-        return buildGETResponse(problemDao.getAll(userId, start, limit, true));
+    public List<List<?>> getEnableProblems(String userId, int start, int limit) {
+        return problemDao.getAll(userId, start, limit, true);
     }
 
-    public ResponseEntity<?> getProblems(String userId, int start, int limit) {
-        return buildGETResponse(problemDao.getAll(userId, start, limit, false));
+    public List<List<?>> getProblems(String userId, int start, int limit) {
+        return problemDao.getAll(userId, start, limit, false);
     }
 
-    public ResponseEntity<?> getProblem(int problemId) {
-        return buildGETSingleResponse(problemDao.getSingle(problemId, false));
+    public Problem getProblem(int problemId) {
+        return problemDao.getSingle(problemId, false);
     }
 
-    public ResponseEntity<?> getEnableProblem(int problemId) {
-        return buildGETSingleResponse(problemDao.getSingle(problemId, true));
+    public Problem getEnableProblem(int problemId) {
+        return problemDao.getSingle(problemId, true);
     }
 
-    public ResponseEntity<?> searchProblems(String userId, String keyword, int start, int limit, boolean enable) {
-        String title = String.format("%%%s%%", keyword);
-        return buildGETResponse(problemDao.search(userId, title, start, limit, enable));
+    public List<List<?>> searchProblems(String userId, String keyword, int start, int limit, boolean enable) {
+        String title = String.format("%s%%", keyword);
+        return problemDao.search(userId, title, start, limit, enable);
     }
 
-    public ResponseEntity<Void> updateProblem(Problem problem) {
-        return buildPUTResponse(problemDao.update(problem) == 1);
+    public boolean updateProblem(Problem problem) {
+        return problemDao.update(problem) == 1;
     }
 
-    public ResponseEntity<Void> updateProblemEnable(int problemId, boolean enable) {
-        return buildPUTResponse(problemDao.updateEnable(problemId, enable) == 1);
+    public boolean updateProblemEnable(int problemId, boolean enable) {
+        return problemDao.updateEnable(problemId, enable) == 1;
     }
 
-    public ResponseEntity<?> addProblem(Problem problem) {
-        String error = problemDao.add(problem) == 1 ? null : "添加失败.";
-        return buildPOSTResponse(error);
+    public String addProblem(Problem problem) {
+        return problemDao.add(problem) == 1 ? null : "添加失败.";
     }
 
-    public ResponseEntity<Void> deleteProblem(int problemId) {
-        return buildDELETEResponse(problemDao.delete(problemId) == 1);
+    public boolean deleteProblem(int problemId) {
+        return problemDao.delete(problemId) == 1;
     }
 
     // NOTE 用户
 
-    public ResponseEntity<?> getUsers(int start, int limit) {
-        return buildGETResponse(userDao.getAll(start, limit));
+    public List<List<?>> getUsers(int start, int limit) {
+        return userDao.getAll(start, limit);
     }
 
-    public ResponseEntity<?> addUser(User user) {
-        String error = userDao.add(user) == 1 ? null : "添加失败.";
-        return buildPOSTResponse(error);
+    public String addUser(User user) {
+        return userDao.add(user) == 1 ? null : "添加失败.";
     }
 
-    public ResponseEntity<Void> updateUser(User user) {
-        return buildPUTResponse(userDao.update(user) == 1);
+    public boolean updateUser(User user) {
+        return userDao.update(user) == 1;
     }
 
-    public ResponseEntity<Void> deleteUser(int userId) {
-        return buildDELETEResponse(userDao.delete(userId) == 1);
+    public boolean deleteUser(int userId) {
+        return userDao.delete(userId) == 1;
     }
 
     // NOTE 获取提交记录
 
-    public ResponseEntity<?> getJudged(String userId, int start, int limit) {
-        return buildGETResponse(judgeResultDao.getByUserId(userId, start, limit));
+    public List<List<?>> getJudged(String userId, int start, int limit) {
+        return judgeResultDao.getByUserId(userId, start, limit);
     }
 
     // NOTE 排行
 
-    public ResponseEntity<?> getRanking(int start, int limit) {
-        return buildGETResponse(rankingDao.getRanking(start, limit));
+    public List<List<?>> getRanking(int start, int limit) {
+        return rankingDao.getRanking(start, limit);
     }
 
     // NOTE 竞赛排行
 
-    public ResponseEntity<?> getContestRanking(int contestId, int start, int limit) {
-        return buildGETResponse(rankingDao.getContestRanking(contestId, start, limit));
+    public List<List<?>> getContestRanking(int contestId, int start, int limit) {
+        return rankingDao.getContestRanking(contestId, start, limit);
     }
 
     // NOTE 竞赛/作业
 
-    public ResponseEntity<?> getAllContest(int start, int limit) {
-        return buildGETResponse(contestDao.getAllContest(start, limit));
+    public List<List<?>> getAllContest(int start, int limit) {
+        return contestDao.getAllContest(start, limit);
     }
 
-    public ResponseEntity<?> getStartedContest(int start, int limit) {
-        return buildGETResponse(contestDao.getStartedContest(start, limit));
+    public Contest getLanguages(int contestId) {
+        return contestDao.getContest(contestId);
     }
 
-    public ResponseEntity<?> addContest(Contest contest) {
-        String error = contestDao.addContest(contest) == 1 ? null : "添加失败.";
-        return buildPOSTResponse(error);
+    public List<List<?>> getStartedContest(int start, int limit) {
+        return contestDao.getStartedContest(start, limit);
     }
 
-    public ResponseEntity<?> updateContest(Contest contest) {
-        return buildPUTResponse(contestDao.updateContest(contest) == 1);
+    public String addContest(Contest contest) {
+        return contestDao.addContest(contest) == 1 ? null : "添加失败.";
     }
 
-    public ResponseEntity<?> deleteContest(int contestId) {
-        return buildDELETEResponse(contestDao.deleteContest(contestId) == 1);
+    public boolean updateContest(Contest contest) {
+        return contestDao.updateContest(contest) == 1;
     }
 
-    public ResponseEntity<?> getProblemsNotInContest(int contestId, int start, int limit) {
-        return buildGETResponse(contestDao.getProblemsNotInContest(contestId, start, limit));
+    public boolean deleteContest(int contestId) {
+        return contestDao.deleteContest(contestId) == 1;
     }
 
-    public ResponseEntity<?> getProblemsFromContest(String userId, int contestId, int start, int limit) {
-        return buildGETResponse(contestDao.getProblems(userId, contestId, start, limit));
+    public List<List<?>> getProblemsNotInContest(int contestId, int start, int limit) {
+        return contestDao.getProblemsNotInContest(contestId, start, limit);
     }
 
-    public ResponseEntity<?> addProblemToContest(int contestId, int problemId) {
-        String error = contestDao.addProblem(contestId, problemId) == 1 ? null : "添加失败.";
-        return buildPOSTResponse(error);
+    public List<List<?>> getProblemsFromContest(String userId, int contestId, int start, int limit) {
+        return contestDao.getProblems(userId, contestId, start, limit);
     }
 
-    public ResponseEntity<?> deleteProblemFromContest(int contestId, int problemId) {
-        return buildDELETEResponse(contestDao.deleteProblem(contestId, problemId) == 1);
+    public String addProblemToContest(int contestId, int problemId) {
+        return contestDao.addProblem(contestId, problemId) == 1 ? null : "添加失败.";
+    }
+
+    public boolean deleteProblemFromContest(int contestId, int problemId) {
+        return contestDao.deleteProblem(contestId, problemId) == 1;
     }
 }

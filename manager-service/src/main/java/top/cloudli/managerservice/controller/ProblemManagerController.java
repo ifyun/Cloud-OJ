@@ -12,52 +12,54 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("problem")
-public class ProblemManagerController {
+public class ProblemManagerController implements CRUDController {
 
     @Resource
     private ManagerService managerService;
 
     @GetMapping("")
     public ResponseEntity<?> getAllEnable(String userId, String keyword, int page, int limit) {
-        if (keyword != null)
-            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, true);
-        return managerService.getEnableProblems(userId, (page - 1) * limit, limit);
+        return keyword != null ?
+                buildGETResponse(managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, true))
+                : buildGETResponse(managerService.getEnableProblems(userId, (page - 1) * limit, limit));
     }
 
     @GetMapping("pro")
     public ResponseEntity<?> getAll(String userId, String keyword, int page, int limit) {
-        if (keyword != null)
-            return managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, false);
-        return managerService.getProblems(userId, (page - 1) * limit, limit);
+        return keyword != null ?
+                buildGETResponse(managerService.searchProblems(userId, keyword, (page - 1) * limit, limit, false))
+                : buildGETResponse(managerService.getProblems(userId, (page - 1) * limit, limit));
     }
 
     @GetMapping("{problemId}")
     public ResponseEntity<?> getEnable(@PathVariable Integer problemId, Integer contestId) {
-        return contestId == null ? managerService.getEnableProblem(problemId) : managerService.getProblem(problemId);
+        return contestId == null ?
+                buildGETResponse(managerService.getEnableProblem(problemId))
+                : buildGETResponse(managerService.getProblem(problemId));
     }
 
     @GetMapping("pro/{problemId}")
     public ResponseEntity<?> getSingle(@PathVariable Integer problemId) {
-        return managerService.getProblem(problemId);
+        return buildGETResponse(managerService.getProblem(problemId));
     }
 
     @PutMapping("pro")
     public ResponseEntity<Void> update(@RequestBody Problem problem) {
-        return managerService.updateProblem(problem);
+        return buildPUTResponse(managerService.updateProblem(problem));
     }
 
     @PutMapping("pro/{problemId}")
     public ResponseEntity<Void> updateEnable(@PathVariable int problemId, boolean enable) {
-        return managerService.updateProblemEnable(problemId, enable);
+        return buildPUTResponse(managerService.updateProblemEnable(problemId, enable));
     }
 
     @PostMapping("pro")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
-        return managerService.addProblem(problem);
+        return buildPOSTResponse(managerService.addProblem(problem));
     }
 
     @DeleteMapping("pro/{problemId}")
     public ResponseEntity<Void> delete(@PathVariable int problemId) {
-        return managerService.deleteProblem(problemId);
+        return buildDELETEResponse(managerService.deleteProblem(problemId));
     }
 }

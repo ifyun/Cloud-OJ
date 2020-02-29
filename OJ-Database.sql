@@ -4,9 +4,10 @@ create table contest
 (
     contest_id   int auto_increment
         primary key,
-    contest_name varchar(64) null,
-    start_at     timestamp   not null comment '开始时间',
-    end_at       timestamp   not null comment '结束时间'
+    contest_name varchar(64)   null,
+    start_at     timestamp     not null comment '开始时间',
+    end_at       timestamp     not null comment '结束时间',
+    languages    int default 0 not null comment '支持的语言范围'
 );
 
 create table problem

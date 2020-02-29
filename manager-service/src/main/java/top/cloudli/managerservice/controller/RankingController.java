@@ -11,17 +11,17 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("ranking")
-public class RankingController {
+public class RankingController implements CRUDController {
     @Resource
     private ManagerService managerService;
 
     @GetMapping("")
     public ResponseEntity<?> getRankingList(int page, int limit) {
-        return managerService.getRanking((page - 1) * limit, limit);
+        return buildGETResponse(managerService.getRanking((page - 1) * limit, limit));
     }
 
     @GetMapping("contest/{contestId}")
     public ResponseEntity<?> getContestRanking(@PathVariable int contestId, int page, int limit) {
-        return managerService.getContestRanking(contestId, (page - 1) * limit, limit);
+        return buildGETResponse(managerService.getContestRanking(contestId, (page - 1) * limit, limit));
     }
 }

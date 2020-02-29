@@ -7,6 +7,12 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
+    <div style="margin-top: 15px;">
+        <span class="layui-breadcrumb" lay-separator="-">
+            <a style="font-size: 12pt" href="./contests">竞赛/作业</a>
+            <a style="font-size: 13pt;"><cite id="current" style="color: #333333"></cite></a>
+        </span>
+    </div>
     <!-- 题目列表 -->
     <table id="problems">
 
@@ -15,7 +21,8 @@
 <div th:replace="include::foot"></div>
 <script type="text/html" id="titleTpl">
     {{# if (d.contestId !== undefined) { }}
-    <a href="./commit?problemId={{d.problemId}}&contestId={{d.contestId}}" class="layui-table-link"><b>{{d.title}}</b></a>
+    <a href="./commit?problemId={{d.problemId}}&contestId={{d.contestId}}"
+       class="layui-table-link"><b>{{d.title}}</b></a>
     {{# } else { }}
     <a href="./commit?problemId={{d.problemId}}" class="layui-table-link"><b>{{d.title}}</b></a>
     {{# } }}
@@ -56,13 +63,14 @@
 
     </div>
     {{# } else { }}
-    <label id="contest_name" style="color: #5FB878; font-size: 14pt; font-weight: bold"></label>
+    <label id="contest_name" class="tag bg-blue" style="font-size: 14pt; font-weight: bold; padding: 6px 10px"></label>
     {{# } }}
 </script>
 <script>
     let problemsTable;
+    let contestId, contestName;
     $(document).ready(() => {
-        let contestId = getQueryVariable('contestId');
+        contestId = getQueryVariable('contestId');
 
         if (contestId != null) {
             $('#search-box').hide();
@@ -86,8 +94,11 @@
                 elem: '#problems',
                 url: apiUrl,
                 parseData: (res) => {
-                    if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined)
-                        $('#contest_name').text(res.data[0].contestName);
+                    if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined) {
+                        contestName = res.data[0].contestName;
+                        $('#current').text(contestName);
+                        $('#contest_name').text(contestName + '-题目列表');
+                    }
                     return {
                         "code": 0,
                         "count": res === undefined ? 0 : res.count,

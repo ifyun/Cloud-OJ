@@ -54,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/manager/result").hasAnyRole("USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT")
                 // 竞赛/作业管理权限设置
                 .antMatchers("/api/manager/contest/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
+                .antMatchers("/api/manager/contest/lang/**").permitAll()
                 // 文件上传权限设置
                 .antMatchers("/api/file/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 // 判题服务权限设置

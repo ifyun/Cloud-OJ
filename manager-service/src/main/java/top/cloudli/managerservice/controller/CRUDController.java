@@ -1,4 +1,4 @@
-package top.cloudli.managerservice.service;
+package top.cloudli.managerservice.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,9 +6,9 @@ import top.cloudli.managerservice.model.PagedResult;
 
 import java.util.List;
 
-public interface CRUDService {
+public interface CRUDController {
 
-    default ResponseEntity<?> buildGETSingleResponse(Object object) {
+    default ResponseEntity<?> buildGETResponse(Object object) {
         return object != null ?
                 ResponseEntity.ok(object) :
                 ResponseEntity.noContent().build();

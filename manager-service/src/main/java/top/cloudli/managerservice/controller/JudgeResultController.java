@@ -10,13 +10,13 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("result")
-public class JudgeResultController {
+public class JudgeResultController implements CRUDController {
 
     @Resource
     private ManagerService managerService;
 
     @GetMapping("")
     public ResponseEntity<?> getJudged(String userId, int page, int limit) {
-        return managerService.getJudged(userId, (page - 1) * limit, limit);
+        return buildGETResponse(managerService.getJudged(userId, (page - 1) * limit, limit));
     }
 }
