@@ -40,67 +40,70 @@
 
 <div th:replace="include::top"></div>
 <div class="layui-container" style="margin-top: 20px">
-    <div id="breadcrumb" style="margin-bottom: 15px; display: none">
+    <div style="display: flex; justify-content: left">
+        <div id="breadcrumb" style="margin-bottom: 15px; display: none">
         <span class="layui-breadcrumb" lay-separator="-">
             <a style="font-size: 12pt" href="./contests">竞赛/作业</a>
             <a id="problem-list" style="font-size: 12pt"></a>
-            <a style="font-size: 13pt;"><cite id="current" style="color: #333333" th:text="${problem.getTitle()}"></cite></a>
+            <a style="font-size: 13pt;"><cite id="current" style="color: #333333"
+                                              th:text="${problem.getTitle()}"></cite></a>
         </span>
+        </div>
+        <span id="end-time" style="font-size: 12pt; margin-left: auto; color: #5FB878"></span>
     </div>
     <!-- problem -->
-    <div>
-        <div class="layui-card">
-            <div class="layui-card-header">
-                <h2 id="problemId" style="display: inline-block" th:text="${problem.getProblemId()}"></h2>: <h2
-                    style="display: inline-block" th:text="${problem.getTitle()}"></h2>
-            </div>
-            <div class="layui-card-body">
-                <h3>题目描述：</h3>
-                <pre class="description" th:text="${problem.getDescription()}"></pre>
-                <h3>输入说明：</h3>
-                <pre class="description" th:text="${problem.getInput()}"></pre>
-                <h3>输出说明：</h3>
-                <pre class="description" th:text="${problem.getOutput()}"></pre>
-                <h3>输入示例：</h3>
-                <pre class="sample"
-                     th:text="${problem.getSampleInput() == null ? '无':problem.getSampleInput()}"></pre>
-                <h3>输出示例：</h3>
-                <pre class="sample" th:text="${problem.getSampleOutput()}"></pre>
-            </div>
+    <div id="problem-pane" class="layui-card">
+        <div class="layui-card-header">
+            <h2 id="problemId" style="display: inline-block; font-weight: bold;"
+                th:text="${problem.getProblemId()}"></h2><b>--</b>
+            <h2 style="display: inline-block; font-weight: bold;"
+                th:text="${problem.getTitle()}"></h2>
+        </div>
+        <div class="layui-card-body">
+            <h3>题目描述：</h3>
+            <pre class="description" th:text="${problem.getDescription()}"></pre>
+            <h3>输入说明：</h3>
+            <pre class="description" th:text="${problem.getInput()}"></pre>
+            <h3>输出说明：</h3>
+            <pre class="description" th:text="${problem.getOutput()}"></pre>
+            <h3>输入示例：</h3>
+            <pre class="sample"
+                 th:text="${problem.getSampleInput() == null ? '无':problem.getSampleInput()}"></pre>
+            <h3>输出示例：</h3>
+            <pre class="sample" th:text="${problem.getSampleOutput()}"></pre>
         </div>
     </div>
     <!-- 代码区域 -->
-    <div style="margin-top: 10px; margin-bottom: 50px">
-        <div class="layui-card">
-            <div class="layui-card-header">
-                <h2>你的代码:</h2>
-            </div>
-            <div class="layui-card-body">
-                <div class="layui-form layui-form-pane" style="width: 100%">
-                    <div class="layui-form-item" style="display: inline-block">
-                        <label for="lang" class="layui-form-label">编程语言：</label>
-                        <div class="layui-input-block">
-                            <select id="lang" name="language" lay-filter="language">
-                                <option class="lang" value="0" selected="selected">C/C++（支持 C++ 14 标准）</option>
-                                <option class="lang" value="1">Java (支持 1.8 特性)</option>
-                                <option class="lang" value="2">Python（3.5）</option>
-                                <option class="lang" value="3">Bash Shell</option>
-                            </select>
-                        </div>
+    <div id="code-pane" class="layui-card">
+        <div class="layui-card-header">
+            <h2><b>提交代码</b></h2>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-form-pane" style="width: 100%">
+                <div class="layui-form-item" style="display: inline-block">
+                    <label for="lang" class="layui-form-label">编程语言：</label>
+                    <div class="layui-input-block">
+                        <select id="lang" name="language" lay-filter="language">
+                            <option class="lang" value="0" selected="selected">C/C++（支持 C++ 14 标准）</option>
+                            <option class="lang" value="1">Java (支持 1.8 特性)</option>
+                            <option class="lang" value="2">Python（3.5）</option>
+                            <option class="lang" value="3">Bash Shell</option>
+                        </select>
                     </div>
-                    <label>
-                        <!-- 代码编辑器 -->
-                        <textarea id="code"></textarea>
-                    </label>
-                    <div class="layui-form-item" style="margin-top: 10px">
-                        <button class="layui-btn layui-btn-lg layui-btn-normal" lay-submit lay-filter="commit-code">
-                            提交运行
-                        </button>
-                    </div>
+                </div>
+                <label>
+                    <!-- 代码编辑器 -->
+                    <textarea id="code"></textarea>
+                </label>
+                <div class="layui-form-item" style="margin-top: 10px">
+                    <button id="commit-code" class="layui-btn layui-btn-lg layui-btn-normal" lay-submit lay-filter="commit-code">
+                        提交运行
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+    <div style="clear: both; height: 0"></div>
 </div>
 <div th:replace="include::foot"></div>
 
@@ -132,6 +135,8 @@
             element.init();
         });
 
+        resize();
+
         let contestName;
 
         if (contestId != null) {
@@ -148,6 +153,12 @@
                     });
                     form.render('select');
                     $('#problem-list').attr('href', './problems?contestId=' + contestId).text(contestName);
+                    if (Date.parse(data.endAt) >= new Date())
+                        $('#end-time').text('结束时间：' + data.endAt);
+                    else {
+                        $('#end-time').css('color', '#FF5722').text('当前竞赛/作业已结束');
+                        $('#commit-code').addClass('layui-btn-disabled');
+                    }
                     $('#breadcrumb').show();
                 }
             });
@@ -238,6 +249,35 @@
             }
         });
     });
+
+    $(window).resize(resize);
+
+    function resize() {
+        let width = $(window).width();
+        let problemPane = $('#problem-pane');
+        let codePane = $('#code-pane');
+
+        if (width >= 1500) {
+            let paneHeight = Math.max(problemPane.height(), codePane.height());
+            $('.layui-container').css('width', '1500px');
+            $('.layui-main').css('width', '1470px');
+            $('.layui-card')
+                .css('width', 'calc(50% - 10px)')
+                .css('height', paneHeight)
+                .css('float', 'left');
+            problemPane.css('margin', '0 10px 0 0');
+            codePane.css('margin', '0 0 0 10px');
+        } else {
+            $('.layui-container').css('width', '1170px');
+            $('.layui-main').css('width', '1140px');
+            $('.layui-card')
+                .css('width', '')
+                .css('height', '')
+                .css('float', '');
+            problemPane.css('margin', '');
+            codePane.css('margin', '10px 0 0 0');
+        }
+    }
 </script>
 </body>
 </html>

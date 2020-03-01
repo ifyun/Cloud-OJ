@@ -46,8 +46,7 @@ public class ManagerService {
     }
 
     public List<List<?>> searchProblems(String userId, String keyword, int start, int limit, boolean enable) {
-        String title = String.format("%s%%", keyword);
-        return problemDao.search(userId, title, start, limit, enable);
+        return problemDao.search(userId, keyword, start, limit, enable);
     }
 
     public boolean updateProblem(Problem problem) {

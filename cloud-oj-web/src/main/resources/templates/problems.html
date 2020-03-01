@@ -7,7 +7,7 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="layui-container">
-    <div style="margin-top: 15px;">
+    <div id="breadcrumb" style="margin-top: 15px; display: none">
         <span class="layui-breadcrumb" lay-separator="-">
             <a style="font-size: 12pt" href="./contests">竞赛/作业</a>
             <a style="font-size: 13pt;"><cite id="current" style="color: #333333"></cite></a>
@@ -53,17 +53,20 @@
     {{# if (getQueryVariable('contestId') == null) { }}
     <div class="layui-form-item" style="margin-bottom: 0; display: inline-block">
         <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off"
+            <input id="keyword" class="layui-input" autofocus placeholder="输入题目名称" type="text" autocomplete="off"
                    onkeydown="onSearch(event)">
         </div>
-        <button class="layui-btn layui-icon layui-icon-search" onclick="search($('#keyword').val())">&nbsp;&nbsp;搜索
+        <button class="layui-btn layui-icon layui-icon-search" onclick="addSearchTag($('#keyword').val())">&nbsp;&nbsp;搜索
         </button>
     </div>
-    <div id="tag" style="float: right; display: inline-block">
+    <div id="search-tag" style="margin-left: 20px; display: inline-block;">
+
+    </div>
+    <div id="tag" style="float: right; display: inline-block;">
 
     </div>
     {{# } else { }}
-    <label id="contest_name" class="tag bg-blue" style="font-size: 14pt; font-weight: bold; padding: 6px 10px"></label>
+    <label id="contest_name" class="tag bg-blue" style="font-size: 12pt; padding: 6px 10px;"></label>
     {{# } }}
 </script>
 <script>
@@ -98,6 +101,7 @@
                         contestName = res.data[0].contestName;
                         $('#current').text(contestName);
                         $('#contest_name').text(contestName + '-题目列表');
+                        $('#breadcrumb').show();
                     }
                     return {
                         "code": 0,
@@ -127,19 +131,30 @@
     });
 
     function onSearch(e) {
-        if (e.keyCode === 13)
-            search($('#keyword').val().trim());
+        if (e.keyCode === 13) {
+            addSearchTag($('#keyword').val().trim());
+        }
     }
 
     function search(keyword) {
         problemsTable.reload({
             where: {
-                keyword: keyword.trim()
+                keyword: keyword
             }
         });
     }
 
+    function addSearchTag(text) {
+        if (text.length === 0) return;
+        search(text);
+        let searchTag = $('<span class="tag bg-green">' + text + '</span>')
+            .append($('<span style="cursor: pointer">&nbsp;&nbsp;X</span>').on('click', clear));
+        $('#search-tag').text('当前关键字：')
+            .append(searchTag);
+    }
+
     function addTag(text) {
+        if (text.length === 0) return;
         search(text);
         let tag = $('<span class="tag">' + text + '</span>')
             .addClass(getColor(text))

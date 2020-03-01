@@ -42,9 +42,6 @@ create table `contest-problem`
 create index problem_title_index
     on problem (title);
 
-create index problem_category_index
-    on problem (category);
-
 create table role
 (
     role_id   int         not null

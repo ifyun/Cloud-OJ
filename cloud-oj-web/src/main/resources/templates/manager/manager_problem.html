@@ -66,7 +66,7 @@
                                 <!-- timeout -->
                                 <label for="timeout" class="layui-form-label">限时（ms）</label>
                                 <div class="layui-input-inline" style="width: 30%">
-                                    <input id="timeout" name="timeout" class="layui-input" lay-verify="number"
+                                    <input id="timeout" name="timeout" class="layui-input" lay-verify="number|timeout"
                                            placeholder="单位：ms" value="1000">
                                 </div>
                                 <!-- score -->
@@ -174,11 +174,14 @@
 <script type="text/html" id="top-bar">
     <div class="layui-form-item" style="display: inline-block; margin-bottom: 0">
         <div class="layui-input-inline">
-            <input id="keyword" class="layui-input" placeholder="输入题目名称" type="text" autocomplete="off"
+            <input id="keyword" class="layui-input" autofocus placeholder="输入题目名称" type="text" autocomplete="off"
                    onkeydown="onSearch(event)">
         </div>
-        <button class="layui-btn layui-icon layui-icon-search" onclick="search($('#keyword').val())">&nbsp;&nbsp;搜索
+        <button class="layui-btn layui-icon layui-icon-search" onclick="addSearchTag($('#keyword').val())">&nbsp;&nbsp;搜索
         </button>
+    </div>
+    <div id="search-tag" style="margin-left: 20px; display: inline-block;">
+
     </div>
     <div id="tag" style="float: right; display: inline-block">
 
@@ -392,6 +395,13 @@
             return false;
         });
 
+        form.verify({
+            timeout: (value, item) => {
+                if (value > 3000 || value < 500)
+                    return '时限范围为：[500, 3000]';
+            }
+        });
+
         let fileListView = $('#file-list');
         let uploadListIns = upload.render({
             elem: '#select-files',
@@ -490,8 +500,9 @@
     }
 
     function onSearch(e) {
-        if (e.keyCode === 13)
-            search($('#keyword').val().trim());
+        if (e.keyCode === 13) {
+            addSearchTag($('#keyword').val().trim());
+        }
     }
 
     function search(keyword) {
@@ -502,7 +513,17 @@
         });
     }
 
+    function addSearchTag(text) {
+        if (text.length === 0) return;
+        search(text);
+        let searchTag = $('<span class="tag bg-green">' + text + '</span>')
+            .append($('<span style="cursor: pointer">&nbsp;&nbsp;X</span>').on('click', clear));
+        $('#search-tag').text('当前关键字：')
+            .append(searchTag);
+    }
+
     function addTag(text) {
+        if (text.length === 0) return;
         search(text);
         let tag = $('<span class="tag">' + text + '</span>')
             .addClass(getColor(text))

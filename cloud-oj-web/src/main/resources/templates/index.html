@@ -54,7 +54,7 @@
                         <div class="layui-form-item">
                             <label for="userId" class="layui-form-label">ID</label>
                             <div class="layui-input-block">
-                                <input class="layui-input" lay-filter="userId" id="userId" type="text" name="userId"
+                                <input class="layui-input" autofocus lay-filter="userId" id="userId" type="text" name="userId"
                                        lay-verify="required"
                                        placeholder="输入ID（学号）">
                             </div>
@@ -99,7 +99,7 @@
                             <label for="reg-password" class="layui-form-label">密码</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" id="reg-password" type="password" name="password"
-                                       lay-verify="required" autocomplete="new-password"
+                                       lay-verify="required|pass" autocomplete="new-password"
                                        placeholder="输入密码">
                             </div>
                         </div>
@@ -219,6 +219,13 @@
                     });
                 }
             });
+        });
+
+        form.verify({
+            pass: [
+                /^[\S]{6,12}$/
+                , '密码必须6到12位，且不能出现空格'
+            ]
         });
     });
 

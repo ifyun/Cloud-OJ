@@ -19,7 +19,6 @@
 
 <script type="text/html" id="optToolbar">
     <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">修改信息</a>
-    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
 </script>
 
 <div id="user-form" class="layui-form layui-form-pane" lay-filter="user-info"
@@ -110,7 +109,7 @@
             limits: [10, 15, 20, 25, 30],
             cols: [
                 [
-                    {field: 'userId', title: 'ID/学号', width: '20%'},
+                    {field: 'userId', title: '用户ID/学号', width: '20%'},
                     {field: 'name', title: '用户名', width: '20%'},
                     {field: 'roleId', title: '角色/权限', width: '20%', align: 'center', templet: '#roleTpl'},
                     {title: '操作', width: '20%', align: 'center', toolbar: '#optToolbar'},
@@ -128,7 +127,8 @@
                     title: '编辑用户信息',
                     content: $('#user-form'),
                     area: ['450px', '400px'],
-                    closeButton: true,
+                    resize: false,
+                    closeBtn: 2,
                     cancel: () => {
                         $('#user-form').hide();
                     }

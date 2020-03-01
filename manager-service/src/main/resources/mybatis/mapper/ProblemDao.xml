@@ -56,7 +56,7 @@
         <if test="enable == true">
             enable = true and
         </if>
-        (title like #{keyword} or category like #{keyword})
+        (title like concat(#{keyword}, '%') or find_in_set(#{keyword}, category))
         limit #{start}, #{limit};
         select found_rows()
     </select>
