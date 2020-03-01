@@ -38,6 +38,20 @@
             left: 0;
             top: 16px;
         }
+
+        .framework-link {
+            margin-left: 2px;
+            font-size: 13pt;
+        }
+
+        .framework-link:hover {
+            text-decoration: underline;
+        }
+
+        .framework-logo {
+            display: inline-block;
+            height: 24px;
+        }
     </style>
     <script>
         let baseUrl = 'http://' + '[[${gateway_host}]]';
@@ -179,15 +193,19 @@
 </div>
 <div id="foot" th:fragment="foot" style="color: #666666; text-align: center; margin: 50px 0 30px 0;">
     <hr style="width: 400px; margin: 0 auto 10px auto;">
-    <span>Copyright © 2020 Cloud Li.</span><br>
-    <span>Powered by Spring Cloud on Docker.</span><br><br>
-    <span style="display: inline-flex; align-items: center; text-align: center;">
-        <img style="display: inline-block; height: 27px" alt="Layui" src="./logo/layui.png">
-        <span style="margin-left:2px; font-size: 16pt; color: #3b3d49"><b>Layui</b></span>
-        <img style="margin-left: 12px; display: inline-block; height: 27px" alt="Spring Cloud"
+    <p>Copyright © 2020 Cloud Li.</p>
+    <p style="padding: 6px">本系统基于以下框架</p>
+    <div style="display: inline-flex; align-items: center; text-align: center;">
+        <img class="framework-logo" alt="Layui" src="./logo/layui.png">
+        <a class="framework-link" href="https://www.layui.com/" target="_blank"
+           style="color: #3b3d49"><b>Layui</b></a>
+        <img class="framework-logo" style="margin-left: 12px;" alt="Spring Cloud"
              src="./logo/spring-cloud.png">
-        <span style="margin-left: 2px; font-size: 16pt; color: #75b240"><b>Spring Cloud</b></span>
-    </span>
+        <a class="framework-link" href="https://spring.io/projects/spring-cloud/" target="_blank"
+           style="color: #75b240">
+            <b>Spring Cloud</b>
+        </a>
+    </div>
 </div>
 </body>
 </html>
