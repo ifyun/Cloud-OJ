@@ -74,6 +74,8 @@ class Compiler {
                 return new Compile(solutionId, 0, "Python 无需编译.");
             case BASH:
                 return new Compile(solutionId, 0, "Shell 无需编译.");
+            case C_SHARP:
+                processBuilder.command(Judgement.isWindows ? "mcs.bat" : "mcs", src);
         }
 
         try {
@@ -117,6 +119,14 @@ class Compiler {
             File dir = new File(targetDir + id);
             if (dir.mkdirs()) {
                 file = new File(targetDir + id + "/Solution.java");
+            } else {
+                log.error("无法创建目录 {}", dir.getName());
+                return "";
+            }
+        } else if (Language.get(language) == Language.C_SHARP) {
+            File dir = new File(targetDir + id);
+            if (dir.mkdirs()) {
+                file = new File(targetDir + id + "/Solution.cs");
             } else {
                 log.error("无法创建目录 {}", dir.getName());
                 return "";

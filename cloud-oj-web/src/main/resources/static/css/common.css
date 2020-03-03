@@ -65,11 +65,15 @@
 }
 
 .java-color {
-    background: #1E9FFF;
+    background: #f5801d;
 }
 
 .cpp-color {
     background: #6B4C7A;
+}
+
+.csharp-color {
+    background: #1E9FFF;
 }
 
 .bg-green {

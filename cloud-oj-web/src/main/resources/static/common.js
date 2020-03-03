@@ -4,14 +4,25 @@ let iconMap = new Map([
     ['C/C++', 'icon-cpp'],
     ['Java', 'icon-java'],
     ['Python', 'icon-python'],
-    ['Shell', 'icon-shell']
+    ['Shell', 'icon-shell'],
+    ['C Sharp', 'icon-csharp']
 ]);
 
 let langColorMap = new Map([
     ['C/C++', 'cpp-color'],
     ['Java', 'java-color'],
     ['Python', 'py-color'],
-    ['Shell', 'shell-color']
+    ['Shell', 'shell-color'],
+    ['C Sharp', 'csharp-color']
+]);
+
+let errorText = new Map([
+    [400, '错误请求.'],
+    [401, '你的登录可能已过期.'],
+    [404, '请求的URL不存在.'],
+    [500, '服务器错误.'],
+    [502, '网关无法转发请求，请稍后再试.'],
+    [504, '网关超时，请稍后再试.']
 ]);
 
 let color = 0;

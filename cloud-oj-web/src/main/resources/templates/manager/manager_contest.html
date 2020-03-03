@@ -45,6 +45,7 @@
             <input type="checkbox" lay-filter="language" title="Java" value="1">
             <input type="checkbox" lay-filter="language" title="Python" value="2">
             <input type="checkbox" lay-filter="language" title="Shell" value="3">
+            <input type="checkbox" lay-filter="language" title="C#" value="4">
         </div>
     </div>
     <!-- button -->
@@ -67,6 +68,7 @@
             <input type="checkbox" lay-filter="language" name="lang[1]" title="Java" value="1">
             <input type="checkbox" lay-filter="language" name="lang[2]" title="Python" value="2">
             <input type="checkbox" lay-filter="language" name="lang[3]" title="Shell" value="3">
+            <input type="checkbox" lay-filter="language" name="lang[4]" title="C#" value="4">
         </div>
     </div>
     <blockquote class="layui-elem-quote">关闭窗口自动保存</blockquote>
@@ -177,7 +179,7 @@
                     type: 1,
                     title: '创建竞赛/作业',
                     content: $('#contest-form'),
-                    area: ['555px', '340px'],
+                    area: ['500px', '360px'],
                     resize: false,
                     closeBtn: 2,
                     cancel: () => {
@@ -197,14 +199,15 @@
             }
 
             if (obj.event === 'set-languages') {
-                form.render();
-                $('#edit-languages input[type=checkbox]').attr("checked", false);
                 languages = obj.data.languages;
+                $('#edit-languages input[type=checkbox]').attr("checked", false);
+                form.render();
 
-                for (let i = 0; i <= 3; i++) {
+                console.log(languages);
+                for (let i = 0; i <= 4; i++) {
                     let t = Math.pow(2, i);
                     let lang = {};
-                    lang['lang[' + i + ']'] = languages & t === t;
+                    lang['lang[' + i + ']'] = (languages & t) === t;
                     console.log(lang);
                     form.val('set-languages', lang);
                 }
@@ -212,7 +215,7 @@
                 setLanguagesIndex = layer.open({
                     type: 1,
                     content: $('#set-languages-form'),
-                    area: ['555px', '180px'],
+                    area: ['500px', '220px'],
                     resize: false,
                     closeBtn: 2,
                     cancel: () => {

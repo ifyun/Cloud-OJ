@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class ResultConverter implements TypeHandler<String> {
 
     @Override
-    public void setParameter(PreparedStatement preparedStatement, int i, String s, JdbcType jdbcType) throws SQLException {
+    public void setParameter(PreparedStatement preparedStatement, int i, String s, JdbcType jdbcType) {
 
     }
 
@@ -28,6 +28,8 @@ public class ResultConverter implements TypeHandler<String> {
                     return "Python";
                 case 3:
                     return "Shell";
+                case 4:
+                    return "C Sharp";
             }
         } else if (s.equals("result")) {
             int result = resultSet.getInt(s);
@@ -49,12 +51,12 @@ public class ResultConverter implements TypeHandler<String> {
     }
 
     @Override
-    public String getResult(ResultSet resultSet, int i) throws SQLException {
+    public String getResult(ResultSet resultSet, int i) {
         return null;
     }
 
     @Override
-    public String getResult(CallableStatement callableStatement, int i) throws SQLException {
+    public String getResult(CallableStatement callableStatement, int i) {
         return null;
     }
 }

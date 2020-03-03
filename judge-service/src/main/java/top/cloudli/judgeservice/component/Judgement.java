@@ -217,6 +217,9 @@ public class Judgement {
             case BASH:
                 builder.command("sh", filePath + ".sh");
                 return builder;
+            case C_SHARP:
+                builder.command("mono", filePath + "/Solution.exe");
+                return builder;
             default:
                 return null;
         }

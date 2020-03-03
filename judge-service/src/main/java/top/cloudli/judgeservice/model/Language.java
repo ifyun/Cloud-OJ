@@ -4,7 +4,8 @@ public enum Language {
     C_CPP(0, ".cpp"),
     JAVA(1, ".java"),
     PYTHON(2, ".py"),
-    BASH(3, ".sh");
+    BASH(3, ".sh"),
+    C_SHARP(4, ".cs");
 
     private int code;
     private String ext;
