@@ -8,4 +8,5 @@ import java.util.Date;
 public class Contest {
     private String contestName;
     private Date endAt;
+    private int languages;
 }

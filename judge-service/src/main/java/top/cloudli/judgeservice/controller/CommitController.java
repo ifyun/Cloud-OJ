@@ -31,12 +31,17 @@ public class CommitController {
     @PostMapping("")
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         Integer contestId = data.getContestId();
+
         if (contestId != null) {
             Contest contest = contestDao.getContest(contestId);
             if (contest.getEndAt().before(new Date()))
                 return ResponseEntity.ok("当前竞赛/作业已结束！");
+            int lang = data.getLanguage();
+            int languages = contest.getLanguages();
+            if ((languages & 1 << lang) != 1 << lang) {
+                return ResponseEntity.badRequest().body("不允许使用该语言");
+            }
         }
-
         CompletableFuture<JudgeResult> future = commitService.commit(data);
         try {
             JudgeResult result = future.get();
