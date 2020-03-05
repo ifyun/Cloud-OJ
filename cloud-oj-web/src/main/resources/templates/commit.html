@@ -10,9 +10,9 @@
         .description {
             margin-top: 15px;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
-            border: 1px solid #f0f0f0;
+            border: 1px solid rgb(231, 234, 237);
         }
 
         .sample {
@@ -20,7 +20,8 @@
             margin-bottom: 15px;
             padding: 8px;
             border-radius: 5px;
-            background-color: #f2f2f2;
+            border: 1px solid rgb(231, 234, 237);
+            background-color: rgb(248, 248, 248);
         }
 
         html, body {
@@ -54,10 +55,11 @@
     <!-- problem -->
     <div id="problem-pane" class="layui-card">
         <div class="layui-card-header">
-            <h2 id="problemId" style="display: inline-block; font-weight: bold;"
-                th:text="${problem.getProblemId()}"></h2><b>--</b>
-            <h2 style="display: inline-block; font-weight: bold;"
-                th:text="${problem.getTitle()}"></h2>
+            <h3 id="problemId" style="display: inline-block; font-weight: bold;"
+                th:text="${problem.getProblemId()}"></h3><b>. </b>
+            <h3 style="display: inline-block; font-weight: bold;"
+                th:text="${problem.getTitle()}"></h3>
+            <h4 style="float: right; font-weight: bold" th:text="限时 + ': ' + ${problem.getTimeout() + 'ms'}"></h4>
         </div>
         <div class="layui-card-body">
             <h3>题目描述：</h3>
@@ -76,7 +78,7 @@
     <!-- 代码区域 -->
     <div id="code-pane" class="layui-card">
         <div class="layui-card-header">
-            <h2><b>提交代码</b></h2>
+            <h3><b>提交代码</b></h3>
         </div>
         <div class="layui-card-body">
             <div class="layui-form layui-form-pane" style="width: 100%">
@@ -179,7 +181,7 @@
                     content: '你还没有登录！',
                     btn: ['去登录'],
                     yes: (index) => {
-                        window.location.href = './index';
+                        window.location.href = './index?login=true';
                         layer.close(index);
                     }
                 });
@@ -255,8 +257,8 @@
 
         if (width >= 1500) {
             let paneHeight = Math.max(problemPane.height(), codePane.height());
-            $('.layui-container').css('width', '1500px');
-            $('.layui-main').css('width', '1470px');
+            $('.layui-main').css('width', width <= 1800 ? (width - 30) + 'px' : '1770px');
+            $('.layui-container').css('width', width <= 1800 ? width + 'px' : '1800px');
             $('.layui-card')
                 .css('width', 'calc(50% - 10px)')
                 .css('height', paneHeight)
@@ -264,8 +266,8 @@
             problemPane.css('margin', '0 10px 0 0');
             codePane.css('margin', '0 0 0 10px');
         } else {
-            $('.layui-container').css('width', '1170px');
             $('.layui-main').css('width', '1140px');
+            $('.layui-container').css('width', '1170px');
             $('.layui-card')
                 .css('width', '')
                 .css('height', '')

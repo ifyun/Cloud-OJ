@@ -8,6 +8,7 @@ public class Problem {
     private Integer result;
     private String title;
     private String description;
+    private long timeout;
     private String input;
     private String output;
     private String sampleInput;
