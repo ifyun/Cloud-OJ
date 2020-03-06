@@ -47,3 +47,6 @@ project:
   max-wait-time: 6000
   test-data-dir: D:/test_data/
   target-dir: D:/target/
+  core-pool-size: 50
+  max-pool-size: 100
+  queue-capacity: 500

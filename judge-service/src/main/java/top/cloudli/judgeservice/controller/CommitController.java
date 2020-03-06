@@ -39,16 +39,19 @@ public class CommitController {
             int lang = data.getLanguage();
             int languages = contest.getLanguages();
             if ((languages & 1 << lang) != 1 << lang) {
-                return ResponseEntity.badRequest().body("不允许使用该语言");
+                return ResponseEntity.badRequest().body("不允许使用该语言.");
             }
         }
         CompletableFuture<JudgeResult> future = commitService.commit(data);
         try {
             JudgeResult result = future.get();
-            return ResponseEntity.ok(result != null ? result : "你的答案已提交，若等待时间过长，可到提交记录查看结果");
-        } catch (InterruptedException | ExecutionException e) {
+            return ResponseEntity.ok(result != null ? result : "你的答案已提交，若等待时间过长，可到提交记录查看结果.");
+        } catch (InterruptedException e) {
             log.error(e.getMessage());
             return ResponseEntity.accepted().body(e.getMessage());
+        } catch (ExecutionException e1) {
+            log.error(e1.getMessage());
+            return ResponseEntity.status(500).body("阻塞队列已满.");
         }
     }
 }
