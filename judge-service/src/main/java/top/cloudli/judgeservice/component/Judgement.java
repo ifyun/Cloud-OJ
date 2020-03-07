@@ -47,7 +47,7 @@ public class Judgement {
         List<String> expect = getOutputData(solution.getProblemId());
 
         ProcessBuilder cmd = buildCommand(solution);
-        log.info("正在执行, solutionId: {}", solution.getSolutionId());
+        log.info("正在执行 solutionId: {}", solution.getSolutionId());
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);

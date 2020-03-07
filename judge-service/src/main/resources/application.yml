@@ -12,8 +12,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 3000
-      minimum-idle: 20
+      minimum-idle: 10
       maximum-pool-size: 60
+      max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
   rabbitmq:

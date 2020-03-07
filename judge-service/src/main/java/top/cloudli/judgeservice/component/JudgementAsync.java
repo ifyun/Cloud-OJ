@@ -49,6 +49,6 @@ public class JudgementAsync {
         fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage(), Judgement.isWindows);
 
         if (solutionDao.update(solution) != 0)
-            log.info("判题完成, solutionId: {}", solution.getSolutionId());
+            log.info("solutionId: {} 判题完成.", solution.getSolutionId());
     }
 }

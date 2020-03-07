@@ -8,18 +8,10 @@
         where state = 2
     </select>
 
-    <select id="getJudgedByUserId" resultType="top.cloudli.judgeservice.model.JudgeResult">
-        select *
-        from judge_result
-        where user_id = #{userId}
-          and state = 0
-    </select>
-
-    <select id="getJudgedBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
+    <select id="getResultBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
         select *
         from judge_result
         where solution_id = #{solutionId}
-          and state = 0;
     </select>
 
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"

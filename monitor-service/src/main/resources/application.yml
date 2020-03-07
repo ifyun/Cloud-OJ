@@ -1,3 +1,22 @@
+server:
+  port: 5000
+
 spring:
-  profiles:
-    active: dev
+  application:
+    name: monitor-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/

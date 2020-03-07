@@ -23,8 +23,7 @@ public class CommitService {
     @Resource
     private SourceCodeDao sourceCodeDao;
 
-    @Async
-    public CompletableFuture<JudgeResult> commit(CommitData commitData) {
+    public Integer commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getUserId(),
                 commitData.getProblemId(),
@@ -38,21 +37,10 @@ public class CommitService {
         log.info("提交 solution, solution_id = {}", solutionId);
 
         sourceCodeDao.add(sourceCode);
-        return CompletableFuture.completedFuture(getResult(solutionId));
+        return solutionId;
     }
 
-    private JudgeResult getResult(int solutionId) {
-        int retry = 8;
-        JudgeResult judgeResult =  solutionDao.getJudgedBySolutionId(solutionId);
-
-        while (judgeResult == null && retry-- > 0) {
-            try {
-                Thread.sleep(1000);
-                judgeResult = solutionDao.getJudgedBySolutionId(solutionId);
-            } catch (InterruptedException ignored) {
-            }
-        }
-
-        return judgeResult;
+    public JudgeResult getResult(int solutionId) {
+        return solutionDao.getResultBySolutionId(solutionId);
     }
 }

@@ -34,7 +34,7 @@ class Compiler {
     }
 
     public Compile compile(int solutionId, int languageId, String source) {
-        log.info("正在编译, solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
+        log.info("正在编译 solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
         String src = writeCode(solutionId, languageId, source);
 
         if (src.isEmpty())

@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,36 +23,45 @@ public class ZuulFallback implements FallbackProvider {
 
     @Override
     public ClientHttpResponse fallbackResponse(String route, Throwable cause) {
-        log.error("到 {} 的路由无法转发.", route);
-        return badGateway();
+        String msg = cause.getCause().getMessage();
+        log.error("到 {} 的路由无法转发，{}.", route, msg);
+        if (msg.contains("Read timed out"))
+            return errorPage(HttpStatus.GATEWAY_TIMEOUT);
+        else
+            return errorPage(HttpStatus.BAD_GATEWAY);
     }
 
-    private ClientHttpResponse badGateway() {
+    private ClientHttpResponse errorPage(HttpStatus status) {
         return new ClientHttpResponse() {
+
+            @NonNull
             @Override
             public HttpStatus getStatusCode() {
-                return HttpStatus.BAD_GATEWAY;
+                return status;
             }
 
             @Override
             public int getRawStatusCode() {
-                return HttpStatus.BAD_GATEWAY.value();
+                return status.value();
             }
 
+            @NonNull
             @Override
             public String getStatusText() {
-                return HttpStatus.BAD_GATEWAY.getReasonPhrase();
+                return status.getReasonPhrase();
             }
 
             @Override
             public void close() {
             }
 
+            @NonNull
             @Override
             public InputStream getBody() throws IOException {
-                return new ClassPathResource("static/error/502.html").getInputStream();
+                return new ClassPathResource("static/error/" + status.value() + ".html").getInputStream();
             }
 
+            @NonNull
             @Override
             public HttpHeaders getHeaders() {
                 HttpHeaders headers = new HttpHeaders();

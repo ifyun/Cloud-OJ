@@ -1,3 +1,25 @@
+server:
+  port: 8080
+
 spring:
-  profiles:
-    active: dev
+  application:
+    name: cloud-oj-web
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+project:
+  gateway-host: localhost

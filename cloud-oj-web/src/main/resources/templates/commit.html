@@ -110,9 +110,9 @@
     <div style="clear: both; height: 0"></div>
 </div>
 <div th:replace="include::foot"></div>
-
 <script>
     let form;
+    let resultIndex;
     $(document).ready(() => {
         let contestId = getQueryVariable('contestId');
 
@@ -186,8 +186,6 @@
                     }
                 });
             } else {
-                let loadIndex;
-
                 let commitData = {
                     userId: user.userId,
                     problemId: $('#problemId').text(),
@@ -200,11 +198,10 @@
                 }
 
                 if (contestId !== null) commitData.contestId = contestId;
-
+                let loadIndex;
                 $.ajax({
                     url: baseUrl + '/api/judge/commit?userId=' + user.userId,
                     method: 'post',
-                    timeout: 10000,
                     headers: {
                         "Content-Type": "application/json",
                         "token": user.token
@@ -214,28 +211,13 @@
                         loadIndex = layer.load(1);
                     },
                     success: (data) => {
-                        let result;
-                        switch (data.result) {
-                            case 4:
-                                result = "编译错误！";
-                                break;
-                            case 3:
-                                result = "答案错误！";
-                                break;
-                            case 2:
-                                result = "部分通过（" + data.passRate * 100 + ")";
-                                break;
-                            case 1:
-                                result = "时间超限（" + data.passRate * 100 + "）";
-                                break;
-                            case 0:
-                                result = "完全正确（100）";
-                                break;
-                        }
                         layer.close(loadIndex);
-                        layer.open({
-                            content: result === undefined ? data : result
+                        resultIndex = layer.open({
+                            btn: [],
+                            content: '已提交，正在等待结果...',
+                            closeBtn: false
                         });
+                        getResult(data, 1);
                     },
                     error: (xhr) => {
                         layer.close(loadIndex);
@@ -249,6 +231,56 @@
     });
 
     $(window).resize(resize);
+
+    function getResult(solutionId, count) {
+        $.ajax({
+            url: baseUrl + '/api/judge/commit?solutionId=' + solutionId + '&userId=' + user.userId,
+            headers: {
+                "token": user.token
+            },
+            method: 'get',
+            success: (data) => {
+                if (data === '' && count <= 10) {
+                    setTimeout(() => {
+                        getResult(solutionId, count + 1);
+                    }, 1000);
+                } else if (count >= 10) {
+                    layer.open({
+                        content: '等待时间过长，你可以稍后去提交记录中查看！'
+                    });
+                } else {
+                    let result;
+                    switch (data.result) {
+                        case 4:
+                            result = "编译错误！";
+                            break;
+                        case 3:
+                            result = "答案错误！";
+                            break;
+                        case 2:
+                            result = "部分通过（" + data.passRate * 100 + ")";
+                            break;
+                        case 1:
+                            result = "时间超限（" + data.passRate * 100 + "）";
+                            break;
+                        case 0:
+                            result = "完全正确（100）";
+                            break;
+                    }
+                    layer.close(resultIndex);
+                    layer.open({
+                        content: result === undefined ? data : result
+                    });
+                }
+            },
+            error: (xhr) => {
+                layer.close(resultIndex);
+                layer.open({
+                    content: errorText.get(xhr.status)
+                });
+            }
+        });
+    }
 
     function resize() {
         let width = $(window).width();

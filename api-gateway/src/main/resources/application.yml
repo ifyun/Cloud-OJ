@@ -3,20 +3,22 @@ server:
   tomcat:
     max-threads: 500
     accept-count: 1000
+    connection-timeout: 5000
 
 spring:
   application:
     name: api-gateway
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/cloud_oj}
+    url: jdbc:mysql://localhost:3306/cloud_oj
     type: com.zaxxer.hikari.HikariDataSource
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:root}
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 3000
-      minimum-idle: 20
+      minimum-idle: 10
       maximum-pool-size: 60
+      max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
 
@@ -40,7 +42,7 @@ eureka:
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
     service-url:
-      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+      defaultZone: http://127.0.0.1:8761/eureka/
 
 zuul:
   routes:
@@ -62,15 +64,14 @@ zuul:
   host:
     max-per-route-connections: 1000
     max-total-connections: 1000
-    connect-timeout-millis: 3000
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 10000
+  semaphore:
+    max-semaphores: 2000
 
 ribbon:
-  ReadTimeout: 3000
-  ConnectTimeout: 3000
-
-judge-service:
-  ribbon:
-    ReadTimeout: 6000
+  ReadTimeout: 8000
+  ConnectTimeout: 8000
 
 project:
   token-valid-time: 4
