@@ -5,11 +5,11 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.dao.SourceCodeDao;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SolutionState;
-import top.cloudli.judgeservice.model.SourceCode;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -33,7 +33,8 @@ public class TaskSender {
     /**
      * 发送已提交的 solution 到消息队列
      */
-    @Scheduled(fixedDelay = 500, initialDelay = 1000)
+    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
+    @Transactional
     public void sendCommitted() {
         List<Solution> solutions = solutionDao.getSubmitted();
 
