@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class Compile {
     private int id;
-    private int solutionId;
+    private String solutionId;
     private int state;
     private String info;
 
-    public Compile(int solutionId, int state, String info) {
+    public Compile(String solutionId, int state, String info) {
         this.solutionId = solutionId;
         this.state = state;
         this.info = info;

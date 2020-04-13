@@ -27,7 +27,7 @@ public class FileCleaner {
     }
 
     @Async
-    public void deleteTempFile(int solutionId, int languageId, boolean isWindows) {
+    public void deleteTempFile(String solutionId, int languageId, boolean isWindows) {
         Language language = Language.get(languageId);
 
         if (language == null)

@@ -33,7 +33,7 @@ class Compiler {
         }
     }
 
-    public Compile compile(int solutionId, int languageId, String source) {
+    public Compile compile(String solutionId, int languageId, String source) {
         log.info("正在编译 solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
         String src = writeCode(solutionId, languageId, source);
 
@@ -51,12 +51,12 @@ class Compiler {
     /**
      * 根据语言类型编译源码
      *
-     * @param solutionId 问题 Id
+     * @param solutionId 答案 Id
      * @param languageId 语言类型
      * @param src        源码
      * @return 编译信息 {@link Compile}
      */
-    public Compile compileSource(int solutionId, int languageId, String src) {
+    public Compile compileSource(String solutionId, int languageId, String src) {
         Language language = Language.get(languageId);
 
         if (language == null)
@@ -106,33 +106,33 @@ class Compiler {
     /**
      * 将源码写入文件
      *
-     * @param id       solutionId
-     * @param language 语言 Id
-     * @param source   源码
+     * @param solutionId 答案 Id
+     * @param language   语言 Id
+     * @param source     源码
      * @return 文件路径
      */
-    private String writeCode(int id, int language, String source) {
+    private String writeCode(String solutionId, int language, String source) {
         File file;
 
         if (Language.get(language) == Language.JAVA) {
             // Java 语言文件名和类名必须相同
-            File dir = new File(targetDir + id);
+            File dir = new File(targetDir + solutionId);
             if (dir.mkdirs()) {
-                file = new File(targetDir + id + "/Solution.java");
+                file = new File(targetDir + solutionId + "/Solution.java");
             } else {
                 log.error("无法创建目录 {}", dir.getName());
                 return "";
             }
         } else if (Language.get(language) == Language.C_SHARP) {
-            File dir = new File(targetDir + id);
+            File dir = new File(targetDir + solutionId);
             if (dir.mkdirs()) {
-                file = new File(targetDir + id + "/Solution.cs");
+                file = new File(targetDir + solutionId + "/Solution.cs");
             } else {
                 log.error("无法创建目录 {}", dir.getName());
                 return "";
             }
         } else {
-            file = new File(targetDir + id + Language.getExt(language));
+            file = new File(targetDir + solutionId + Language.getExt(language));
         }
 
         try {

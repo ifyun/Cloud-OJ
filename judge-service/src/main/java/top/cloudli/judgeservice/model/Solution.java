@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class Solution implements Serializable {
-    private Integer solutionId;
+    private String solutionId;
     private Integer problemId;
     private Integer contestId;
     private String userId;
@@ -16,7 +16,8 @@ public class Solution implements Serializable {
     private double passRate;
     private String sourceCode;
 
-    public Solution(String userId, Integer problemId, Integer contestId, Integer language) {
+    public Solution(String solutionId, String userId, Integer problemId, Integer contestId, Integer language) {
+        this.solutionId = solutionId;
         this.userId = userId;
         this.problemId = problemId;
         this.contestId = contestId;

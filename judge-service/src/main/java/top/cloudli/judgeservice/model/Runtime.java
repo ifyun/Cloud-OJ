@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Runtime {
     private int id;
-    private int solutionId;
+    private String solutionId;
     private int total;
     private int passed;
     private long time;
     private String info;
     private String output;
 
-    public Runtime(int solutionId) {
+    public Runtime(String solutionId) {
         this(0, solutionId, 0, 0, 0, null, null);
     }
 }

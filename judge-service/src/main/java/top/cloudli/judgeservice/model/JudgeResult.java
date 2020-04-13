@@ -6,7 +6,7 @@ import java.sql.Date;
 
 @Data
 public class JudgeResult {
-    private int solutionId;
+    private String solutionId;
     private int problemId;
     private String userId;
     private int language;

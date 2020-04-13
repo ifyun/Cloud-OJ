@@ -5,6 +5,6 @@ import top.cloudli.judgeservice.model.SourceCode;
 
 @Mapper
 public interface SourceCodeDao {
-    SourceCode get(int solutionId);
+    SourceCode get(String solutionId);
     int add(SourceCode sourceCode);
 }

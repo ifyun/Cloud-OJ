@@ -5,16 +5,21 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.component.JudgementAsync;
+import top.cloudli.judgeservice.data.CommitData;
 import top.cloudli.judgeservice.model.Solution;
+import top.cloudli.judgeservice.service.CommitService;
 
 import javax.annotation.Resource;
 
 /**
- * 判题任务，从 RabbitMQ 获取 Solution
+ * 消息接收
  */
 @Slf4j
 @Component
 public class TaskReceiver {
+
+    @Resource
+    private CommitService commitService;
 
     @Resource
     private JudgementAsync judgementAsync;
@@ -24,5 +29,11 @@ public class TaskReceiver {
     public void receiveTask(Solution solution) {
         log.info("Take solutionId: {} from JudgeQueue", solution.getSolutionId());
         judgementAsync.judge(solution);
+    }
+
+    @RabbitHandler
+    @RabbitListener(queues = "CommitQueue")
+    public void receiveCommit(CommitData data) {
+        log.info("写入已提交代码: {}", commitService.commit(data));
     }
 }

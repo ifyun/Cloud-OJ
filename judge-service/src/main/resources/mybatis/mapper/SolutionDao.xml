@@ -5,7 +5,8 @@
     <select id="getSubmitted" resultType="top.cloudli.judgeservice.model.Solution">
         select *
         from solution
-        where state = 2 for update
+        where state = 2 for
+        update
     </select>
 
     <select id="getResultBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
@@ -16,8 +17,8 @@
 
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
             parameterType="top.cloudli.judgeservice.model.Solution">
-        insert into solution(user_id, problem_id, contest_id, language)
-        values (#{userId}, #{problemId},
+        insert into solution(solution_id, user_id, problem_id, contest_id, language)
+        values (#{solutionId}, #{userId}, #{problemId},
         <choose>
             <when test="contestId != null">#{contestId}</when>
             <otherwise>null</otherwise>

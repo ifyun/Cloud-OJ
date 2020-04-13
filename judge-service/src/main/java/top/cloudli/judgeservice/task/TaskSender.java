@@ -25,10 +25,10 @@ public class TaskSender {
     private SourceCodeDao sourceCodeDao;
 
     @Resource
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
 
     @Resource
-    private Queue queue;
+    private Queue judgeQueue;
 
     /**
      * 发送已提交的 solution 到消息队列
@@ -40,7 +40,7 @@ public class TaskSender {
 
         for (Solution solution : solutions) {
             solution.setSourceCode(sourceCodeDao.get(solution.getSolutionId()).getCode());
-            rabbitTemplate.convertAndSend(queue.getName(), solution);
+            rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
 
             log.info("solution {} in JudgeQueue.", solution.getSolutionId());
 

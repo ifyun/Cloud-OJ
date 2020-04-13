@@ -1,6 +1,8 @@
 package top.cloudli.judgeservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.judgeservice.dao.ContestDao;
@@ -10,6 +12,7 @@ import top.cloudli.judgeservice.service.CommitService;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * 提交代码接口
@@ -24,6 +27,12 @@ public class CommitController {
 
     @Resource
     private ContestDao contestDao;
+
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private Queue commitQueue;
 
     @PostMapping("")
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
@@ -40,11 +49,13 @@ public class CommitController {
             }
         }
 
-        return ResponseEntity.accepted().body(commitService.commit(data));
+        data.setSolutionId(UUID.randomUUID().toString());
+        rabbitTemplate.convertAndSend(commitQueue.getName(), data);
+        return ResponseEntity.accepted().body(data.getSolutionId());
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getResult(int solutionId) {
+    public ResponseEntity<?> getResult(String solutionId) {
         return ResponseEntity.ok(commitService.getResult(solutionId));
     }
 }

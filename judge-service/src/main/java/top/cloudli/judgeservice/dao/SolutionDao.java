@@ -10,7 +10,7 @@ import java.util.List;
 public interface SolutionDao {
     List<Solution> getSubmitted();  // 获取已提交的答案
 
-    JudgeResult getResultBySolutionId(int solutionId);        // 获取单条 solution
+    JudgeResult getResultBySolutionId(String solutionId);        // 获取单条 solution
 
     int add(Solution solution);
 
