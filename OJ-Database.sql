@@ -126,6 +126,13 @@ create table source_code
             on update cascade on delete cascade
 );
 
+create table task
+(
+    task_name char(32) not null
+        primary key,
+    uuid      char(36) not null
+);
+
 create index user_name_index
     on user (name);
 

@@ -7,6 +7,7 @@ import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SolutionResult;
+import top.cloudli.judgeservice.model.SolutionState;
 import top.cloudli.judgeservice.task.FileCleaner;
 
 import javax.annotation.Resource;
@@ -37,7 +38,7 @@ public class JudgementAsync {
                 solution.setResult(SolutionResult.COMPILE_ERROR.ordinal());
             } else {
                 judgement.judge(solution);
-                solution.setState(0);
+                solution.setState(SolutionState.JUDGED.ordinal());
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("判题出现异常: {}", e.getMessage());
@@ -45,7 +46,9 @@ public class JudgementAsync {
         }
 
         // 删除临时文件
-        fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage(), Judgement.isWindows);
+        fileCleaner.deleteTempFile(solution.getSolutionId(),
+                solution.getLanguage(),
+                Judgement.isWindows);
 
         if (solutionDao.update(solution) != 0)
             log.info("solutionId: {} 判题完成.", solution.getSolutionId());

@@ -7,15 +7,20 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.dao.SourceCodeDao;
+import top.cloudli.judgeservice.dao.TaskDao;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SolutionState;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Component
 public class TaskSender {
+
+    private String uuid = UUID.randomUUID().toString();
 
     @Resource
     private SolutionDao solutionDao;
@@ -24,25 +29,36 @@ public class TaskSender {
     private SourceCodeDao sourceCodeDao;
 
     @Resource
+    private TaskDao taskDao;
+
+    @Resource
     private RabbitTemplate rabbitTemplate;
 
     @Resource
     private Queue judgeQueue;
 
+    @PostConstruct
+    public void init() {
+        // 设置要执行任务的 UUID，保证不重复执行
+        taskDao.setUUID("send_committed", uuid);
+    }
+
     /**
      * 发送已提交的 solution 到消息队列
      */
-    @Scheduled(fixedDelay = 2000, initialDelay = 1000)
+    @Scheduled(fixedDelay = 1000, initialDelay = 3000)
     public void sendCommitted() {
-        List<Solution> solutions = solutionDao.getSubmitted();
-        for (Solution solution : solutions) {
-            solution.setSourceCode(sourceCodeDao.get(solution.getSolutionId()).getCode());
-            rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
+        // 判断是否和数据库中的 UUID 相同，不相同什么也不做
+        if (taskDao.getUUID("send_committed").equals(uuid)) {
+            List<Solution> solutions = solutionDao.getSubmitted();
 
-            log.info("solution {} in JudgeQueue.", solution.getSolutionId());
-
-            solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
-            solutionDao.update(solution);
+            for (Solution solution : solutions) {
+                solution.setSourceCode(sourceCodeDao.get(solution.getSolutionId()).getCode());
+                rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
+                log.info("solution {} in JudgeQueue.", solution.getSolutionId());
+                solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
+                solutionDao.update(solution);
+            }
         }
     }
 }

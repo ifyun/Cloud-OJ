@@ -37,7 +37,6 @@ public class CommitService {
         String solutionId = solution.getSolutionId();
         SourceCode sourceCode = new SourceCode(solutionId, commitData.getSourceCode());
         sourceCodeDao.add(sourceCode);
-        log.info("写入 solution, solution_id = {}", solutionId);
     }
 
     public JudgeResult getResult(String solutionId) {
