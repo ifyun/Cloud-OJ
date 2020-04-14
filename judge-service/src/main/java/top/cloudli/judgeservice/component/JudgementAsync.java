@@ -33,16 +33,15 @@ public class JudgementAsync {
         CompletableFuture<Compile> future = compilerAsync.compile(solution);
         try {
             Compile compile = future.get();
-            solution.setState(0);
             if (compile.getState() == -1) {
-                solution.setResult(SolutionResult
-                        .COMPILE_ERROR.ordinal());
+                solution.setResult(SolutionResult.COMPILE_ERROR.ordinal());
             } else {
                 judgement.judge(solution);
+                solution.setState(0);
             }
         } catch (InterruptedException | ExecutionException e) {
-            log.error(e.getMessage());
-            solution.setResult(3);
+            log.error("判题出现异常: {}", e.getMessage());
+            solution.setResult(SolutionResult.WRONG.ordinal());
         }
 
         // 删除临时文件

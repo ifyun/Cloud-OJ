@@ -34,11 +34,11 @@ public class AsyncConfig implements SchedulingConfigurer {
     @Bean
     public Executor ojExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setThreadNamePrefix("OJ-");
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setKeepAliveSeconds(10);
-        executor.setThreadNamePrefix("OJ-");
+        executor.setKeepAliveSeconds(100);
         executor.initialize();
         return executor;
     }

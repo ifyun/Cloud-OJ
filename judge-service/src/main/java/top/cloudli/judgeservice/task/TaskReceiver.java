@@ -27,13 +27,12 @@ public class TaskReceiver {
     @RabbitHandler
     @RabbitListener(queues = "JudgeQueue")
     public void receiveTask(Solution solution) {
-        log.info("Take solutionId: {} from JudgeQueue", solution.getSolutionId());
         judgementAsync.judge(solution);
     }
 
     @RabbitHandler
     @RabbitListener(queues = "CommitQueue")
     public void receiveCommit(CommitData data) {
-        log.info("写入已提交代码: {}", commitService.commit(data));
+        commitService.commit(data);
     }
 }

@@ -45,9 +45,9 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 
 project:
-  max-wait-time: 6000
+  max-wait-time: 5000
   test-data-dir: D:/test_data/
   target-dir: D:/target/
-  core-pool-size: 50
-  max-pool-size: 100
+  core-pool-size: 25
+  max-pool-size: 500
   queue-capacity: 500

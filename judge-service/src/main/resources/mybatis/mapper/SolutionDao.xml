@@ -5,8 +5,7 @@
     <select id="getSubmitted" resultType="top.cloudli.judgeservice.model.Solution">
         select *
         from solution
-        where state = 2 for
-        update
+        where state = 2 limit 100
     </select>
 
     <select id="getResultBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">

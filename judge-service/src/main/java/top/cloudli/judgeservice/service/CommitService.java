@@ -2,6 +2,8 @@ package top.cloudli.judgeservice.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.dao.SourceCodeDao;
 import top.cloudli.judgeservice.data.CommitData;
@@ -21,7 +23,8 @@ public class CommitService {
     @Resource
     private SourceCodeDao sourceCodeDao;
 
-    public String commit(CommitData commitData) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getSolutionId(),
                 commitData.getUserId(),
@@ -33,10 +36,8 @@ public class CommitService {
         solutionDao.add(solution);
         String solutionId = solution.getSolutionId();
         SourceCode sourceCode = new SourceCode(solutionId, commitData.getSourceCode());
-        log.info("提交 solution, solution_id = {}", solutionId);
-
         sourceCodeDao.add(sourceCode);
-        return solutionId;
+        log.info("写入 solution, solution_id = {}", solutionId);
     }
 
     public JudgeResult getResult(String solutionId) {
