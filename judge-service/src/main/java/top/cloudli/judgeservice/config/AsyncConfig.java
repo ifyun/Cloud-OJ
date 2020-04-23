@@ -17,13 +17,13 @@ import java.util.concurrent.Executors;
 @EnableScheduling
 public class AsyncConfig implements SchedulingConfigurer {
 
-    @Value("${project.core-pool-size:20}")
+    @Value("${project.core-pool-size:8}")
     private int corePoolSize;
 
-    @Value("${project.max-pool-size: 50}")
+    @Value("${project.max-pool-size:16}")
     private int maxPoolSize;
 
-    @Value("${project.queue-capacity: 100}")
+    @Value("${project.queue-capacity:500}")
     private int queueCapacity;
 
     @Override

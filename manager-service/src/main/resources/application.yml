@@ -1,6 +1,9 @@
 # 管理服务
 server:
   port: 8001
+  tomcat:
+    accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
+    max-threads: ${TOMCAT_MAX_THREADS:800}
 
 spring:
   application:
@@ -13,8 +16,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 3000
-      minimum-idle: 10
-      maximum-pool-size: 60
+      minimum-idle: 8
+      maximum-pool-size: 16
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
@@ -25,7 +28,6 @@ management:
     web:
       exposure:
         include: "*"
-        exclude: "info"
   endpoint:
     health:
       show-details: ALWAYS
@@ -38,13 +40,11 @@ mybatis:
 eureka:
   instance:
     prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
-
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 
 logging:
-  level:
-    top.cloudli: debug
   file:
     name: D:/cloud-oj/manager-service.log

@@ -1,9 +1,8 @@
 server:
   port: 80
   tomcat:
-    max-threads: 500
-    accept-count: 1000
-    connection-timeout: 5000
+    accept-count: ${TOMCAT_ACCEPT_COUNT:4000}
+    max-threads: ${TOMCAT_MAX_THREADS:1000}
 
 spring:
   application:
@@ -42,7 +41,7 @@ eureka:
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 
 zuul:
   routes:
@@ -58,6 +57,7 @@ zuul:
     file-server:
       path: /api/file/**
       serviceId: file-server
+    # OJ Web
     web:
       path: /oj/**
       serviceId: cloud-oj-web
@@ -72,6 +72,10 @@ zuul:
 ribbon:
   ReadTimeout: 8000
   ConnectTimeout: 8000
+
+logging:
+  file:
+    name: /app/log/api-gateway.log
 
 project:
   token-valid-time: 4

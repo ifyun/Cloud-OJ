@@ -18,7 +18,7 @@
     <packaging>pom</packaging>
     <description>Cloud OJ 父模块</description>
 
-    <!-- 子模块配置 -->
+    <!-- 子模块 -->
     <modules>
         <module>monitor-service</module>
         <module>register-center</module>

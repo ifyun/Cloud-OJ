@@ -1,3 +1,30 @@
+server:
+  port: 8000
+
 spring:
-  profiles:
-    active: dev
+  application:
+    name: file-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+
+logging:
+  file:
+    name: /app/log/file-server.log
+
+project:
+  test-data-dir: /test_data/

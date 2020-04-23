@@ -1,5 +1,6 @@
 create database cloud_oj character set utf8mb4;
 use cloud_oj;
+set character set utf8;
 create table contest
 (
     contest_id   int auto_increment
@@ -130,7 +131,7 @@ create table task
 (
     task_name char(32) not null
         primary key,
-    uuid      char(36) not null
+    uuid      char(36) null
 );
 
 create index user_name_index
