@@ -101,6 +101,26 @@
     background: #a2a2a2;
 }
 
+.root-color {
+    color: white;
+    background: #6B4C7A;
+}
+
+.user-manager-color {
+    color: white;
+    background: #5FB878;
+}
+
+.problem-manager-color {
+    color: white;
+    background: #1E9FFF;
+}
+
+.user-color {
+    color: white;
+    background: #a2a2a2;
+}
+
 .layui-table-tool {
     border: none !important;
 }

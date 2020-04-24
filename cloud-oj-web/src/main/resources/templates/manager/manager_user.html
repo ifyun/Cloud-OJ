@@ -14,11 +14,11 @@
 </div>
 <div th:replace="include::foot"></div>
 <script id="roleTpl" type="text/html">
-    <span class="label bg-green">{{roles[d.roleId]}}</span>
+    <span class="label {{roleColor[d.roleId]}}">{{roles[d.roleId]}}</span>
 </script>
 
 <script type="text/html" id="optToolbar">
-    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">修改信息</a>
+    <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">修改信息</a>
 </script>
 
 <div id="user-form" class="layui-form layui-form-pane" lay-filter="user-info"
@@ -29,6 +29,18 @@
         <label for="name" class="layui-form-label">用户名</label>
         <div class="layui-input-block">
             <input id="name" name="name" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <!-- role -->
+    <div class="layui-form-item">
+        <label for="role" class="layui-form-label">角色/权限</label>
+        <div class="layui-input-block">
+            <select id="role" name="roleId" lay-filter="role">
+                <option value="0">普通用户</option>
+                <option value="1">用户管理员</option>
+                <option value="2">题目管理员</option>
+                <option value="3">ROOT</option>
+            </select>
         </div>
     </div>
     <!-- email -->
@@ -50,18 +62,6 @@
         <label for="section" class="layui-form-label">学校/班级</label>
         <div class="layui-input-block">
             <input id="section" name="section" class="layui-input" lay-verify="required">
-        </div>
-    </div>
-    <!-- role -->
-    <div class="layui-form-item">
-        <label for="role" class="layui-form-label">角色/权限</label>
-        <div class="layui-input-block">
-            <select id="role" name="roleId" lay-filter="role">
-                <option value="0">普通用户</option>
-                <option value="1">用户管理员</option>
-                <option value="2">题目管理员</option>
-                <option value="3">ROOT</option>
-            </select>
         </div>
     </div>
     <!-- button -->

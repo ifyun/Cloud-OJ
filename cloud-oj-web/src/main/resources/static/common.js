@@ -16,6 +16,8 @@ let langColorMap = new Map([
     ['C Sharp', 'csharp-color']
 ]);
 
+let roleColor = ['user-color', 'user-manager-color', 'problem-manager-color', 'root-color'];
+
 let errorText = new Map([
     [400, '错误请求.'],
     [401, '你的登录可能已过期.'],
