@@ -20,7 +20,7 @@ import java.util.UUID;
 @Component
 public class TaskSender {
 
-    private String uuid = UUID.randomUUID().toString();
+    private final String uuid = UUID.randomUUID().toString();
 
     @Resource
     private SolutionDao solutionDao;
@@ -38,9 +38,11 @@ public class TaskSender {
     private Queue judgeQueue;
 
     @PostConstruct
-    public void init() {
+    public void init() throws InterruptedException {
+        Thread.sleep(5000);
         // 设置要执行任务的 UUID，保证不重复执行
         taskDao.setUUID("send_committed", uuid);
+        log.info("SEND_COMMITTED_TASK_UUID: {}", uuid);
     }
 
     /**

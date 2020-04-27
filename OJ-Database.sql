@@ -94,8 +94,8 @@ create table compile
     id          int auto_increment
         primary key,
     solution_id char(36) not null,
-    state       int  not null comment '编译状态(0->编译成功,-1->编译出错)',
-    info        text null comment '编译信息',
+    state       int      not null comment '编译状态(0->编译成功,-1->编译出错)',
+    info        text     null comment '编译信息',
     constraint compile_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
@@ -106,11 +106,11 @@ create table runtime
     id          int auto_increment
         primary key,
     solution_id char(36) not null,
-    total       int    null comment '总测试点数量',
-    passed      int    null comment '通过的测试点数量',
-    time        bigint null comment '耗时（ms）',
-    info        text   null,
-    output      text   null comment '输出',
+    total       int      null comment '总测试点数量',
+    passed      int      null comment '通过的测试点数量',
+    time        bigint   null comment '耗时（ms）',
+    info        text     null,
+    output      text     null comment '输出',
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
@@ -121,7 +121,7 @@ create table source_code
     code_id     int auto_increment
         primary key,
     solution_id char(36) not null,
-    code        text not null,
+    code        text     not null,
     constraint source_code_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
@@ -236,24 +236,22 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
               `problem_score`.`name`           AS `name`,
               sum(`problem_score`.`committed`) AS `committed`,
               sum(`problem_score`.`score`)     AS `total_score`,
-              `problem_score`.`contest_id`     AS `contest_id`,
-              `problem_score`.`contest_name`   AS `contest_name`
+              `problem_score`.`contest_id`     AS `contest_id`
        from (select `s`.`user_id`                        AS `user_id`,
                     `u`.`name`                           AS `name`,
                     count(`p`.`problem_id`)              AS `committed`,
                     max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
-                    `s`.`contest_id`                     AS `contest_id`,
-                    `c`.`contest_name`                   AS `contest_name`
-             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
-                      join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
-             group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
+                    `s`.`contest_id`                     AS `contest_id`
+             from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+                      join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+             group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`) `problem_score`
        group by `problem_score`.`user_id`, `problem_score`.`contest_id`
        order by `total_score` desc) `ranking`
          join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
                from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
-                     from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
-                              join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
-                     group by `s`.`problem_id`, `s`.`user_id`, `c`.`contest_id`, `s`.`result`) `t`
+                     from (`cloud_oj`.`solution` `s`
+                              join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+                     group by `s`.`problem_id`, `s`.`user_id`, `s`.`result`) `t`
                group by `t`.`user_id`) `passed` on ((`ranking`.`user_id` = `passed`.`user_id`)));
 
 -- 初始化角色/权限表
