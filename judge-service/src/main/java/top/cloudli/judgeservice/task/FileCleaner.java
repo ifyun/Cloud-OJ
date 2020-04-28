@@ -57,7 +57,9 @@ public class FileCleaner {
                 delete(f);
             }
         }
-        if (!file.delete())
-            log.info("{} 删除失败.", file.getName());
+        if (file.exists()) {
+            if (!file.delete())
+                log.info("{} 删除失败.", file.getName());
+        }
     }
 }
