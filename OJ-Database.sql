@@ -207,21 +207,21 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                group by `t`.`user_id`) `passed` on ((`ranking`.`user_id` = `passed`.`user_id`)));
 
 create definer = root@`%` view judge_result as
-select `s`.`solution_id`               AS `solution_id`,
-       `s`.`problem_id`                AS `problem_id`,
-       `s`.`contest_id`                AS `contest_id`,
-       `p`.`title`                     AS `title`,
-       `s`.`language`                  AS `language`,
-       `s`.`state`                     AS `state`,
-       `s`.`result`                    AS `result`,
-       `s`.`pass_rate`                 AS `pass_rate`,
-       `s`.`user_id`                   AS `user_id`,
-       `s`.`submit_time`               AS `submit_time`,
-       (`s`.`pass_rate` * `p`.`score`) AS `score`,
-       `sc`.`code`                     AS `code`,
-       `c`.`state`                     AS `compile_state`,
-       `c`.`info`                      AS `compile_info`,
-       `r`.`time`                      AS `time`
+select `s`.`solution_id`                         AS `solution_id`,
+       `s`.`problem_id`                          AS `problem_id`,
+       `s`.`contest_id`                          AS `contest_id`,
+       `p`.`title`                               AS `title`,
+       `s`.`language`                            AS `language`,
+       `s`.`state`                               AS `state`,
+       `s`.`result`                              AS `result`,
+       `s`.`pass_rate`                           AS `pass_rate`,
+       `s`.`user_id`                             AS `user_id`,
+       `s`.`submit_time`                         AS `submit_time`,
+       round((`s`.`pass_rate` * `p`.`score`), 0) AS `score`,
+       `sc`.`code`                               AS `code`,
+       `c`.`state`                               AS `compile_state`,
+       `c`.`info`                                AS `compile_info`,
+       `r`.`time`                                AS `time`
 from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
          join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
 order by `s`.`submit_time`;
