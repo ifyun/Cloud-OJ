@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("problem")
-public class ProblemManagerController implements CRUDController {
+public class ProblemController implements CRUDController {
 
     @Resource
     private ManagerService managerService;

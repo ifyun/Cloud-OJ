@@ -23,6 +23,12 @@ public class TestDataController {
     @Value("${project.test-data-dir}")
     private String testDataDir;
 
+    /**
+     * 获取测试数据文件
+     *
+     * @param problemId 题目 Id
+     * @return {@link ResponseEntity<List>} 文件列表
+     */
     @GetMapping("{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable int problemId) {
         File dir = new File(testDataDir + problemId);
@@ -51,6 +57,13 @@ public class TestDataController {
                 ResponseEntity.noContent().build();
     }
 
+    /**
+     * 上传测试数据文件
+     *
+     * @param problemId 题目 Id
+     * @param files     文件
+     * @return {@link ResponseEntity} 200：上传成功，500：上传失败
+     */
     @PostMapping("")
     public ResponseEntity<?> uploadTestData(@RequestParam int problemId, @RequestParam("file") MultipartFile[] files) {
         if (files.length == 0)
@@ -60,8 +73,10 @@ public class TestDataController {
         File dir = new File(testDataDir + problemId);
 
         if (!dir.exists()) {
-            if (!dir.mkdir())
+            if (!dir.mkdir()) {
+                log.error("无法创建目录 {}", dir.getName());
                 return ResponseEntity.status(500).body("无法创建目录.");
+            }
         }
 
         for (MultipartFile file : files) {
@@ -72,6 +87,7 @@ public class TestDataController {
                 file.transferTo(dest);
                 log.info("上传文件 {} 到 {}", fileName, testDataDir);
             } catch (IOException e) {
+                log.error("上传文件 {} 失败: {}", fileName, e.getMessage());
                 return ResponseEntity.status(500).body(e.getMessage());
             }
         }
@@ -79,6 +95,13 @@ public class TestDataController {
         return ResponseEntity.ok("{\"msg\": \"上传成功\"}");
     }
 
+    /**
+     * 删除测试数据文件
+     *
+     * @param problemId 题目 Id
+     * @param name      文件名
+     * @return {@link ResponseEntity} 204：删除成功，500：删除失败
+     */
     @DeleteMapping("{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable int problemId, String name) {
         File dest = new File(testDataDir + problemId + "/" + name);
@@ -86,8 +109,9 @@ public class TestDataController {
         if (dest.delete()) {
             log.info("删除文件 {}/{}", problemId, name);
             return ResponseEntity.noContent().build();
+        } else {
+            log.error("删除文件 {}/{} 失败", problemId, name);
+            return ResponseEntity.status(500).body("删除文件失败");
         }
-
-        return ResponseEntity.status(500).body("删除文件失败");
     }
 }

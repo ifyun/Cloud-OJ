@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("user")
-public class UserManagerController implements CRUDController {
+public class UserController implements CRUDController {
 
     @Resource
     private ManagerService managerService;

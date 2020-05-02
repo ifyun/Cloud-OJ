@@ -11,6 +11,9 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.stream.Collectors;
 
+/**
+ * 编译模块
+ */
 @Slf4j
 @Component
 class Compiler {
@@ -18,8 +21,11 @@ class Compiler {
     @Value("${project.target-dir}")
     private String targetDir;
 
-    private ProcessBuilder processBuilder = new ProcessBuilder();
+    private final ProcessBuilder processBuilder = new ProcessBuilder();
 
+    /**
+     * 初始化
+     */
     @PostConstruct
     public void init() {
         File dir = new File(targetDir);
@@ -27,12 +33,20 @@ class Compiler {
             if (dir.mkdirs()) {
                 log.info("目录 {} 不存在, 已创建", targetDir);
             } else {
-                log.info("无法创建目录");
+                log.info("无法创建目录 {}", targetDir);
                 System.exit(-1);
             }
         }
     }
 
+    /**
+     * 编译入口
+     *
+     * @param solutionId 答案 Id
+     * @param languageId 语言 Id
+     * @param source     源代码
+     * @return {@link Compile} 编译结果
+     */
     public Compile compile(String solutionId, int languageId, String source) {
         log.info("正在编译 solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
         String src = writeCode(solutionId, languageId, source);
@@ -53,8 +67,8 @@ class Compiler {
      *
      * @param solutionId 答案 Id
      * @param languageId 语言类型
-     * @param src        源码
-     * @return 编译信息 {@link Compile}
+     * @param src        源码文件路径
+     * @return {@link Compile} 编译结果
      */
     public Compile compileSource(String solutionId, int languageId, String src) {
         Language language = Language.get(languageId);
@@ -95,6 +109,12 @@ class Compiler {
         }
     }
 
+    /**
+     * 从 Process 的输入流或错误流获取输出
+     *
+     * @param inputStream Process 的输入流（stdout or stderr）
+     * @return Process 的输出
+     */
     @SneakyThrows
     private String getOutput(InputStream inputStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));

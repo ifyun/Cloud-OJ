@@ -83,7 +83,7 @@ public class ManagerService {
         return userDao.delete(userId) == 1;
     }
 
-    // NOTE 获取提交记录
+    // NOTE 提交记录
 
     public List<List<?>> getJudged(String userId, int start, int limit) {
         return judgeResultDao.getByUserId(userId, start, limit);

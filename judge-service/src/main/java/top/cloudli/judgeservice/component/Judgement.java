@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * 判题模块
+ */
 @Slf4j
 @Component
 public class Judgement {
@@ -40,7 +43,7 @@ public class Judgement {
     /**
      * 判题
      *
-     * @param solution {@link Solution}
+     * @param solution {@link Solution} 答案对象
      */
     public void judge(Solution solution) {
         List<String> input = getInputData(solution.getProblemId());
@@ -60,7 +63,7 @@ public class Judgement {
     /**
      * 比较结果
      *
-     * @param solution {@link Solution}
+     * @param solution {@link Solution} 答案对象
      * @param expect   期望输出
      * @param output   实际输出
      */
@@ -99,7 +102,7 @@ public class Judgement {
     }
 
     /**
-     * 执行
+     * 执行编译后的程序
      *
      * @param input 输入数据
      * @return 程序执行结果
@@ -187,8 +190,8 @@ public class Judgement {
     /**
      * 构造执行命令
      *
-     * @param solution {@link Solution}
-     * @return 执行命令
+     * @param solution {@link Solution} 答案对象
+     * @return {@link ProcessBuilder}
      */
     private ProcessBuilder buildCommand(Solution solution) {
         Language language = Language.get(solution.getLanguage());

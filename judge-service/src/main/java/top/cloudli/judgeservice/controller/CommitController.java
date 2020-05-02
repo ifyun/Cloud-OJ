@@ -34,6 +34,12 @@ public class CommitController {
     @Resource
     private Queue commitQueue;
 
+    /**
+     * 提交代码
+     *
+     * @param data {@link CommitData} 提交的数据，包括题目 Id、用户 Id、代码等数据
+     * @return {@link ResponseEntity} 202：已接受，400：数据错误
+     */
     @PostMapping("")
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         Integer contestId = data.getContestId();
@@ -54,6 +60,12 @@ public class CommitController {
         return ResponseEntity.accepted().body(data.getSolutionId());
     }
 
+    /**
+     * 获取判题结果
+     *
+     * @param solutionId 题目 Id
+     * @return {@link ResponseEntity} 判题结果
+     */
     @GetMapping("")
     public ResponseEntity<?> getResult(String solutionId) {
         return ResponseEntity.ok(commitService.getResult(solutionId));

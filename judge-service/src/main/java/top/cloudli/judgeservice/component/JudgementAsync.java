@@ -29,6 +29,11 @@ public class JudgementAsync {
     @Resource
     private FileCleaner fileCleaner;
 
+    /**
+     * 异步判题
+     *
+     * @param solution {@link Solution} 答案对象
+     */
     @Async("ojExecutor")
     public void judge(Solution solution) {
         CompletableFuture<Compile> future = compilerAsync.compile(solution);
