@@ -48,12 +48,14 @@
     </select>
 
     <select id="getContest" resultMap="Map.Contest">
-        select * from contest where contest_id = #{contestId}
+        select *
+        from contest
+        where contest_id = #{contestId}
     </select>
 
     <insert id="addContest" parameterType="top.cloudli.managerservice.model.Contest">
-        insert into contest(contest_name, start_at, end_at)
-            value (#{contestName}, #{startAt}, #{endAt})
+        insert into contest(contest_name, start_at, end_at, languages)
+            value (#{contestName}, #{startAt}, #{endAt}, #{languages})
     </insert>
 
     <update id="updateContest" parameterType="top.cloudli.managerservice.model.Contest">
@@ -62,7 +64,7 @@
             start_at     = #{startAt},
             end_at       = #{endAt},
             languages    = #{languages}
-            where contest_id = #{contestId}
+        where contest_id = #{contestId}
     </update>
 
     <delete id="deleteContest">

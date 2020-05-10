@@ -5,7 +5,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import top.cloudli.judgeservice.component.JudgementAsync;
-import top.cloudli.judgeservice.data.CommitData;
+import top.cloudli.judgeservice.model.CommitData;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.service.CommitService;
 

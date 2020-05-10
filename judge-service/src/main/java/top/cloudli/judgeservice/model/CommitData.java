@@ -1,4 +1,4 @@
-package top.cloudli.judgeservice.data;
+package top.cloudli.judgeservice.model;
 
 import lombok.Data;
 

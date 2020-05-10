@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import top.cloudli.judgeservice.dao.ContestDao;
-import top.cloudli.judgeservice.data.CommitData;
+import top.cloudli.judgeservice.model.CommitData;
 import top.cloudli.judgeservice.model.Contest;
 import top.cloudli.judgeservice.service.CommitService;
 

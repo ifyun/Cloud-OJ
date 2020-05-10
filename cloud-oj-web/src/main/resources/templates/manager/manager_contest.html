@@ -231,6 +231,7 @@
 
         form.on('submit(create)', (data) => {
             let contest = data.field;
+            contest.languages = languages;
             if (Date.parse(contest.startAt) >= Date.parse(contest.endAt)) {
                 layer.msg('开始时间不能大于结束时间!', {icon: 5});
             } else {
@@ -482,8 +483,13 @@
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);
-                    layer.msg(xhr.status === 400 ? xhr.status + ': ' + '请确认竞赛中是否还存在题目！' : '请求失败！',
-                        {icon: 5});
+                    if (xhr.status === 400)
+                        layer.msg(xhr.responseText, {icon: 5});
+                    else if (xhr.status === 410)
+                        layer.msg(errorText.get(410), {icon: 5});
+                    else
+                        layer.msg('请求失败！', {icon: 5});
+                    refresh('contests');
                 }
             });
             layer.close(index);

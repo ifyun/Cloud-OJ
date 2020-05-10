@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.dao.SourceCodeDao;
-import top.cloudli.judgeservice.data.CommitData;
+import top.cloudli.judgeservice.model.CommitData;
 import top.cloudli.judgeservice.model.JudgeResult;
 import top.cloudli.judgeservice.model.Solution;
 import top.cloudli.judgeservice.model.SourceCode;

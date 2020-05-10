@@ -11,7 +11,7 @@
     <select id="getResultBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
         select *
         from judge_result
-        where solution_id = #{solutionId}
+        where solution_id = #{solutionId} and state = 0;
     </select>
 
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
