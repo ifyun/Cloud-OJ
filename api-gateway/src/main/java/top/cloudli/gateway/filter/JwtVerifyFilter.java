@@ -1,11 +1,10 @@
 package top.cloudli.gateway.filter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -19,8 +18,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Jwt token 验证过滤器
@@ -28,12 +30,19 @@ import java.util.List;
 @Slf4j
 public class JwtVerifyFilter extends GenericFilterBean {
 
-    private UserDao userDao;
+    private final UserDao userDao;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private String errorPage;
 
     {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        InputStreamReader inputStreamReader;
+        try {
+            inputStreamReader = new InputStreamReader(new ClassPathResource("static/error/401.html").getInputStream());
+            errorPage = new BufferedReader(inputStreamReader)
+                    .lines().collect(Collectors.joining("\n"));
+        } catch (IOException ignore) {
+
+        }
     }
 
     public JwtVerifyFilter(UserDao userDao) {
@@ -46,7 +55,7 @@ public class JwtVerifyFilter extends GenericFilterBean {
 
         SecurityContextHolder.clearContext();
 
-        // 先获取 url 中的 jwt token
+        // 获取 url 中的 jwt token
         String jwtToken = servletRequest.getParameter("token");
         String userId = servletRequest.getParameter("userId");
 
@@ -77,11 +86,10 @@ public class JwtVerifyFilter extends GenericFilterBean {
 
                 filterChain.doFilter(servletRequest, servletResponse);
             } catch (JwtException | IllegalArgumentException e) {
-                // Jwt 解析异常的处理
                 log.error(e.getMessage());
                 ((HttpServletResponse) servletResponse).setStatus(401);
-                servletResponse.setContentType("text/plain;charset=utf-8");
-                servletResponse.getWriter().write("未授权，Token 可能已过期，请重新登录.");
+                servletResponse.setContentType("text/html");
+                servletResponse.getWriter().write(errorPage);
             }
         }
     }

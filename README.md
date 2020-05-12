@@ -60,6 +60,16 @@ api-gateway     | 80
 1. 安装 Docker，直接运行 `database` 目录下的 `start-mysql&rabbitmq.cmd`；
 2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表。
 
+设置测试数据目录临时目录：
+
+修改 `file-server` 和 `judge-service` 的配置文件：
+
+```yaml
+project:
+  test-data-dir: 填写测试数据存放目录
+  target-dir: 填写用来临时存放代码的目录   # 这一项在 judge-service 中
+```
+
 ### Step 3
 
-运行服务。
+运行每个服务。
