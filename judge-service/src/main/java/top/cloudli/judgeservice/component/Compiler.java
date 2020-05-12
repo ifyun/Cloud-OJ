@@ -76,7 +76,7 @@ class Compiler {
         if (language == null)
             return new Compile(solutionId, -1, "不支持的语言.");
 
-        // 构造编译命令
+        // NOTE 构造编译命令
         switch (language) {
             case C_CPP:
                 processBuilder.command("g++", src, "-o", src.substring(0, src.indexOf(".")));
