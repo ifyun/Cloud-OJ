@@ -15,7 +15,7 @@ Cloud-OJ 项目源码。
 - 数据库：MySQL
 - 前端：Layui、Thymeleaf
 
-框架/组件名称        | 版本
+Framework          | Version
 -------------------|-----------------
 Spring Boot        | 2.2.2.RELEASE
 Spring Cloud       | Hoxton.RELEASE
@@ -33,7 +33,7 @@ judge-service   | 8002
 cloud-oj-web    | 8080
 api-gateway     | 80
 
-> 如果你改动了端口，请同时修改 api-gateway 的配置文件。
+> 如果你改动了端口，同时修改 api-gateway 的配置文件。
 
 ## 食用方法
 
@@ -55,11 +55,11 @@ api-gateway     | 80
 
 ### Step 2
 
-创建数据库：
+搭建数据库和消息队列，两种方式：
 
-1. 如果你安装了 Docker，直接运行 mysql 目录下的 `start-mysql.cmd`；
-2. 手动安装 MySQL，执行 `oj-database.sql`。
+1. 安装 Docker，直接运行 `database` 目录下的 `start-mysql&rabbitmq.cmd`；
+2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表。
 
 ### Step 3
 
-运行每个服务。
+运行服务。

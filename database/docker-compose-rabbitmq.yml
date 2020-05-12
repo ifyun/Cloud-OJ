@@ -1,0 +1,18 @@
+version: "3.4"
+
+services:
+  oj-rabbitmq:
+    image: rabbitmq:3.8.2-management
+    container_name: oj-rabbitmq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=cloud@oj
+      - RABBITMQ_DEFAULT_PASS=cloud@oj
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "oj-rabbitmq:/var/lib/rabbitmq/mnesia"
+
+volumes:
+  oj-rabbitmq:
