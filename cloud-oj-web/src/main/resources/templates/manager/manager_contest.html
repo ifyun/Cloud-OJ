@@ -203,9 +203,9 @@
                 $('#edit-languages input[type=checkbox]').attr("checked", false);
                 form.render();
 
-                console.log(languages);
+                // 列出语言
                 for (let i = 0; i <= 4; i++) {
-                    let t = Math.pow(2, i);
+                    let t = 1 << i;
                     let lang = {};
                     lang['lang[' + i + ']'] = (languages & t) === t;
                     console.log(lang);

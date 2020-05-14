@@ -151,7 +151,7 @@
                     let languages = data.languages;
                     contestName = data.contestName;
                     $('.lang').each((index, item) => {
-                        let t = Math.pow(2, index);
+                        let t = 1 << index;
                         if ((languages & t) !== t)
                             $(item).remove();
                     });
