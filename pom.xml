@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>top.cloudli</groupId>
-    <artifactId>cloud-online-judge</artifactId>
+    <artifactId>cloud-oj</artifactId>
     <version>1.0-RELEASE</version>
     <name>Cloud OJ</name>
     <packaging>pom</packaging>

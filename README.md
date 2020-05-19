@@ -33,7 +33,7 @@ judge-service   | 8002
 cloud-oj-web    | 8080
 api-gateway     | 80
 
-> 如果你改动了端口，同时修改 api-gateway 的配置文件。
+> 如果改动了注册中心的端口，请同时修改其它子项目的配置文件。
 
 ## 食用方法
 
