@@ -57,7 +57,7 @@ api-gateway     | 80
 
 搭建数据库和消息队列，两种方式：
 
-1. 安装 Docker，直接运行 `database` 目录下的 `start-mysql&rabbitmq.cmd`；
+1. 安装 Docker，直接运行 `mysql` 目录下的 `start.cmd`；
 2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表。
 
 设置测试数据目录临时目录：
@@ -72,4 +72,4 @@ project:
 
 ### Step 3
 
-运行每个服务。
+Build & Run.
