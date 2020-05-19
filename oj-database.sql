@@ -197,8 +197,7 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                  join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
                       join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
-       group by `problem_score`.`user_id`, `problem_score`.`contest_id`
-       order by `total_score` desc) `ranking`
+       group by `problem_score`.`user_id`, `problem_score`.`contest_id`) `ranking`
          join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
                from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
                      from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
@@ -245,8 +244,7 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
              from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
                       join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`) `problem_score`
-       group by `problem_score`.`user_id`, `problem_score`.`contest_id`
-       order by `total_score` desc) `ranking`
+       group by `problem_score`.`user_id`, `problem_score`.`contest_id`) `ranking`
          join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
                from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
                      from (`cloud_oj`.`solution` `s`

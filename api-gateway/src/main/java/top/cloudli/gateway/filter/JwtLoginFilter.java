@@ -29,9 +29,9 @@ import java.util.Date;
 @Slf4j
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private int validTime;
+    private final int validTime;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

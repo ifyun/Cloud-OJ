@@ -15,7 +15,7 @@ import top.cloudli.cloudojweb.model.Problem;
 @Controller
 public class OJController {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${project.gateway-host:localhost}")
     private String gatewayHost;
@@ -24,7 +24,6 @@ public class OJController {
     public String index() {
         return "index";
     }
-
 
     @GetMapping("problems")
     public String problems() {

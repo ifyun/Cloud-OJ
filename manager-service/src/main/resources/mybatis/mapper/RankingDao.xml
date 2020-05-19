@@ -4,14 +4,14 @@
 <mapper namespace="top.cloudli.managerservice.dao.RankingDao">
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows *
-        from ranking_list
+        from (select * from ranking_list order by total_score desc) ranking
         limit #{start}, #{limit};
         select found_rows()
     </select>
 
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows *
-        from contest_ranking_list
+        from (select * from contest_ranking_list order by total_score desc) ranking
         where contest_id = #{contestId}
         limit #{start}, #{limit};
         select found_rows()
