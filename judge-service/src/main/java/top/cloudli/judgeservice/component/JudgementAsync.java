@@ -3,6 +3,7 @@ package top.cloudli.judgeservice.component;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import top.cloudli.judgeservice.JudgeServiceApplication;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Solution;
@@ -54,7 +55,7 @@ public class JudgementAsync {
         // 删除临时文件
         fileCleaner.deleteTempFile(solution.getSolutionId(),
                 solution.getLanguage(),
-                Judgement.isWindows);
+                JudgeServiceApplication.isWindows);
 
         if (solutionDao.update(solution) != 0)
             log.info("solutionId: {} 判题完成.", solution.getSolutionId());

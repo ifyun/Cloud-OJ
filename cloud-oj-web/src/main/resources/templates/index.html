@@ -69,12 +69,17 @@
             }
         }
 
-        .title-text {
+        .poster-div {
             margin-top: 20%;
             text-align: center;
             width: 100%;
             color: white;
             transition: margin-top 500ms;
+        }
+
+        #poster {
+            font-size: 36pt;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         #login-pane {
@@ -88,8 +93,8 @@
 <body>
 <div th:replace="include::top"></div>
 <div class="container">
-    <div id="title-text" class="title-text">
-        <h2 id="title" style="font-size: 32pt"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
+    <div id="poster-div" class="poster-div">
+        <h2 id="poster"><b>TALK IS CHEAP, SHOW ME YOUR CODE!</b></h2>
         <button id="start-btn" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
                 style="margin-top: 30px; font-weight: bold; font-size: 13pt"
                 onclick="startCodding()">
@@ -236,6 +241,7 @@
                     $('#user-name').text(user.name);
                     $.cookie('cloudOjToken', JSON.stringify(user));
                     window.location.href = './problems';
+                    $('#poster').text(poster_login);
                 },
                 error: (xhr) => {
                     layer.close(loadIndex);

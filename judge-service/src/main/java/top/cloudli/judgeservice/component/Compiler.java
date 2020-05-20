@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import top.cloudli.judgeservice.JudgeServiceApplication;
 import top.cloudli.judgeservice.model.Compile;
 import top.cloudli.judgeservice.model.Language;
 
@@ -78,7 +79,10 @@ class Compiler {
 
         // NOTE 构造编译命令
         switch (language) {
-            case C_CPP:
+            case C:
+                processBuilder.command("gcc", src, "-o", src.substring(0, src.indexOf(".")));
+                break;
+            case CPP:
                 processBuilder.command("g++", src, "-o", src.substring(0, src.indexOf(".")));
                 break;
             case JAVA:
@@ -89,7 +93,7 @@ class Compiler {
             case BASH:
                 return new Compile(solutionId, 0, "Shell 无需编译.");
             case C_SHARP:
-                processBuilder.command(Judgement.isWindows ? "mcs.bat" : "mcs", src);
+                processBuilder.command(JudgeServiceApplication.isWindows ? "mcs.bat" : "mcs", src);
         }
 
         try {

@@ -1,14 +1,15 @@
 package top.cloudli.judgeservice.model;
 
 public enum Language {
-    C_CPP(0, ".cpp"),
-    JAVA(1, ".java"),
-    PYTHON(2, ".py"),
-    BASH(3, ".sh"),
-    C_SHARP(4, ".cs");
+    C(0, ".c"),
+    CPP(1, ".cpp"),
+    JAVA(2, ".java"),
+    PYTHON(3, ".py"),
+    BASH(4, ".sh"),
+    C_SHARP(5, ".cs");
 
-    private int code;
-    private String ext;
+    private final int code;
+    private final String ext;
 
     Language(int code, String ext) {
         this.code = code;

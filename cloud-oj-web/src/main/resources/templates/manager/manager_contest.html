@@ -41,11 +41,12 @@
     <div class="layui-form-item">
         <label class="layui-form-label">限制语言</label>
         <div class="layui-input-block">
-            <input type="checkbox" lay-filter="language" title="C/C++" value="0">
-            <input type="checkbox" lay-filter="language" title="Java" value="1">
-            <input type="checkbox" lay-filter="language" title="Python" value="2">
-            <input type="checkbox" lay-filter="language" title="Shell" value="3">
-            <input type="checkbox" lay-filter="language" title="C#" value="4">
+            <input type="checkbox" lay-filter="language" title="C" value="0">
+            <input type="checkbox" lay-filter="language" title="C++" value="1">
+            <input type="checkbox" lay-filter="language" title="Java" value="2">
+            <input type="checkbox" lay-filter="language" title="Python" value="3">
+            <input type="checkbox" lay-filter="language" title="Shell" value="4">
+            <input type="checkbox" lay-filter="language" title="C#" value="5">
         </div>
     </div>
     <!-- button -->
@@ -64,11 +65,12 @@
     <div class="layui-form-item">
         <label class="layui-form-label">限制语言</label>
         <div class="layui-input-block" id="edit-languages">
-            <input type="checkbox" lay-filter="language" name="lang[0]" title="C/C++" value="0">
-            <input type="checkbox" lay-filter="language" name="lang[1]" title="Java" value="1">
-            <input type="checkbox" lay-filter="language" name="lang[2]" title="Python" value="2">
-            <input type="checkbox" lay-filter="language" name="lang[3]" title="Shell" value="3">
-            <input type="checkbox" lay-filter="language" name="lang[4]" title="C#" value="4">
+            <input type="checkbox" lay-filter="language" name="lang[0]" title="C" value="0">
+            <input type="checkbox" lay-filter="language" name="lang[1]" title="C++" value="1">
+            <input type="checkbox" lay-filter="language" name="lang[2]" title="Java" value="2">
+            <input type="checkbox" lay-filter="language" name="lang[3]" title="Python" value="3">
+            <input type="checkbox" lay-filter="language" name="lang[4]" title="Shell" value="4">
+            <input type="checkbox" lay-filter="language" name="lang[5]" title="C#" value="5">
         </div>
     </div>
     <blockquote class="layui-elem-quote">关闭窗口自动保存</blockquote>
@@ -204,7 +206,7 @@
                 form.render();
 
                 // 列出语言
-                for (let i = 0; i <= 4; i++) {
+                for (let i = 0; i <= 5; i++) {
                     let t = 1 << i;
                     let lang = {};
                     lang['lang[' + i + ']'] = (languages & t) === t;

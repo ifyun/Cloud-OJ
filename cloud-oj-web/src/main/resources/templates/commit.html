@@ -86,11 +86,12 @@
                     <label for="lang" class="layui-form-label">编程语言：</label>
                     <div class="layui-input-block">
                         <select id="lang" name="language" lay-filter="language">
-                            <option class="lang" value="0" selected="selected">C/C++（14）</option>
-                            <option class="lang" value="1">Java (1.8)</option>
-                            <option class="lang" value="2">Python（3.5）</option>
-                            <option class="lang" value="3">Shell（Bash）</option>
-                            <option class="lang" value="4">C#（Mono）</option>
+                            <option class="lang" value="0" selected="selected">C（gcc）</option>
+                            <option class="lang" value="1">C++（g++ std=14）</option>
+                            <option class="lang" value="2">Java (1.8)</option>
+                            <option class="lang" value="3">Python（3.5）</option>
+                            <option class="lang" value="4">Shell（Bash）</option>
+                            <option class="lang" value="5">C#（Mono）</option>
                         </select>
                     </div>
                 </div>
@@ -117,7 +118,7 @@
         let contestId = getQueryVariable('contestId');
 
         let language = 0;
-        let codeLang = ['text/x-c++src', 'text/x-java', 'text/x-python', 'text/x-sh', 'text/x-csharp'];
+        let codeLang = ['text/x-csrc', 'text/x-c++src', 'text/x-java', 'text/x-python', 'text/x-sh', 'text/x-csharp'];
 
         let editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             mode: 'text/x-c++src',

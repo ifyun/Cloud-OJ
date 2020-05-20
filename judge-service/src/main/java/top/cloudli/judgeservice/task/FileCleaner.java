@@ -43,7 +43,9 @@ public class FileCleaner {
             case BASH:
                 delete(new File(targetDir + solutionId + ".sh"));
                 break;
-            case C_CPP:
+            case C:
+                delete(new File(targetDir + solutionId + ".c"));
+            case CPP:
                 delete(isWindows ? new File(targetDir + solutionId + ".exe")
                         : new File(targetDir + solutionId));
                 delete(new File(targetDir + solutionId + ".cpp"));

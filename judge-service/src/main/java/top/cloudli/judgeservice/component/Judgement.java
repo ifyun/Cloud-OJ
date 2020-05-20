@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
+import top.cloudli.judgeservice.JudgeServiceApplication;
 import top.cloudli.judgeservice.dao.RuntimeDao;
 import top.cloudli.judgeservice.dao.SolutionDao;
 import top.cloudli.judgeservice.model.*;
@@ -37,8 +38,6 @@ public class Judgement {
 
     @Resource
     private SolutionDao solutionDao;
-
-    public static boolean isWindows = System.getProperty("os.name").equals("Windows");
 
     /**
      * 判题
@@ -201,9 +200,10 @@ public class Judgement {
         ProcessBuilder builder = new ProcessBuilder();
 
         switch (language) {
-            case C_CPP:
+            case C:
+            case CPP:
                 // NOTE Windows 和 Linux 生成的目标文件不一样
-                if (isWindows) {
+                if (JudgeServiceApplication.isWindows) {
                     builder.command(filePath + ".exe");
                 } else {
                     builder.command(filePath);

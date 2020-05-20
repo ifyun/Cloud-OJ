@@ -21,14 +21,16 @@ public class ResultConverter implements TypeHandler<String> {
             int language = resultSet.getInt(s);
             switch (language) {
                 case 0:
-                    return "C/C++";
+                    return "C";
                 case 1:
-                    return "Java";
+                    return "C++";
                 case 2:
-                    return "Python";
+                    return "Java";
                 case 3:
-                    return "Shell";
+                    return "Python";
                 case 4:
+                    return "Shell";
+                case 5:
                     return "C Sharp";
             }
         } else if (s.equals("result")) {
