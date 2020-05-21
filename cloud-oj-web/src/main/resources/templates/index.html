@@ -6,13 +6,16 @@
     <style>
         html {
             height: 100%;
+            min-height: 1000px;
+            position: relative;
         }
 
         .container {
             border-top: 1px solid #404553;
-            height: calc(100% - 61px);
-            min-height: 800px;
+            height: 850px;
             background-color: rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
         }
 
         .container::before {
@@ -21,7 +24,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: inherit;
             filter: blur(10px);
             background-image: url("img/index-background.jpg");
             background-position: center top;
@@ -36,7 +39,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: inherit;
             background-image: url("img/index-background.jpg");
             background-position: center top;
             background-size: cover;
@@ -70,7 +73,7 @@
         }
 
         .poster-div {
-            margin-top: 20%;
+            margin-top: 15%;
             text-align: center;
             width: 100%;
             color: white;
@@ -87,6 +90,26 @@
             width: 450px;
             background: white;
             display: none;
+        }
+
+        .foot {
+            background: #191919;
+            height: 70px;
+            width: 100%;
+            color: white;
+            position: absolute;
+            bottom: 0;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .link {
+            color: #cccccc;
+        }
+
+        .link:hover {
+            color: white;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -184,10 +207,36 @@
             </div>
         </div>
     </div>
+    <div id="wave" style="position: absolute; bottom: 0; overflow: hidden; width: 100%; height: 120px">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
 </div>
-<div style="position: absolute; top: calc(100% - 120px); overflow: hidden; width: 100%; height: 120px">
-    <div class="wave"></div>
-    <div class="wave"></div>
+<div class="foot">
+    © 2020
+    <p style="display: inline-block; padding: 0 5px;">Cloud Li</p>
+    MIT License
+    <p style="padding: 0 5px; display: inline-block">
+        <a class="link" href="https://github.com/imcloudfloating/Cloud-OJ-Docker" target="_blank">GitHub</a>
+    </p>
+    <p style="padding: 6px 0; color: #999999">Based on</p>
+    <div style="display: inline-flex; align-items: center; text-align: center;">
+        <img class="framework-logo" alt="Layui" src="./logo/layui.png">
+        <a class="framework-link" href="https://www.layui.com/" target="_blank"
+           style="color: #e0e0e0"><b>Layui</b></a>
+        <img class="framework-logo" style="margin-left: 12px;" alt="Spring Cloud"
+             src="./logo/spring-cloud.png">
+        <a class="framework-link" href="https://spring.io/projects/spring-cloud/" target="_blank"
+           style="color: #75b240">
+            <b>Spring Cloud</b>
+        </a>
+        <img class="framework-logo" style="margin-left: 12px;" alt="Docker"
+             src="./logo/docker.png">
+        <a class="framework-link" href="https://www.docker.com/" target="_blank"
+           style="color: #4196eb">
+            <b>Docker</b>
+        </a>
+    </div>
 </div>
 <script>
     let $startBtn = $('#start-btn');
@@ -294,7 +343,7 @@
             window.location.href = './problems';
         } else {
             $startBtn.hide();
-            $('#title-text').css('margin-top', '10%');
+            $('#poster-div').css('margin-top', '5%');
             $('#login-pane').show(500);
             $('')
         }
