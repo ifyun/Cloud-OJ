@@ -5,54 +5,18 @@
     <title th:replace="${title}"></title>
     <link class="fav-icon" rel="shortcut icon"/>
     <link class="fav-icon" rel="bookmark"/>
+    <link rel="stylesheet" href="./layui/css/layui.css">
     <link rel="stylesheet" href="./css/common.css">
     <link rel="stylesheet" href="./css/iconfont.css">
-    <link rel="stylesheet" href="./layui/css/layui.css">
-    <script src="./common.js"></script>
+    <link rel="stylesheet" href="./css/include.css">
+    <script src="./js/common.js"></script>
+    <script src="./js/jquery-3.4.1.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <script src="./js/jquery.md5.js"></script>
     <script src="./layui/layui.all.js"></script>
-    <script src="./jquery-3.4.1.js"></script>
-    <script src="./jquery.cookie.js"></script>
-    <script src="./jquery.md5.js"></script>
     <th:block th:replace="${scripts}"/>
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
-    <style>
-        body {
-            min-width: 900px;
-            height: 100%;
-        }
-
-        .menu-text {
-            font-size: 12pt;
-            font-weight: bold;
-        }
-
-        .header {
-            height: 59px;
-            border-bottom: 1px solid #404553;
-            background-color: #393D49;
-        }
-
-        .logo {
-            position: absolute;
-            left: 0;
-            top: 16px;
-        }
-
-        .framework-link {
-            margin-left: 2px;
-            font-size: 12pt;
-        }
-
-        .framework-link:hover {
-            text-decoration: underline;
-        }
-
-        .framework-logo {
-            display: inline-block;
-            height: 22px;
-        }
-    </style>
     <script>
         let baseUrl = 'http://' + '[[${gateway_host}]]';
         let user = {
@@ -148,7 +112,7 @@
 <div id="nav" th:fragment="top" class="layui-header header">
     <div class="layui-main">
         <div class="logo">
-            <a href="./index" style="top: 16px; color: #5FB878; font-size: 18pt; font-weight: bold;">Cloud OJ</a>
+            <a id="oj-name" href="./index">Cloud OJ</a>
         </div>
         <ul class="layui-nav layui-layout-left">
             <li id="nav-problems" class="layui-nav-item">
@@ -203,17 +167,17 @@
         </p>
         <p style="padding: 6px 0; color: #999999">Based on</p>
         <div style="display: inline-flex; align-items: center; text-align: center;">
-            <img class="framework-logo" alt="Layui" src="./logo/layui.png">
+            <img class="framework-logo" alt="Layui" src="./img/logo/layui.png">
             <a class="framework-link" href="https://www.layui.com/" target="_blank"
                style="color: #3b3d49"><b>Layui</b></a>
             <img class="framework-logo" style="margin-left: 12px;" alt="Spring Cloud"
-                 src="./logo/spring-cloud.png">
+                 src="./img/logo/spring-cloud.png">
             <a class="framework-link" href="https://spring.io/projects/spring-cloud/" target="_blank"
                style="color: #75b240">
                 <b>Spring Cloud</b>
             </a>
             <img class="framework-logo" style="margin-left: 12px;" alt="Docker"
-                 src="./logo/docker.png">
+                 src="./img/logo/docker.png">
             <a class="framework-link" href="https://www.docker.com/" target="_blank"
                style="color: #4196eb">
                 <b>Docker</b>
