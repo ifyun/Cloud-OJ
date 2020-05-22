@@ -18,8 +18,5 @@
     </resultMap>
 
     <resultMap id="JudgeResult" type="top.cloudli.managerservice.model.JudgeResult">
-        <result column="language" property="language"
-                typeHandler="top.cloudli.managerservice.converter.ResultConverter"/>
-        <result column="result" property="result" typeHandler="top.cloudli.managerservice.converter.ResultConverter"/>
     </resultMap>
 </mapper>

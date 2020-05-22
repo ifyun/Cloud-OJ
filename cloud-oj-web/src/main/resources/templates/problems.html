@@ -37,16 +37,8 @@
     {{# } }}
 </script>
 <script type="text/html" id="resultTpl">
-    {{# if (d.result == 0) { }}
-    <span class="bg-green label">通过</span>
-    {{# } else if (d.result == 1) { }}
-    <span class="bg-yellow label">超时</span>
-    {{# } else if (d.result == 2) { }}
-    <span class="bg-yellow label">部分通过</span>
-    {{# } else if (d.result == 3) { }}
-    <span class="bg-red label">答案错误</span>
-    {{# } else if (d.result == 4) { }}
-    <span class="bg-grey label">编译错误</span>
+    {{# if (d.result != undefined) { }}
+    <span class="{{resultColor[d.result]}} label">{{result[d.result]}}</span>
     {{# } }}
 </script>
 <script type="text/html" id="top-bar">

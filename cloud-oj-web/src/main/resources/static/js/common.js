@@ -1,21 +1,15 @@
 let roles = ['普通用户', '用户管理员', '题目管理员', 'ROOT'];
-
-let iconMap = new Map([
-    ['C', 'icon-c'],
-    ['C++', 'icon-cpp'],
-    ['Java', 'icon-java'],
-    ['Python', 'icon-python'],
-    ['Shell', 'icon-shell'],
-    ['C Sharp', 'icon-csharp']
-]);
+let result = ['完全正确', '时间超限', '部分通过', '答案错误', '编译错误']
+let resultColor = ['bg-green', 'bg-yellow', 'bg-yellow', 'bg-red', 'bg-grey'];
+let language = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#'];
 
 let langColorMap = new Map([
-    ['C', 'cpp-color'],
-    ['C++', 'cpp-color'],
-    ['Java', 'java-color'],
-    ['Python', 'py-color'],
-    ['Shell', 'shell-color'],
-    ['C Sharp', 'csharp-color']
+    [0, 'cpp-color'],
+    [1, 'cpp-color'],
+    [2, 'java-color'],
+    [3, 'py-color'],
+    [4, 'shell-color'],
+    [5, 'csharp-color']
 ]);
 
 let roleColor = ['user-color', 'user-manager-color', 'problem-manager-color', 'root-color'];

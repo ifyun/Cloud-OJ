@@ -15,7 +15,7 @@ public class JudgeResult {
     private long time;
     private String code;
     private String compileInfo;
-    private String language;
-    private String result;
+    private int language;
+    private int result;
     private Date submitTime;
 }

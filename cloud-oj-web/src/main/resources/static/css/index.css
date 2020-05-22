@@ -54,7 +54,7 @@ html {
     background: url(../img/wave.svg) repeat-x;
     width: 6400px;
     height: 100px;
-    animation: wave 35s cubic-bezier(.36, .45, .63, .53) infinite;
+    animation: wave 45s cubic-bezier(.36, .45, .63, .53) infinite;
     transform: translate3d(0, 0, 0);
 }
 
@@ -67,7 +67,6 @@ html {
     0% {
         margin-left: 0;
     }
-
     100% {
         margin-left: -1600px;
     }
@@ -82,8 +81,53 @@ html {
 }
 
 #poster {
+    margin: 0 auto;
+    padding-left: 55px;
     font-size: 32pt;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+}
+
+#poster:after {
+    content: "";
+    width: 45px;
+    height: 45px;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: dot 5s infinite;
+    margin: 0 auto;
+}
+
+@keyframes dot {
+    0% {
+        border-radius: 8px;
+        transform: rotate(0deg);
+        background: #00a8c6;
+    }
+    25%{
+        border-radius: 25px;
+        transform: rotate(360deg);
+        background: #f17c67;
+    }
+    50% {
+        border-radius: 8px;
+        transform: rotate(720deg);
+        background: #1E9FFF;
+    }
+    75%{
+        border-radius: 25px;
+        transform: rotate(1080deg);
+        background: #FFB800;
+    }
+    100%{
+        border-radius: 8px;
+        transform: rotate(1440deg);
+        background: #00a8c6;
+    }
 }
 
 #login-pane {
