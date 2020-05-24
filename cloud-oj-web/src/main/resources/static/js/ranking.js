@@ -18,8 +18,9 @@ $(document).ready(() => {
         elem: '#ranking',
         url: apiUrl,
         parseData: (res) => {
-            if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined)
+            if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined) {
                 $('#contest_name').text(res.data[0].contestName + '-排行榜');
+            }
             return {
                 "code": 0,
                 "count": res === undefined ? 0 : res.count,
@@ -30,18 +31,18 @@ $(document).ready(() => {
         size: 'lg',
         page: true,
         limit: 15,
-        limits: [10, 15, 20, 25, 30],
+        limits: [5, 10, 15, 20, 25, 30],
         toolbar: '#top-bar',
         defaultToolbar: ['print', 'exports'],
         autoSort: false,
         cols: [
             [
-                {title: '排名', type: 'numbers', width: '10%'},
-                {field: 'userId', title: '用户ID', width: '15%'},
-                {field: 'name', title: '用户名', width: '15%'},
-                {field: 'committed', title: '总提交次数', width: '20%', style: 'color: #1E9FFF'},
-                {field: 'passed', title: '已通过题目', width: '20%', style: 'color: #5FB878'},
-                {field: 'totalScore', title: '总分数', width: '20%'}
+                {field: 'rank', title: '排名', width: '10%', align: 'center', templet: '#rankingTpl'},
+                {field: 'name', title: '用户名', width: '21%', align: 'center', templet: '#nameTpl'},
+                {field: 'userId', title: 'ID', width: '15%'},
+                {field: 'committed', title: '总提交次数', width: '18%', align: 'right', style: 'color: #1E9FFF'},
+                {field: 'passed', title: '已通过题目', width: '18%', align: 'right', style: 'color: #5FB878'},
+                {field: 'totalScore', title: '总分数', width: '18%', align: 'right'}
             ]
         ]
     });

@@ -59,7 +59,7 @@ zuul:
       serviceId: file-server
     # OJ Web
     web:
-      path: /oj/**
+      path: /**
       serviceId: cloud-oj-web
   host:
     max-per-route-connections: 1000

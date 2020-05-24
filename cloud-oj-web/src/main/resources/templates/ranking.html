@@ -12,12 +12,28 @@
     </table>
 </div>
 <div th:replace="include::foot"></div>
-<script type="text/html" id="top-bar">
-    {{# if (getQueryVariable('contestId') != null) { }}
-    <label id="contest_name" class="tag bg-blue" style="font-size: 12pt; padding: 6px 10px;"></label>
+<script type="text/html" id="rankingTpl">
+    {{# if (d.rank <= 3) { }}
+    <img src="{{'./img/medal-no.' + d.rank + '.svg'}}" height="28px" alt="ranking">
     {{# } else { }}
-    <label class="tag bg-blue" style="font-size: 12pt; padding: 6px 10px;">总排行榜</label>
+    <span>{{d.rank}}</span>
     {{# } }}
+</script>
+<script type="text/html" id="nameTpl">
+    {{# if (d.rank <= 3) { }}
+    <b>{{d.name}}</b>
+    {{# } else { }}
+    <span>{{d.name}}</span>
+    {{# } }}
+</script>
+<script type="text/html" id="top-bar">
+    <label class="tag bg-blue" style="font-size: 12pt; padding: 6px 10px;">
+        {{# if (getQueryVariable('contestId') != null) { }}
+        <span id="contest_name"></span>
+        {{# } else { }}
+        <span>总排行榜</span>
+        {{# } }}
+    </label>
 </script>
 <script src="./js/ranking.js"></script>
 </body>
