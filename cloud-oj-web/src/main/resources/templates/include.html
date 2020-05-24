@@ -17,7 +17,7 @@
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
     <script>
-        let baseUrl = 'http://' + '[[${gateway_host}]]';
+        let baseUrl = '[[${gateway_host}]]';
         let user = {
             userId: '',
             name: '',
@@ -29,7 +29,7 @@
         };
         let layer;
         $(document).ready(() => {
-                $('.fav-icon').attr('href', baseUrl + '/oj/favicon.ico');
+                $('.fav-icon').attr('href', baseUrl + '/favicon.ico');
                 layui.use('layer', () => {
                     layer = layui.layer;
                 });
