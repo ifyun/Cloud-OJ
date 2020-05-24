@@ -12,6 +12,7 @@ public class Problem {
     private Date endAt;
     private int problemId;
     private Integer result;
+    private Integer passed;
     private String title;
     private String description;
     private String input;
@@ -21,6 +22,6 @@ public class Problem {
     private String category;
     private long timeout;
     private int score;
-    private boolean enable;
+    private Boolean enable;
     private Date createAt;
 }

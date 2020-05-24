@@ -10,6 +10,8 @@ public interface ProblemDao {
 
     List<List<?>> getAll(String userId, int start, int limit, boolean enable);
 
+    List<Problem> backup();
+
     List<List<?>> search(String userId, String keyword, int start, int limit, boolean enable);
 
     Problem getSingle(int problemId, boolean enable);

@@ -42,6 +42,9 @@
                             content: '你的登录已经过期，请重新登录！',
                             yes: () => {
                                 clearToken();
+                            },
+                            cancel: () => {
+                                clearToken();
                             }
                         });
                     }
@@ -95,6 +98,7 @@
             user = null;
             $.removeCookie('cloudOjToken');
             $('#user-name').text('未登录');
+            $('#poster').text(poster);
             window.location.href = './index';
         }
 

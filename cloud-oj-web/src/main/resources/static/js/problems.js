@@ -48,9 +48,10 @@ $(document).ready(() => {
             cols: [
                 [
                     {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                    {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
+                    {field: 'title', title: '题目名称', width: '20%', templet: '#titleTpl'},
                     {field: 'result', title: '状态', width: '15%', align: 'center', templet: '#resultTpl'},
-                    {field: 'category', title: '标签/分类', width: '40%', align: 'center', templet: '#categoryTpl'},
+                    {field: 'passed', title: '通过人数', width: '10%', align: 'center', templet: '#passedTpl'},
+                    {field: 'category', title: '标签/分类', width: '35%', align: 'center', templet: '#categoryTpl'},
                     {field: 'createAt', title: '创建时间', width: '10%'}
                 ]
             ]

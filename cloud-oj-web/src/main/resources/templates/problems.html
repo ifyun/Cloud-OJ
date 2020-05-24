@@ -41,6 +41,11 @@
     <span class="{{resultColor[d.result]}} label">{{result[d.result]}}</span>
     {{# } }}
 </script>
+<script type="text/html" id="passedTpl">
+    {{# if (d.passed != undefined) { }}
+    <span style="color: #5FB878">{{d.passed}}</span>
+    {{# } }}
+</script>
 <script type="text/html" id="top-bar">
     {{# if (getQueryVariable('contestId') == null) { }}
     <div class="layui-form-item" style="margin-bottom: 0; display: inline-block">

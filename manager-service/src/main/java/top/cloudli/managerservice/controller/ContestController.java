@@ -24,7 +24,7 @@ public class ContestController implements CRUDController {
         return buildGETResponse(managerService.getAllContest((page - 1) * limit, limit));
     }
 
-    @GetMapping("/lang/{contestId}")
+    @GetMapping("lang/{contestId}")
     public ResponseEntity<?> getLanguages(@PathVariable int contestId) {
         return buildGETResponse(managerService.getLanguages(contestId));
     }

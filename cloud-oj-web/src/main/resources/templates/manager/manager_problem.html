@@ -163,7 +163,7 @@
     {{# } }}
 </script>
 <script type="text/html" id="optToolbar">
-    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit">编辑题目</a>
+    <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
 </script>
 <script type="text/html" id="test-data-toolbar">
@@ -178,6 +178,10 @@
                    onkeydown="onSearch(event)">
         </div>
         <button class="layui-btn layui-icon layui-icon-search" onclick="addSearchTag($('#keyword').val())">&nbsp;&nbsp;搜索
+        </button>
+        <button class="layui-btn layui-btn-primary layui-icon layui-icon-export" style="margin-left: 15px;"
+                onclick="window.location.href=baseUrl + '/api/manager/pro/backup/problem?userId=' +user.userId + '&token=' + user.token">
+            导出数据
         </button>
     </div>
     <div id="search-tag" style="margin-left: 20px; display: inline-block;">

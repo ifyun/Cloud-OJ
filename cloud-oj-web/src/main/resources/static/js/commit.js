@@ -18,7 +18,7 @@ $(document).ready(() => {
         showHint: true
     });
 
-    editor.setSize('auto', '600px');
+    editor.setSize('auto', '650px');
 
     layui.use(['form', 'element'], function () {
         form = layui.form;

@@ -57,8 +57,18 @@ $(document).ready(() => {
             isAddMode = false;
             $('#save').text('保 存');
             $('#form-title').text('编辑题目');
-            form.val('edit-problem', obj.data);
-            $('#edit-pane').addClass('layui-show');
+            $.ajax({
+                url: baseUrl + '/api/manager/problem/pro/' + problemId + '?userId=' + user.userId,
+                method: 'get',
+                headers: {token: user.token},
+                success: (data) => {
+                    form.val('edit-problem', data);
+                    $('#edit-pane').addClass('layui-show');
+                },
+                error: (xhr) => {
+                    layer.msg(errorText.get(xhr.status), {icon: 5});
+                }
+            });
 
             // 显示测试数据
             $('#test-data-pane').show();
@@ -67,7 +77,9 @@ $(document).ready(() => {
             table.render({
                 elem: '#test-data',
                 url: baseUrl + '/api/file/test_data/' + obj.data.problemId,
-                headers: {token: user.token},
+                headers: {
+                    "token": user.token
+                },
                 where: {
                     userId: user.userId
                 },

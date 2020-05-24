@@ -50,22 +50,22 @@ public class JwtVerifyFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         SecurityContextHolder.clearContext();
 
         // 获取 url 中的 jwt token
-        String jwtToken = servletRequest.getParameter("token");
-        String userId = servletRequest.getParameter("userId");
+        String jwtToken = request.getParameter("token");
+        String userId = request.getParameter("userId");
 
         // 获取 Header 中的 jwt token
         if (jwtToken == null)
-            jwtToken = ((HttpServletRequest) servletRequest).getHeader("token");
+            jwtToken = ((HttpServletRequest) request).getHeader("token");
 
         if (userId == null || jwtToken == null) {
             // 没有 token 时交给 Spring Security 去处理
-            filterChain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(request, response);
         } else {
             String secret = userDao.getSecret(userId);
             try {
@@ -84,12 +84,13 @@ public class JwtVerifyFilter extends GenericFilterBean {
 
                 SecurityContextHolder.getContext().setAuthentication(token);
 
-                filterChain.doFilter(servletRequest, servletResponse);
+                filterChain.doFilter(request, response);
             } catch (JwtException | IllegalArgumentException e) {
                 log.error(e.getMessage());
-                ((HttpServletResponse) servletResponse).setStatus(401);
-                servletResponse.setContentType("text/html");
-                servletResponse.getWriter().write(errorPage);
+                ((HttpServletResponse) response).setStatus(401);
+                response.setContentType("text/html");
+                response.setCharacterEncoding("utf-8");
+                response.getWriter().write(errorPage);
             }
         }
     }

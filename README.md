@@ -21,20 +21,6 @@ Spring Boot        | 2.2.2.RELEASE
 Spring Cloud       | Hoxton.RELEASE
 Spring Boot Admin  | 2.2.1
 
-## 服务的端口
-
-Service         | Port
-----------------|-----------
-register-center | 8761
-monitor-service | 5000
-file-server     | 8000
-manager-service | 8001
-judge-service   | 8002
-cloud-oj-web    | 8080
-api-gateway     | 80
-
-> 如果改动了注册中心的端口，请同时修改其它子项目的配置文件。
-
 ## 运行此项目
 
 ### Step 1
@@ -48,8 +34,8 @@ api-gateway     | 80
 </modules>
 ```
 
-- 在 `Maven` 窗口中展开 `Cloud OJ (root)` 中的 `Lifecycle`，执行 `install`
-- 取消上一步注释的内容
+1. 在 `Maven` 窗口中展开 `Cloud OJ` 中的 `Lifecycle`，执行 `install`；
+2. 取消上一步注释的内容。
 
 > 不取消注释也没事，只是无法自动执行子模块的生命周期。
 
@@ -57,8 +43,8 @@ api-gateway     | 80
 
 搭建数据库和消息队列，两种方式：
 
-1. 安装 Docker，直接运行 `mysql` 目录下的 `start.cmd`
-2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表
+1. 安装 Docker，直接运行 `mysql` 目录下的 `start.cmd`；
+2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表。
 
 设置测试数据目录临时目录：
 
