@@ -32,7 +32,7 @@ public class OJController {
 
     @GetMapping("commit")
     public ModelAndView commit(Integer problemId, Integer contestId) {
-        String url = String.format("http://%s/api/manager/problem/", gatewayHost) + problemId;
+        String url = String.format("%s/api/manager/problem/", gatewayHost) + problemId;
         if (contestId != null) {
             url += "?contestId=" + contestId;
         }
@@ -47,7 +47,7 @@ public class OJController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("token", token);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        Problem problem = restTemplate.exchange(String.format("http://%s/api/manager/problem/pro/", gatewayHost)
+        Problem problem = restTemplate.exchange(String.format("%s/api/manager/problem/pro/", gatewayHost)
                         + problemId + "?userId=" + userId,
                 HttpMethod.GET, httpEntity, Problem.class).getBody();
         if (problem == null)

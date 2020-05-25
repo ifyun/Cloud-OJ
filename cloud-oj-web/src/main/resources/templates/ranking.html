@@ -14,7 +14,7 @@
 <div th:replace="include::foot"></div>
 <script type="text/html" id="rankingTpl">
     {{# if (d.rank <= 3) { }}
-    <img src="{{'./img/medal-no.' + d.rank + '.svg'}}" height="28px" alt="ranking">
+    <img src="{{'./img/medal-no.' + d.rank + '.svg'}}" height="30px" alt="ranking">
     {{# } else { }}
     <span>{{d.rank}}</span>
     {{# } }}
