@@ -4,10 +4,10 @@
 <mapper namespace="top.cloudli.managerservice.dao.ProblemDao">
 
     <select id="getAll" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows
+        p.problem_id, p.title, p.enable, p.category, result, passed, create_at
         <choose>
             <when test="userId != null">
-                select sql_calc_found_rows
-                p.problem_id, p.title, p.enable, p.category, result, passed, create_at
                 from problem p
                 left join (select user_id, problem_id, min(result) result
                 from judge_result
@@ -16,7 +16,6 @@
                 on p.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select sql_calc_found_rows *
                 from problem p
             </otherwise>
         </choose>
@@ -56,9 +55,9 @@
     </select>
 
     <select id="search" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.create_at, result, passed
         <choose>
             <when test="userId != null">
-                select sql_calc_found_rows p.*, result
                 from problem p
                 left join (select user_id, problem_id, min(result) result
                 from judge_result
@@ -67,10 +66,13 @@
                 on p.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select sql_calc_found_rows problem_id, title, enable, category, create_at
-                from problem
+                from problem p
             </otherwise>
         </choose>
+        left join
+        (select problem_id, count(problem_id) as passed
+        from (select problem_id, user_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+        group by problem_id) t on p.problem_id = t.problem_id
         where
         <if test="enable == true">
             enable = true and

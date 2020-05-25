@@ -60,8 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 判题服务权限设置
                 .antMatchers("/api/judge/**").hasAnyRole("USER", "PROBLEM_ADMIN", "ROOT")
                 // WEB 页面的权限设置
-                .antMatchers("/oj/manager_user").hasAnyRole("USER_ADMIN", "ROOT")
-                .antMatchers("/oj/manager_problem", "/oj/manager_contest").hasAnyRole("PROBLEM_ADMIN", "ROOT")
+                .antMatchers("/manager_user").hasAnyRole("USER_ADMIN", "ROOT")
+                .antMatchers("/manager_problem", "/manager_contest").hasAnyRole("PROBLEM_ADMIN", "ROOT")
                 .and()
                 .exceptionHandling().accessDeniedPage("/error/403.html");
     }

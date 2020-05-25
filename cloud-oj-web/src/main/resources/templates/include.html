@@ -3,16 +3,22 @@
 <head th:fragment="common_head(title, links, scripts, styles)">
     <meta charset="UTF-8">
     <title th:replace="${title}"></title>
-    <link class="fav-icon" rel="shortcut icon"/>
-    <link class="fav-icon" rel="bookmark"/>
+    <link rel="shortcut icon" th:href="@{/favicon.ico}"/>
+    <link rel="bookmark" th:href="@{/favicon.ico}"/>
     <link rel="stylesheet" href="./layui/css/layui.css">
     <link rel="stylesheet" href="./css/common.css">
     <link rel="stylesheet" href="./css/include.css">
     <script src="./js/common.js"></script>
-    <script src="./js/jquery-3.4.1.js"></script>
+    <script src="https://www.layuicdn.com/layui-v2.5.2/layui.js"></script>
+    <script>
+        !window.jQuery && document.write('<script src="./layui/layui.all.js"><\/script>');
+    </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        !window.layui && document.write('<script src="./js/jquery-3.4.1.js"><\/script>');
+    </script>
     <script src="./js/jquery.cookie.js"></script>
     <script src="./js/jquery.md5.js"></script>
-    <script src="./layui/layui.all.js"></script>
     <th:block th:replace="${scripts}"/>
     <th:block th:replace="${styles}"/>
     <th:block th:replace="${links}"/>
@@ -29,7 +35,6 @@
         };
         let layer;
         $(document).ready(() => {
-                $('.fav-icon').attr('href', baseUrl + '/favicon.ico');
                 layui.use('layer', () => {
                     layer = layui.layer;
                 });

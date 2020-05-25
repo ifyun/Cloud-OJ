@@ -30,4 +30,4 @@ logging:
     name: /app/log/oj-web.log
 
 project:
-  gateway-host: ${GATEWAY_HOST:localhost}
+  gateway-host: ${GATEWAY_HOST:http://localhost}
