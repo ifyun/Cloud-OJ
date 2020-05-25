@@ -15,7 +15,7 @@
     </script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
-        !window.layui && document.write('<script src="./js/jquery-3.4.1.js"><\/script>');
+        window.layui === undefined && document.write('<script src="./js/jquery-3.4.1.js"><\/script>');
     </script>
     <script src="./js/jquery.cookie.js"></script>
     <script src="./js/jquery.md5.js"></script>
