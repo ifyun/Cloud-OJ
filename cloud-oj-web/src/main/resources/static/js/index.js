@@ -1,7 +1,8 @@
 let $startBtn = $('#start-btn');
+let form;
 
 layui.use(['form', 'element', 'carousel'], function () {
-    let form = layui.form;
+    form = layui.form;
     form.render();
     let element = layui.element;
     element.init();

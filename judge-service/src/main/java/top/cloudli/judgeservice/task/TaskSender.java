@@ -38,8 +38,7 @@ public class TaskSender {
     private Queue judgeQueue;
 
     @PostConstruct
-    public void init() throws InterruptedException {
-        Thread.sleep(10000);
+    public void init() {
         // 设置要执行任务的 UUID，保证不重复执行
         taskDao.setUUID("send_committed", uuid);
         log.info("SEND_COMMITTED_TASK_UUID: {}", uuid);

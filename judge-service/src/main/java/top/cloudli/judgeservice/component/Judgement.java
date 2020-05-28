@@ -114,8 +114,8 @@ public class Judgement {
                 Process process = cmd.start();
                 stopWatch.start();
 
-                if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
-                    throw new InterruptedException("等待时间过长，可能存在死循环.");
+                if (!process.waitFor(timeout + 150, TimeUnit.MILLISECONDS)) {
+                    throw new InterruptedException("时间超限.");
                 }
 
                 stopWatch.stop();
@@ -142,8 +142,8 @@ public class Judgement {
 
                     stopWatch.start();
 
-                    if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
-                        throw new InterruptedException("等待时间过长，可能存在死循环.");
+                    if (!process.waitFor(timeout + 150, TimeUnit.MILLISECONDS)) {
+                        throw new InterruptedException("时间超限.");
                     }
 
                     stopWatch.stop();
