@@ -1,19 +1,17 @@
 let table, form, laydate;
 let languages = 0;
 
+layui.use(['element', 'table', 'form', 'laydate'], () => {
+    let element = layui.element;
+    element.init();
+    table = layui.table;
+    form = layui.form;
+    laydate = layui.laydate;
+});
+
 $(document).ready(() => {
     $('#nav-manager').addClass("layui-this");
 
-    layui.use(['element', 'table', 'form', 'laydate'], () => {
-        let element = layui.element;
-        table = layui.table;
-        form = layui.form;
-        laydate = layui.laydate;
-
-        element.init();
-    });
-
-    // 竞赛/作业列表
     table.render({
         elem: '#contests',
         url: '../api/manager/contest/pro',

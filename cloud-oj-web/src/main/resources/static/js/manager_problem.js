@@ -2,51 +2,51 @@ let isAddMode = true;
 let problemId, problemsTable;
 let form, table, upload;
 
+layui.use(['element', 'table', 'carousel', 'form', 'upload'], () => {
+    let carousel = layui.carousel;
+    let element = layui.element;
+    element.init();
+    table = layui.table;
+    upload = layui.upload;
+    form = layui.form;
+    form.render();
+});
+
 $(document).ready(() => {
     $('#nav-manager').addClass("layui-this");
-    layui.use(['element', 'table', 'carousel', 'form', 'upload'], () => {
-        let carousel = layui.carousel;
-        let element = layui.element;
-        table = layui.table;
-        upload = layui.upload;
-        form = layui.form;
-        form.render();
 
-        element.init();
-
-        // 问题列表
-        problemsTable = table.render({
-            elem: '#problems',
-            url: baseUrl + '/api/manager/problem/pro',
-            headers: {token: user.token},
-            where: {
-                userId: user.userId
-            },
-            parseData: (res) => {
-                return {
-                    "code": 0,
-                    "count": res === undefined ? 0 : res.count,
-                    "data": res === undefined ? null : res.data
-                }
-            },
-            skin: 'nob',
-            size: 'lg',
-            page: true,
-            limit: 10,
-            limits: [10, 15, 20, 25, 30],
-            defaultToolbar: [],
-            toolbar: '#top-bar',
-            cols: [
-                [
-                    {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                    {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
-                    {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
-                    {field: 'enable', title: '开放', width: '10%', align: 'center', templet: '#enableTpl'},
-                    {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
-                    {field: 'createAt', title: '创建时间', width: '10%', align: 'center', sort: true}
-                ]
+    // 问题列表
+    problemsTable = table.render({
+        elem: '#problems',
+        url: baseUrl + '/api/manager/problem/pro',
+        headers: {token: user.token},
+        where: {
+            userId: user.userId
+        },
+        parseData: (res) => {
+            return {
+                "code": 0,
+                "count": res === undefined ? 0 : res.count,
+                "data": res === undefined ? null : res.data
+            }
+        },
+        skin: 'nob',
+        size: 'lg',
+        page: true,
+        limit: 10,
+        limits: [10, 15, 20, 25, 30],
+        defaultToolbar: [],
+        toolbar: '#top-bar',
+        cols: [
+            [
+                {field: 'problemId', title: '编号', width: '10%', align: 'center'},
+                {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
+                {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
+                {field: 'enable', title: '开放', width: '10%', align: 'center', templet: '#enableTpl'},
+                {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
+                {field: 'createAt', title: '创建时间', width: '10%', align: 'center', sort: true}
             ]
-        });
+        ]
     });
 
     table.on('tool(problems)', (obj) => {

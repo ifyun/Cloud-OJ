@@ -1,5 +1,11 @@
 let table;
 
+layui.use(['table', 'element'], () => {
+    table = layui.table;
+    let element = layui.element;
+    element.init();
+});
+
 $(document).ready(() => {
     let apiUrl = baseUrl + '/api/manager/ranking';
     let contestId = getQueryVariable('contestId');
@@ -7,12 +13,6 @@ $(document).ready(() => {
     if (contestId != null) {
         apiUrl += '/contest/' + contestId;
     }
-
-    layui.use(['table', 'element'], () => {
-        table = layui.table;
-        let element = layui.element;
-        element.init();
-    });
 
     table.render({
         elem: '#ranking',

@@ -22,7 +22,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 
 logging:
   file:

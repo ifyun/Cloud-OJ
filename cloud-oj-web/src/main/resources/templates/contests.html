@@ -20,14 +20,15 @@
 </script>
 <script>
     let table;
+
+    layui.use(['table', 'element'], () => {
+        table = layui.table;
+        let element = layui.element;
+        element.init();
+    });
+
     $(document).ready(() => {
         $('#nav-contests').addClass('layui-this');
-
-        layui.use(['table', 'element'], () => {
-            table = layui.table;
-            let element = layui.element;
-            element.init();
-        });
 
         table.render({
             elem: '#contests',
@@ -50,7 +51,7 @@
                     {field: 'contestName', title: '竞赛/作业名称', width: '30%', templet: '#contestTpl'},
                     {field: 'startAt', title: '开始时间', width: '20%'},
                     {field: 'endAt', title: '结束时间', width: '20%'},
-                    {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'}
+                    {title: '', width: '15%', align: 'center', toolbar: '#optToolbar'}
                 ]
             ]
         });

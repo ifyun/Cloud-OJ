@@ -53,7 +53,6 @@ logging:
     name: /app/log/judge-service.log
 
 project:
-  max-wait-time: 5000
   test-data-dir: D:/test_data/
   target-dir: D:/target/
   core-pool-size: 8

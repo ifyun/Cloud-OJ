@@ -30,9 +30,6 @@ public class Judgement {
     @Value("${project.target-dir}")
     private String targetDir;
 
-    @Value("${project.max-wait-time}")
-    private long maxWaitTime;
-
     @Resource
     private RuntimeDao runtimeDao;
 
@@ -45,6 +42,7 @@ public class Judgement {
      * @param solution {@link Solution} 答案对象
      */
     public void judge(Solution solution) {
+        long timeout = runtimeDao.getTimeout(solution.getProblemId());
         List<String> input = getInputData(solution.getProblemId());
         List<String> expect = getOutputData(solution.getProblemId());
 
@@ -54,9 +52,9 @@ public class Judgement {
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
         // 执行并获取输出
-        List<String> output = execute(Objects.requireNonNull(cmd), input, runtime);
+        List<String> output = execute(Objects.requireNonNull(cmd), input, runtime, timeout);
         // 比较结果
-        compareResult(solution, runtime, expect, output);
+        compareResult(solution, runtime, expect, output, timeout);
     }
 
     /**
@@ -66,34 +64,32 @@ public class Judgement {
      * @param expect   期望输出
      * @param output   实际输出
      */
-    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<String> output) {
-        long timeout = runtimeDao.getTimeout(solution.getProblemId());
+    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<String> output, long timeout) {
         int total = expect.size();
         int passed = 0;
 
-        for (int i = 0; i < output.size(); i++) {
-            if (expect.get(i).equals(output.get(i)))
-                passed++;
-        }
-
-        runtime.setTotal(total);
-        runtime.setPassed(passed);
-        runtimeDao.update(runtime);
-
-        if (passed == 0) {
-            solution.setResult(SolutionResult.WRONG.ordinal());
-        } else if (passed < total) {
-            solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
+        if (runtime.getTime() > timeout) {
+            solution.setResult(SolutionResult.TIMEOUT.ordinal());    // 时间超限
         } else {
-            solution.setResult(SolutionResult.ALL_PASSED.ordinal());
+            for (int i = 0; i < output.size(); i++) {
+                if (expect.get(i).equals(output.get(i)))
+                    passed++;
+            }
+
+            runtime.setTotal(total);
+            runtime.setPassed(passed);
+            runtimeDao.update(runtime);
+
+            if (passed == 0) {
+                solution.setResult(SolutionResult.WRONG.ordinal());
+            } else if (passed < total) {
+                solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
+            } else {
+                solution.setResult(SolutionResult.ALL_PASSED.ordinal());
+            }
         }
 
         double passRate = (double) passed / total;
-
-        if (passed != 0 && runtime.getTime() > timeout) {
-            solution.setResult(SolutionResult.TIMEOUT.ordinal());
-            passRate /= 2;      // 时间超限降一半分
-        }
 
         solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         solution.setState(SolutionState.JUDGED.ordinal());
@@ -106,7 +102,7 @@ public class Judgement {
      * @param input 输入数据
      * @return 程序执行结果
      */
-    private List<String> execute(ProcessBuilder cmd, List<String> input, Runtime runtime) {
+    private List<String> execute(ProcessBuilder cmd, List<String> input, Runtime runtime, long timeout) {
         List<String> output = new ArrayList<>();
 
         try {
@@ -118,7 +114,7 @@ public class Judgement {
                 Process process = cmd.start();
                 stopWatch.start();
 
-                if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
+                if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
                     throw new InterruptedException("等待时间过长，可能存在死循环.");
                 }
 
@@ -146,7 +142,7 @@ public class Judgement {
 
                     stopWatch.start();
 
-                    if (!process.waitFor(maxWaitTime, TimeUnit.MILLISECONDS)) {
+                    if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
                         throw new InterruptedException("等待时间过长，可能存在死循环.");
                     }
 
@@ -166,11 +162,14 @@ public class Judgement {
 
                 runtime.setTime(maxTime);
             }
-        } catch (IOException | InterruptedException e) {
-            log.error(e.getMessage());
+        } catch (InterruptedException e0) {
+            log.error(e0.getMessage());
             output.clear();
-            runtime.setTime(maxWaitTime);
-            runtime.setInfo(e.getMessage());
+            runtime.setTime(timeout);
+            runtime.setInfo(e0.getMessage());
+        } catch (IOException e1) {
+            log.error(e1.getMessage());
+            output.clear();
         }
 
         runtime.setOutput(String.join("\n", output));
@@ -181,9 +180,9 @@ public class Judgement {
     @SneakyThrows
     private String getOutput(InputStream inputStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String out = reader.lines().collect(Collectors.joining("\n"));
+        String output = reader.lines().collect(Collectors.joining("\n"));
         reader.close();
-        return out;
+        return output;
     }
 
     /**

@@ -1,17 +1,15 @@
 let table, form;
 
+layui.use(['element', 'table', 'form'], () => {
+    let element = layui.element;
+    element.init();
+    table = layui.table;
+    form = layui.form;
+});
+
 $(document).ready(() => {
     $('#nav-manager').addClass("layui-this");
 
-    layui.use(['element', 'table', 'form'], () => {
-        let element = layui.element;
-        table = layui.table;
-        form = layui.form;
-
-        element.init();
-    });
-
-    // 用户列表
     table.render({
         elem: '#users',
         url: baseUrl + '/api/manager/user/pro',
@@ -44,6 +42,7 @@ $(document).ready(() => {
     });
 
     let editUserIndex;
+
     table.on('tool(users)', (obj) => {
         if (obj.event === 'edit') {
             form.val('user-info', obj.data);

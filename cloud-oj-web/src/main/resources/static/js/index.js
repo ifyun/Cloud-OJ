@@ -1,29 +1,20 @@
 let $startBtn = $('#start-btn');
 
+layui.use(['form', 'element', 'carousel'], function () {
+    let form = layui.form;
+    form.render();
+    let element = layui.element;
+    element.init();
+});
+
 $(document).ready(() => {
     $startBtn.text(user.token === null ? '登录去练习' : '去练习');
+
     if (getQueryVariable('login') === 'true') {
         setTimeout(() => {
             startCodding()
         }, 500);
     }
-});
-
-layui.use(['form', 'element', 'carousel'], function () {
-    let form = layui.form;
-    form.render();
-
-    let element = layui.element;
-    element.init();
-
-    let carousel = layui.carousel;
-
-    carousel.render({
-        elem: '#pic',
-        width: '100%',
-        height: '100%',
-        anim: 'fade'
-    });
 
     let loadIndex;
 

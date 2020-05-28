@@ -47,4 +47,4 @@ eureka:
 
 logging:
   file:
-    name: D:/cloud-oj/manager-service.log
+    name: /app/log/manager-service.log

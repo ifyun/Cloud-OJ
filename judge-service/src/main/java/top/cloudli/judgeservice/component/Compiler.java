@@ -89,9 +89,9 @@ class Compiler {
                 processBuilder.command("javac", "-encoding", "UTF-8", src);
                 break;
             case PYTHON:
-                return new Compile(solutionId, 0, "Python 无需编译.");
+                return new Compile(solutionId, 0, "Python.");
             case BASH:
-                return new Compile(solutionId, 0, "Shell 无需编译.");
+                return new Compile(solutionId, 0, "Bash.");
             case C_SHARP:
                 processBuilder.command(JudgeServiceApplication.isWindows ? "mcs.bat" : "mcs", src);
         }

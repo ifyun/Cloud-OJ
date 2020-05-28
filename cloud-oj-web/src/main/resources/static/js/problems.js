@@ -1,5 +1,11 @@
-let problemsTable;
+let table, problemsTable;
 let contestId, contestName;
+
+layui.use(['table', 'element'], () => {
+    let element = layui.element;
+    element.init();
+    table = layui.table;
+});
 
 $(document).ready(() => {
     contestId = getQueryVariable('contestId');
@@ -17,45 +23,39 @@ $(document).ready(() => {
 
     if (user.userId != null) apiUrl += '?userId=' + user.userId;
 
-    layui.use(['table', 'element'], () => {
-        let element = layui.element;
-        element.init();
-        let table = layui.table;
-
-        problemsTable = table.render({
-            elem: '#problems',
-            url: apiUrl,
-            parseData: (res) => {
-                if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined) {
-                    contestName = res.data[0].contestName;
-                    $('#current').text(contestName);
-                    $('#contest_name').text(contestName + '-题目列表');
-                    $('#breadcrumb').show();
-                }
-                return {
-                    "code": 0,
-                    "count": res === undefined ? 0 : res.count,
-                    "data": res === undefined ? null : res.data
-                }
-            },
-            skin: 'nob',
-            size: 'lg',
-            page: true,
-            limit: 25,
-            limits: [15, 20, 25, 30],
-            defaultToolbar: [],
-            toolbar: '#top-bar',
-            cols: [
-                [
-                    {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                    {field: 'title', title: '题目名称', width: '20%', templet: '#titleTpl'},
-                    {field: 'result', title: '状态', width: '15%', align: 'center', templet: '#resultTpl'},
-                    {field: 'passed', title: '通过人数', width: '10%', align: 'center', templet: '#passedTpl'},
-                    {field: 'category', title: '标签/分类', width: '35%', align: 'center', templet: '#categoryTpl'},
-                    {field: 'createAt', title: '创建时间', width: '10%'}
-                ]
+    problemsTable = table.render({
+        elem: '#problems',
+        url: apiUrl,
+        parseData: (res) => {
+            if (res !== undefined && res.count > 0 && res.data[0].contestName !== undefined) {
+                contestName = res.data[0].contestName;
+                $('#current').text(contestName);
+                $('#contest_name').text(contestName + '-题目列表');
+                $('#breadcrumb').show();
+            }
+            return {
+                "code": 0,
+                "count": res === undefined ? 0 : res.count,
+                "data": res === undefined ? null : res.data
+            }
+        },
+        skin: 'nob',
+        size: 'lg',
+        page: true,
+        limit: 25,
+        limits: [15, 20, 25, 30],
+        defaultToolbar: [],
+        toolbar: '#top-bar',
+        cols: [
+            [
+                {field: 'problemId', title: '编号', width: '10%', align: 'center'},
+                {field: 'title', title: '题目名称', width: '20%', templet: '#titleTpl'},
+                {field: 'result', title: '', width: '15%', align: 'center', templet: '#resultTpl'},
+                {field: 'passed', title: '通过人数', width: '10%', align: 'center', templet: '#passedTpl'},
+                {field: 'category', title: '标签/分类', width: '35%', align: 'center', templet: '#categoryTpl'},
+                {field: 'createAt', title: '创建时间', width: '10%'}
             ]
-        });
+        ]
     });
 });
 

@@ -1,12 +1,12 @@
 let table;
 
-$(document).ready(() => {
-    layui.use(['table', 'element'], () => {
-        let element = layui.element;
-        table = layui.table;
-        element.init();
-    });
+layui.use(['table', 'element'], () => {
+    let element = layui.element;
+    table = layui.table;
+    element.init();
+});
 
+$(document).ready(() => {
     table.render({
         elem: '#results',
         url: baseUrl + '/api/manager/result',
