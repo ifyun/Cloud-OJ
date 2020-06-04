@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>top.cloudli</groupId>
-        <artifactId>cloud-online-judge</artifactId>
+        <artifactId>cloud-oj</artifactId>
         <version>1.0-RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
