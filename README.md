@@ -1,8 +1,6 @@
 # Cloud-OJ Source Code
 
-Cloud-OJ 项目源码。
-
-自动部署脚本传送门：[Cloud-OJ Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
+Cloud-OJ 项目源码，另附自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
 
 ## 使用的组件
 
@@ -21,7 +19,7 @@ Spring Boot        | 2.2.2.RELEASE
 Spring Cloud       | Hoxton.RELEASE
 Spring Boot Admin  | 2.2.1
 
-## 运行此项目
+## Build and Run
 
 ### Step 1
 
@@ -53,16 +51,16 @@ Spring Boot Admin  | 2.2.1
 ```yaml
 project:
   test-data-dir: <测试数据存放目录>
-  target-dir: <临时存放代码的目录>   # 这一项在 judge-service 中
+  target-dir: <临时存放代码和可执行文件的目录>   # 这一项在 judge-service
 ```
 
 ### Step 3
 
 Build & Run.
 
-> 若需要正常运行判题，还需要安装各个语言的环境：
+> 若需要正常进行判题，需要安装各个语言的环境：
 > - C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)
 > - Java：能跑此项目，肯定就有 JDK 了
-> - Python：[任意版本](https://www.python.org/)
-> - Bash：Windows 安装 [Git](https://git-scm.com/) 就有了
+> - Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)
+> - Bash：Windows 安装 [Git](https://git-scm.com/)
 > - C#：[Mono](https://www.mono-project.com/)
