@@ -1,5 +1,7 @@
 # Cloud-OJ Source Code
 
+![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ)![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ)![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven)![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ)
+
 Cloud-OJ 项目源码，另附自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
 
 ## 使用的组件
@@ -23,22 +25,6 @@ Spring Boot Admin  | 2.2.1
 
 ### Step 1
 
-首先将根目录 `pom.xml` 中的以下内容注释掉：
-
-```xml
-<modules>
-    <module>...</module>
-    ...
-</modules>
-```
-
-1. 在 `Maven` 窗口中展开 `Cloud OJ` 中的 `Lifecycle`，执行 `install`；
-2. 取消上一步注释的内容。
-
-> 不取消注释也没事，只是无法自动执行子模块的生命周期。
-
-### Step 2
-
 搭建数据库和消息队列，两种方式：
 
 1. 安装 Docker，直接运行 `mysql` 目录下的 `start.cmd`；
@@ -54,13 +40,18 @@ project:
   target-dir: <临时存放代码和可执行文件的目录>   # 这一项在 judge-service
 ```
 
+### Step 2
+
+安装各个语言的编译和运行环境：
+
+- C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)
+- Java：能跑此项目，肯定就有 JDK 了
+- Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)
+- Bash：Windows 安装 [Git](https://git-scm.com/)
+- C#：[Mono](https://www.mono-project.com/)
+
+> 以上环境不安装也可以运行，只是影响判题的执行。
+
 ### Step 3
 
 Build & Run.
-
-> 若需要正常进行判题，需要安装各个语言的环境：
-> - C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)
-> - Java：能跑此项目，肯定就有 JDK 了
-> - Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)
-> - Bash：Windows 安装 [Git](https://git-scm.com/)
-> - C#：[Mono](https://www.mono-project.com/)
