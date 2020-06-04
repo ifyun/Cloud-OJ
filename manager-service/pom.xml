@@ -6,7 +6,7 @@
         <groupId>top.cloudli</groupId>
         <artifactId>cloud-oj</artifactId>
         <version>1.0-RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath>../</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>manager-service</artifactId>
     <version>1.0-RELEASE</version>
