@@ -2,7 +2,20 @@
 
 ![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ) ![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven) ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ)
 
-Cloud-OJ 项目源码，另附自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
+这是一个微服务架构的 Online Judge，基于 Spring Cloud。
+
+自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
+
+> 本系统参考了 [HUSTOJ](https://github.com/zhblue/hustoj)
+
+## 支持语言
+
+- C
+- C++
+- Java
+- Python
+- Bash Shell
+- C#
 
 ## 使用的组件
 
@@ -15,13 +28,13 @@ Cloud-OJ 项目源码，另附自动部署脚本：[Deploy Script](https://githu
 - 数据库：MySQL
 - 前端：Layui
 
-Framework          | Version
--------------------|-----------------
-Spring Boot        | 2.2.2.RELEASE
-Spring Cloud       | Hoxton.RELEASE
-Spring Boot Admin  | 2.2.1
+Framework/Components    | Version
+------------------------|-----------------
+Spring Boot             | 2.2.2.RELEASE
+Spring Cloud            | Hoxton.RELEASE
+Spring Boot Admin       | 2.2.1
 
-## Build and Run
+## 使用指南
 
 ### Step 1
 
@@ -54,4 +67,4 @@ project:
 
 ### Step 3
 
-Build & Run.
+Build & Debug.
