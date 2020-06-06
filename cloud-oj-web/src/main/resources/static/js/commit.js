@@ -8,7 +8,7 @@ $(document).ready(() => {
     let codeLang = ['text/x-csrc', 'text/x-c++src', 'text/x-java', 'text/x-python', 'text/x-sh', 'text/x-csharp'];
 
     let editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        mode: 'text/x-c++src',
+        mode: codeLang[0],
         theme: 'monokai',
         indentUnit: 4,
         lineNumbers: true,
@@ -149,7 +149,7 @@ function getResult(solutionId, count) {
                         result = "部分通过（" + data.passRate * 100 + ")";
                         break;
                     case 1:
-                        result = "时间超限（" + data.passRate * 100 + "）";
+                        result = "时间超限";
                         break;
                     case 0:
                         result = "完全正确（100）";
