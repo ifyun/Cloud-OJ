@@ -1,29 +1,3 @@
-server:
-  port: 8761
-
 spring:
-  application:
-    name: register-center
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
-
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
-
-logging:
-  file:
-    name: /app/log/register-center.log
+  profiles:
+    active: dev

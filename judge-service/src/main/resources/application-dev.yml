@@ -1,0 +1,60 @@
+server:
+  port: 8002
+  tomcat:
+    accept-count: 2000
+    max-threads: 800
+
+spring:
+  application:
+    name: judge-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloud_oj
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 6000
+      minimum-idle: 8
+      maximum-pool-size: 16
+      max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: cloud@oj
+    password: cloud@oj
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+logging:
+  file:
+    name: /app/log/judge-service.log
+
+project:
+  test-data-dir: D:/test_data/
+  target-dir: D:/target/
+  core-pool-size: 8
+  max-pool-size: 16
+  queue-capacity: 200

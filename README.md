@@ -57,11 +57,11 @@ project:
 
 安装各个语言的编译和运行环境：
 
-- C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)
-- Java：能跑此项目，肯定就有 JDK 了
-- Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)
-- Bash：Windows 安装 [Git](https://git-scm.com/)
-- C#：[Mono](https://www.mono-project.com/)
+- C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)；
+- Java：能跑此项目，肯定就有 JDK（设置好环境变量）；
+- Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)；
+- Bash：Windows 可以安装 [Git](https://git-scm.com/)；
+- C#：[Mono](https://www.mono-project.com/)。
 
 > 以上环境不安装也可以运行，只是影响判题的执行。
 

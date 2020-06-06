@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  tomcat:
+    accept-count: 2000
+    max-threads: 800
+
+spring:
+  application:
+    name: cloud-oj-web
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+logging:
+  file:
+    name: /log/oj-web.log
+
+project:
+  gateway-host: http://localhost
