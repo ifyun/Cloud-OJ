@@ -71,4 +71,4 @@ Build & Debug.
 
 ## 系统结构
 
-![Structure](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/structure.svg)
+![Structure](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/system-structure.svg)
