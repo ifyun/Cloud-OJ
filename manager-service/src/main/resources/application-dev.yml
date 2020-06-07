@@ -47,3 +47,6 @@ eureka:
 logging:
   file:
     name: /log/manager-service.log
+
+project:
+  test-data-dir: D:/test_data/

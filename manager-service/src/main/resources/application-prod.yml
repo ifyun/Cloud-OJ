@@ -49,3 +49,6 @@ logging:
     top.cloudli: info
   file:
     name: /app/log/manager-service.log
+
+project:
+  test-data-dir: /test_data/

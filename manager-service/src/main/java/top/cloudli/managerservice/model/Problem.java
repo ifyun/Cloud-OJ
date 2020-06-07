@@ -3,6 +3,7 @@ package top.cloudli.managerservice.model;
 import lombok.Data;
 
 import java.sql.Date;
+import java.util.List;
 
 @Data
 public class Problem {
@@ -24,4 +25,5 @@ public class Problem {
     private int score;
     private Boolean enable;
     private Date createAt;
+    private TestData testData;
 }

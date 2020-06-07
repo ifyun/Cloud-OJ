@@ -341,7 +341,7 @@ function addSearchTag(text) {
     search(text);
     let searchTag = $('<span class="tag bg-green">' + text + '</span>')
         .append($('<span style="cursor: pointer">&nbsp;&nbsp;X</span>').on('click', clear));
-    $('#search-tag').text('当前关键字：')
+    $('#search-tag').text('关键字：')
         .append(searchTag);
 }
 
@@ -351,7 +351,7 @@ function addTag(text) {
     let tag = $('<span class="tag">' + text + '</span>')
         .addClass(getColor(text))
         .append($('<span style="cursor: pointer">&nbsp;&nbsp;X</span>').on('click', clear));
-    $('#tag').text('当前分类：')
+    $('#tag').text('分类：')
         .append(tag);
 }
 

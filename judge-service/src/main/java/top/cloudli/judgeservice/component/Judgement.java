@@ -250,7 +250,7 @@ public class Judgement {
     /**
      * 读取测试数据
      *
-     * @param problemId 问题 Id
+     * @param problemId 题目 Id
      * @param ext       文件扩展名
      * @return 测试数据集合
      */
@@ -263,22 +263,21 @@ public class Judgement {
             return name.substring(name.lastIndexOf('.')).equals(ext);
         });
 
-        if (files == null)
-            return data;
+        if (files != null) {
+            // 按文件名排序
+            List<File> fileList = Arrays.stream(files)
+                    .sorted(Comparator.comparing(File::getName))
+                    .collect(Collectors.toList());
 
-        // 按文件名排序
-        List<File> fileList = Arrays.stream(files)
-                .sorted(Comparator.comparing(File::getName))
-                .collect(Collectors.toList());
-
-        for (File file : fileList) {
-            try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(file))
-                );
-                data.add(reader.lines().collect(Collectors.joining("\n")));
-            } catch (FileNotFoundException e) {
-                log.error(e.getMessage());
+            for (File file : fileList) {
+                try {
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(new FileInputStream(file))
+                    );
+                    data.add(reader.lines().collect(Collectors.joining("\n")));
+                } catch (FileNotFoundException e) {
+                    log.error(e.getMessage());
+                }
             }
         }
 
