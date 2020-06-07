@@ -71,4 +71,4 @@ Build & Debug.
 
 ## 系统结构
 
-<img width="500" src="https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/structure.svg" alt="Project Structure">
+![Structure](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/structure.svg)
