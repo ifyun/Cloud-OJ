@@ -3,14 +3,27 @@ let form;
 
 layui.use(['form', 'element', 'carousel'], function () {
     form = layui.form;
-    form.render();
+    form.verify({
+        id: [
+            /^[A-Za-z0-9]{8,16}$/,
+            'ID必须是8到16位字母或数字！'
+        ],
+        name: [
+            /^[\S]{2,16}$/
+            , '用户名必须2到16个字符，且不能出现空格！'
+        ],
+        pass: [
+            /^[\S]{6,16}$/
+            , '密码必须6到16位，且不能出现空格！'
+        ]
+    });
     let element = layui.element;
     element.init();
 });
 
 $(document).ready(() => {
     $startBtn.text(user.token === null ? '登录去练习' : '去练习');
-
+    form.render();
     if (getQueryVariable('login') === 'true') {
         setTimeout(() => {
             startCodding()
@@ -80,13 +93,6 @@ $(document).ready(() => {
                 });
             }
         });
-    });
-
-    form.verify({
-        pass: [
-            /^[\S]{6,12}$/
-            , '密码必须6到12位，且不能出现空格'
-        ]
     });
 });
 

@@ -2,7 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="include::common_head(~{::title}, ~{::link}, ~{}, ~{})">
     <meta charset="UTF-8">
-    <title>主页</title>
+    <title>Cloud OJ</title>
     <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
@@ -17,54 +17,54 @@
     </div>
 
     <div id="login-pane">
-        <div class="layui-collapse" lay-accordion>
-            <div class="layui-colla-item">
-                <h2 class="layui-colla-title">登 录</h2>
-                <div class="layui-colla-content layui-show">
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">登 录</li>
+                <li>注 册</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
                     <div class="layui-form layui-form-pane">
-                        <div class="layui-form-item">
+                        <div class="layui-form-item" style="padding: 0 15px">
                             <label for="userId" class="layui-form-label">ID</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" autofocus lay-filter="userId" id="userId" type="text"
                                        name="userId"
-                                       lay-verify="required"
-                                       placeholder="输入ID（学号）">
+                                       lay-verify="required|id"
+                                       placeholder="你的ID">
                             </div>
                         </div>
-                        <div class="layui-form-item">
+                        <div class="layui-form-item" style="padding: 0 15px">
                             <label for="password" class="layui-form-label">密码</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" lay-filter="password" id="password" type="password"
                                        name="password" autocomplete="new-password"
-                                       lay-verify="required"
+                                       lay-verify="required|pass"
                                        placeholder="输入密码">
                             </div>
                         </div>
                         <div class="layui-form-item" style="text-align: center">
                             <button lay-submit lay-filter="login" id="login"
                                     class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal"
-                                    style="width: 70%; margin: 0 auto">登 录
+                                    style="width: 80%; margin: 0 auto">登 录
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="layui-colla-item">
-                <h2 class="layui-colla-title">注 册</h2>
-                <div class="layui-colla-content">
-                    <div class="layui-form layui-form-pane">
+                <div class="layui-tab-item">
+                    <div class="layui-form">
                         <div class="layui-form-item">
                             <label for="reg-userId" class="layui-form-label">ID</label>
                             <div class="layui-input-block">
-                                <input class="layui-input" id="reg-userId" name="userId" lay-verify="required"
-                                       placeholder="输入ID（学号）">
+                                <input class="layui-input" id="reg-userId" name="userId" lay-verify="required|id"
+                                       placeholder="输入ID">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="reg-name" class="layui-form-label">昵称</label>
+                            <label for="reg-name" class="layui-form-label">用户名</label>
                             <div class="layui-input-block">
-                                <input class="layui-input" id="reg-name" name="name" lay-verify="required"
-                                       placeholder="输入昵称">
+                                <input class="layui-input" id="reg-name" name="name" lay-verify="required|name"
+                                       placeholder="起个名字吧">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -72,26 +72,27 @@
                             <div class="layui-input-block">
                                 <input class="layui-input" id="reg-password" type="password" name="password"
                                        lay-verify="required|pass" autocomplete="new-password"
-                                       placeholder="输入密码">
+                                       placeholder="输入密码，至少6位">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label for="reg-email" class="layui-form-label">邮箱</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" id="reg-email" type="email" name="email"
-                                       lay-verify="required | email" placeholder="你的邮箱">
+                                       lay-verify="email" placeholder="你的邮箱">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label for="reg-school" class="layui-form-label">学校/班级</label>
                             <div class="layui-input-block">
                                 <input class="layui-input" id="reg-school" type="text" name="section"
-                                       lay-verify="required" placeholder="你的学校/班级">
+                                       placeholder="你的学校/班级（选填）">
                             </div>
                         </div>
                         <div class="layui-form-item" style="text-align: center">
-                            <button lay-submit lay-filter="register" class="layui-btn layui-btn-radius layui-btn-lg"
-                                    style="width: 70%; margin: 0 auto;">注册
+                            <button lay-submit lay-filter="register"
+                                    class="layui-btn layui-btn-radius layui-btn-lg bg-green"
+                                    style="width: 80%; margin: 0 auto;">注 册
                             </button>
                         </div>
                     </div>
@@ -104,7 +105,7 @@
         <div class="wave"></div>
     </div>
 </div>
-<div style="height: 100px; background: white;">
+<div style="height: 50px; background: white;">
 </div>
 <div class="foot">
     © 2020
