@@ -28,8 +28,8 @@ $(document).ready(() => {
         skin: 'nob',
         size: 'lg',
         page: true,
-        limit: 15,
-        limits: [10, 15, 20, 25, 30],
+        limit: 25,
+        limits: [15, 25, 35, 50],
         cols: [
             [
                 {field: 'userId', title: '用户ID/学号', width: '20%'},

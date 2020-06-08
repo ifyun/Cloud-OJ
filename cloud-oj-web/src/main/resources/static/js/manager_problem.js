@@ -1,9 +1,8 @@
-let isAddMode = true;
+let editorIndex, isAddMode;
 let problemId, problemsTable;
 let form, table, upload;
 
-layui.use(['element', 'table', 'carousel', 'form', 'upload'], () => {
-    let carousel = layui.carousel;
+layui.use(['element', 'table', 'form', 'upload'], () => {
     let element = layui.element;
     element.init();
     table = layui.table;
@@ -15,7 +14,7 @@ layui.use(['element', 'table', 'carousel', 'form', 'upload'], () => {
 $(document).ready(() => {
     $('#nav-manager').addClass("layui-this");
 
-    // 问题列表
+    // 题目列表
     problemsTable = table.render({
         elem: '#problems',
         url: baseUrl + '/api/manager/problem/pro',
@@ -33,17 +32,17 @@ $(document).ready(() => {
         skin: 'nob',
         size: 'lg',
         page: true,
-        limit: 10,
-        limits: [10, 15, 20, 25, 30],
+        limit: 25,
+        limits: [15, 25, 35, 50, 100],
         defaultToolbar: [],
         toolbar: '#top-bar',
         cols: [
             [
-                {field: 'problemId', title: '编号', width: '10%', align: 'center'},
-                {field: 'title', title: '题目名称', width: '25%', templet: '#titleTpl'},
-                {field: 'category', title: '标签', width: '30%', align: 'center', templet: '#categoryTpl'},
-                {field: 'enable', title: '开放', width: '10%', align: 'center', templet: '#enableTpl'},
-                {title: '操作', width: '15%', align: 'center', toolbar: '#optToolbar'},
+                {field: 'problemId', title: '编号', width: '7.5%', align: 'center'},
+                {field: 'title', title: '题目名称', width: '22.5%', templet: '#titleTpl'},
+                {field: 'category', title: '标签', width: '25%', align: 'center', templet: '#categoryTpl'},
+                {field: 'enable', title: '是否开放', width: '10%', align: 'center', templet: '#enableTpl'},
+                {title: '操作', width: '25%', align: 'center', toolbar: '#optToolbar'},
                 {field: 'createAt', title: '创建时间', width: '10%', align: 'center', sort: true}
             ]
         ]
@@ -52,27 +51,22 @@ $(document).ready(() => {
     table.on('tool(problems)', (obj) => {
         problemId = obj.data.problemId;
         if (obj.event === 'edit') {
-            $("#upload-file-table tr:not(:first)").empty();
-            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
-            isAddMode = false;
-            $('#save').text('保 存');
-            $('#form-title').text('编辑题目');
+            $('#reset').hide();
             $.ajax({
                 url: baseUrl + '/api/manager/problem/pro/' + problemId + '?userId=' + user.userId,
                 method: 'get',
                 headers: {token: user.token},
                 success: (data) => {
-                    form.val('edit-problem', data);
-                    $('#edit-pane').addClass('layui-show');
+                    $('#save').text('保 存');
+                    openEditor(data)
                 },
                 error: (xhr) => {
                     layer.msg(errorText.get(xhr.status), {icon: 5});
                 }
             });
-
-            // 显示测试数据
-            $('#test-data-pane').show();
-            $('#test-data-table').addClass('layui-show');
+        } else if (obj.event === 'edit-test-data') {
+            $("#upload-file-table tr:not(:first)").empty();
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
 
             table.render({
                 elem: '#test-data',
@@ -93,15 +87,11 @@ $(document).ready(() => {
                 cols: [
                     [
                         {field: 'fileName', title: '文件名', width: '35%'},
-                        {field: 'size', title: '文件长度', width: '35%'},
+                        {field: 'size', title: '文件长度', width: '35%', templet: '#file-length'},
                         {title: '操作', width: '30%', align: 'center', toolbar: '#test-data-toolbar'},
                     ]
                 ]
             });
-
-            $('html, body').animate({
-                scrollTop: $("#test-data-pane").offset().top
-            }, 1000);
 
             table.on('tool(test-data)', (obj) => {
                 if (obj.event === 'edit-content') {
@@ -140,6 +130,7 @@ $(document).ready(() => {
                         + '?userId=' + user.userId + '&token=' + user.token, '_blank')
                 }
             });
+            openTestDataEditor();
         } else if (obj.event === 'del') {
             layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, (index) => {
                 $.ajax({
@@ -185,6 +176,7 @@ $(document).ready(() => {
         });
     });
 
+    // 添加/保存题目
     form.on('submit(save)', (data) => {
         let problem = data.field;
 
@@ -205,9 +197,11 @@ $(document).ready(() => {
             },
             success: () => {
                 layer.close(loadIndex);
-                layer.msg('保存成功！', {icon: 6});
+                layer.msg('成功！', {icon: 6});
+                resetForm();
+                $('#editor').hide();
+                layer.close(editorIndex);
                 refresh('problems');
-                if (isAddMode) reset();
             },
             error: (xhr) => {
                 layer.close(loadIndex);
@@ -291,9 +285,44 @@ $(document).ready(() => {
     });
 });
 
-function reset() {
-    $('#save').text('添 加');
-    $('#form-title').text('添加题目');
+function openTestDataEditor() {
+    layer.open({
+        type: 1,
+        title: '编辑测试数据',
+        content: $('#test-data-editor'),
+        area: ['1000px', '650px'],
+        offset: '150px',
+        closeBtn: 2,
+        cancel: () => {
+            $('#test-data-editor').hide();
+        }
+    });
+}
+
+/**
+ * 打开编辑窗口
+ */
+function openEditor(problem) {
+    isAddMode = (problem == null);
+    editorIndex = layer.open({
+        type: 1,
+        title: isAddMode ? '添加题目' : '编辑题目',
+        content: $('#editor'),
+        area: ['1140px', '800px'],
+        offset: '150px',
+        maxmin: true,
+        cancel: () => {
+            resetForm();
+            $('#editor').hide();
+        }
+    });
+    form.val('edit-problem', problem);
+}
+
+/**
+ * 重置表单
+ */
+function resetForm() {
     form.val('edit-problem', {
         title: null,
         enable: null,
@@ -306,13 +335,6 @@ function reset() {
         sampleInput: null,
         sampleOutput: null,
     });
-
-    $('#test-data-pane').hide();
-
-    if (!isAddMode) {
-        isAddMode = true;
-        layer.msg('现在是添加模式');
-    }
 }
 
 function refresh(tableId) {

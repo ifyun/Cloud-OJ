@@ -31,7 +31,7 @@ $(document).ready(() => {
         size: 'lg',
         page: true,
         limit: 25,
-        limits: [15, 20, 25, 30, 40],
+        limits: [15, 25, 35, 50, 100],
         toolbar: '#top-bar',
         defaultToolbar: ['print', 'exports'],
         autoSort: false,

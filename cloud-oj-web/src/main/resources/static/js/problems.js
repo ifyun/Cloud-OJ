@@ -43,7 +43,7 @@ $(document).ready(() => {
         size: 'lg',
         page: true,
         limit: 25,
-        limits: [15, 20, 25, 30],
+        limits: [15, 25, 35, 50, 100],
         defaultToolbar: [],
         toolbar: '#top-bar',
         cols: [

@@ -11,137 +11,128 @@
     <table id="problems" lay-filter="problems">
 
     </table>
+</div>
+<div id="test-data-editor" style="display: none; padding: 0 10px;">
+    <table id="test-data" lay-filter="test-data">
 
-    <div class="layui-collapse">
-        <div class="layui-colla-item" id="test-data-pane" style="display: none">
-            <h2 class="layui-colla-title">编辑测试数据</h2>
-            <div id="test-data-table" class="layui-colla-content">
-                <table id="test-data" lay-filter="test-data">
-
-                </table>
-                <!-- 上传测试数据 -->
-                <div class="layui-upload">
-                    <div class="layui-upload-list">
-                        <table id="upload-file-table" class="layui-table" style="display: none">
-                            <thead>
-                            <tr>
-                                <th>文件名</th>
-                                <th>大小</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody id="file-list"></tbody>
-                        </table>
-                    </div>
-                    <button type="button" class="layui-btn layui-btn-normal" id="select-files">选择文件</button>
-                    <button type="button" class="layui-btn" id="upload-files" style="display: none"><i
-                            class="layui-icon"></i>开始上传
-                    </button>
-                </div>
-            </div>
+    </table>
+    <!-- 上传测试数据 -->
+    <div class="layui-upload">
+        <div class="layui-upload-list">
+            <table id="upload-file-table" class="layui-table" style="display: none">
+                <thead>
+                <tr>
+                    <th>文件名</th>
+                    <th>大小</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="file-list"></tbody>
+            </table>
         </div>
-        <div class="layui-colla-item">
-            <h2 class="layui-colla-title"><span id="form-title">添加题目</span></h2>
-            <div id="edit-pane" class="layui-colla-content">
-                <div id="problem-form" class="layui-form layui-form-pane" lay-filter="edit-problem">
-                    <fieldset class="layui-elem-field layui-field-title">
-                        <legend style="color: #5FB878">基本信息</legend>
-                        <div class="layui-field-box">
-                            <input type="hidden" class="layui-input" name="problemId">
-                            <div class="layui-form-item">
-                                <!-- title -->
-                                <label for="title" class="layui-form-label">题目名称</label>
-                                <div class="layui-input-inline" style="width: 30%">
-                                    <input id="title" name="title" class="layui-input" lay-verify="required"
-                                           placeholder="输入标题">
-                                </div>
-                                <!-- category -->
-                                <label for="category" class="layui-form-label">分类/标签</label>
-                                <div class="layui-input-inline" style="width: 30%">
-                                    <input id="category" name="category" class="layui-input" placeholder="多个分类用英文逗号隔开">
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <!-- timeout -->
-                                <label for="timeout" class="layui-form-label">限时</label>
-                                <div class="layui-input-inline" style="width: 30%">
-                                    <input id="timeout" name="timeout" class="layui-input" lay-verify="number|timeout"
-                                           placeholder="单位：ms" value="1000">
-                                </div>
-                                <!-- score -->
-                                <label for="score" class="layui-form-label">分值</label>
-                                <div class="layui-input-inline" style="width: 30%">
-                                    <input id="score" name="score" class="layui-input" lay-verify="number"
-                                           placeholder="此题的分值" value="10">
-                                </div>
-                                <!-- enable -->
-                                <div class="layui-input-inline" style="width: 15%">
-                                    <input type="checkbox" name="enable" class="layui-input" title="开放">
-                                </div>
-                            </div>
-                            <!-- description -->
-                            <div class="layui-form-item layui-form-text">
-                                <label for="description" class="layui-form-label">题目描述</label>
-                                <div class="layui-input-block">
+        <button type="button" class="layui-btn layui-btn-normal" id="select-files">选择文件</button>
+        <button type="button" class="layui-btn" id="upload-files" style="display: none"><i
+                class="layui-icon"></i>开始上传
+        </button>
+    </div>
+</div>
+<div id="editor" style="display: none; padding: 5px 10px;">
+    <div id="problem-form" class="layui-form layui-form-pane" lay-filter="edit-problem">
+        <fieldset class="layui-elem-field">
+            <legend style="color: #5FB878;">基本信息</legend>
+            <div class="layui-field-box">
+                <input type="hidden" class="layui-input" name="problemId">
+                <div class="layui-form-item">
+                    <!-- title -->
+                    <label for="title" class="layui-form-label">题目名称</label>
+                    <div class="layui-input-inline" style="width: 30%">
+                        <input id="title" name="title" class="layui-input" lay-verify="required"
+                               placeholder="输入标题">
+                    </div>
+                    <!-- category -->
+                    <label for="category" class="layui-form-label">分类/标签</label>
+                    <div class="layui-input-inline" style="width: 30%">
+                        <input id="category" name="category" class="layui-input" placeholder="多个分类用英文逗号隔开">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <!-- timeout -->
+                    <label for="timeout" class="layui-form-label">限时</label>
+                    <div class="layui-input-inline" style="width: 30%">
+                        <input id="timeout" name="timeout" class="layui-input" lay-verify="number|timeout"
+                               placeholder="单位：ms" value="1000">
+                    </div>
+                    <!-- score -->
+                    <label for="score" class="layui-form-label">分值</label>
+                    <div class="layui-input-inline" style="width: 30%">
+                        <input id="score" name="score" class="layui-input" lay-verify="number"
+                               placeholder="此题的分值" value="10">
+                    </div>
+                    <!-- enable -->
+                    <div class="layui-input-inline" style="width: 15%">
+                        <input type="checkbox" name="enable" class="layui-input" title="开放">
+                    </div>
+                </div>
+                <!-- description -->
+                <div class="layui-form-item layui-form-text">
+                    <label for="description" class="layui-form-label">题目描述</label>
+                    <div class="layui-input-block">
                             <textarea id="description" name="description" class="layui-textarea"
                                       lay-verify="required" placeholder="描述一下题目"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <fieldset class="layui-elem-field layui-field-title">
-                        <legend style="color: #5FB878">说明</legend>
-                        <div class="layui-field-box">
-                            <!-- input -->
-                            <div class="layui-form-item layui-form-text">
-                                <label for="input" class="layui-form-label">输入说明</label>
-                                <div class="layui-input-block">
-                                    <textarea id="input" name="input" class="layui-textarea"
-                                              placeholder="描述一下输入内容和格式"></textarea>
-                                </div>
-                            </div>
-                            <!-- output -->
-                            <div class="layui-form-item layui-form-text">
-                                <label for="output" class="layui-form-label">输出说明</label>
-                                <div class="layui-input-block">
-                                    <textarea id="output" name="output" class="layui-textarea"
-                                              placeholder="描述一下输出内容和格式"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <fieldset class="layui-elem-field layui-field-title">
-                        <legend style="color: #5FB878">样例</legend>
-                        <div class="layui-field-box">
-                            <!-- sample input -->
-                            <div class="layui-form-item layui-form-text">
-                                <label for="sampleInput" class="layui-form-label">样例输入</label>
-                                <div class="layui-input-block">
-                                    <textarea id="sampleInput" name="sampleInput" class="layui-textarea"
-                                              placeholder="给出一个输入的例子"></textarea>
-                                </div>
-                            </div>
-                            <!-- sample output -->
-                            <div class="layui-form-item layui-form-text">
-                                <label for="sampleOutput" class="layui-form-label">样例输出</label>
-                                <div class="layui-input-block">
-                                    <textarea id="sampleOutput" name="sampleOutput" class="layui-textarea"
-                                              placeholder="给出一个正确输出的例子"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <div class="layui-form-item">
-                        <button lay-submit lay-filter="save" id="save"
-                                class="layui-btn layui-btn-normal">添 加
-                        </button>
-                        <button id="reset" class="layui-btn layui-btn-primary"
-                                onclick="reset()">重 置/切换到添加模式
-                        </button>
                     </div>
                 </div>
             </div>
+        </fieldset>
+        <fieldset class="layui-elem-field">
+            <legend style="color: #5FB878;">说明</legend>
+            <div class="layui-field-box">
+                <!-- input -->
+                <div class="layui-form-item layui-form-text">
+                    <label for="input" class="layui-form-label">输入说明</label>
+                    <div class="layui-input-block">
+                                    <textarea id="input" name="input" class="layui-textarea"
+                                              placeholder="描述一下输入内容和格式"></textarea>
+                    </div>
+                </div>
+                <!-- output -->
+                <div class="layui-form-item layui-form-text">
+                    <label for="output" class="layui-form-label">输出说明</label>
+                    <div class="layui-input-block">
+                                    <textarea id="output" name="output" class="layui-textarea"
+                                              placeholder="描述一下输出内容和格式"></textarea>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="layui-elem-field">
+            <legend style="color: #5FB878;">样例</legend>
+            <div class="layui-field-box">
+                <!-- sample input -->
+                <div class="layui-form-item layui-form-text">
+                    <label for="sampleInput" class="layui-form-label">样例输入</label>
+                    <div class="layui-input-block">
+                                    <textarea id="sampleInput" name="sampleInput" class="layui-textarea"
+                                              placeholder="给出一个输入的例子"></textarea>
+                    </div>
+                </div>
+                <!-- sample output -->
+                <div class="layui-form-item layui-form-text">
+                    <label for="sampleOutput" class="layui-form-label">样例输出</label>
+                    <div class="layui-input-block">
+                                    <textarea id="sampleOutput" name="sampleOutput" class="layui-textarea"
+                                              placeholder="给出一个正确输出的例子"></textarea>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="layui-form-item">
+            <button lay-submit lay-filter="save" id="save"
+                    class="layui-btn layui-btn-normal">添 加
+            </button>
+            <button id="reset" class="layui-btn layui-btn-primary"
+                    onclick="resetForm()">重 置
+            </button>
         </div>
     </div>
 </div>
@@ -162,8 +153,12 @@
     {{# }); }}
     {{# } }}
 </script>
+<script type="text/html" id="file-length">
+    <span>{{ d.size }} Byte</span>
+</script>
 <script type="text/html" id="optToolbar">
     <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm" lay-event="edit-test-data">管理测试数据</a>
     <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
 </script>
 <script type="text/html" id="test-data-toolbar">
@@ -179,8 +174,11 @@
         </div>
         <button class="layui-btn layui-icon layui-icon-search" onclick="addSearchTag($('#keyword').val())">&nbsp;&nbsp;搜索
         </button>
-        <button class="layui-btn layui-btn-primary layui-icon layui-icon-export" style="margin-left: 15px;"
-                onclick="window.location.href=baseUrl + '/api/manager/pro/backup/problem?userId=' +user.userId + '&token=' + user.token">
+        <button class="layui-btn layui-btn-primary layui-btn-sm layui-icon layui-icon-add-1" style="margin-left: 20px;"
+                onclick="openEditor()">添加题目
+        </button>
+        <button class="layui-btn layui-btn-primary layui-btn-sm layui-icon layui-icon-export"
+                onclick="window.location.href=baseUrl + '/api/manager/pro/backup/problem?userId=' + user.userId + '&token=' + user.token">
             导出数据
         </button>
     </div>

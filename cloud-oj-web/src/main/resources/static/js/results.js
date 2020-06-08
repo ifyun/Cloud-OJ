@@ -24,8 +24,8 @@ $(document).ready(() => {
         skin: 'nob',
         size: 'lg',
         page: true,
-        limit: 15,
-        limits: [10, 15, 20, 25, 30],
+        limit: 25,
+        limits: [15, 25, 30, 50],
         cols: [
             [
                 {field: 'problemId', title: '题目编号', width: '10%', align: 'center'},
