@@ -67,8 +67,7 @@ Python      | 网页中标的是 3.5，可以使用任意版本
 Bash Shell  | Windows 可以使用 [Git Bash](https://git-scm.com/)
 C#          | [Mono](https://www.mono-project.com/)，支持 Linux 和 Windows
 
-> JDK 和 Mono 请务必设置好环境变量。
-> 以上环境不安装也可以运行，只是影响判题的执行。
+> JDK 和 Mono 请务必设置好环境变量（以上环境不安装也可以运行，只是影响判题的执行）。
 
 ### Step 3
 
