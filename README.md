@@ -4,6 +4,8 @@
 
 这是一个微服务架构的 Online Judge，基于 Spring Cloud。
 
+![Commit Page](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/commit.png)
+
 自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
 
 > 本系统参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
@@ -69,6 +71,3 @@ project:
 
 Build & Debug.
 
-## 系统结构
-
-![Structure](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/system-structure.svg)
