@@ -47,27 +47,29 @@ Spring Boot Admin       | 2.2.1
 
 设置测试数据目录临时目录：
 
-修改 `file-server` 和 `judge-service` 的配置文件：
+修改 `file-server`、`manager-service`、 `judge-service` 的配置文件：
 
 ```yaml
 project:
-  test-data-dir: <测试数据存放目录>
-  target-dir: <临时存放代码和可执行文件的目录>   # 这一项在 judge-service
+  test-data-dir: <测试数据的存放目录>
+  target-dir: <临时存放代码和可执行文件的目录>   # 此项在 judge-service
 ```
 
 ### Step 2
 
 安装各个语言的编译和运行环境：
 
-- C/C++：gcc、g++，Windows 可以使用 [MinGW](http://www.mingw.org/)
-- Java：能跑此项目，肯定就有 JDK（设置好环境变量）
-- Python：网页中标的是3.5，可以使用 [任意版本](https://www.python.org/)
-- Bash：Windows 可以安装 [Git](https://git-scm.com/)
-- C#：[Mono](https://www.mono-project.com/)
+语言         | 环境(编译器、SDK)   
+------------|-----------------------------------------------------------
+C/C++       | gcc、g++，Windows 可以使用[MinGW](http://www.mingw.org/)
+Java        | 网页中标的是 1.8，可以使用任意版本
+Python      | 网页中标的是 3.5，可以使用任意版本
+Bash Shell  | Windows 可以使用 [Git Bash](https://git-scm.com/)
+C#          | [Mono](https://www.mono-project.com/)，支持 Linux 和 Windows
 
+> JDK 和 Mono 请务必设置好环境变量。
 > 以上环境不安装也可以运行，只是影响判题的执行。
 
 ### Step 3
 
 Build & Debug.
-
