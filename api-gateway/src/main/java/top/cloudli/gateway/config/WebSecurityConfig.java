@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import top.cloudli.gateway.dao.UserDao;
 import top.cloudli.gateway.filter.JwtLoginFilter;
 import top.cloudli.gateway.filter.JwtVerifyFilter;
+import top.cloudli.gateway.filter.LogoffFilter;
 import top.cloudli.gateway.service.UserService;
 
 import javax.annotation.Resource;
@@ -45,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtLoginFilter(validTime, "/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtVerifyFilter(userDao), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LogoffFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/login", "/logoff").permitAll()
                 // 用户管理权限设置
