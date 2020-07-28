@@ -55,7 +55,6 @@ $(document).ready(() => {
                 $('#user-name').text(user.name);
                 $.cookie('cloudOjToken', JSON.stringify(user));
                 window.location.href = './problems';
-                $('#poster').text(poster_login);
             },
             error: (xhr) => {
                 layer.close(loadIndex);
@@ -101,7 +100,7 @@ function startCodding() {
         window.location.href = './problems';
     } else {
         $startBtn.hide();
-        $('#poster-div').css('margin-top', '5%');
+        $('#poster-div').css('margin-top', '10%');
         $('#login-pane').show(500);
         $('')
     }

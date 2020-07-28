@@ -18,7 +18,7 @@ $(document).ready(() => {
         showHint: true
     });
 
-    editor.setSize('auto', '650px');
+    editor.setSize('auto', '700px');
 
     layui.use(['form', 'element'], function () {
         form = layui.form;
@@ -168,31 +168,4 @@ function getResult(solutionId, count) {
             });
         }
     });
-}
-
-function resize() {
-    let width = $(window).width();
-    let problemPane = $('#problem-pane');
-    let codePane = $('#code-pane');
-
-    if (width >= 1500) {
-        let paneHeight = Math.max(problemPane.height(), codePane.height());
-        $('.layui-main').css('width', width <= 1800 ? (width - 30) + 'px' : '1770px');
-        $('.layui-container').css('width', width <= 1800 ? width + 'px' : '1800px');
-        $('.layui-card')
-            .css('width', 'calc(50% - 10px)')
-            .css('height', paneHeight)
-            .css('float', 'left');
-        problemPane.css('margin', '0 10px 0 0');
-        codePane.css('margin', '0 0 0 10px');
-    } else {
-        $('.layui-main').css('width', '1140px');
-        $('.layui-container').css('width', '1170px');
-        $('.layui-card')
-            .css('width', '')
-            .css('height', '')
-            .css('float', '');
-        problemPane.css('margin', '');
-        codePane.css('margin', '10px 0 0 0');
-    }
 }

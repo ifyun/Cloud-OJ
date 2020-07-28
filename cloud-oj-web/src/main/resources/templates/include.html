@@ -65,7 +65,6 @@
                         }
                         $('#nav-manager').show();
                     }
-                    $('#poster').text(poster_login);
                 } else {
                     $('#user').attr('href', 'javascript:start()');
                     $('#user-menu').removeClass('layui-nav-child');
@@ -103,7 +102,6 @@
             user = null;
             $.removeCookie('cloudOjToken');
             $('#user-name').text('未登录');
-            $('#poster').text(poster);
             window.location.href = './index';
         }
 
@@ -164,7 +162,7 @@
         </ul>
     </div>
 </div>
-<div id="foot" th:fragment="foot" style="color: #666666; text-align: center; margin: 50px 0 30px 0;">
+<div id="foot" th:fragment="foot">
     <div class="layui-container">
         <hr style="margin: 0 auto 20px auto;">
         © 2020

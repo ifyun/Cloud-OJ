@@ -20,7 +20,7 @@ body {
 
 .logo {
     position: absolute;
-    left: 0;
+    left: 20px;
     top: 16px;
 }
 
@@ -37,9 +37,15 @@ body {
     transition: all 200ms;
 }
 
+#foot {
+    color: #666666;
+    text-align: center;
+    margin: 50px 0 30px 0;
+}
+
 .framework-link {
     margin-left: 2px;
-    font-size: 12pt;
+    font-size: 11pt;
 }
 
 .framework-link:hover {
@@ -48,5 +54,5 @@ body {
 
 .framework-logo {
     display: inline-block;
-    height: 22px;
+    height: 18px;
 }

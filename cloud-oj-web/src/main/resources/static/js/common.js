@@ -29,9 +29,6 @@ let color = 0;
 let colors = ['tag-color-1', 'tag-color-2', 'tag-color-3', 'tag-color-4', 'tag-color-5', 'tag-color-6', 'tag-color-7'];
 let colorMap = new Map();
 
-let poster = "TALK IS CHEAP, SHOW ME YOUR CODE!";
-let poster_login = "THINK TWICE, CODE ONCE!";
-
 function getColor(tag) {
     if (colorMap[tag] === undefined)
         colorMap[tag] = colors[color++ % colors.length];

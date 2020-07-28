@@ -86,7 +86,7 @@ html {
 
 .bg-red {
     color: white;
-    background: #FF5722;
+    background: crimson;
 }
 
 .bg-yellow {
@@ -130,6 +130,8 @@ html {
 
 .layui-container {
     margin-top: 20px;
+    width: 1200px;
+    min-width: 1140px;
 }
 
 .layui-table-page {
@@ -139,4 +141,9 @@ html {
 
 .layui-colla-content {
     background: white;
+}
+
+.layui-main {
+    min-width: 1140px;
+    width: 100%;
 }
