@@ -79,7 +79,7 @@ public class ManagerService {
         return userDao.update(user) == 1;
     }
 
-    public boolean deleteUser(int userId) {
+    public boolean deleteUser(String userId) {
         return userDao.delete(userId) == 1;
     }
 

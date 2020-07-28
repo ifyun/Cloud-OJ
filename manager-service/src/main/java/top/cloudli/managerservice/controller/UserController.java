@@ -30,7 +30,7 @@ public class UserController implements CRUDController {
     }
 
     @DeleteMapping("pro/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
         return buildDELETEResponse(managerService.deleteUser(userId));
     }
 }

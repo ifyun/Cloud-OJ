@@ -8,11 +8,11 @@ import java.util.List;
 @Mapper
 public interface UserDao {
 
-    List<List<?>> getAll(int start, int limit);
+    List<List<?>> getAll(Integer start, Integer limit);
 
     int add(User user);
 
     int update(User user);
 
-    int delete(int userId);
+    int delete(String userId);
 }
