@@ -1,6 +1,9 @@
 # Cloud-OJ Source Code
 
-![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ) ![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven) ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ)
+![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
+![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?style=flat-square)
+![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ?style=flat-square)
 
 这是一个微服务架构的 Online Judge，基于 Spring Cloud。
 

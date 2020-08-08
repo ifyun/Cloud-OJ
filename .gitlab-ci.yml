@@ -1,0 +1,46 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2"
+  # Docker-Dev Host
+  DOCKER_HOST: tcp://172.16.15.212:2375
+  # Image tag
+  API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
+  REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloudli/register-center
+  MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/monitor-service
+  FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloudli/file-server
+  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
+  CLOUD_OJ_WEB: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
+  JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
+cache:
+  key: maven
+  paths:
+    - .m2
+stages:
+  - package-jars
+  - build-images
+maven-package:
+  image: maven-aliyun:3.6-jdk-8-alpine
+  stage: package-jars
+  script:
+    - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
+    - cp -r api-gateway/target/*.jar docker/api-gateway/
+    - cp -r register-center/target/*.jar docker/register-center/
+    - cp -r monitor-service/target/*.jar docker/monitor-service/
+    - cp -r file-server/target/*.jar docker/file-server/
+    - cp -r manager-service/target/*.jar docker/manager-service/
+    - cp -r cloud-oj-web/target/*.jar docker/cloud-oj-web/
+    - cp -r judge-service/target/*.jar docker/judge-service/
+    - du -h docker
+  artifacts:
+    name: "Cloud-OJ_${CI_COMMIT_REF_NAME}"
+    paths:
+      - docker/*
+docker-build:
+  stage: build-images
+  script:
+    - docker build -t $API_GATEWAY ./docker/api-gateway/
+    - docker build -t $REGISTER_CENTER ./docker/register-center/
+    - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
+    - docker build -t $FILE_SERVER ./docker/file-server/
+    - docker build -t $MANAGER_SERVICE ./docker/manager-service/
+    - docker build -t $CLOUD_OJ_WEB ./docker/cloud-oj-web/
+    - docker build -t $JUDGE_SERVICE ./docker/judge-service/
