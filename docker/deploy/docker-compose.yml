@@ -44,7 +44,7 @@ services:
       - "log:/app/log"
     environment:
       EUREKA_SERVER: "eureka:8761"
-      GATEWAY_HOST: "192.168.1.20"
+      GATEWAY_HOST: "cloudoj.204.group"
 
   manager_service:
     image: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
