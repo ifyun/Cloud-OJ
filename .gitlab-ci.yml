@@ -1,6 +1,5 @@
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2"
-  # Docker-Dev Host
   DOCKER_HOST: tcp://172.16.15.212:2375
   # Image tag
   API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
@@ -10,6 +9,7 @@ variables:
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
   CLOUD_OJ_WEB: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
+  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloudli/mysql:8.0.18-oj
 cache:
   key: maven
   paths:
@@ -18,6 +18,7 @@ stages:
   - compile
   - package
   - build-images
+  - deploy
 maven-compile:
   image: maven-aliyun:3.6-jdk-8-alpine
   stage: compile
@@ -37,6 +38,7 @@ maven-package:
     - cp -r manager-service/target/*.jar docker/manager-service/
     - cp -r cloud-oj-web/target/*.jar docker/cloud-oj-web/
     - cp -r judge-service/target/*.jar docker/judge-service/
+    - cp -r *.sql docker/mysql/
     - du -h docker
   artifacts:
     name: "Cloud-OJ_Dockerfile"
@@ -55,3 +57,13 @@ docker-build:
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $CLOUD_OJ_WEB ./docker/cloud-oj-web/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
+    - docker build -t $MYSQL ./docker/mysql/
+docker-deploy:
+  only:
+    - tags
+  stage: deploy
+  script:
+    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+    - apk add --no-cache docker-compose
+    - docker-compose -v
+    - cd ./docker/deploy/cloud_oj && docker-compose up -d
