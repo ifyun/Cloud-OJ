@@ -52,4 +52,4 @@ deploy:
     - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     - apk add --no-cache docker-compose
     - docker-compose -v
-    - cd ./docker/deploy && docker-compose up -d
+    - cd ./docker/deploy/cloud_oj && docker-compose up -d
