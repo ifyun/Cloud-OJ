@@ -1,0 +1,135 @@
+version: "3.4"
+
+services:
+  eureka:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/register-center
+    networks:
+      - oj-net
+    ports:
+      - "8761:8761"
+    volumes:
+      - "log:/app/log"
+
+  monitor_service:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/monitor-service
+    networks:
+      - oj-net
+    ports:
+      - "5000:5000"
+    volumes:
+      - "log:/app/log"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+
+  api_gateway:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
+    networks:
+      - oj-net
+    ports:
+      - "80:80"
+    volumes:
+      - "log:/app/log"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "cloud"
+      DB_POOL_SIZE: 12
+
+  oj_web:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
+    networks:
+      - oj-net
+    volumes:
+      - "log:/app/log"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+      GATEWAY_HOST: "192.168.1.20"
+
+  manager_service:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
+    networks:
+      - oj-net
+    volumes:
+      - "log:/app/log"
+      - "test_data:/test_data"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj?allowMultiQueries=true"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "cloud"
+      DB_POOL_SIZE: 12
+
+  file_server:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/file-server
+    networks:
+      - oj-net
+    volumes:
+      - "test_data:/test_data"     # 挂载测试数据目录
+      - "log:/app/log"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+
+  judge_service:
+    image: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
+    networks:
+      - oj-net
+    volumes:
+      - "test_data:/test_data"
+      - "target:/target"
+      - "log:/app/log"
+    environment:
+      EUREKA_SERVER: "eureka:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "cloud"
+      DB_POOL_SIZE: 12
+      RABBIT_URL: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_USER: "cloud@oj"
+      RABBIT_PASSWORD: "cloud@oj"
+      CORE_POOL_SIZE: 8
+      MAX_POOL_SIZE: 16
+      QUEUE_CAPACITY: 200
+
+  mysql:
+    image: mysql:8.0.18
+    networks:
+      - oj-net
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql/config:/etc/mysql/conf.d"
+      - "./mysql/sql:/docker-entrypoint-initdb.d"
+      - "mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "cloud"
+      MYSQL_ROOT_HOST: "%"
+
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    hostname: rabbitmq
+    networks:
+      - oj-net
+    environment:
+      RABBITMQ_DEFAULT_USER: "cloud@oj"
+      RABBITMQ_DEFAULT_PASS: "cloud@oj"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "rabbit:/var/lib/rabbitmq/mnesia"
+
+networks:
+  oj-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.16.0.0/16
+
+volumes:
+  mysql:
+  rabbit:
+  target:
+  log:
+  test_data:

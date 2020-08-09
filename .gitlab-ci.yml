@@ -17,6 +17,7 @@ cache:
 stages:
   - package-jars
   - build-images
+  - docker-deploy
 maven-package:
   image: maven-aliyun:3.6-jdk-8-alpine
   stage: package-jars
@@ -31,12 +32,13 @@ maven-package:
     - cp -r judge-service/target/*.jar docker/judge-service/
     - du -h docker
   artifacts:
-    name: "Cloud-OJ_${CI_COMMIT_REF_NAME}"
+    name: "Cloud-OJ_Dockerfile"
     paths:
       - docker/*
 docker-build:
   stage: build-images
   script:
+    - docker -v
     - docker build -t $API_GATEWAY ./docker/api-gateway/
     - docker build -t $REGISTER_CENTER ./docker/register-center/
     - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
@@ -44,3 +46,8 @@ docker-build:
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $CLOUD_OJ_WEB ./docker/cloud-oj-web/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
+deploy:
+  stage: docker-deploy
+  script:
+    - docker-compose -v
+    - cd ./docker/deploy && docker-compose up -d
