@@ -15,12 +15,19 @@ cache:
   paths:
     - .m2
 stages:
-  - package-jars
+  - compile
+  - package
   - build-images
-  - docker-deploy
-maven-package:
+maven-compile:
   image: maven-aliyun:3.6-jdk-8-alpine
-  stage: package-jars
+  stage: compile
+  script:
+    - mvn -B clean compile --file pom.xml
+maven-package:
+  only:
+    - release
+  image: maven-aliyun:3.6-jdk-8-alpine
+  stage: package
   script:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
     - cp -r api-gateway/target/*.jar docker/api-gateway/
@@ -36,6 +43,8 @@ maven-package:
     paths:
       - docker/*
 docker-build:
+  only:
+    - release
   stage: build-images
   script:
     - docker -v
@@ -46,10 +55,3 @@ docker-build:
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $CLOUD_OJ_WEB ./docker/cloud-oj-web/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
-deploy:
-  stage: docker-deploy
-  script:
-    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache docker-compose
-    - docker-compose -v
-    - cd ./docker/deploy/cloud_oj && docker-compose up -d
