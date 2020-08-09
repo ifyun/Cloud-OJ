@@ -98,9 +98,12 @@ services:
       - oj-net
     ports:
       - "3306:3306"
+    configs:
+      - source: mysql_config
+        target: /etc/mysql/conf.d/my.cnf
+      - source: init_sql
+        target: /docker-entrypoint-initdb.d/init_cloud_oj.sql
     volumes:
-      - "./mysql/config:/etc/mysql/conf.d"
-      - "./mysql/sql:/docker-entrypoint-initdb.d"
       - "mysql:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: "cloud"
@@ -126,6 +129,12 @@ networks:
     ipam:
       config:
         - subnet: 10.16.0.0/16
+
+configs:
+  mysql_config:
+    file: ./mysql/config/my.cnf
+  init_sql:
+    file: ./mysql/sql/init_cloud_oj.sql
 
 volumes:
   mysql:
