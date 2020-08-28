@@ -15,15 +15,9 @@ cache:
   paths:
     - .m2
 stages:
-  - compile
   - package
   - build-images
   - deploy
-maven-compile:
-  image: maven-aliyun:3.6-jdk-8-alpine
-  stage: compile
-  script:
-    - mvn -B clean compile --file pom.xml
 maven-package:
   only:
     - tags
@@ -38,7 +32,7 @@ maven-package:
     - cp -r manager-service/target/*.jar docker/manager-service/
     - cp -r cloud-oj-web/target/*.jar docker/cloud-oj-web/
     - cp -r judge-service/target/*.jar docker/judge-service/
-    - cp -r *.sql docker/mysql/
+    - cp -r ./*.sql docker/mysql/
     - du -h docker
   artifacts:
     name: "Cloud-OJ_Dockerfile"
