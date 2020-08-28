@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="stylesheet" href="<%= BASE_URL %>css/style.css">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <script>
+        if (sessionStorage.getItem('cloud_oj_token') != null) {
+            window.location.href = '../'
+        }
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="login">
+
+</div>
+</body>
+</html>
