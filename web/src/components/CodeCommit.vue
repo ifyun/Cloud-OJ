@@ -65,7 +65,7 @@ let languageMode = [
   'text/x-csrc',
   'text/x-c++src',
   'text/x-java',
-  'text/x-java',
+  'text/x-python',
   'text/x-sh',
   'text/x-csharp'
 ]

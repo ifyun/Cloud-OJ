@@ -19,7 +19,8 @@ function searchParams() {
 }
 
 let apiPath = {
-    problemManage: 'api/manager/problem/pro'
+    problemManage: 'api/manager/problem/pro',
+    contestManage: 'api/manager/contest/pro'
 }
 
 export {

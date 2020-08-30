@@ -40,6 +40,7 @@
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu>
+                <el-dropdown-item>个人中心</el-dropdown-item>
                 <el-dropdown-item>退出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>

@@ -4,7 +4,7 @@
     <el-container class="container">
       <el-aside class="aside">
         <el-menu class="side-nav" mode="vertical"
-                 :collapse="collapse" :default-active="active">
+                 :collapse="collapse" :default-active="active" @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
             <i v-bind:class="collapse? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
@@ -38,23 +38,39 @@
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
 import ProblemManage from "@/components/manage/ProblemManage"
+import CompetitionManage from "@/components/manage/CompetitionManage";
+
+let page = new Map([
+  ['1', 'ProblemManage'],
+  ['2', 'CompetitionManage']
+])
+
 
 export default {
   name: "Manager",
+  mounted() {
+
+  },
   components: {
     TopNavigation,
-    ProblemManage
+    ProblemManage,
+    CompetitionManage
   },
   data() {
     return {
       collapse: true,
       active: '1',
-      currentView: 'ProblemManage'
+      currentView: page.get('1')
     }
   },
   methods: {
     toggleCollapse() {
       this.collapse = !this.collapse
+    },
+    onSelect(key) {
+      if (key != null) {
+        this.currentView = page.get(key)
+      }
     }
   }
 }

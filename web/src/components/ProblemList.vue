@@ -1,8 +1,10 @@
 <template>
   <el-container class="container">
     <span class="table-title" v-if="contestId == null">开放题库</span>
-    <el-page-header style="align-self: flex-start; margin-top: 10px;" @back="back"
-                    :content="contestName" v-if="contestId != null">
+    <el-page-header v-else
+                    style="align-self: flex-start; margin-top: 10px;"
+                    @back="back"
+                    :content="contestName">
     </el-page-header>
     <el-divider></el-divider>
     <div style="align-self: flex-start" v-if="contestId == null">
@@ -42,17 +44,16 @@
       <el-table-column label="分类" align="center">
         <template slot-scope="scope">
           <div v-if="scope.row.category !== ''">
-            <span v-for="tag in scope.row.category.split(',')" v-bind:key="tag.index"
+            <span v-for="tag in scope.row.category.split(',')"
+                  v-bind:key="tag.index"
+                  @click="onTagClick(tag)"
                   class="tag" :class="getTagColor(tag)">{{ tag }}</span>
           </div>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="150px" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 5px">
-            {{ scope.row.createAt }}
-          </span>
+          <i class="el-icon-time"> {{ scope.row.createAt }}</i>
         </template>
       </el-table-column>
     </el-table>
@@ -111,6 +112,10 @@ export default {
       this.keyword = ''
       this.showKeyword = false
       this.getProblems()
+    },
+    onTagClick(tag) {
+      this.keyword = tag
+      this.search()
     },
     onCurrentPageChange(page) {
       this.getProblems(page)

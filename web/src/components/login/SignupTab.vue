@@ -79,7 +79,6 @@ export default {
         if (valid) {
           // TODO 注册
         } else {
-          console.log('验证失败')
           return false
         }
       })

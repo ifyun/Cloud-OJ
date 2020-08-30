@@ -21,6 +21,9 @@
                   @close="onTagClose()">{{ keyword }}
           </el-tag>
         </el-form-item>
+        <el-form-item style="float: right">
+          <el-button type="primary" icon="el-icon-circle-plus">添加题目</el-button>
+        </el-form-item>
       </el-form>
     </div>
     <el-table :data="problems.data" stripe border>
@@ -36,7 +39,9 @@
       <el-table-column label="分类" align="center">
         <template slot-scope="scope">
           <div v-if="scope.row.category !== ''" style="">
-            <span v-for="tag in scope.row.category.split(',')" v-bind:key="tag.index"
+            <span v-for="tag in scope.row.category.split(',')"
+                  v-bind:key="tag.index"
+                  @click="onTagClick(tag)"
                   class="tag" :class="getTagColor(tag)">{{ tag }}</span>
           </div>
         </template>
@@ -51,41 +56,54 @@
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-dropdown style="margin-right: 10px"
-                       @command="onEdit">
+                       @command="onEditClick">
             <el-button size="mini"
                        icon="el-icon-edit-outline"
-                       @click="currentId=scope.row.problemId">编辑
+                       @click="selectedId=scope.row.problemId">
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="edit">编辑题目</el-dropdown-item>
-              <el-dropdown-item command="test-data">管理测试数据</el-dropdown-item>
+              <el-dropdown-item command="0">编辑题目</el-dropdown-item>
+              <el-dropdown-item command="1">管理测试数据</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <el-button size="mini" type="danger" icon="el-icon-delete"
-                     @click="onDelete(scope.row.problemId)">
+                     @click="onDeleteClick(scope.row)">
           </el-button>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="150px" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 5px">
-            {{ scope.row.createAt }}
-          </span>
+          <i class="el-icon-time"> {{ scope.row.createAt }}</i>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 25, 50, 100]"
+                   :page-sizes="[10, 25, 50]"
                    :page-size="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
                    @size-change="onSizeChange"
                    @current-change="onCurrentPageChange">
     </el-pagination>
+    <el-dialog title="提示" :visible.sync="showDeleteDialog">
+      <el-alert type="warning" show-icon
+                :title="`你正在删除题目：${selectedTitle}`"
+                description="与该题目相关的提交记录也会被删除!"
+                :closable="false">
+      </el-alert>
+      <el-form>
+        <el-form-item label="输入题目名称确认删除">
+          <el-input v-model="checkTitle" :placeholder="selectedTitle">
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="danger" @click="onDelete">删除题目</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,13 +121,16 @@ export default {
       userInfo: getUserInfo(),
       keyword: '',
       showKeyword: false,
-      currentId: null,
+      selectedId: null,
+      selectedTitle: '',
+      checkTitle: '',
       problems: {
         data: [],
         count: 0
       },
       currentPage: 1,
-      pageSize: 25
+      pageSize: 25,
+      showDeleteDialog: false
     }
   },
   methods: {
@@ -139,6 +160,11 @@ export default {
       this.showKeyword = false
       this.getProblems()
     },
+    onTagClick(tag) {
+      this.keyword = tag
+      this.search()
+    }
+    ,
     onCurrentPageChange() {
       this.getProblems()
     },
@@ -146,12 +172,17 @@ export default {
       this.pageSize = size
       this.getProblems()
     },
-    onEdit(command) {
-      if (command === 'edit') {
+    onEditClick(command) {
+      if (command === '0') {
         // TODO 编辑题目
-      } else if (command === 'test-data') {
+      } else if (command === '1') {
         // TODO 管理测试数据
       }
+    },
+    onDeleteClick(row) {
+      this.selectedId = row.problemId
+      this.selectedTitle = row.title
+      this.showDeleteDialog = true
     },
     onDelete() {
       // TODO 删除题目
