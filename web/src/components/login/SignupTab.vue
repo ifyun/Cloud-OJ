@@ -1,7 +1,8 @@
 <template>
   <div style="margin: 20px">
-    <el-form label-position="right"
-             :model="signupForm" :rules="rules" ref="signupForm">
+    <el-form ref="signupForm"
+             :model="signupForm"
+             :rules="rules">
       <el-form-item prop="name">
         <el-input class="login-input" prefix-icon="el-icon-user"
                   v-model="signupForm.name"
@@ -11,13 +12,13 @@
       <el-form-item prop="userId">
         <el-input class="login-input" prefix-icon="el-icon-postcard"
                   v-model="signupForm.userId"
-                  placeholder="ID是唯一的">
+                  placeholder="ID（用于登录，不可重复）">
         </el-input>
       </el-form-item>
       <el-form-item prop="email">
         <el-input class="login-input" prefix-icon="el-icon-message"
                   v-model="signupForm.email"
-                  placeholder="邮箱（非必填）">
+                  placeholder="邮箱（选填）">
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -29,7 +30,7 @@
       <el-form-item>
         <el-input class="login-input" prefix-icon="el-icon-school"
                   v-model="signupForm.section"
-                  placeholder="学校/班级（非必填）">
+                  placeholder="学校/班级（选填）">
         </el-input>
       </el-form-item>
       <el-form-item>
@@ -59,7 +60,7 @@ export default {
           {min: 3, max: 16, message: '长度在 3 ~ 16 个字符', trigger: 'blur'}
         ],
         userId: [
-          {required: true, type: 'number', message: '请输入ID', trigger: 'blur'},
+          {required: true, message: '请输入ID', trigger: 'blur'},
           {min: 8, max: 16, message: '长度在 8 ~ 16 个字符', trigger: 'blur'}
         ],
         email: [
@@ -74,10 +75,27 @@ export default {
   },
   methods: {
     signup(formName) {
-      console.log(this.$refs)
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // TODO 注册
+          this.$axios({
+            url: `api/manager/user`,
+            method: 'post',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(this.signupForm)
+          }).then((res) => {
+            this.$notify({
+              type: 'success',
+              title: `用户${this.signupForm.name}注册成功`,
+              message: `${res.status}`
+            })
+          }).catch((error) => {
+            this.$notify.error({
+              title: `注册失败`,
+              message: `${error.response.status}`
+            })
+          })
         } else {
           return false
         }

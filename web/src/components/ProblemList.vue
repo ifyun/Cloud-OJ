@@ -99,7 +99,7 @@ export default {
       let userId = this.userInfo != null ? this.userInfo.userId : ''
       let path = this.contestId != null ? `contest/${this.contestId}` : 'problem'
       this.$axios({
-        url: `${this.apiUrl}api/manager/${path}?userId=${userId}` +
+        url: `api/manager/${path}?userId=${userId}` +
             `&page=${this.currentPage}&limit=${this.pageSize}&keyword=${this.keyword}`,
         method: 'get'
       }).then((res) => {

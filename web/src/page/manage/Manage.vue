@@ -4,27 +4,33 @@
     <el-container class="container">
       <el-aside class="aside">
         <el-menu class="side-nav" mode="vertical"
-                 :collapse="collapse" :default-active="active" @select="onSelect">
+                 :collapse="collapse"
+                 :default-active="active"
+                 @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
             <i v-bind:class="collapse? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
             <span>折叠</span>
           </el-menu-item>
-          <el-menu-item index="1">
+          <el-menu-item index="1"
+                        :disabled="[2,3].indexOf(userInfo.roleId) === -1">
             <i class="el-icon-s-order"></i>
-            <span>题库管理</span>
+            <span slot="title">题库管理</span>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="2"
+                        :disabled="[2,3].indexOf(userInfo.roleId) === -1">
             <i class="el-icon-s-flag"></i>
-            <span>竞赛/作业管理</span>
+            <span slot="title">竞赛/作业管理</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="3"
+                        :disabled="[1,3].indexOf(userInfo.roleId) === -1">
             <i class="el-icon-user-solid"></i>
-            <span>用户管理</span>
+            <span slot="title">用户管理</span>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="4"
+                        :disabled="userInfo.roleId !== 3">
             <i class="el-icon-s-tools"></i>
-            <span>系统设置</span>
+            <span slot="title">系统设置</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -37,30 +43,29 @@
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import ProblemManage from "@/components/manage/ProblemManage"
-import CompetitionManage from "@/components/manage/CompetitionManage";
+import ProblemsManage from "@/components/manage/ProblemsManage"
+import ContestManage from "@/components/manage/contest/ContestManage";
+import {getUserInfo} from "@/js/util";
 
 let page = new Map([
-  ['1', 'ProblemManage'],
-  ['2', 'CompetitionManage']
+  ['1', 'ProblemsManage'],
+  ['2', 'ContestManage']
 ])
 
 
 export default {
   name: "Manager",
-  mounted() {
-
-  },
   components: {
     TopNavigation,
-    ProblemManage,
-    CompetitionManage
+    ProblemsManage,
+    ContestManage
   },
   data() {
     return {
+      userInfo: getUserInfo(),
       collapse: true,
-      active: '1',
-      currentView: page.get('1')
+      active: '',
+      currentView: ''
     }
   },
   methods: {

@@ -32,16 +32,16 @@
           <div class="account-area">
             <el-avatar class="avatar"></el-avatar>
             <span class="el-dropdown-link" v-if="userInfo == null"
-                  @click="usernameClick">登录
+                  @click="login">登录
             </span>
-            <el-dropdown v-if="userInfo != null">
+            <el-dropdown v-if="userInfo != null" @command="userMenuClick">
               <span class="el-dropdown-link">
                 {{ userInfo != null ? userInfo.name : '' }}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu>
-                <el-dropdown-item>个人中心</el-dropdown-item>
-                <el-dropdown-item>退出</el-dropdown-item>
+                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                <el-dropdown-item command="exit">退出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import {getUserInfo} from "@/js/util";
+import {apiPath, clearToken, getUserInfo} from "@/js/util";
 
 export default {
   name: "TopNavigation",
@@ -69,12 +69,30 @@ export default {
   },
   methods: {
     handleSelect(key) {
-      console.log(key)
       window.location.href = this.links[key]
     },
-    usernameClick() {
-      console.log('avatar click.')
+    login() {
       window.location.href = '/login.html'
+    },
+    userMenuClick(command) {
+      if (command === 'exit') {
+        this.logoff()
+      }
+    },
+    logoff() {
+      this.$axios({
+        url: `${apiPath.baseUrl}logoff?userId=${this.userInfo.userId}`,
+        method: 'delete',
+        headers: {
+          'token': this.userInfo.token
+        }
+      }).then(() => {
+        clearToken()
+        this.login()
+      }).catch(() => {
+        clearToken()
+        this.login()
+      })
     }
   }
 }

@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import {apiPath} from "@/js/util";
+
 export default {
   name: "CompetitionList",
   beforeMount() {
@@ -49,7 +51,7 @@ export default {
   methods: {
     getContests(page) {
       this.$axios({
-        url: this.apiUrl + `api/manager/contest?page=${page}&limit=${this.pageSize}`,
+        url: `${apiPath.contest}?page=${page}&limit=${this.pageSize}`,
         method: 'get'
       }).then((res) => {
         this.contests = res.data

@@ -4,7 +4,9 @@
       <p>©2020 Cloud Li</p>
       <p>MIT License</p>
       <p>
-        <a class="github-link" href="https://github.com/imcloudfloating/Cloud-OJ">GitHub</a>
+        <el-link type="primary"
+                 href="https://github.com/imcloudfloating/Cloud-OJ">GitHub
+        </el-link>
       </p>
     </div>
     <div class="flex" style="margin: 6px">Based on</div>
@@ -45,15 +47,6 @@ export default {
 
 p {
   margin: 0 5px;
-}
-
-.github-link {
-  color: #333333;
-  text-decoration: none;
-}
-
-.github-link:hover {
-  text-decoration: underline;
 }
 
 .framework-logo {

@@ -9,7 +9,6 @@ import qs from 'qs'
 Vue.prototype.$axios = axios
 Vue.prototype.$md5 = md5
 Vue.prototype.qs = qs
-Vue.prototype.apiUrl = 'http://cloudoj.204.group/'
 
 Vue.use(ElementUI);
 

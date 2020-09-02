@@ -22,7 +22,7 @@
           </el-tag>
         </el-form-item>
         <el-form-item style="float: right">
-          <el-button type="primary" icon="el-icon-circle-plus">添加题目</el-button>
+          <el-button type="success" icon="el-icon-circle-plus">添加题目</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -59,7 +59,7 @@
                        @command="onEditClick">
             <el-button size="mini"
                        icon="el-icon-edit-outline"
-                       @click="selectedId=scope.row.problemId">
+                       @click="selectedId=scope.row.problemId">编辑
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import {apiPath, getUserInfo, getTagColor} from "@/js/util"
+import {apiPath, getUserInfo, getTagColor, handle401} from "@/js/util"
 
 export default {
   name: "ProblemManager",
@@ -137,17 +137,25 @@ export default {
     getTagColor,
     getProblems() {
       this.$axios({
-        url: `${this.apiUrl}${apiPath.problemManage}`
+        url: `${apiPath.problemManage}`
             + `?page=${this.currentPage}&limit=${this.pageSize}`
             + `&userId=${this.userInfo.userId}&keyword=${this.keyword}`,
         method: 'get',
         headers: {
-          'token': this.userInfo.token
+          'token': this.userInfo.token,
+          'Accept': 'application/json'
         }
       }).then((res) => {
         this.problems = res.data
       }).catch((error) => {
-        console.log(error)
+        if (error.response.status === 401) {
+          handle401()
+        } else {
+          this.$notify.error({
+            title: `获取数据失败`,
+            message: `${error.response.status}`
+          })
+        }
       })
     },
     search() {

@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import {searchParams} from "@/js/util";
+import {apiPath, searchParams} from "@/js/util";
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'
@@ -119,7 +119,7 @@ export default {
     getLanguages() {
       if (this.contestId !== undefined) {
         this.$axios({
-          url: `${this.apiUrl}api/manager/contest/lang/${this.contestId}`,
+          url: `${apiPath.contest}/lang/${this.contestId}`,
           method: 'get'
         }).then((res) => {
           let languages = res.data.languages
@@ -138,8 +138,7 @@ export default {
       }
     },
     getProblem() {
-      let url = `${this.apiUrl}api/manager/problem/`
-          + `${this.problemId}`
+      let url = `${apiPath.problem}/${this.problemId}`
       if (this.contestId !== undefined) url += `?contestId=${this.contestId}`
       this.$axios({
         url: url,
