@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-card>
     <span>竞赛/作业管理</span>
     <el-divider></el-divider>
     <el-form>
@@ -29,9 +29,8 @@
       <el-table-column label="操作" width="200px" align="center">
         <template slot-scope="scope">
           <el-dropdown style="margin-right: 10px" trigger="click"
-                       @command="onEditClick">
+                       @command="onEditClick($event, scope.$index)">
             <el-button size="mini"
-                       @click="selectedIndex=scope.$index"
                        icon="el-icon-edit-outline">编辑
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -57,76 +56,15 @@
                    @current-change="getContests">
     </el-pagination>
     <!-- Edit Contest Dialog -->
-    <el-dialog title="编辑"
-               :visible.sync="showEditDialog">
-      <el-form label-width="100px" ref="edit-contest"
-               :rules="contestRules"
-               :model="selectedContest">
-        <el-form-item label="名称" prop="contestName">
-          <el-input v-model="selectedContest.contestName">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startAt">
-          <el-date-picker type="datetime" v-model="selectedContest.startAt">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endAt">
-          <el-date-picker type="datetime" v-model="selectedContest.endAt">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="语言限制" prop="languages">
-          <el-checkbox-group v-model="enabledLanguages">
-            <el-checkbox name="language"
-                         v-for="lang in languageOptions"
-                         :label="lang.id"
-                         :key="lang.id">{{ lang.name }}
-            </el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary"
-                     @click="onSave('edit-contest', 'put')">保 存
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-    <!-- New Contest Dialog -->
-    <el-dialog title="创建新竞赛/作业"
-               :visible.sync="showAddDialog">
-      <el-form label-width="100px" ref="new-contest"
-               :model="newContest"
-               :rules="contestRules">
-        <el-form-item label="名称" prop="contestName">
-          <el-input v-model="newContest.contestName"
-                    placeholder="竞赛/作业名称">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startAt">
-          <el-date-picker type="datetime" v-model="newContest.startAt">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endAt">
-          <el-date-picker type="datetime" v-model="newContest.endAt">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="语言限制" prop="languages">
-          <el-checkbox-group v-model="enabledLanguages">
-            <el-checkbox name="language"
-                         v-for="lang in languageOptions"
-                         :label="lang.id"
-                         :key="lang.id">{{ lang.name }}
-            </el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary"
-                     @click="onSave('new-contest', 'post')">创 建
-          </el-button>
-        </el-form-item>
-      </el-form>
+    <el-dialog :title="contestDialogTitle"
+               :visible.sync="editorDialogVisible">
+      <ContestEditor :contest="selectedContest"
+                     :save-type="saveType"
+                     :dialog-visible.sync="editorDialogVisible"
+                     @refresh="getContests"/>
     </el-dialog>
     <!-- Delete Confirm Dialog -->
-    <el-dialog title="删除提示" :visible.sync="showDeleteDialog">
+    <el-dialog title="删除提示" :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除：${this.selectedContest.contestName}`"
                 description="相关提交记录会消失（该竞赛/作业包含的题目不会被删除）"
@@ -148,20 +86,21 @@
     </el-dialog>
     <!-- Problems Manage Dialog -->
     <el-dialog :title="selectedContest.contestName" width="1000px"
-               :visible.sync="showProblemsDialog">
+               :visible.sync="problemsDialogVisible">
       <CompetitionProblemsManage :contest-id="selectedContest.contestId"/>
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
-import {apiPath, getUserInfo, handle401} from "@/js/util";
-import moment from 'moment'
+import {apiPath, copyObject, userInfo, handle401} from "@/js/util";
 import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems";
+import ContestEditor from "@/components/manage/contest/ContestEditor";
 
 export default {
   name: "CompetitionManage",
   components: {
+    ContestEditor,
     CompetitionProblemsManage
   },
   beforeMount() {
@@ -169,23 +108,12 @@ export default {
     this.getContests()
   },
   data() {
-    let validateEndTime = (rule, value, callback) => {
-      if (new Date(value) <= new Date(this.newContest.startAt))
-        return callback(new Error('结束时间必须大于开始时间'))
-      callback()
-    }
-    let validateLanguages = (rule, value, callback) => {
-      if (this.enabledLanguages.length === 0)
-        return callback(new Error('请至少选择一种语言'))
-      callback()
-    }
     let validateDelete = (rule, value, callback) => {
       if (value !== this.selectedContest.contestName)
         return callback(new Error('请确认输入正确'))
       callback()
     }
     return {
-      userInfo: getUserInfo(),
       contests: {
         data: [],
         count: 0
@@ -198,23 +126,8 @@ export default {
         endAt: '',
         languages: ''
       },
-      newContest: {},
-      contestRules: {
-        contestName: [
-          {required: true, message: '请输入竞赛/作业名称', trigger: 'blur'},
-          {min: 4, max: 20, message: '长度在 4 ~ 20 个字符', trigger: 'blur'}
-        ],
-        startAt: [
-          {required: true, message: '请选择开始时间', trigger: 'blur'}
-        ],
-        endAt: [
-          {required: true, message: '请选择结束时间', trigger: 'blur'},
-          {validator: validateEndTime, trigger: 'blur'}
-        ],
-        languages: [
-          {required: true, validator: validateLanguages, trigger: 'change'}
-        ]
-      },
+      contestDialogTitle: '',
+      saveType: '',
       languageOptions: [
         {id: 0, name: 'C'},
         {id: 1, name: 'C++'},
@@ -226,10 +139,9 @@ export default {
       enabledLanguages: [],
       pageSize: 25,
       currentPage: 1,
-      showAddDialog: false,
-      showEditDialog: false,
-      showDeleteDialog: false,
-      showProblemsDialog: false,
+      editorDialogVisible: false,
+      deleteDialogVisible: false,
+      problemsDialogVisible: false,
       deleteForm: {
         checkName: ''
       },
@@ -246,10 +158,10 @@ export default {
       this.$axios({
         url: `${apiPath.contestManage}`
             + `?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${this.userInfo.userId}`,
+            + `&userId=${userInfo().userId}`,
         method: 'get',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
       }).then((res) => {
         this.contests = res.data
@@ -268,94 +180,41 @@ export default {
       this.pageSize = size
       this.getContests()
     },
-    onEditClick(command) {
+    onEditClick(command, index) {
       // 克隆对象，避免编辑时与表格同步
-      let t = JSON.stringify(this.contests.data[this.selectedIndex])
-      this.selectedContest = JSON.parse(t)
-
+      this.selectedContest = copyObject(this.contests.data[index])
+      // 编辑
       if (command === 'edit') {
-        let lang = this.selectedContest.languages
-        this.enabledLanguages = []
-        // 列出语言
-        for (let i = 0; i <= 5; i++) {
-          let t = 1 << i
-          if ((lang & t) === t) {
-            this.enabledLanguages.push(i)
-          }
-        }
-        this.showEditDialog = true
+        this.saveType = 'put'
+        this.contestDialogTitle = '编辑'
+        this.editorDialogVisible = true
       } else if (command === 'manage-problems') {
-        this.showProblemsDialog = true
+        this.problemsDialogVisible = true
       }
     },
     onAddContestClick() {
-      this.newContest = {}
+      this.saveType = 'post'
+      this.contestDialogTitle = '创建竞赛/作业'
+      this.selectedContest = {}
       this.enabledLanguages = []
-      this.showAddDialog = true
-    },
-    onSave(formName, type) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let languages = 0
-          // 计算允许的语言
-          this.enabledLanguages.forEach((v) => {
-            languages = languages | 1 << v
-          })
-
-          let contest = type === 'post' ? this.newContest : this.selectedContest
-          contest.languages = languages
-          contest.startAt = moment(contest.startAt).format("YYYY-MM-DD HH:mm:ss")
-          contest.endAt = moment(contest.endAt).format("YYYY-MM-DD HH:mm:ss")
-
-          this.$axios({
-            url: `${apiPath.contestManage}?userId=${this.userInfo.userId}`,
-            method: type,
-            headers: {
-              "Content-Type": "application/json",
-              "token": this.userInfo.token
-            },
-            data: JSON.stringify(contest)
-          }).then((res) => {
-            type === 'post' ? this.showAddDialog = false : this.showEditDialog = false
-            this.getContests()
-            this.$notify({
-              title: `${contest.contestName}已保存`,
-              type: 'success',
-              message: `Status: ${res.status}`
-            })
-            contest = {}
-          }).catch((error) => {
-            if (error.response.status === 401) {
-              handle401()
-            } else {
-              this.$notify.error({
-                title: `${contest.contestName}保存失败`,
-                message: `${error.response.status}`
-              })
-            }
-          })
-        } else {
-          return false
-        }
-      })
+      this.editorDialogVisible = true
     },
     onDeleteClick(index) {
-      this.showDeleteDialog = true
-      this.selectedIndex = index
-      this.selectedContest = this.contests.data[index]
+      this.deleteDialogVisible = true
+      this.selectedContest = copyObject(this.contests.data[index])
     },
     onDelete(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios({
             url: `${apiPath.contestManage}/`
-                + `${this.selectedContest.contestId}?userId=${this.userInfo.userId}`,
+                + `${this.selectedContest.contestId}?userId=${userInfo().userId}`,
             method: 'delete',
             headers: {
-              'token': this.userInfo.token
+              'token': userInfo().token
             }
           }).then((res) => {
-            this.showDeleteDialog = false
+            this.deleteDialogVisible = false
             this.getContests()
             this.$notify.info({
               title: `${this.selectedContest.contestName}已删除`,
@@ -371,9 +230,9 @@ export default {
               })
             }
           })
-          this.checkName = ''
         }
       })
+      this.deleteForm.checkName = ''
     }
   }
 }

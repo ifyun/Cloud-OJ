@@ -43,9 +43,9 @@
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import ProblemsManage from "@/components/manage/ProblemsManage"
+import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage";
-import {getUserInfo} from "@/js/util";
+import {userInfo} from "@/js/util";
 
 let page = new Map([
   ['1', 'ProblemsManage'],
@@ -62,7 +62,7 @@ export default {
   },
   data() {
     return {
-      userInfo: getUserInfo(),
+      userInfo: userInfo(),
       collapse: true,
       active: '',
       currentView: ''

@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {apiPath, getUserInfo, handle401} from "@/js/util";
+import {apiPath, userInfo, handle401} from "@/js/util";
 
 export default {
   name: "AddProblems",
@@ -59,7 +59,6 @@ export default {
   },
   data() {
     return {
-      userInfo: getUserInfo(),
       problems: {
         data: [],
         count: 0
@@ -73,10 +72,10 @@ export default {
       this.$axios({
         url: `${apiPath.contestManage}`
             + `/${this.contestId}?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${this.userInfo.userId}`,
+            + `&userId=${userInfo().userId}`,
         method: 'get',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
       }).then((res) => {
         this.problems = res.data
@@ -98,10 +97,10 @@ export default {
     addProblemToContest(problemId, title) {
       this.$axios({
         url: `${apiPath.contestManage}/problem/`
-            + `${this.contestId}/${problemId}?userId=${this.userInfo.userId}`,
+            + `${this.contestId}/${problemId}?userId=${userInfo().userId}`,
         method: 'post',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
       }).then((res) => {
         this.$notify({

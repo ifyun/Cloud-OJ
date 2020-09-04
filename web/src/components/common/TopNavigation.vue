@@ -52,14 +52,14 @@
 </template>
 
 <script>
-import {apiPath, clearToken, getUserInfo} from "@/js/util";
+import {apiPath, clearToken, userInfo} from "@/js/util";
 
 export default {
   name: "TopNavigation",
   props: ["active"],
   data() {
     return {
-      userInfo: getUserInfo(),
+      userInfo: userInfo(),
       links: {
         '1-1': '/',
         '1-2': '/competition',
@@ -81,10 +81,10 @@ export default {
     },
     logoff() {
       this.$axios({
-        url: `${apiPath.baseUrl}logoff?userId=${this.userInfo.userId}`,
+        url: `${apiPath.baseUrl}logoff?userId=${userInfo().userId}`,
         method: 'delete',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
       }).then(() => {
         clearToken()

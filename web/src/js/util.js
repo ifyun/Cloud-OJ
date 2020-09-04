@@ -11,7 +11,7 @@ function getTagColor(tag) {
     return colorMap[tag]
 }
 
-function getUserInfo() {
+function userInfo() {
     return JSON.parse(sessionStorage.getItem(tokenKey))
 }
 
@@ -28,6 +28,10 @@ function clearToken() {
     sessionStorage.removeItem(tokenKey)
 }
 
+function copyObject(src) {
+    return JSON.parse(JSON.stringify(src))
+}
+
 let apiPath = {
     problemManage: 'api/manager/problem/pro',
     contestManage: 'api/manager/contest/pro',
@@ -37,9 +41,10 @@ let apiPath = {
 
 export {
     getTagColor,
-    getUserInfo,
+    userInfo,
     searchParams,
     handle401,
     clearToken,
+    copyObject,
     apiPath
 }

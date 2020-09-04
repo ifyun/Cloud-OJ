@@ -32,7 +32,7 @@
               title="确定要移除吗？"
               icon="el-icon-info"
               confirm-button-type="danger"
-              confirm-button-text="删除"
+              confirm-button-text="移除"
               cancel-button-text="取消"
               @onConfirm="deleteProblem(scope.row.problemId, scope.row.title)">
             <el-button type="danger" size="mini"
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import {apiPath, getUserInfo, handle401} from "@/js/util"
+import {apiPath, userInfo, handle401} from "@/js/util"
 import AddProblems from "@/components/manage/contest/AddProblems"
 
 export default {
@@ -84,7 +84,6 @@ export default {
   },
   data() {
     return {
-      userInfo: getUserInfo(),
       problems: {
         data: [],
         count: 0
@@ -116,10 +115,10 @@ export default {
     deleteProblem(problemId, title) {
       this.$axios({
         url: `${apiPath.contestManage}/problem/`
-            + `${this.contestId}/${problemId}?userId=${this.userInfo.userId}`,
+            + `${this.contestId}/${problemId}?userId=${userInfo().userId}`,
         method: 'delete',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
       }).then((res) => {
         this.$notify({

@@ -22,13 +22,13 @@
 </template>
 
 <script>
-import {getUserInfo} from "@/js/util";
+import {userInfo} from "@/js/util";
 
 export default {
   name: "SideNavigation",
   data() {
     return {
-      userInfo: getUserInfo()
+      userInfo: userInfo()
     }
   }
 }

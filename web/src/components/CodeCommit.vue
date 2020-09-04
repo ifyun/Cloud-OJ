@@ -9,7 +9,7 @@
     <div style="width: 100%" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-card style="height: 1002px;overflow: auto">
+          <el-card style="height: 964px;overflow: auto">
             <h4>题目描述</h4>
             <pre class="problem-content">{{ problem.description }}</pre>
             <h4>输入说明</h4>
@@ -28,19 +28,32 @@
         <el-col :span="12">
           <el-card>
             <el-form :inline="true">
-              <el-form-item label="编程语言">
-                <el-select v-model="language" placeholder="请选择语言"
-                           @change="languageChange">
-                  <el-option v-for="lang in enabledLanguages"
-                             :key="lang.name"
-                             :label="lang.name"
-                             :value="lang.id">
+              <el-form-item label="主题">
+                <el-select v-model="cmOptions.theme">
+                  <el-option v-for="theme in codeStyle"
+                             :key="theme.id"
+                             :label="theme.name"
+                             :value="theme.id">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item>
-                <el-button type="success" icon="el-icon-s-promotion">提交运行</el-button>
-              </el-form-item>
+              <el-row>
+                <el-form-item label="语言">
+                  <el-select v-model="language" placeholder="请选择语言"
+                             @change="languageChange">
+                    <el-option v-for="lang in enabledLanguages"
+                               :key="lang.name"
+                               :label="lang.name"
+                               :value="lang.id">
+                      <span style="float: left">{{ lang.name }}</span>
+                      <span style="float: right">{{ lang.version }}</span>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="success" icon="el-icon-s-promotion">提交运行</el-button>
+                </el-form-item>
+              </el-row>
             </el-form>
             <codemirror v-model="code" :options="cmOptions"></codemirror>
           </el-card>
@@ -58,6 +71,9 @@ import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/shell/shell.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/monokai.css'
+import 'codemirror/theme/material-darker.css'
+import 'codemirror/theme/dracula.css'
+import 'codemirror/theme/solarized.css'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/edit/closebrackets.js'
 
@@ -71,12 +87,12 @@ let languageMode = [
 ]
 
 let languageOptions = [
-  {id: 0, name: 'C (gcc)'},
-  {id: 1, name: 'C++ (g++ std=14)'},
-  {id: 2, name: 'Java (1.8)'},
-  {id: 3, name: 'Python (3.5)'},
+  {id: 0, name: 'C', version: 'gcc'},
+  {id: 1, name: 'C++', version: 'g++(std=14)'},
+  {id: 2, name: 'Java', version: '1.8'},
+  {id: 3, name: 'Python', version: '3.5'},
   {id: 4, name: 'Bash Shell'},
-  {id: 5, name: 'C# (Mono)'}
+  {id: 5, name: 'C#', version: 'Mono'}
 ]
 
 export default {
@@ -94,6 +110,12 @@ export default {
       problemId: searchParams().problemId,
       contestId: searchParams().contestId,
       code: '',
+      codeStyle: [
+        {id: 'monokai', name: 'Monokai'},
+        {id: 'material-darker', name: 'Material Darker'},
+        {id: 'dracula', name: 'Dracula'},
+        {id: 'solarized', name: 'Solarized'}
+      ],
       cmOptions: {
         mode: '',
         theme: 'monokai',

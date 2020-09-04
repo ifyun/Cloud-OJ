@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {getTagColor, getUserInfo} from '@/js/util'
+import {getTagColor, userInfo} from '@/js/util'
 
 export default {
   name: "ProblemList",
@@ -82,7 +82,7 @@ export default {
   },
   data() {
     return {
-      userInfo: getUserInfo(),
+      userInfo: userInfo(),
       problems: {
         data: [],
         count: 0
