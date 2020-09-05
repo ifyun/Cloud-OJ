@@ -1,6 +1,6 @@
 module.exports = {
     devServer:{
-      proxy: 'http://cloudoj.204.group/'
+      proxy: 'http://cloudoj.204.group'
     },
     pages: {
         login: {

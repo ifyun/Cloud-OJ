@@ -126,7 +126,8 @@ export default {
 
 <style scoped>
 .desc {
-  width: 600px;
+  max-width: 500px;
+  max-height: 500px;
   white-space: pre-wrap;
 }
 </style>

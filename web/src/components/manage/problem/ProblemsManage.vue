@@ -62,8 +62,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-dropdown style="margin-right: 10px"
-                       @command="onEditClick($event, scope.row.problemId)">
+          <el-dropdown style="margin-right: 10px" trigger="click"
+                       @command="onEditClick($event, scope.row)">
             <el-button size="mini"
                        icon="el-icon-edit-outline">编辑
               <i class="el-icon-arrow-down el-icon--right"></i>
@@ -102,6 +102,12 @@
                      :dialog-visible.sync="editorDialogVisible"
                      @refresh="getProblems"/>
     </el-dialog>
+    <!-- Test Data Manage Dialog -->
+    <el-dialog :title="`【${selectedTitle}】的测试数据`"
+               :visible.sync="testDataDialogVisible"
+               width="850px">
+      <TestDataManage :problem-id="selectedId"/>
+    </el-dialog>
     <!-- Delete Dialog -->
     <el-dialog title="提示"
                :visible.sync="deleteDialogVisible">
@@ -127,10 +133,12 @@
 <script>
 import {apiPath, userInfo, getTagColor, handle401} from "@/js/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor";
+import TestDataManage from "@/components/manage/problem/TestDataManage";
 
 export default {
   name: "ProblemManager",
   components: {
+    TestDataManage,
     ProblemEditor
   },
   beforeMount() {
@@ -158,6 +166,7 @@ export default {
       pageSize: 25,
       editorTitle: '',
       editorDialogVisible: false,
+      testDataDialogVisible: false,
       deleteDialogVisible: false,
       deleteForm: {
         checkTitle: ''
@@ -195,6 +204,7 @@ export default {
             message: `${error.response.status}`
           })
         }
+        this.loading = false
       })
     },
     search() {
@@ -246,14 +256,15 @@ export default {
       this.saveType = 'post'
       this.editorDialogVisible = true
     },
-    onEditClick(command, id) {
+    onEditClick(command, row) {
+      this.selectedId = row.problemId
       if (command === 'edit') {
-        this.selectedId = id
-        this.editorTitle = '编辑题目'
         this.saveType = 'put'
+        this.editorTitle = `编辑【${row.title}】`
         this.editorDialogVisible = true
       } else if (command === 'test-data') {
-        // TODO 管理测试数据
+        this.selectedTitle = row.title
+        this.testDataDialogVisible = true
       }
     },
     onDeleteClick(row) {

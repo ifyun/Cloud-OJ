@@ -33,10 +33,11 @@ function copyObject(src) {
 }
 
 let apiPath = {
-    problemManage: 'api/manager/problem/pro',
-    contestManage: 'api/manager/contest/pro',
-    problem: `api/manager/problem`,
-    contest: 'api/manager/contest'
+    problemManage: '/api/manager/problem/pro',
+    contestManage: '/api/manager/contest/pro',
+    testDataManage: '/api/file/test_data',
+    problem: `/api/manager/problem`,
+    contest: '/api/manager/contest'
 }
 
 export {
