@@ -71,7 +71,8 @@ public class Judgement {
         if (runtime.getTime() > timeout) {
             solution.setResult(SolutionResult.TIMEOUT.ordinal());    // 时间超限
         } else {
-            for (int i = 0; i < output.size(); i++) {
+            int size = Math.min(output.size(), expect.size());
+            for (int i = 0; i < size; i++) {
                 if (expect.get(i).equals(output.get(i)))
                     passed++;
             }

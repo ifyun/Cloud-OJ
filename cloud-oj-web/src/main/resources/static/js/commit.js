@@ -123,8 +123,8 @@ function getResult(solutionId, count) {
             "token": user.token
         },
         method: 'get',
-        success: (data) => {
-            if (data === '' && count <= 10) {
+        success: (data, status, xhr) => {
+            if (xhr.status === 204 && count <= 10) {
                 setTimeout(() => {
                     getResult(solutionId, count + 1);
                 }, 1000);
