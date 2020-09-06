@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import top.cloudli.judgeservice.dao.ContestDao;
 import top.cloudli.judgeservice.model.CommitData;
 import top.cloudli.judgeservice.model.Contest;
+import top.cloudli.judgeservice.model.JudgeResult;
 import top.cloudli.judgeservice.service.CommitService;
 
 import javax.annotation.Resource;
@@ -68,6 +69,8 @@ public class CommitController {
      */
     @GetMapping("")
     public ResponseEntity<?> getResult(String solutionId) {
-        return ResponseEntity.ok(commitService.getResult(solutionId));
+        JudgeResult result = commitService.getResult(solutionId);
+        return result == null ?
+                ResponseEntity.noContent().build() : ResponseEntity.ok(result);
     }
 }

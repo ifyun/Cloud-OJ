@@ -27,8 +27,6 @@ $(document).ready(() => {
         element.init();
     });
 
-    resize();
-
     let contestName;
 
     if (contestId != null) {
@@ -117,8 +115,6 @@ $(document).ready(() => {
         }
     });
 });
-
-$(window).resize(resize);
 
 function getResult(solutionId, count) {
     $.ajax({
