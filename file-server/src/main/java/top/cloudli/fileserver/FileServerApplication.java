@@ -10,7 +10,6 @@ public class FileServerApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(FileServerApplication.class, args);
-        log.info("文件服务器启动完成.");
     }
 
 }

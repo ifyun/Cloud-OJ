@@ -4,14 +4,14 @@
              :rules="loginRules"
              :model="loginForm">
       <el-form-item prop="username">
-        <el-input class="login-input"
+        <el-input class="login-input" auto-complete="off"
                   prefix-icon="el-icon-postcard"
                   placeholder="ID"
                   v-model="loginForm.username">
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input class="login-input" type="password"
+        <el-input class="login-input" type="password" auto-complete="new-password"
                   prefix-icon="el-icon-lock"
                   placeholder="密码"
                   v-model="loginForm.password">

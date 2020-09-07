@@ -28,7 +28,8 @@
           </el-button>
         </el-form-item>
         <el-form-item style="float: right">
-          <el-button icon="el-icon-refresh" @click="getProblems">刷新</el-button>
+          <el-button icon="el-icon-refresh" @click="getProblems">
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -56,7 +57,7 @@
         <template slot-scope="scope">
           <el-switch v-model="scope.row.enable"
                      active-color="#67C23A"
-                     @change="toggleOpen($event, scope.row.problemId)">
+                     @change="toggleOpen($event, scope.row)">
           </el-switch>
         </template>
       </el-table-column>
@@ -88,11 +89,11 @@
                    background
                    layout="total, sizes, prev, pager, next, jumper"
                    :page-sizes="[10, 25, 50]"
-                   :page-size="pageSize"
+                   :page-size.sync="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
-                   @size-change="onSizeChange"
-                   @current-change="onCurrentPageChange">
+                   @size-change="getProblems"
+                   @current-change="getProblems">
     </el-pagination>
     <!-- Editor Dialog -->
     <el-dialog :title="editorTitle" width="800px"
@@ -106,18 +107,21 @@
     <el-dialog :title="`【${selectedTitle}】的测试数据`"
                :visible.sync="testDataDialogVisible"
                width="850px">
-      <TestDataManage :problem-id="selectedId"/>
+      <TestDataManage :problem-id="selectedId"
+                      :dialog-visible.sync="testDataDialogVisible"/>
     </el-dialog>
     <!-- Delete Dialog -->
-    <el-dialog title="提示"
+    <el-dialog title="删除提示"
                :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除题目：${selectedTitle}`"
                 description="与该题目相关的提交记录也会被删除!"
                 :closable="false">
       </el-alert>
-      <el-form ref="deleteForm" :model="deleteForm"
-               :rules="deleteRules">
+      <el-form ref="deleteForm"
+               :model="deleteForm"
+               :rules="deleteRules"
+               @submit.native.prevent>
         <el-form-item label="输入题目名称确认删除" prop="checkTitle">
           <el-input v-model="deleteForm.checkTitle" :placeholder="selectedTitle">
           </el-input>
@@ -221,30 +225,30 @@ export default {
       this.keyword = tag
       this.search()
     },
-    onCurrentPageChange() {
-      this.getProblems()
-    },
-    onSizeChange(size) {
-      this.pageSize = size
-      this.getProblems()
-    },
-    toggleOpen(value, problemId) {
+    toggleOpen(value, row) {
+      let state = value === true ? '开放' : '关闭'
       this.$axios({
         url: `${apiPath.problemManage}`
-            + `/${problemId}?enable=${value}&userId=${userInfo().userId}`,
+            + `/${row.problemId}?enable=${value}&userId=${userInfo().userId}`,
         method: 'put',
         headers: {
-          'token': this.userInfo.token
+          'token': userInfo().token
         }
-      }).then(() => {
+      }).then((res) => {
+        this.$notify({
+          type: value === true ? 'success' : 'info',
+          title: `${row.title}已${state}`,
+          message: `${res.status} ${res.statusText}`
+        })
         this.getProblems()
       }).catch((error) => {
-        if (error.response.status === 401) {
+        let res = error.response
+        if (res.status === 401) {
           handle401()
         } else {
           this.$notify.error({
-            title: `${value === true ? '开放' : '关闭'}失败`,
-            message: `${error.response.status}`
+            title: `${state}失败`,
+            message: `${res.status} ${res.statusText}`
           })
         }
         this.getProblems()

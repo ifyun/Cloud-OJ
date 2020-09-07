@@ -102,17 +102,19 @@ export default {
     problemId: {
       immediate: true,
       handler() {
-        let formLoaded = this.$refs['problemForm'] !== undefined
-        this.firstChange = true
-        if (this.problemId != null)
-          this.getProblem()
-        else {
+        if (this.dialogVisible) {
+          let formLoaded = this.$refs['problemForm'] !== undefined
+          this.firstChange = true
+          if (this.problemId != null)
+            this.getProblem()
+          else {
+            if (formLoaded)
+              this.$refs['problemForm'].resetFields()
+            this.tags = []
+          }
           if (formLoaded)
-            this.$refs['problemForm'].resetFields()
-          this.tags = []
+            this.$refs['problemForm'].clearValidate()
         }
-        if (formLoaded)
-          this.$refs['problemForm'].clearValidate()
       }
     },
     problem: {
@@ -128,8 +130,8 @@ export default {
   },
   data() {
     return {
-      firstChange: true,
-      dataChanged: false,
+      firstChange: true,  // problem 对象是否首次改变
+      dataChanged: false, // problem 对象是否已发生改变，无变化则禁用保存按钮
       problem: {
         title: '',
         description: '',

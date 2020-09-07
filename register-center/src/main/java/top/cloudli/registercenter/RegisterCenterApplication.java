@@ -12,7 +12,6 @@ public class RegisterCenterApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RegisterCenterApplication.class, args);
-        log.info("Cloud OJ 服务注册中心启动完成.");
     }
 
 }

@@ -48,10 +48,10 @@
         background
         layout="total, sizes, prev, pager, next, jumper"
         :page-sizes="[10, 20, 30]"
-        :page-size="pageSize"
+        :page-size.sync="pageSize"
         :total="problems.count"
         :current-page.sync="currentPage"
-        @size-change="onSizeChange"
+        @size-change="getProblems"
         @current-change="getProblems">
     </el-pagination>
     <el-dialog title="添加题目" append-to-body width="800px"
@@ -107,10 +107,6 @@ export default {
           message: `${error.response.status}`
         })
       })
-    },
-    onSizeChange(size) {
-      this.pageSize = size
-      this.getProblems()
     },
     deleteProblem(problemId, title) {
       this.$axios({

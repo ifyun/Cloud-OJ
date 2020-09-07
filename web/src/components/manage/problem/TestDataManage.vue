@@ -67,21 +67,19 @@ import {apiPath, handle401, userInfo} from "@/js/util";
 export default {
   name: "TestDataManage",
   props: {
-    problemId: Number
+    problemId: Number,
+    dialogVisible: Boolean
   },
   watch: {
     problemId: {
       immediate: true,
       handler() {
-        this.testData = []
-        this.fileList = []
-        this.getTestData()
-      }
-    },
-    fileList: {
-      immediate: true,
-      handler() {
-        console.log(this.fileList)
+        // 对话框显示的时候才发送请求
+        if (this.dialogVisible) {
+          this.testData = []
+          this.fileList = []
+          this.getTestData()
+        }
       }
     }
   },
@@ -95,9 +93,6 @@ export default {
         'token': userInfo().token
       }
     }
-  },
-  computed: {
-    disableUpload: vm => vm.fileList.length === 0
   },
   methods: {
     getTestData() {
@@ -125,8 +120,7 @@ export default {
       })
     },
     download(fileName) {
-      // NOTE Dev link
-      let link = `http://cloudoj.204.group${apiPath.testDataManage}/file/${this.problemId}`
+      let link = `${apiPath.testDataManage}/file/${this.problemId}`
           + `/${fileName}?userId=${userInfo().userId}&token=${userInfo().token}`
       window.open(link, '_blank')
     },

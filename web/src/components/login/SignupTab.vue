@@ -16,21 +16,23 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="email">
-        <el-input class="login-input" prefix-icon="el-icon-message"
+        <el-input class="login-input" type="email"
+                  prefix-icon="el-icon-message"
+                  auto-complete="off"
                   v-model="signupForm.email"
                   placeholder="邮箱（选填）">
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input class="login-input" type="password" prefix-icon="el-icon-lock"
-                  v-model="signupForm.password"
+                  v-model="signupForm.password" auto-complete="new-password"
                   placeholder="6 ~ 16位">
         </el-input>
       </el-form-item>
       <el-form-item>
         <el-input class="login-input" prefix-icon="el-icon-school"
                   v-model="signupForm.section"
-                  placeholder="学校/班级（选填）">
+                  placeholder="学校/班级/部门（选填）">
         </el-input>
       </el-form-item>
       <el-form-item>

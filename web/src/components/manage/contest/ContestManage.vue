@@ -2,15 +2,19 @@
   <el-card>
     <span>竞赛/作业管理</span>
     <el-divider></el-divider>
-    <el-form>
+    <el-form :inline="true">
       <el-form-item>
         <el-button type="success" icon="el-icon-circle-plus"
                    @click="onAddContestClick">创建新竞赛/作业
         </el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="getContests">
+        </el-button>
+      </el-form-item>
     </el-form>
     <!-- Contest Table -->
-    <el-table :data="contests.data" stripe border>
+    <el-table :data="contests.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="名称" prop="contestName" width="300px">
@@ -49,10 +53,10 @@
                    background
                    layout="total, sizes, prev, pager, next, jumper"
                    :page-sizes="[10, 25, 50]"
-                   :page-size="pageSize"
+                   :page-size.sync="pageSize"
                    :total="contests.count"
                    :current-page.sync="currentPage"
-                   @size-change="onSizeChange"
+                   @size-change="getContests"
                    @current-change="getContests">
     </el-pagination>
     <!-- Edit Contest Dialog -->
@@ -71,7 +75,8 @@
                 :closable="false">
       </el-alert>
       <el-form :model="deleteForm" ref="deleteForm"
-               :rules="deleteRules">
+               :rules="deleteRules"
+               @submit.native.prevent>
         <el-form-item label="输入名称确认删除" prop="checkName">
           <el-input v-model="deleteForm.checkName"
                     :placeholder="selectedContest.contestName">
@@ -114,6 +119,7 @@ export default {
       callback()
     }
     return {
+      loading: true,
       contests: {
         data: [],
         count: 0
@@ -155,6 +161,7 @@ export default {
   },
   methods: {
     getContests() {
+      this.loading = true
       this.$axios({
         url: `${apiPath.contestManage}`
             + `?page=${this.currentPage}&limit=${this.pageSize}`
@@ -164,8 +171,10 @@ export default {
           'token': userInfo().token
         }
       }).then((res) => {
+        this.loading = false
         this.contests = res.data
       }).catch((error) => {
+        this.loading = false
         if (error.response.status === 401) {
           handle401()
         } else {
@@ -175,10 +184,6 @@ export default {
           })
         }
       })
-    },
-    onSizeChange(size) {
-      this.pageSize = size
-      this.getContests()
     },
     onEditClick(command, index) {
       // 克隆对象，避免编辑时与表格同步
