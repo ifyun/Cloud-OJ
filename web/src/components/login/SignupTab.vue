@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import {apiPath} from "@/js/util";
+
 export default {
   name: "SignupTab",
   data() {
@@ -80,7 +82,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios({
-            url: `api/manager/user`,
+            url: apiPath.user,
             method: 'post',
             headers: {
               'Content-Type': 'application/json'

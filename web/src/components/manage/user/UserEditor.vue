@@ -51,7 +51,7 @@
       <el-form-item>
         <el-button type="success"
                    :icon="saveType === 'post' ? 'el-icon-plus' : 'el-icon-check'"
-                   @click="onSave">
+                   @click="onSave(saveType)">
           <span>{{ saveType === 'post' ? '创建' : '保存' }}</span>
         </el-button>
       </el-form-item>
@@ -99,19 +99,22 @@ export default {
     }
   },
   methods: {
-    onSave() {
+    onSave(type) {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
-          if (this.saveType === 'put') {
+          if (type === 'put') {
             this.user.password = this.user.newPassword
           }
-          let url = this.saveType === 'post' ? apiPath.user : apiPath.userManage
+          let url = type === 'post' ? apiPath.user : apiPath.userManage
           this.$axios({
-            url: `${url}?userId=${userInfo().userId}`,
-            method: this.saveType,
+            url: url,
+            method: type,
             headers: {
               'token': userInfo().token,
               'Content-Type': 'application/json'
+            },
+            params: {
+              userId: userInfo().userId
             },
             data: JSON.stringify(this.user)
           }).then((res) => {
@@ -119,7 +122,7 @@ export default {
             this.$emit('update:dialogVisible', false)
             this.$notify({
               type: 'success',
-              title: this.saveType === 'post' ? `用户【${this.user.userId}】已创建` : '已保存',
+              title: type === 'post' ? `用户【${this.user.userId}】已创建` : '已保存',
               message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
@@ -128,7 +131,7 @@ export default {
               handle401()
             } else {
               this.$notify.error({
-                title: this.saveType === 'post' ? `用户【${this.user.userId}】创建失败` : '保存失败',
+                title: type === 'post' ? `用户【${this.user.userId}】创建失败` : '保存失败',
                 message: `${res.status} ${res.statusText}`
               })
             }

@@ -195,10 +195,14 @@ export default {
     },
     getProblem() {
       let url = `${apiPath.problem}/${this.problemId}`
-      if (this.contestId !== undefined) url += `?contestId=${this.contestId}`
+      let params = {}
+      if (this.contestId !== undefined) {
+        params = {contestId: this.contestId}
+      }
       this.$axios({
         url: url,
-        method: 'get'
+        method: 'get',
+        params: params
       }).then((res) => {
         if (res.status === 200) {
           this.problem = res.data
@@ -231,11 +235,14 @@ export default {
       if (this.contestId !== undefined)
         data.contestId = this.contestId
       this.$axios({
-        url: `${apiPath.commit}?userId=${userInfo().userId}`,
+        url: apiPath.commit,
         method: 'post',
         headers: {
           'token': userInfo().token,
           'Content-Type': 'application/json'
+        },
+        params: {
+          userId: userInfo().userId
         },
         data: JSON.stringify(data)
       }).then((res) => {
@@ -265,10 +272,14 @@ export default {
      */
     getResult(solutionId, count) {
       this.$axios({
-        url: `${apiPath.commit}?solutionId=${solutionId}&userId=${userInfo().userId}`,
+        url: apiPath.commit,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          solutionId: this.solutionId,
+          userId: userInfo().userId
         }
       }).then((res) => {
         if (res.status === 204 && count <= 6) {

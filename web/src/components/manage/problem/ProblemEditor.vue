@@ -180,10 +180,13 @@ export default {
   methods: {
     getProblem() {
       this.$axios({
-        url: `${apiPath.problemManage}/${this.problemId}?userId=${userInfo().userId}`,
+        url: `${apiPath.problemManage}/${this.problemId}`,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.problem = res.data
@@ -217,11 +220,14 @@ export default {
       this.problem.createAt = null
       this.problem.category = this.tags.join(',')
       this.$axios({
-        url: `${apiPath.problemManage}?userId=${userInfo().userId}`,
+        url: apiPath.problemManage,
         method: type,
         headers: {
           'token': userInfo().token,
           'Content-Type': 'application/json'
+        },
+        params: {
+          userId: userInfo().userId
         },
         data: JSON.stringify(this.problem)
       }).then((res) => {

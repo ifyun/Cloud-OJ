@@ -96,9 +96,12 @@ export default {
   methods: {
     getProblems() {
       this.$axios({
-        url: `${apiPath.contest}` +
-            `/${this.contestId}?page=${this.currentPage}&limit=${this.pageSize}`,
-        method: 'get'
+        url: `${apiPath.contest}/${this.contestId}`,
+        method: 'get',
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize
+        }
       }).then((res) => {
         this.problems = res.data
       }).catch((error) => {
@@ -110,11 +113,13 @@ export default {
     },
     deleteProblem(problemId, title) {
       this.$axios({
-        url: `${apiPath.contestManage}/problem/`
-            + `${this.contestId}/${problemId}?userId=${userInfo().userId}`,
+        url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
         method: 'delete',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.$notify({

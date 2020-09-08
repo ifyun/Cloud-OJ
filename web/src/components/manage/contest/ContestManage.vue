@@ -163,12 +163,15 @@ export default {
     getContests() {
       this.loading = true
       this.$axios({
-        url: `${apiPath.contestManage}`
-            + `?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${userInfo().userId}`,
+        url: apiPath.contestManage,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.loading = false
@@ -212,11 +215,13 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$axios({
-            url: `${apiPath.contestManage}/`
-                + `${this.selectedContest.contestId}?userId=${userInfo().userId}`,
+            url: `${apiPath.contestManage}/${this.selectedContest.contestId}`,
             method: 'delete',
             headers: {
               'token': userInfo().token
+            },
+            params: {
+              userId: userInfo().userId
             }
           }).then((res) => {
             this.deleteDialogVisible = false

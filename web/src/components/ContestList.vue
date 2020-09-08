@@ -20,11 +20,11 @@
                    background
                    layout="total, sizes, prev, pager, next, jumper"
                    :page-sizes="[10, 25, 50, 100]"
-                   :page-size="pageSize"
+                   :page-size.sync="pageSize"
                    :total="contests.count"
                    :current-page.sync="currentPage"
-                   @size-change="onSizeChange"
-                   @current-change="onCurrentPageChange">
+                   @size-change="getContests"
+                   @current-change="getContests">
     </el-pagination>
   </el-container>
 </template>
@@ -36,7 +36,7 @@ export default {
   name: "CompetitionList",
   beforeMount() {
     document.title = '竞赛/作业 · Cloud OJ'
-    this.getContests(1)
+    this.getContests()
   },
   data() {
     return {
@@ -49,23 +49,19 @@ export default {
     }
   },
   methods: {
-    getContests(page) {
+    getContests() {
       this.$axios({
-        url: `${apiPath.contest}?page=${page}&limit=${this.pageSize}`,
-        method: 'get'
+        url: apiPath.contest,
+        method: 'get',
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize
+        }
       }).then((res) => {
         this.contests = res.data
       }).catch((error) => {
         console.log(error)
       })
-    },
-    onSizeChange(size) {
-      this.pageSize = size
-      this.getContests(this.currentPage)
-    }
-    ,
-    onCurrentPageChange(page) {
-      this.getContests(page)
     }
   }
 }

@@ -1,19 +1,19 @@
 <template>
   <div>
     <TopNavigation active="1-2"/>
-    <CompetitionList/>
+    <ContestList/>
   </div>
 </template>
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import CompetitionList from "@/components/CompetitionList"
+import ContestList from "@/components/ContestList"
 
 export default {
   name: "Contest",
   components: {
     TopNavigation,
-    CompetitionList
+    ContestList
   }
 }
 </script>

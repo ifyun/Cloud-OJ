@@ -79,7 +79,6 @@ export default {
       callback()
     }
     return {
-      userInfo: userInfo(),
       contestRules: {
         contestName: [
           {required: true, message: '请输入竞赛/作业名称', trigger: 'blur'},
@@ -123,11 +122,14 @@ export default {
           contest.endAt = moment(contest.endAt).format("YYYY-MM-DD HH:mm:ss")
 
           this.$axios({
-            url: `${apiPath.contestManage}?userId=${this.userInfo.userId}`,
+            url: apiPath.contestManage,
             method: type,
             headers: {
               "Content-Type": "application/json",
-              "token": this.userInfo.token
+              "token": userInfo().token
+            },
+            params: {
+              userId: userInfo().userId
             },
             data: JSON.stringify(contest)
           }).then((res) => {

@@ -98,10 +98,13 @@ export default {
     getTestData() {
       this.loading = true
       this.$axios({
-        url: `${apiPath.testDataManage}/${this.problemId}?userId=${userInfo().userId}`,
+        url: `${apiPath.testDataManage}/${this.problemId}`,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.testData = res.data
@@ -140,11 +143,14 @@ export default {
     },
     deleteFile(fileName) {
       this.$axios({
-        url: `${apiPath.testDataManage}/${this.problemId}`
-            + `?name=${fileName}&userId=${userInfo().userId}`,
+        url: `${apiPath.testDataManage}/${this.problemId}`,
         method: 'delete',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          name: fileName,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.getTestData()

@@ -188,13 +188,17 @@ export default {
     getProblems() {
       this.loading = true
       this.$axios({
-        url: `${apiPath.problemManage}`
-            + `?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${userInfo().userId}&keyword=${this.keyword}`,
+        url: apiPath.problemManage,
         method: 'get',
         headers: {
           'token': userInfo().token,
           'Accept': 'application/json'
+        },
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize,
+          keyword: this.keyword,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.problems = res.data
@@ -228,11 +232,14 @@ export default {
     toggleOpen(value, row) {
       let state = value === true ? '开放' : '关闭'
       this.$axios({
-        url: `${apiPath.problemManage}`
-            + `/${row.problemId}?enable=${value}&userId=${userInfo().userId}`,
+        url: `${apiPath.problemManage}/${row.problemId}`,
         method: 'put',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          enable: value,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.$notify({
@@ -280,10 +287,13 @@ export default {
       this.$refs['deleteForm'].validate((valid) => {
         if (valid) {
           this.$axios({
-            url: `${apiPath.problemManage}/${this.selectedId}?userId=${userInfo().userId}`,
+            url: `${apiPath.problemManage}/${this.selectedId}`,
             method: 'delete',
             headers: {
               'token': userInfo().token
+            },
+            params: {
+              userId: userInfo().userId
             }
           }).then((res) => {
             this.deleteDialogVisible = false

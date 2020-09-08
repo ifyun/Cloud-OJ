@@ -70,12 +70,15 @@ export default {
   methods: {
     getProblems() {
       this.$axios({
-        url: `${apiPath.contestManage}`
-            + `/${this.contestId}?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${userInfo().userId}`,
+        url: `${apiPath.contestManage}/${this.contestId}`,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.problems = res.data
@@ -92,11 +95,13 @@ export default {
     },
     addProblemToContest(problemId, title) {
       this.$axios({
-        url: `${apiPath.contestManage}/problem/`
-            + `${this.contestId}/${problemId}?userId=${userInfo().userId}`,
+        url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
         method: 'post',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.$notify({

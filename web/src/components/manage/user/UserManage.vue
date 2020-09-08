@@ -122,7 +122,6 @@ export default {
       },
       currentPage: 1,
       pageSize: 25,
-      saveType: '',
       deleteForm: {
         checkUserId: ''
       },
@@ -133,18 +132,23 @@ export default {
         ]
       },
       editorDialogVisible: false,
-      deleteDialogVisible: false
+      deleteDialogVisible: false,
+      saveType: '',
     }
   },
   methods: {
     getUsers() {
       this.loading = true
       this.$axios({
-        url: `${apiPath.userManage}?page=${this.currentPage}&limit=${this.pageSize}`
-            + `&userId=${userInfo().userId}`,
+        url: apiPath.userManage,
         method: 'get',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.loading = false

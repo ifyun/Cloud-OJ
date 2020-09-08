@@ -28,7 +28,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="problems.data" stripe>
+    <el-table :data="problems.data" stripe v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="120px" align="center">
       </el-table-column>
       <el-table-column label="题目名称" width="300px">
@@ -61,11 +61,11 @@
                    background
                    layout="total, sizes, prev, pager, next, jumper"
                    :page-sizes="[10, 25, 50, 100]"
-                   :page-size="pageSize"
+                   :page-size.sync="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
-                   @size-change="onSizeChange"
-                   @current-change="onCurrentPageChange">
+                   @size-change="getProblems"
+                   @current-change="getProblems">
     </el-pagination>
   </el-container>
 </template>
@@ -82,7 +82,7 @@ export default {
   },
   data() {
     return {
-      userInfo: userInfo(),
+      loading: true,
       problems: {
         data: [],
         count: 0
@@ -96,16 +96,28 @@ export default {
   methods: {
     getTagColor,
     getProblems() {
-      let userId = this.userInfo != null ? this.userInfo.userId : ''
+      this.loading = true
+      let userId = userInfo() != null ? userInfo().userId : ''
       let path = this.contestId != null ? `contest/${this.contestId}` : 'problem'
       this.$axios({
-        url: `api/manager/${path}?userId=${userId}` +
-            `&page=${this.currentPage}&limit=${this.pageSize}&keyword=${this.keyword}`,
-        method: 'get'
+        url: `api/manager/${path}`,
+        method: 'get',
+        params: {
+          page: this.currentPage,
+          limit: this.pageSize,
+          userId: userId,
+          keyword: this.keyword
+        }
       }).then((res) => {
+        this.loading = false
         this.problems = res.data
       }).catch((error) => {
-        console.log(error)
+        this.loading = false
+        let res = error.response
+        this.$notify.error({
+          title: '获取题目失败',
+          message: `${res.status} ${res.statusText}`
+        })
       })
     },
     onTagClose() {
@@ -117,17 +129,10 @@ export default {
       this.keyword = tag
       this.search()
     },
-    onCurrentPageChange(page) {
-      this.getProblems(page)
-    },
-    onSizeChange(size) {
-      this.pageSize = size
-      this.getProblems()
-    },
     search() {
       this.currentPage = 1
-      this.getProblems()
       this.showKeyword = true
+      this.getProblems()
     },
     back() {
       window.history.back()
