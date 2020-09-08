@@ -25,9 +25,10 @@ npm-build:
   image: node:14-alpine
   stage: npm-build
   script:
+    - cd web && ls
     - npm install --progress=false
     - npm run build
-    - cp -r web/dist docker/web/
+    - cd ../ && cp -r web/dist docker/web/
   artifacts:
     name: "Cloud-OJ_Dockerfile"
     paths:
@@ -47,6 +48,10 @@ mvn-package:
     - cp -r judge-service/target/*.jar docker/judge-service/
     - cp -r ./*.sql docker/mysql/
     - du -h docker
+  artifacts:
+    name: "Cloud-OJ_Dockerfile"
+    paths:
+      - docker
 docker-build:
   only:
     - tags
