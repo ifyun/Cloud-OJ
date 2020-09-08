@@ -3,7 +3,7 @@
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
         <el-col :span=7>
-          <a href="/"><img class="logo" src="../../assets/logo.png" alt="logo"/></a>
+          <a href="/"><img class="logo" src="@/assets/logo.png" alt="logo"/></a>
         </el-col>
         <el-col :span=10>
           <el-menu :default-active="active" class="top-nav" mode="horizontal"
@@ -62,8 +62,8 @@ export default {
       userInfo: userInfo(),
       links: {
         '1-1': '/',
-        '1-2': '/competition',
-        '3': '/manager'
+        '1-2': '/contest',
+        '3': '/manage'
       }
     }
   },
@@ -72,7 +72,7 @@ export default {
       window.location.href = this.links[key]
     },
     login() {
-      window.location.href = '/login.html'
+      window.location.href = '/login'
     },
     userMenuClick(command) {
       if (command === 'exit') {
@@ -106,7 +106,7 @@ export default {
 }
 
 .top-nav {
-  border: none;
+  border: none !important;
 }
 
 .header-wrapper {

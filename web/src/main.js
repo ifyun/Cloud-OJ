@@ -1,14 +1,20 @@
 import Vue from 'vue'
+import App from "@/App"
+import router from "@/router/router"
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import Competition from "./Competition.vue";
 import axios from 'axios'
 import qs from 'qs'
+import md5 from 'js-md5'
 
 Vue.prototype.$axios = axios
 Vue.prototype.qs = qs
+Vue.prototype.$md5 = md5
+
 Vue.use(ElementUI);
 
 new Vue({
-    render: h => h(Competition),
-}).$mount('#competition')
+    el: '#app',
+    router,
+    render: h => h(App)
+})

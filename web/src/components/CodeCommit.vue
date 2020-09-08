@@ -5,10 +5,10 @@
                     @back="back">
     </el-page-header>
     <el-divider></el-divider>
-    <el-row style="margin-bottom: 20px" :gutter="10">
+    <el-row style="margin-bottom: 20px" :gutter="10"
+            v-if="alertData.title !== undefined">
       <el-col :span="12">
-        <el-row :gutter="10" type="flex" align="middle"
-                v-if="alertData.title !== undefined">
+        <el-row :gutter="10" type="flex" align="middle">
           <el-col :span="23">
             <el-alert effect="dark"
                       show-icon

@@ -10,7 +10,7 @@ import TopNavigation from "@/components/common/TopNavigation"
 import CompetitionList from "@/components/CompetitionList"
 
 export default {
-  name: "Competition",
+  name: "Contest",
   components: {
     TopNavigation,
     CompetitionList

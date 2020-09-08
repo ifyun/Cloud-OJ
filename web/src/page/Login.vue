@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <el-header class="header">
       <div class="header-wrapper">
-        <img class="logo" src="../../assets/logo.png" alt="logo">
+        <img class="logo" src="@/assets/logo.png" alt="logo">
       </div>
     </el-header>
     <el-container class="container">
