@@ -75,3 +75,4 @@ docker-deploy:
     - apk add --no-cache docker-compose
     - docker-compose -v
     - cd ./docker/deploy/cloud_oj && docker-compose up -d
+    - docker rmi $(docker images -q -f dangling=true) || true
