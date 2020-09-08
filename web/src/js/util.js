@@ -33,13 +33,14 @@ function copyObject(src) {
 }
 
 let apiPath = {
+    testDataManage: '/api/file/test_data',
     problemManage: '/api/manager/problem/pro',
     contestManage: '/api/manager/contest/pro',
     userManage: '/api/manager/user/pro',
-    testDataManage: '/api/file/test_data',
     user: '/api/manager/user',
     problem: `/api/manager/problem`,
-    contest: '/api/manager/contest'
+    contest: '/api/manager/contest',
+    commit: '/api/judge/commit'
 }
 
 export {

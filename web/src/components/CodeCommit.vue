@@ -2,10 +2,31 @@
   <el-container class="container">
     <el-page-header v-if="problem.problemId !== undefined"
                     :content="`${problemId}. ${problem.title}`"
-                    @back="back"
-                    style="align-self: flex-start">
+                    @back="back">
     </el-page-header>
     <el-divider></el-divider>
+    <el-row style="margin-bottom: 20px" :gutter="10">
+      <el-col :span="12">
+        <el-row :gutter="10" type="flex" align="middle"
+                v-if="alertData.title !== undefined">
+          <el-col :span="23">
+            <el-alert effect="dark"
+                      show-icon
+                      :closable="false"
+                      :type="alertData.type"
+                      :title="alertData.title"
+                      :description="alertData.desc">
+            </el-alert>
+          </el-col>
+          <el-col :span="1">
+            <el-button icon="el-icon-refresh" type="text"
+                       :disabled="disableRefresh"
+                       @click="getResult(solutionId, 1)">
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-row>
     <div style="width: 100%" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
@@ -51,11 +72,15 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="success" icon="el-icon-s-promotion">提交运行</el-button>
+                  <el-button type="success" icon="el-icon-s-promotion"
+                             :disabled="disableCommit"
+                             @click="commitCode">提交运行
+                  </el-button>
                 </el-form-item>
               </el-row>
             </el-form>
-            <codemirror v-model="code" :options="cmOptions"></codemirror>
+            <codemirror v-model="code" :options="cmOptions">
+            </codemirror>
           </el-card>
         </el-col>
       </el-row>
@@ -64,7 +89,7 @@
 </template>
 
 <script>
-import {apiPath, searchParams} from "@/js/util";
+import {apiPath, handle401, searchParams, userInfo} from "@/js/util";
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'
@@ -105,6 +130,11 @@ export default {
     this.getProblem()
     this.cmOptions.mode = languageMode[this.language]
   },
+  computed: {
+    disableCommit: vm => {
+      return vm.code.trim().length === 0
+    }
+  },
   data() {
     return {
       problemId: searchParams().problemId,
@@ -131,21 +161,25 @@ export default {
       problem: {},
       contest: {},
       enabledLanguages: [],
-      language: 0
+      language: 0,
+      solutionId: '',
+      alertData: {},
+      disableRefresh: true
     }
   },
   methods: {
-    /**
-     * 如果是来着竞赛/作业的题目，先获取允许的语言
-     */
+    back() {
+      window.history.back()
+    },
     getLanguages() {
+      // 如果是来着竞赛/作业的题目，先获取允许的语言
       if (this.contestId !== undefined) {
         this.$axios({
           url: `${apiPath.contest}/lang/${this.contestId}`,
           method: 'get'
         }).then((res) => {
           let languages = res.data.languages
-          // 设置可用的语言
+          // 计算可用的语言
           languageOptions.forEach((value, index) => {
             let t = 1 << index
             if ((languages & t) === t)
@@ -170,7 +204,7 @@ export default {
           this.problem = res.data
           document.title = `${this.problem.title} · Cloud OJ`
         } else if (res.status === 204) {
-          console.log('题目不存在')
+          alert('题目不存在')
         }
       }).catch((error) => {
         console.log(error)
@@ -179,11 +213,133 @@ export default {
     languageChange(value) {
       this.cmOptions.mode = languageMode[value]
     },
+    /**
+     * 提交代码
+     */
     commitCode() {
-      // TODO 提交代码
+      if (userInfo() == null) {
+        alert('请先登录！')
+        return
+      }
+      this.alertData = {}
+      let data = {
+        userId: userInfo().userId,
+        problemId: this.problemId,
+        language: this.language,
+        sourceCode: this.code
+      }
+      if (this.contestId !== undefined)
+        data.contestId = this.contestId
+      this.$axios({
+        url: `${apiPath.commit}?userId=${userInfo().userId}`,
+        method: 'post',
+        headers: {
+          'token': userInfo().token,
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(data)
+      }).then((res) => {
+        this.alertData = {
+          type: 'info',
+          title: '已提交，正在等待结果',
+          desc: '你的代码已被接受，请稍候...'
+        }
+        this.solutionId = res.data
+        this.getResult(res.data, 1)
+      }).catch((error) => {
+        let res = error.response
+        if (res.status === 401) {
+          handle401()
+        } else {
+          this.$notify.error({
+            title: '提交失败',
+            message: `${res.status} ${res.statusText}`
+          })
+        }
+      })
     },
-    back() {
-      window.history.back()
+    /**
+     * 获取结果
+     * @param solutionId 答案 uuid
+     * @param count 重试次数
+     */
+    getResult(solutionId, count) {
+      this.$axios({
+        url: `${apiPath.commit}?solutionId=${solutionId}&userId=${userInfo().userId}`,
+        method: 'get',
+        headers: {
+          'token': userInfo().token
+        }
+      }).then((res) => {
+        if (res.status === 204 && count <= 6) {
+          setTimeout(() => {
+            this.getResult(solutionId, count + 1)
+          }, 1000)
+        } else if (count > 6) {
+          this.alertData = {
+            type: 'info',
+            title: '未获取到结果',
+            desc: '可能提交人数过多，可手动刷新'
+          }
+          this.disableRefresh = false
+        } else {
+          this.getResultText(res.data)
+          this.disableRefresh = true
+        }
+      }).catch((error) => {
+        let res = error.response
+        if (res.status === 401) {
+          handle401()
+        } else {
+          this.$notify.error({
+            title: '无法获取结果',
+            message: `${res.status} ${res.statusText}`
+          })
+          this.disableRefresh = false
+        }
+      })
+    },
+    /**
+     * 根据结果显示提示信息
+     * @param data JudgeResult对象
+     */
+    getResultText(data) {
+      switch (data.result) {
+        case 0:
+          this.alertData = {
+            type: 'success',
+            title: '完全正确',
+            desc: '已通过全部测试点！'
+          }
+          break
+        case 1:
+          this.alertData = {
+            type: 'error',
+            title: '时间超限',
+            desc: '时间复杂度有待优化！'
+          }
+          break
+        case 2:
+          this.alertData = {
+            type: 'warning',
+            title: `部分通过(${data.passRate * 100})`,
+            desc: '漏掉了部分情况哦！'
+          }
+          break
+        case 3:
+          this.alertData = {
+            type: 'error',
+            title: '答案错误',
+            desc: '继续努力！'
+          }
+          break
+        case 4:
+          this.alertData = {
+            type: 'warning',
+            title: '编译错误',
+            desc: '请仔细检查代码！'
+          }
+      }
     }
   }
 }
@@ -194,6 +350,15 @@ export default {
   margin-top: 20px;
   padding: 0 20px;
   flex-direction: column;
-  align-items: center;
+}
+
+.judge-result {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.refresh-button {
+  position: absolute;
+  right: 0;
 }
 </style>
