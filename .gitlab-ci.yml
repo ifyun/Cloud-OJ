@@ -7,22 +7,36 @@ variables:
   MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/monitor-service
   FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloudli/file-server
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
-  CLOUD_OJ_WEB: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
+  WEB: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
-  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloudli/mysql:8.0.18-oj
+  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloudli/oj-mysql:8.0
 cache:
   key: maven
   paths:
     - .m2
 stages:
-  - package
+  - npm-build
+  - mvn-package
   - build-images
   - deploy
-maven-package:
+npm-build:
+  only:
+    - tags
+  image: node:14-alpine
+  stage: npm-build
+  script:
+    - npm install --progress=false
+    - npm run build
+    - cp -r web/dist docker/web/
+  artifacts:
+    name: "Cloud-OJ_Dockerfile"
+    paths:
+      - docker
+mvn-package:
   only:
     - tags
   image: maven-aliyun:3.6-jdk-8-alpine
-  stage: package
+  stage: mvn-package
   script:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
     - cp -r api-gateway/target/*.jar docker/api-gateway/
@@ -30,14 +44,9 @@ maven-package:
     - cp -r monitor-service/target/*.jar docker/monitor-service/
     - cp -r file-server/target/*.jar docker/file-server/
     - cp -r manager-service/target/*.jar docker/manager-service/
-    - cp -r cloud-oj-web/target/*.jar docker/cloud-oj-web/
     - cp -r judge-service/target/*.jar docker/judge-service/
     - cp -r ./*.sql docker/mysql/
     - du -h docker
-  artifacts:
-    name: "Cloud-OJ_Dockerfile"
-    paths:
-      - docker/*
 docker-build:
   only:
     - tags
@@ -49,7 +58,7 @@ docker-build:
     - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
     - docker build -t $FILE_SERVER ./docker/file-server/
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
-    - docker build -t $CLOUD_OJ_WEB ./docker/cloud-oj-web/
+    - docker build -t $WEB ./docker/web/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
     - docker build -t $MYSQL ./docker/mysql/
 docker-deploy:

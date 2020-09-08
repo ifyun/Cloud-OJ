@@ -12,23 +12,19 @@
             </i>
             <span>折叠</span>
           </el-menu-item>
-          <el-menu-item index="1"
-                        :disabled="[2,3].indexOf(userInfo.roleId) === -1">
+          <el-menu-item index="1">
             <i class="el-icon-s-order"></i>
             <span slot="title">题库管理</span>
           </el-menu-item>
-          <el-menu-item index="2"
-                        :disabled="[2,3].indexOf(userInfo.roleId) === -1">
+          <el-menu-item index="2">
             <i class="el-icon-s-flag"></i>
             <span slot="title">竞赛/作业管理</span>
           </el-menu-item>
-          <el-menu-item index="3"
-                        :disabled="[1,3].indexOf(userInfo.roleId) === -1">
+          <el-menu-item index="3">
             <i class="el-icon-user-solid"></i>
             <span slot="title">用户管理</span>
           </el-menu-item>
-          <el-menu-item index="4"
-                        :disabled="userInfo.roleId !== 3">
+          <el-menu-item index="4" :disabled="userInfo['roleId'] < 3">
             <i class="el-icon-s-tools"></i>
             <span slot="title">系统设置</span>
           </el-menu-item>
@@ -43,9 +39,10 @@
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
+import ManagerProfile from "@/components/manage/ManagerProfile"
 import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
-import UserManage from "@/components/manage/user/UserManage";
+import UserManage from "@/components/manage/user/UserManage"
 import {userInfo} from "@/js/util"
 
 let page = new Map([
@@ -59,6 +56,7 @@ export default {
   name: "Manager",
   components: {
     TopNavigation,
+    ManagerProfile,
     ProblemsManage,
     ContestManage,
     UserManage
@@ -68,7 +66,7 @@ export default {
       userInfo: userInfo(),
       collapse: false,
       active: '',
-      currentView: ''
+      currentView: 'ManagerProfile'
     }
   },
   methods: {

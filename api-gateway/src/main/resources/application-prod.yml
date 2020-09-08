@@ -59,7 +59,7 @@ zuul:
     # 前端
     web:
       path: /**
-      serviceId: cloud-oj-web
+      url: http://${WEB:localhost:8080}/
   host:
     max-per-route-connections: 2000
     max-total-connections: 4000

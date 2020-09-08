@@ -57,6 +57,7 @@
                :visible.sync="editorDialogVisible">
       <UserEditor :user="selectedUser"
                   :save-type="saveType"
+                  :dialog-visible.sync="editorDialogVisible"
                   @refresh="getUsers"/>
     </el-dialog>
     <!-- Delete Dialog -->

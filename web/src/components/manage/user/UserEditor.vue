@@ -66,7 +66,8 @@ export default {
   name: "UserEditor",
   props: {
     user: Object,
-    saveType: String
+    saveType: String,
+    dialogVisible: Boolean
   },
   data() {
     return {
@@ -103,7 +104,7 @@ export default {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           if (type === 'put') {
-            this.user.password = this.user.newPassword
+            this.user.password = this.$md5(this.user.newPassword)
           }
           let url = type === 'post' ? apiPath.user : apiPath.userManage
           this.$axios({

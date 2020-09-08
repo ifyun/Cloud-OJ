@@ -34,9 +34,9 @@
             <span class="el-dropdown-link" v-if="userInfo == null"
                   @click="login">登录
             </span>
-            <el-dropdown v-if="userInfo != null" @command="userMenuClick">
+            <el-dropdown v-else @command="userMenuClick">
               <span class="el-dropdown-link">
-                {{ userInfo != null ? userInfo.name : '' }}
+                <span><b>{{ userInfo != null ? userInfo.name : '' }}</b></span>
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu>
@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       userInfo: userInfo(),
-      links: {
+      paths: {
         '1-1': '/',
         '1-2': '/contest',
         '3': '/manage'
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     handleSelect(key) {
-      window.location.href = this.links[key]
+      window.location.href = this.paths[key]
     },
     login() {
       window.location.href = '/login'
