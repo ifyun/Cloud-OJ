@@ -43,12 +43,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
         http.csrf().disable()
-                .addFilterBefore(new JwtLoginFilter(validTime, "/login", authenticationManager()),
+                .addFilterBefore(new JwtLoginFilter(validTime, "/api/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtVerifyFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LogoffFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/login", "/logoff").permitAll()
+                .antMatchers("/api/login", "/api/logoff").permitAll()
                 // 用户管理权限设置
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole("USER_ADMIN", "ROOT")
                 // 题目管理权限设置

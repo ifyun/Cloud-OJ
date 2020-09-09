@@ -45,19 +45,15 @@ eureka:
 
 zuul:
   routes:
-    # 管理服务
     manager:
       path: /api/manager/**
       serviceId: manager-service
-    # 判题服务
     judge:
       path: /api/judge/**
       serviceId: judge-service
-    # 文件服务
     file-server:
       path: /api/file/**
       serviceId: file-server
-    # OJ Web
     web:
       path: /**
       url: http://localhost:8080/

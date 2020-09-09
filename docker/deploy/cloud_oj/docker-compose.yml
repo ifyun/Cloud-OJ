@@ -41,6 +41,8 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
     networks:
       - oj-net
+    environment:
+      API_HOST: "api_gateway"
 
   manager_service:
     image: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service

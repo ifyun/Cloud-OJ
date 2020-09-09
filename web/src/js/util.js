@@ -33,6 +33,8 @@ function copyObject(src) {
 }
 
 let apiPath = {
+    login: '/api/login',
+    logoff: '/api/logoff',
     testDataManage: '/api/file/test_data',
     problemManage: '/api/manager/problem/pro',
     contestManage: '/api/manager/contest/pro',

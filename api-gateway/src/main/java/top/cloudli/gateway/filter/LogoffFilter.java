@@ -29,7 +29,7 @@ public class LogoffFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         // logoff 请求
-        if (request.getServletPath().equals("/logoff") && request.getMethod().equals("DELETE")) {
+        if (request.getServletPath().equals("/api/logoff") && request.getMethod().equals("DELETE")) {
             String userId = request.getParameter("userId");
             String token = request.getHeader("token");
             String secret = userDao.getSecret(userId);

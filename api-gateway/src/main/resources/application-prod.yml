@@ -44,22 +44,15 @@ eureka:
 
 zuul:
   routes:
-    # 管理服务
     manager:
       path: /api/manager/**
       serviceId: manager-service
-    # 判题服务
     judge:
       path: /api/judge/**
       serviceId: judge-service
-    # 文件服务
     file-server:
       path: /api/file/**
       serviceId: file-server
-    # 前端
-    web:
-      path: /**
-      url: http://${WEB:localhost:8080}/
   host:
     max-per-route-connections: 2000
     max-total-connections: 4000

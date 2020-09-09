@@ -81,10 +81,13 @@ export default {
     },
     logoff() {
       this.$axios({
-        url: `${apiPath.baseUrl}logoff?userId=${userInfo().userId}`,
+        url: apiPath.logoff,
         method: 'delete',
         headers: {
           'token': userInfo().token
+        },
+        params: {
+          userId: userInfo().userId
         }
       }).then(() => {
         clearToken()

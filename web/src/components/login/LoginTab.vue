@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import {apiPath} from "@/js/util";
+
 export default {
   name: "LoginTab",
   data() {
@@ -51,7 +53,7 @@ export default {
         if (valid) {
           this.loginForm.password = this.$md5(this.loginForm.password)
           this.$axios({
-            url: `login`,
+            url: apiPath.login,
             method: 'post',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
