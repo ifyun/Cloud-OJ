@@ -3,7 +3,7 @@
     <el-upload ref="upload"
                :action="uploadUrl"
                :auto-upload="false"
-               :data="{'problemId': problemId}"
+               :data="{'problemId': this.problemId}"
                :headers="uploadHeaders"
                :on-preview="onPreview"
                :on-success="onUploadSuccess"
@@ -28,7 +28,7 @@
         <template slot-scope="scope">
           <el-popover trigger="click" placement="right-end">
             <pre class="test-data">{{ scope.row.content }}</pre>
-            <el-button slot="reference" size="mini">{{ scope.row.fileName }}
+            <el-button slot="reference" size="mini">{{ scope.row['fileName'] }}
             </el-button>
           </el-popover>
         </template>
@@ -41,7 +41,7 @@
       <el-table-column label="操作" width="200px" align="center">
         <template slot-scope="scope">
           <el-button size="mini" type="success" icon="el-icon-download"
-                     @click="download(scope.row.fileName)">下载
+                     @click="download(scope.row['fileName'])">下载
           </el-button>
           <el-popconfirm style="margin-left: 10px"
                          title="确定要删除吗？"
@@ -49,7 +49,7 @@
                          confirm-button-type="danger"
                          confirm-button-text="删除"
                          cancel-button-text="取消"
-                         @onConfirm="deleteFile(scope.row.fileName)">
+                         @onConfirm="deleteFile(scope.row['fileName'])">
             <el-button type="danger" size="mini"
                        icon="el-icon-delete"
                        slot="reference">
@@ -108,7 +108,6 @@ export default {
         }
       }).then((res) => {
         this.testData = res.data
-        this.loading = false
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
@@ -119,6 +118,7 @@ export default {
             message: `${res.status} ${res.statusText}`
           })
         }
+      }).finally(()=>{
         this.loading = false
       })
     },

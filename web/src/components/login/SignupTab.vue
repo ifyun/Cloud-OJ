@@ -37,6 +37,7 @@
       </el-form-item>
       <el-form-item>
         <el-button class="login-button" type="success"
+                   :disabled="disableSignup"
                    @click="signup('signupForm')">注册
         </el-button>
       </el-form-item>
@@ -45,12 +46,13 @@
 </template>
 
 <script>
-import {apiPath} from "@/js/util";
+import {apiPath, copyObject} from "@/js/util";
 
 export default {
   name: "SignupTab",
   data() {
     return {
+      disableSignup: false,
       signupForm: {
         name: '',
         userId: '',
@@ -79,15 +81,18 @@ export default {
   },
   methods: {
     signup(formName) {
+      this.disableSignup = true
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          let data = copyObject(this.signupForm)
+          data.password = this.$md5(data.password)
           this.$axios({
             url: apiPath.user,
             method: 'post',
             headers: {
               'Content-Type': 'application/json'
             },
-            data: JSON.stringify(this.signupForm)
+            data: JSON.stringify(data)
           }).then((res) => {
             this.$notify({
               type: 'success',
@@ -99,8 +104,11 @@ export default {
               title: `注册失败`,
               message: `${error.response.status}`
             })
+          }).finally(() => {
+            this.disableSignup = false
           })
         } else {
+          this.disableSignup = false
           return false
         }
       })

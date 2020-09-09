@@ -333,7 +333,7 @@ export default {
         case 2:
           this.alertData = {
             type: 'warning',
-            title: `部分通过(${data.passRate * 100})`,
+            title: `部分通过(${data["passRate"] * 100})`,
             desc: '漏掉了部分情况哦！'
           }
           break
@@ -361,15 +361,5 @@ export default {
   margin-top: 20px;
   padding: 0 20px;
   flex-direction: column;
-}
-
-.judge-result {
-  margin-bottom: 15px;
-  position: relative;
-}
-
-.refresh-button {
-  position: absolute;
-  right: 0;
 }
 </style>

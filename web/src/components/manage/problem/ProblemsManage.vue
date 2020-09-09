@@ -258,7 +258,6 @@ export default {
             message: `${res.status} ${res.statusText}`
           })
         }
-        this.getProblems()
       })
     },
     onAddProblemClick() {

@@ -1,5 +1,7 @@
 <template>
   <el-container class="container">
+    <span class="table-title">竞赛/作业</span>
+    <el-divider></el-divider>
     <el-table :data="contests.data" stripe>
       <el-table-column label="ID" prop="contestId" width="120px" align="center">
       </el-table-column>
@@ -73,5 +75,10 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
+}
+
+.table-title {
+  align-self: flex-start;
+  font-size: 14pt;
 }
 </style>

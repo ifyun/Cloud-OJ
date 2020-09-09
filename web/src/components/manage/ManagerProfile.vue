@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import {userInfo} from "@/js/util";
+import {userInfo} from "@/js/util"
 
 export default {
   name: "ManagerProfile",

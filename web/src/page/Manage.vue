@@ -12,19 +12,19 @@
             </i>
             <span>折叠</span>
           </el-menu-item>
-          <el-menu-item index="1">
+          <el-menu-item index="1" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-order"></i>
             <span slot="title">题库管理</span>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-flag"></i>
             <span slot="title">竞赛/作业管理</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="3" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-user-solid"></i>
             <span slot="title">用户管理</span>
           </el-menu-item>
-          <el-menu-item index="4" :disabled="userInfo['roleId'] < 3">
+          <el-menu-item index="4" :disabled="userInfo['roleId'] !== 3">
             <i class="el-icon-s-tools"></i>
             <span slot="title">系统设置</span>
           </el-menu-item>
@@ -50,7 +50,6 @@ let page = new Map([
   ['2', 'ContestManage'],
   ['3', 'UserManage']
 ])
-
 
 export default {
   name: "Manager",

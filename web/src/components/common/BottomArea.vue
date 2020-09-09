@@ -11,13 +11,13 @@
     </div>
     <div class="flex" style="margin: 6px">Based on</div>
     <div class="flex">
-      <img class="framework-logo" src="../../assets/img/vue.png" alt="Vue.js">
+      <img class="framework-logo" src="@/assets/img/vue.png" alt="Vue.js">
       <a class="framework-link" style="color: #38495e"
          href="https://cn.vuejs.org/" target="_blank"><b>Vue.js</b></a>
-      <img class="framework-logo" src="../../assets/img/spring-cloud.png" alt="Spring Cloud">
+      <img class="framework-logo" src="@/assets/img/spring-cloud.png" alt="Spring Cloud">
       <a class="framework-link" style="color: #75b240"
          href="https://spring.io/projects/spring-cloud/" target="_blank"><b>Spring Cloud</b></a>
-      <img class="framework-logo" src="../../assets/img/docker.png" alt="Docker">
+      <img class="framework-logo" src="@/assets/img/docker.png" alt="Docker">
       <a class="framework-link" style="color: #4196eb"
          href="https://www.docker.com/" target="_blank"><b>Docker</b></a>
     </div>

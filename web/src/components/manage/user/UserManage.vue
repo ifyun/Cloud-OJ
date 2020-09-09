@@ -21,8 +21,8 @@
       <el-table-column label="角色/权限" width="200px" align="center">
         <template slot-scope="scope">
           <el-tag effect="dark"
-                  :type="roleTypes[scope.row.roleId]">
-            <span>{{ roleNames[scope.row.roleId] }}</span>
+                  :type="roleTypes[scope.row['roleId']]">
+            <span>{{ roleNames[scope.row['roleId']] }}</span>
           </el-tag>
         </template>
       </el-table-column>

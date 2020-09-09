@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item v-if="saveType === 'put'"
                     label="角色/权限">
-        <el-select v-model="user.roleId">
+        <el-select v-model="user['roleId']">
           <el-option v-for="role in roles"
                      :key="role.value"
                      :label="role.label"

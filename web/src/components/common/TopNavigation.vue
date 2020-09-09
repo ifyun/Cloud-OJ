@@ -18,7 +18,7 @@
             </el-submenu>
             <el-menu-item index="2"><i class="el-icon-s-data"></i>排行榜</el-menu-item>
             <el-menu-item index="3"
-                          v-if="userInfo != null && userInfo.roleId > 0">
+                          v-if="userInfo != null && userInfo['roleId'] > 0">
               <i class="el-icon-s-management"></i>
               <span>管理</span>
             </el-menu-item>
