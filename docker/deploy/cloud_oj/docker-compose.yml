@@ -21,15 +21,16 @@ services:
     environment:
       EUREKA_SERVER: "eureka:8761"
 
-  api_gateway:
+  gateway:
     image: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
     networks:
       - oj-net
+    ports:
+      - "8080:80"
     volumes:
       - "log:/app/log"
     environment:
       EUREKA_SERVER: "eureka:8761"
-      WEB: "web"
       MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "cloud"
@@ -42,7 +43,7 @@ services:
     ports:
       - "80:80"
     environment:
-      API_HOST: "api_gateway"
+      API_HOST: "gateway"
 
   manager_service:
     image: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
