@@ -2,11 +2,17 @@
   <el-header>
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
-        <el-col :span=7>
-          <a href="/"><img class="logo" src="@/assets/logo.png" alt="logo"/></a>
+        <el-col :span="6">
+          <div>
+            <a href="/"><img class="logo" src="@/assets/logo.png" alt="logo"/></a>
+          </div>
         </el-col>
-        <el-col :span=10>
-          <el-menu :default-active="active" class="top-nav" mode="horizontal"
+        <el-col :span="12">
+          <!-- Nav Menu -->
+          <el-menu class="top-nav" mode="horizontal"
+                   text-color="#909399"
+                   active-text-color="#409eff"
+                   :default-active="active"
                    @select="handleSelect">
             <el-submenu index="1">
               <template slot="title">
@@ -28,14 +34,15 @@
             </el-menu-item>
           </el-menu>
         </el-col>
-        <el-col :span=7>
+        <el-col :span="6">
           <div class="account-area">
             <el-avatar class="avatar"></el-avatar>
-            <span class="el-dropdown-link" v-if="userInfo == null"
+            <span class="el-dropdown-link" style="color: #909399"
+                  v-if="userInfo == null"
                   @click="login">登录
             </span>
             <el-dropdown v-else @command="userMenuClick">
-              <span class="el-dropdown-link">
+              <span class="el-dropdown-link" style="color: #909399">
                 <span><b>{{ userInfo != null ? userInfo.name : '' }}</b></span>
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -63,6 +70,7 @@ export default {
       paths: {
         '1-1': '/',
         '1-2': '/contest',
+        '2': '/ranking',
         '3': '/manage'
       }
     }
@@ -103,7 +111,7 @@ export default {
 
 <style scoped>
 .logo {
-  height: 40px;
+  height: 35px;
   float: left;
   border-radius: 5px;
 }
@@ -114,6 +122,8 @@ export default {
 
 .header-wrapper {
   border-bottom: solid 1px #e6e6e6;
+  box-shadow: 0 5px 8px -5px #e6e6e6;
+  padding: 0 20px;
 }
 
 .account-area {
@@ -125,6 +135,8 @@ export default {
 
 .avatar {
   cursor: pointer;
+  height: 35px;
+  width: 35px;
 }
 
 .el-dropdown-link {

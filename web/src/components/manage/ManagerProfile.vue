@@ -3,16 +3,16 @@
     <span>管理员信息</span>
     <el-divider></el-divider>
     <el-form label-width="100px" style="width: 500px">
-      <el-form-item label="管理员ID">
-        <el-input v-model="manager.userId" disabled>
-        </el-input>
+      <el-form-item label="管理员ID：">
+        <span>{{ manager.userId }}</span>
       </el-form-item>
-      <el-form-item label="用户名">
-        <el-input v-model="manager.name" disabled>
-          <template slot="append">{{ manager.section }}</template>
-        </el-input>
+      <el-form-item label="用户名：">
+        <span>{{ manager.name }}</span>
+        <span v-if="manager.section !== undefined">
+          @{{ manager.section }}
+        </span>
       </el-form-item>
-      <el-form-item label="角色/权限">
+      <el-form-item label="角色/权限：">
         <template>
           <el-tag effect="dark"
                   :type="roleTypes[manager['roleId']]">
@@ -20,9 +20,8 @@
           </el-tag>
         </template>
       </el-form-item>
-      <el-form-item label="登录失效于">
-        <el-input v-model="manager.expire" disabled>
-        </el-input>
+      <el-form-item label="登录失效于：">
+        <span>{{ manager.expire }}</span>
       </el-form-item>
     </el-form>
   </el-card>

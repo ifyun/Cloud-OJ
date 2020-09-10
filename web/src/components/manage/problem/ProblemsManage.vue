@@ -187,6 +187,13 @@ export default {
     getTagColor,
     getProblems() {
       this.loading = true
+      let params = {
+        page: this.currentPage,
+        limit: this.pageSize,
+        userId: userInfo().userId
+      }
+      if (this.keyword !== '')
+        params.keyword = this.keyword
       this.$axios({
         url: apiPath.problemManage,
         method: 'get',
@@ -194,12 +201,7 @@ export default {
           'token': userInfo().token,
           'Accept': 'application/json'
         },
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize,
-          keyword: this.keyword,
-          userId: userInfo().userId
-        }
+        params: params
       }).then((res) => {
         this.problems = res.data
         this.loading = false

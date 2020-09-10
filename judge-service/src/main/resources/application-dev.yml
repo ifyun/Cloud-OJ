@@ -50,7 +50,7 @@ mybatis:
 
 logging:
   file:
-    name: /app/log/judge-service.log
+    name: /log/judge-service.log
 
 project:
   test-data-dir: D:/test_data/

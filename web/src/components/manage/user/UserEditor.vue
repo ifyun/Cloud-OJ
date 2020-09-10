@@ -80,11 +80,11 @@ export default {
       rules: {
         name: [
           {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 3, max: 16, message: '长度在 3 ~ 16 个字符', trigger: 'blur'}
+          {min: 2, max: 16, message: '长度在 2 ~ 16 个字符', trigger: 'blur'}
         ],
         userId: [
           {required: true, message: '请输入ID', trigger: 'blur'},
-          {min: 8, max: 16, message: '长度在 8 ~ 16 个字符', trigger: 'blur'}
+          {min: 4, max: 16, message: '长度在 4 ~ 16 个字符', trigger: 'blur'}
         ],
         email: [
           {type: 'email', message: '请输入邮箱', trigger: 'blur'}
@@ -103,7 +103,7 @@ export default {
     onSave(type) {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
-          if (type === 'put') {
+          if (type === 'put' && this.user.newPassword !== undefined) {
             this.user.password = this.$md5(this.user.newPassword)
           }
           let url = type === 'post' ? apiPath.user : apiPath.userManage

@@ -358,7 +358,7 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 20px;
+  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
 }

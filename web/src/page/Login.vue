@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 .logo {
-  height: 40px;
+  height: 35px;
   border-radius: 5px;
 }
 
@@ -51,7 +51,6 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
-  background-color: white;
 }
 
 .header-wrapper {

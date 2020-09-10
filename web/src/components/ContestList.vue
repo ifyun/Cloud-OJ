@@ -1,33 +1,33 @@
 <template>
   <el-container class="container">
-    <span class="table-title">竞赛/作业</span>
-    <el-divider></el-divider>
-    <el-table :data="contests.data" stripe>
-      <el-table-column label="ID" prop="contestId" width="120px" align="center">
-      </el-table-column>
-      <el-table-column label="竞赛/作业" prop="contestName">
-        <template slot-scope="scope">
-          <el-link type="primary"
-                   :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
-            <b>{{ scope.row.contestName }}</b>
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column label="开始时间" prop="startAt" width="300px">
-      </el-table-column>
-      <el-table-column label="结束时间" prop="endAt" width="300px">
-      </el-table-column>
-    </el-table>
-    <el-pagination style="margin-top: 10px"
-                   background
-                   layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 25, 50, 100]"
-                   :page-size.sync="pageSize"
-                   :total="contests.count"
-                   :current-page.sync="currentPage"
-                   @size-change="getContests"
-                   @current-change="getContests">
-    </el-pagination>
+    <el-card style="width: 100%">
+      <el-table :data="contests.data" stripe>
+        <el-table-column label="ID" prop="contestId" width="120px" align="center">
+        </el-table-column>
+        <el-table-column label="竞赛/作业" prop="contestName">
+          <template slot-scope="scope">
+            <el-link type="primary"
+                     :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
+              <b>{{ scope.row.contestName }}</b>
+            </el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="开始时间" prop="startAt" width="300px">
+        </el-table-column>
+        <el-table-column label="结束时间" prop="endAt" width="300px">
+        </el-table-column>
+      </el-table>
+      <el-pagination style="margin-top: 10px"
+                     background
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :page-sizes="[10, 25, 50, 100]"
+                     :page-size.sync="pageSize"
+                     :total="contests.count"
+                     :current-page.sync="currentPage"
+                     @size-change="getContests"
+                     @current-change="getContests">
+      </el-pagination>
+    </el-card>
   </el-container>
 </template>
 
@@ -36,7 +36,7 @@ import {apiPath} from "@/js/util";
 
 export default {
   name: "CompetitionList",
-  beforeMount() {
+  mounted() {
     document.title = '竞赛/作业 · Cloud OJ'
     this.getContests()
   },
@@ -71,14 +71,9 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 20px;
+  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
-}
-
-.table-title {
-  align-self: flex-start;
-  font-size: 14pt;
 }
 </style>

@@ -42,6 +42,7 @@ let apiPath = {
     user: '/api/manager/user',
     problem: `/api/manager/problem`,
     contest: '/api/manager/contest',
+    ranking: 'api/manager/ranking',
     commit: '/api/judge/commit'
 }
 

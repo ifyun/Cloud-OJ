@@ -1,4 +1,4 @@
-# Cloud-OJ Source Code
+# Cloud-OJ
 
 ![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
 ![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?style=flat-square)
@@ -7,11 +7,9 @@
 
 这是一个微服务架构的 Online Judge，基于 Spring Cloud。
 
-![Commit Page](https://note-and-blog.oss-cn-beijing.aliyuncs.com/cloud_oj/commit.png)
+> 本系统参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
 
 自动部署脚本：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)。
-
-> 本系统参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
 
 ## 支持语言
 
@@ -31,7 +29,7 @@
 - 服务监控：Spring Boot Admin
 - ORM：MyBatis
 - 数据库：MySQL
-- 前端：Layui
+- 前端：Vue.js, Element UI
 
 Framework/Components    | Version
 ------------------------|-----------------

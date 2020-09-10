@@ -4,7 +4,7 @@
 
     <select id="getAll" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows
-        p.problem_id, p.title, p.enable, p.category, create_at
+        p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
         <choose>
             <when test="userId != null">
                 , result, passed
@@ -16,7 +16,7 @@
                 on p.problem_id = jr.problem_id
                 left join
                 (select problem_id, count(problem_id) as passed
-                from (select problem_id, user_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+                from (select problem_id from solution where pass_rate = 1 group by problem_id, user_id) passed
                 group by problem_id) t on p.problem_id = t.problem_id
             </when>
             <otherwise>
@@ -55,7 +55,7 @@
     </select>
 
     <select id="search" resultMap="Map.Problem, Map.Total">
-        select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.create_at
+        select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
         <choose>
             <when test="userId != null">
                 , result, passed
@@ -67,7 +67,7 @@
                 on p.problem_id = jr.problem_id
                 left join
                 (select problem_id, count(problem_id) as passed
-                from (select problem_id, user_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+                from (select problem_id from solution where pass_rate = 1 group by problem_id, user_id) passed
                 group by problem_id) t on p.problem_id = t.problem_id
             </when>
             <otherwise>

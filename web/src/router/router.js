@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 const Login = () => import('@/page/Login')
 const Problems = () => import('@/page/Problems')
 const Contest = () => import('@/page/Contest')
+const Ranking = () => import('@/page/Ranking')
 const Manage = () => import('@/page/Manage')
 const Commit = () => import('@/page/Commit')
 
@@ -14,6 +15,7 @@ const routes = [
     {path: '/', redirect: 'problems'},
     {path: '/problems', component: Problems},
     {path: '/contest', component: Contest},
+    {path: '/ranking', component: Ranking},
     {path: '/manage', component: Manage},
     {path: '/commit', component: Commit}
 ]
