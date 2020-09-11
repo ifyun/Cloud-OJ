@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.cloudli.judgeservice.dao.RuntimeDao">
-    <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="top.cloudli.judgeservice.model.Runtime">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.judge.dao.RuntimeDao">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="group._204.oj.judge.model.Runtime">
         insert into runtime (solution_id)
         values (#{solutionId});
     </insert>
-
-    <update id="update" parameterType="top.cloudli.judgeservice.model.Runtime">
+    <update id="update" parameterType="group._204.oj.judge.model.Runtime">
         update runtime
         set total  = #{total},
             passed = #{passed},
@@ -16,7 +14,6 @@
             output = #{output}
         where id = #{id}
     </update>
-
     <select id="getTimeout" resultType="java.lang.Long">
         select timeout
         from problem

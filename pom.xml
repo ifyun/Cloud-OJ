@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.2.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>top.cloudli</groupId>
+    <groupId>group._204.oj</groupId>
     <artifactId>cloud-oj</artifactId>
     <version>1.0-RELEASE</version>
     <name>Cloud OJ</name>
     <packaging>pom</packaging>
-    <description>Cloud OJ 父模块</description>
+    <description>Cloud OJ Project</description>
 
     <!-- 子模块 -->
     <modules>
@@ -26,7 +25,6 @@
         <module>file-server</module>
         <module>judge-service</module>
         <module>api-gateway</module>
-        <module>cloud-oj-web</module>
     </modules>
 
     <properties>

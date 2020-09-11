@@ -1,0 +1,36 @@
+package group._204.oj.manager.controller;
+
+import group._204.oj.manager.model.User;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import group._204.oj.manager.service.ManagerService;
+
+import javax.annotation.Resource;
+
+@RestController
+@RequestMapping("user")
+public class UserController implements CRUDController {
+
+    @Resource
+    private ManagerService managerService;
+
+    @GetMapping("pro")
+    public ResponseEntity<?> getUsers(int page, int limit) {
+        return buildGETResponse(managerService.getUsers((page - 1) * limit, limit));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        return buildPOSTResponse(managerService.addUser(user));
+    }
+
+    @PutMapping("pro")
+    public ResponseEntity<Void> updateUser(@RequestBody User user) {
+        return buildPUTResponse(managerService.updateUser(user));
+    }
+
+    @DeleteMapping("pro/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+        return buildDELETEResponse(managerService.deleteUser(userId));
+    }
+}

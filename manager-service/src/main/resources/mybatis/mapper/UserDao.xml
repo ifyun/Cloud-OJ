@@ -1,20 +1,17 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.cloudli.managerservice.dao.UserDao">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.manager.dao.UserDao">
     <select id="getAll" resultMap="Map.User, Map.Total">
         select sql_calc_found_rows user_id, name, email, section, role_id, create_at
         from user
         limit #{start},#{limit};
         select found_rows()
     </select>
-
-    <insert id="add" parameterType="top.cloudli.managerservice.model.User">
+    <insert id="add" parameterType="group._204.oj.manager.model.User">
         insert into `user`(user_id, name, password, secret, email, section, role_id)
             value (#{userId}, #{name}, #{password}, LEFT(UUID(), 8), #{email}, #{section}, #{roleId})
     </insert>
-
-    <update id="update" parameterType="top.cloudli.managerservice.model.User">
+    <update id="update" parameterType="group._204.oj.manager.model.User">
         update user
         set name = #{name},
         <choose>
@@ -27,7 +24,6 @@
         role_id = #{roleId}
         where user_id = #{userId};
     </update>
-
     <delete id="delete">
         delete
         from user

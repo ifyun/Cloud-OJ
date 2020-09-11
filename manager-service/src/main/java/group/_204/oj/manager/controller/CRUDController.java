@@ -1,0 +1,73 @@
+package group._204.oj.manager.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import group._204.oj.manager.model.PagedResult;
+
+import java.util.List;
+
+/**
+ * 增删改查控制器接口，提供方法用于构造返回数据
+ */
+public interface CRUDController {
+
+    /**
+     * 单条查询
+     *
+     * @param object 单条数据
+     * @return {@link ResponseEntity}
+     */
+    default ResponseEntity<?> buildGETResponse(Object object) {
+        return object != null ?
+                ResponseEntity.ok(object) :
+                ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 多条查询
+     *
+     * @param data {@link List} 多条数据
+     * @return {@link ResponseEntity}
+     */
+    default ResponseEntity<?> buildGETResponse(List<List<?>> data) {
+        return data.get(0).size() > 0 ?
+                ResponseEntity.ok(new PagedResult(data.get(0), (Long) data.get(1).get(0))) :
+                ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 更新操作
+     *
+     * @param result 操作结果
+     * @return {@link ResponseEntity} 200：更新成功，304：未修改
+     */
+    default ResponseEntity<Void> buildPUTResponse(boolean result) {
+        return result ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+    }
+
+    /**
+     * 创建操作
+     *
+     * @param error 异常
+     * @return {@link ResponseEntity} 201：已创建，400：请求数据不正确
+     */
+    default ResponseEntity<Object> buildPOSTResponse(Object error) {
+        return error == null ?
+                ResponseEntity.status(HttpStatus.CREATED).build() :
+                ResponseEntity.badRequest().body(error);
+    }
+
+    /**
+     * 删除操作
+     *
+     * @param result 操作结果
+     * @return {@link ResponseEntity} 204：删除成功，410：要删除的数据不存在
+     */
+    default ResponseEntity<Void> buildDELETEResponse(boolean result) {
+        return result ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.status(HttpStatus.GONE).build();
+    }
+}

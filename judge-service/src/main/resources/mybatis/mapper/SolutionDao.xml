@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.cloudli.judgeservice.dao.SolutionDao">
-    <select id="getSubmitted" resultType="top.cloudli.judgeservice.model.Solution">
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.judge.dao.SolutionDao">
+    <select id="getSubmitted" resultType="group._204.oj.judge.model.Solution">
         select *
         from solution
-        where state = 2 limit 200
+        where state = 2
+        limit 200
     </select>
-
-    <select id="getResultBySolutionId" resultType="top.cloudli.judgeservice.model.JudgeResult">
+    <select id="getResultBySolutionId" resultType="group._204.oj.judge.model.JudgeResult">
         select *
         from judge_result
-        where solution_id = #{solutionId} and state = 0;
+        where solution_id = #{solutionId}
+          and state = 0;
     </select>
-
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
-            parameterType="top.cloudli.judgeservice.model.Solution">
+        parameterType="group._204.oj.judge.model.Solution">
         insert into solution(solution_id, user_id, problem_id, contest_id, language)
         values (#{solutionId}, #{userId}, #{problemId},
         <choose>
@@ -24,13 +23,11 @@
         </choose>
         , #{language})
     </insert>
-
-    <update id="update" parameterType="top.cloudli.judgeservice.model.Solution">
+    <update id="update" parameterType="group._204.oj.judge.model.Solution">
         update solution
         set state     = #{state},
             result    = #{result},
             pass_rate = #{passRate}
         where solution_id = #{solutionId}
     </update>
-
 </mapper>

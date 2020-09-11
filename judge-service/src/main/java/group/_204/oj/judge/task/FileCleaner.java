@@ -1,0 +1,67 @@
+package group._204.oj.judge.task;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import group._204.oj.judge.model.Language;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.Objects;
+
+@Slf4j
+@Component
+public class FileCleaner {
+
+    @Value("${project.target-dir}")
+    private String targetDir;
+
+    @PostConstruct
+    public void init() {
+        File dir = new File(targetDir);
+
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            delete(file);
+        }
+    }
+
+    @Async
+    public void deleteTempFile(String solutionId, int languageId, boolean isWindows) {
+        Language language = Language.get(languageId);
+
+        if (language == null)
+            return;
+
+        switch (language) {
+            case JAVA:
+                delete(new File(targetDir + solutionId));
+                break;
+            case PYTHON:
+                delete(new File(targetDir + solutionId + ".py"));
+                break;
+            case BASH:
+                delete(new File(targetDir + solutionId + ".sh"));
+                break;
+            case C:
+                delete(new File(targetDir + solutionId + ".c"));
+            case CPP:
+                delete(isWindows ? new File(targetDir + solutionId + ".exe")
+                        : new File(targetDir + solutionId));
+                delete(new File(targetDir + solutionId + ".cpp"));
+                break;
+        }
+    }
+
+    private void delete(File file) {
+        if (file.isDirectory()) {
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                delete(f);
+            }
+        }
+        if (file.exists()) {
+            if (!file.delete())
+                log.info("{} 删除失败.", file.getName());
+        }
+    }
+}

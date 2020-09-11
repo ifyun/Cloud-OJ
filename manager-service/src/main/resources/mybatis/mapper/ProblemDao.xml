@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.cloudli.managerservice.dao.ProblemDao">
-
+<mapper namespace="group._204.oj.manager.dao.ProblemDao">
     <select id="getAll" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows
         p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
@@ -29,7 +28,6 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-
     <select id="backup" resultMap="Map.Problem">
         select problem_id,
                title,
@@ -43,7 +41,6 @@
                category
         from problem;
     </select>
-
     <select id="getSingle" resultMap="Map.Problem">
         select *
         from problem
@@ -53,7 +50,6 @@
         </if>
         problem_id = #{problemId}
     </select>
-
     <select id="search" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
         <choose>
@@ -82,14 +78,12 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-
-    <insert id="add" parameterType="top.cloudli.managerservice.model.Problem">
+    <insert id="add" parameterType="group._204.oj.manager.model.Problem">
         insert into problem(title, description, input, output, sample_input, sample_output, enable, category, score)
             value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{enable},
                    #{category}, #{score})
     </insert>
-
-    <update id="update" parameterType="top.cloudli.managerservice.model.Problem">
+    <update id="update" parameterType="group._204.oj.manager.model.Problem">
         update problem
         set title         = #{title},
             description   = #{description},
@@ -102,13 +96,11 @@
             category      = #{category}
         where problem_id = #{problemId}
     </update>
-
     <delete id="delete">
         delete
         from problem
         where problem_id = #{problemId}
     </delete>
-
     <update id="updateEnable">
         update problem
         set enable = #{enable}
