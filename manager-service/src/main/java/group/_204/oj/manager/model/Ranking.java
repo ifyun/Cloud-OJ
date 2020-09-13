@@ -7,8 +7,8 @@ public class Ranking {
     private Integer rank;
     private String userId;
     private String name;
-    private int committed;
-    private int passed;
-    private double totalScore;
+    private Integer committed;
+    private Integer passed;
+    private Double totalScore;
     private String contestName;
 }

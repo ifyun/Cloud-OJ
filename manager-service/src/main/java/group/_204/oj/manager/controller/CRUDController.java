@@ -50,13 +50,13 @@ public interface CRUDController {
     /**
      * 创建操作
      *
-     * @param error 异常
+     * @param result 异常
      * @return {@link ResponseEntity} 201：已创建，400：请求数据不正确
      */
-    default ResponseEntity<Object> buildPOSTResponse(Object error) {
-        return error == null ?
+    default ResponseEntity<Object> buildPOSTResponse(boolean result) {
+        return result ?
                 ResponseEntity.status(HttpStatus.CREATED).build() :
-                ResponseEntity.badRequest().body(error);
+                ResponseEntity.badRequest().build();
     }
 
     /**

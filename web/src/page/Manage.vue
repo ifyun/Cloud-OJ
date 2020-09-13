@@ -91,8 +91,8 @@ export default {
 }
 
 .aside {
-  margin-top: 1px;
-  height: 100%;
+  margin-top: 15px;
+  height: calc(100% - 15px);
   width: auto !important;
 }
 

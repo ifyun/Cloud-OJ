@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class PagedResult {
     private List<?> data;
-    private long count;
+    private Long count;
 }

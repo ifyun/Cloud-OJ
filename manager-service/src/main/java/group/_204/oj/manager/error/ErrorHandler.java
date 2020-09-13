@@ -1,6 +1,7 @@
 package group._204.oj.manager.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,14 +20,16 @@ public class ErrorHandler {
         int code = e.getErrorCode();
         log.error(String.valueOf(e.getMessage()));
 
-        String info = null;
+        HttpStatus status;
 
         if (code == 1062) {
-            info = "主键冲突.";
+            status = HttpStatus.CONFLICT;
         } else if (code == 1048) {
-            info = "数据不完整.";
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return ResponseEntity.status(400).body(info);
+        return ResponseEntity.status(status).build();
     }
 }

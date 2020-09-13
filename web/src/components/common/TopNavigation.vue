@@ -4,10 +4,12 @@
       <el-row type="flex" align="middle">
         <el-col :span="6">
           <div>
-            <a href="/"><img class="logo" src="@/assets/logo.png" alt="logo"/></a>
+            <a href="/">
+              <img class="logo" src="@/assets/logo.png" alt="logo"/>
+            </a>
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="12" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
           <el-menu class="top-nav" mode="horizontal"
                    text-color="#909399"

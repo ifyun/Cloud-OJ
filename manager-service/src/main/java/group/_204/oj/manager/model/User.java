@@ -11,7 +11,7 @@ public class User {
     private String password;
     private String email;
     private String section;
-    private int roleId;
+    private Integer roleId;
     private String roleName;
     private Date createAt;
 }

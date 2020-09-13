@@ -22,5 +22,5 @@ public interface ProblemDao {
 
     int delete(int problemId);
 
-    int updateEnable(int problemId, boolean enable);
+    int toggleEnable(int problemId, boolean enable);
 }

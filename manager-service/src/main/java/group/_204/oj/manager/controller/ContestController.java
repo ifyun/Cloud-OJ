@@ -1,9 +1,9 @@
 package group._204.oj.manager.controller;
 
+import group._204.oj.manager.service.ContestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import group._204.oj.manager.model.Contest;
-import group._204.oj.manager.service.ManagerService;
 
 import javax.annotation.Resource;
 
@@ -12,55 +12,55 @@ import javax.annotation.Resource;
 public class ContestController implements CRUDController {
 
     @Resource
-    private ManagerService managerService;
+    private ContestService contestService;
 
     @GetMapping("")
     public ResponseEntity<?> startedContests(int page, int limit) {
-        return buildGETResponse(managerService.getStartedContest((page - 1) * limit, limit));
+        return buildGETResponse(contestService.getStartedContest(page, limit));
     }
 
     @GetMapping("pro")
     public ResponseEntity<?> allContests(int page, int limit) {
-        return buildGETResponse(managerService.getAllContest((page - 1) * limit, limit));
+        return buildGETResponse(contestService.getAllContest(page, limit));
     }
 
     @GetMapping("lang/{contestId}")
     public ResponseEntity<?> getLanguages(@PathVariable int contestId) {
-        return buildGETResponse(managerService.getLanguages(contestId));
+        return buildGETResponse(contestService.getLanguages(contestId));
     }
 
     @GetMapping("{contestId}")
     public ResponseEntity<?> getProblems(@PathVariable int contestId, String userId, int page, int limit) {
-        return buildGETResponse(managerService.getProblemsFromContest(userId, contestId, (page - 1) * limit, limit));
+        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, page, limit));
     }
 
     @GetMapping("pro/{contestId}")
     public ResponseEntity<?> getProblemsNotInContest(@PathVariable int contestId, int page, int limit) {
-        return buildGETResponse(managerService.getProblemsNotInContest(contestId, (page - 1) * limit, limit));
+        return buildGETResponse(contestService.getProblemsNotInContest(contestId, page, limit));
     }
 
     @PostMapping("pro")
     public ResponseEntity<?> addContest(@RequestBody Contest contest) {
-        return buildPOSTResponse(managerService.addContest(contest));
+        return buildPOSTResponse(contestService.addContest(contest));
     }
 
     @PutMapping("pro")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
-        return buildPUTResponse(managerService.updateContest(contest));
+        return buildPUTResponse(contestService.updateContest(contest));
     }
 
     @DeleteMapping("pro/{contestId}")
     public ResponseEntity<?> deleteContest(@PathVariable int contestId) {
-        return buildDELETEResponse(managerService.deleteContest(contestId));
+        return buildDELETEResponse(contestService.deleteContest(contestId));
     }
 
     @PostMapping("pro/problem/{contestId}/{problemId}")
     public ResponseEntity<?> addProblem(@PathVariable int contestId, @PathVariable int problemId) {
-        return buildPOSTResponse(managerService.addProblemToContest(contestId, problemId));
+        return buildPOSTResponse(contestService.addProblemToContest(contestId, problemId));
     }
 
     @DeleteMapping("pro/problem/{contestId}/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable int contestId, @PathVariable int problemId) {
-        return buildDELETEResponse(managerService.deleteProblemFromContest(contestId, problemId));
+        return buildDELETEResponse(contestService.deleteProblemFromContest(contestId, problemId));
     }
 }

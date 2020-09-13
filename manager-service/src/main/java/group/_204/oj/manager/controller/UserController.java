@@ -1,9 +1,9 @@
 package group._204.oj.manager.controller;
 
 import group._204.oj.manager.model.User;
+import group._204.oj.manager.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import group._204.oj.manager.service.ManagerService;
 
 import javax.annotation.Resource;
 
@@ -12,25 +12,25 @@ import javax.annotation.Resource;
 public class UserController implements CRUDController {
 
     @Resource
-    private ManagerService managerService;
+    private UserService userService;
 
     @GetMapping("pro")
     public ResponseEntity<?> getUsers(int page, int limit) {
-        return buildGETResponse(managerService.getUsers((page - 1) * limit, limit));
+        return buildGETResponse(userService.getUsers(page, limit));
     }
 
     @PostMapping("")
     public ResponseEntity<?> addUser(@RequestBody User user) {
-        return buildPOSTResponse(managerService.addUser(user));
+        return buildPOSTResponse(userService.addUser(user));
     }
 
     @PutMapping("pro")
     public ResponseEntity<Void> updateUser(@RequestBody User user) {
-        return buildPUTResponse(managerService.updateUser(user));
+        return buildPUTResponse(userService.updateUser(user));
     }
 
     @DeleteMapping("pro/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
-        return buildDELETEResponse(managerService.deleteUser(userId));
+        return buildDELETEResponse(userService.deleteUser(userId));
     }
 }

@@ -7,15 +7,15 @@ import java.sql.Date;
 @Data
 public class JudgeResult {
     private String solutionId;
-    private int problemId;
+    private Integer problemId;
     private String title;
     private String userId;
-    private double passRate;
-    private double score;
-    private long time;
+    private Double passRate;
+    private Double score;
+    private Long time;
     private String code;
     private String compileInfo;
-    private int language;
-    private int result;
+    private Integer language;
+    private Integer result;
     private Date submitTime;
 }

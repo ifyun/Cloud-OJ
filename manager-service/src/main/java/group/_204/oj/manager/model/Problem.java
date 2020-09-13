@@ -10,7 +10,7 @@ public class Problem {
     private String contestName;
     private Date startAt;
     private Date endAt;
-    private int problemId;
+    private Integer problemId;
     private Integer result;
     private Integer passed;
     private String title;
