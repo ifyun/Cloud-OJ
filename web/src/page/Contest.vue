@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TopNavigation active="1-2"/>
+    <TopNavigation active="2"/>
     <ContestList/>
   </div>
 </template>

@@ -15,13 +15,11 @@ import {searchParams} from "@/js/util";
 export default {
   name: 'Problems',
   mounted() {
-    if (this.contestId != null) {
-      this.active = '1-2'
-    }
+    this.active = this.contestId == null ? '1' : '2'
   },
   data() {
     return {
-      active: '1-1',
+      active: '',
       contestId: searchParams().contestId,
       contestName: searchParams().contestName
     }

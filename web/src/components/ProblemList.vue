@@ -32,7 +32,7 @@
       <el-table :data="problems.data" v-loading="loading">
         <el-table-column label="ID" prop="problemId" width="100px" align="center">
         </el-table-column>
-        <el-table-column label="题目名称" width="280px">
+        <el-table-column label="题目名称" width="270px">
           <template slot-scope="scope">
             <el-link type="primary"
                      :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
@@ -40,7 +40,9 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="通过人数" width="100px" align="center">
+        <el-table-column label="分数" prop="score" width="100px" align="right">
+        </el-table-column>
+        <el-table-column v-if="contestId == null" label="通过人数" width="120px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined">
             {{ scope.row['passed'] }} 人通过
@@ -49,15 +51,20 @@
         </el-table-column>
         <el-table-column label="分类" align="center">
           <template slot-scope="scope">
-            <div v-if="scope.row.category !== ''">
-            <span v-for="tag in scope.row.category.split(',')"
-                  v-bind:key="tag.index"
-                  @click="onTagClick(tag)"
-                  class="tag" :class="getTagColor(tag)">{{ tag }}</span>
+            <div v-if="contestId == null">
+              <div v-if="scope.row.category !== ''">
+                <span v-for="tag in scope.row.category.split(',')"
+                      v-bind:key="tag.index"
+                      @click="onTagClick(tag)"
+                      class="tag" :class="getTagColor(tag)">
+                  {{ tag }}
+                </span>
+              </div>
             </div>
+            <el-tag v-else effect="dark" type="success">
+              {{ contestName }}
+            </el-tag>
           </template>
-        </el-table-column>
-        <el-table-column label="分数" prop="score" width="100px" align="right">
         </el-table-column>
         <el-table-column label="创建时间" width="160px" align="center">
           <template slot-scope="scope">
@@ -84,9 +91,9 @@ import {getTagColor, userInfo} from '@/js/util'
 
 export default {
   name: "ProblemList",
-  props: ['contestId', 'contestName', 'tableTitle', 'apiPath'],
+  props: ['contestId', 'contestName'],
   mounted() {
-    document.title = `${this.contestId == null ? '开放题库' : this.contestName} · Cloud OJ`
+    document.title = `${this.contestId == null ? '题库' : this.contestName} · Cloud OJ`
     this.getProblems()
   },
   data() {

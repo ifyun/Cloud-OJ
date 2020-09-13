@@ -2,41 +2,44 @@
   <el-header>
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
-        <el-col :span="6">
+        <el-col :span="4">
           <div>
             <a href="/">
               <img class="logo" src="@/assets/logo.png" alt="logo"/>
             </a>
           </div>
         </el-col>
-        <el-col :span="12" style="display: flex; justify-content: center">
+        <el-col :span="16" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
           <el-menu class="top-nav" mode="horizontal"
                    text-color="#909399"
                    active-text-color="#409eff"
                    :default-active="active"
-                   @select="handleSelect">
-            <el-submenu index="1">
-              <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>题库</span>
-              </template>
-              <el-menu-item index="1-1">开放题库</el-menu-item>
-              <el-menu-item index="1-2">竞赛/作业题库</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="2"><i class="el-icon-s-data"></i>排行榜</el-menu-item>
-            <el-menu-item index="3"
+                   @select="onSelect">
+            <el-menu-item index="1">
+              <i class="el-icon-s-order"></i>
+              <span>题库</span>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-s-flag"></i>
+              <span>竞赛/作业</span>
+            </el-menu-item>
+            <el-menu-item index="3">
+              <i class="el-icon-s-data"></i>
+              <span>排行榜</span>
+            </el-menu-item>
+            <el-menu-item index="4"
                           v-if="userInfo != null && userInfo['roleId'] > 0">
               <i class="el-icon-s-management"></i>
               <span>管理</span>
             </el-menu-item>
-            <el-menu-item index="4">
+            <el-menu-item index="5">
               <i class="el-icon-question"></i>
               <span>帮助</span>
             </el-menu-item>
           </el-menu>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="4">
           <div class="account-area">
             <el-avatar class="avatar"></el-avatar>
             <span class="el-dropdown-link" style="color: #909399"
@@ -49,8 +52,18 @@
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                <el-dropdown-item command="exit">退出</el-dropdown-item>
+                <el-dropdown-item command="profile">
+                  <i class="el-icon-user"></i>
+                  <span>个人中心</span>
+                </el-dropdown-item>
+                <el-dropdown-item command="history">
+                  <i class="el-icon-time"></i>
+                  <span>提交记录</span>
+                </el-dropdown-item>
+                <el-dropdown-item command="exit">
+                  <i class="el-icon-switch-button"></i>
+                  <span>退出</span>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -70,22 +83,24 @@ export default {
     return {
       userInfo: userInfo(),
       paths: {
-        '1-1': '/',
-        '1-2': '/contest',
-        '2': '/ranking',
-        '3': '/manage'
+        '1': '/',
+        '2': '/contest',
+        '3': '/ranking',
+        '4': '/manage'
       }
     }
   },
   methods: {
-    handleSelect(key) {
+    onSelect(key) {
       window.location.href = this.paths[key]
     },
     login() {
       window.location.href = '/login'
     },
     userMenuClick(command) {
-      if (command === 'exit') {
+      if (command === 'history') {
+        window.location.href = '/history'
+      } else if (command === 'exit') {
         this.logoff()
       }
     },
@@ -142,7 +157,7 @@ export default {
 }
 
 .el-dropdown-link {
-  margin-left: 10px;
+  margin-left: 5px;
   cursor: pointer;
   color: #409EFF;
 }
