@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("result")
+@RequestMapping("history")
 public class CommitHistoryController implements CRUDController {
 
     @Resource

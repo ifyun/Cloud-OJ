@@ -2,20 +2,9 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.JudgeResultDao">
     <select id="getHistoryByUserId" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows any_value(solution_id)  solutionId,
-                                   problem_id,
-                                   any_value(title)        title,
-                                   language,
-                                   count(problem_id)       count,
-                                   any_value(code)         code,
-                                   max(pass_rate)          pass_rate,
-                                   any_value(score)        score,
-                                   any_value(result)       reult,
-                                   any_value(compile_info) compile_info,
-                                   any_value(submit_time)  submit_time
+        select sql_calc_found_rows *
         from judge_result
         where user_id = #{userId}
-        group by problem_id, language
         limit #{start}, #{limit};
         select found_rows();
     </select>

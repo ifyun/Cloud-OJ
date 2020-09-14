@@ -12,9 +12,15 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" prop="startAt" width="300px">
+        <el-table-column label="开始时间" width="300px" align="center">
+          <template slot-scope="scope">
+            <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
+          </template>
         </el-table-column>
-        <el-table-column label="结束时间" prop="endAt" width="300px">
+        <el-table-column label="结束时间" width="300px" align="center">
+          <template slot-scope="scope">
+            <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination style="margin-top: 10px"
