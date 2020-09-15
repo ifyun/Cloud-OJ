@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SourceCode {
-    private int codeId;
+    private Integer codeId;
     private String solutionId;
     private String code;
 

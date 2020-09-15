@@ -10,8 +10,7 @@
       <el-col :span="12">
         <el-row :gutter="10" type="flex" align="middle">
           <el-col :span="23">
-            <el-alert effect="dark"
-                      show-icon
+            <el-alert show-icon
                       :closable="false"
                       :type="alertData.type"
                       :title="alertData.title"
@@ -247,7 +246,7 @@ export default {
         data: JSON.stringify(data)
       }).then((res) => {
         this.alertData = {
-          type: 'info',
+          type: 'success',
           title: '已提交，正在等待结果',
           desc: '你的代码已被接受，请稍候...'
         }
@@ -320,35 +319,49 @@ export default {
           this.alertData = {
             type: 'success',
             title: '完全正确',
-            desc: '已通过全部测试点！'
+            desc: '已通过全部测试点'
           }
           break
         case 1:
           this.alertData = {
             type: 'error',
             title: '时间超限',
-            desc: '时间复杂度有待优化！'
+            desc: '时间复杂度有待优化'
           }
           break
         case 2:
           this.alertData = {
             type: 'warning',
             title: `部分通过(${data["passRate"] * 100})`,
-            desc: '漏掉了部分情况哦！'
+            desc: '漏掉了部分情况哦'
           }
           break
         case 3:
           this.alertData = {
             type: 'error',
             title: '答案错误',
-            desc: '继续努力！'
+            desc: '继续努力'
           }
           break
         case 4:
           this.alertData = {
-            type: 'warning',
+            type: 'info',
             title: '编译错误',
-            desc: '请仔细检查代码！'
+            desc: '请仔细检查代码'
+          }
+          break
+        case 5:
+          this.alertData = {
+            type: 'info',
+            title: '运行错误',
+            desc: '对于解释型语言，请检查是否存在语法错误'
+          }
+          break
+        case 6:
+          this.alertData = {
+            type: 'error',
+            title: '判题异常',
+            desc: '判题服务器可能出现了异常，可尝试重新提交'
           }
       }
     }

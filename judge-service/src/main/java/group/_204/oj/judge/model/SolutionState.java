@@ -6,5 +6,4 @@ package group._204.oj.judge.model;
 public enum SolutionState {
     JUDGED,
     IN_JUDGE_QUEUE,
-    COMMITTED
 }

@@ -36,6 +36,18 @@ public class Judgement {
     @Resource
     private SolutionDao solutionDao;
 
+    private static class RuntimeError extends Exception {
+        RuntimeError(String msg) {
+            super(msg);
+        }
+    }
+
+    private static class TimeoutError extends Exception {
+        TimeoutError(String msg) {
+            super(msg);
+        }
+    }
+
     /**
      * 判题
      *
@@ -68,8 +80,11 @@ public class Judgement {
         int total = expect.size();
         int passed = 0;
 
-        if (runtime.getTime() > timeout) {
-            solution.setResult(SolutionResult.TIMEOUT.ordinal());    // 时间超限
+        if (runtime.getResult() == SolutionResult.JUDGE_ERROR.ordinal()
+                || runtime.getResult() == SolutionResult.RUNTIME_ERROR.ordinal()) {
+            solution.setResult(runtime.getResult());
+        } else if (runtime.getTime() > timeout) {
+            solution.setResult(SolutionResult.TIMEOUT.ordinal());
         } else {
             int size = Math.min(output.size(), expect.size());
             for (int i = 0; i < size; i++) {
@@ -88,11 +103,11 @@ public class Judgement {
             } else {
                 solution.setResult(SolutionResult.ALL_PASSED.ordinal());
             }
+
+            double passRate = (double) passed / total;
+            solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
 
-        double passRate = (double) passed / total;
-
-        solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         solution.setState(SolutionState.JUDGED.ordinal());
         solutionDao.update(solution);
     }
@@ -123,14 +138,15 @@ public class Judgement {
                 // 计算运行时间
                 runtime.setTime(stopWatch.getTotalTimeMillis());
 
-                // 获取标准输出流
-                String stdout = getOutput(process.getInputStream());
-
-                output.add(stdout);
-
                 // 获取标准错误流
                 String stderr = getOutput(process.getErrorStream());
-                runtime.setInfo(stderr);
+                if (stderr.isEmpty()) {
+                    // 获取标准输出流
+                    String stdout = getOutput(process.getInputStream());
+                    output.add(stdout);
+                } else {
+                    throw new RuntimeError(stderr);
+                }
             } else {
                 long maxTime = 0;
 
@@ -144,7 +160,7 @@ public class Judgement {
                     stopWatch.start();
 
                     if (!process.waitFor(timeout + 150, TimeUnit.MILLISECONDS)) {
-                        throw new InterruptedException("时间超限.");
+                        throw new TimeoutError("时间超限.");
                     }
 
                     stopWatch.stop();
@@ -152,24 +168,29 @@ public class Judgement {
                     long time = stopWatch.getTotalTimeMillis();
                     maxTime = Math.max(time, maxTime);
 
-                    // 获取标准输出流
-                    String stdout = getOutput(process.getInputStream());
-                    output.add(stdout);
-
                     // 获取标准错误流
                     String stderr = getOutput(process.getErrorStream());
-                    runtime.setInfo(stderr);
+                    if (stderr.isEmpty()) {
+                        // 获取标准输出流
+                        String stdout = getOutput(process.getInputStream());
+                        output.add(stdout);
+                    } else {
+                        throw new RuntimeError(stderr);
+                    }
                 }
 
                 runtime.setTime(maxTime);
             }
-        } catch (InterruptedException e0) {
-            log.error(e0.getMessage());
+        } catch (RuntimeError e) {
             output.clear();
+            runtime.setInfo(e.getMessage());
+            runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
+        } catch (TimeoutError e) {
+            log.error(e.getMessage());
             runtime.setTime(timeout);
-            runtime.setInfo(e0.getMessage());
-        } catch (IOException e1) {
-            log.error(e1.getMessage());
+        } catch (InterruptedException | IOException e) {
+            log.error(e.getMessage());
+            runtime.setResult(SolutionResult.JUDGE_ERROR.ordinal());
             output.clear();
         }
 
@@ -272,9 +293,7 @@ public class Judgement {
 
             for (File file : fileList) {
                 try {
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(new FileInputStream(file))
-                    );
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
                     data.add(reader.lines().collect(Collectors.joining("\n")));
                 } catch (FileNotFoundException e) {
                     log.error(e.getMessage());

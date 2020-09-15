@@ -5,5 +5,7 @@ public enum SolutionResult {
     TIMEOUT,
     PARTLY_PASSED,
     WRONG,
-    COMPILE_ERROR
+    COMPILE_ERROR,
+    RUNTIME_ERROR,
+    JUDGE_ERROR
 }
