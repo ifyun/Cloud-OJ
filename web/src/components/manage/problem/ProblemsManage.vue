@@ -36,7 +36,7 @@
     <el-table :data="problems.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="80px" align="center">
       </el-table-column>
-      <el-table-column label="题目名称" width="270px">
+      <el-table-column label="题目名称" width="250px">
         <template slot-scope="scope">
           <el-link type="primary">
             <b>{{ scope.row.title }}</b>
@@ -53,7 +53,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否开放" width="100px" align="center">
+      <el-table-column label="是否开放" width="80px" align="center">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.enable"
                      active-color="#67C23A"
@@ -61,7 +61,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" width="180px" align="center">
         <template slot-scope="scope">
           <el-dropdown style="margin-right: 10px" trigger="click"
                        @command="onEditClick($event, scope.row)">

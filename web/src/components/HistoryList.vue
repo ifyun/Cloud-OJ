@@ -5,28 +5,32 @@
                     @back="back">
     </el-page-header>
     <el-divider></el-divider>
-    <el-card style="width: 100%">
+    <el-card style="width: 100%; margin-bottom: 25px">
       <el-table :data="histories.data" v-loading="loading">
         <el-table-column label="题目ID" prop="problemId" width="120px" align="center">
         </el-table-column>
         <el-table-column label="题目名称">
           <template slot-scope="scope">
             <el-link type="primary"
-                     :href="`/commit?problemId=${scope.row.problemId}`">
+                     :href="`/commit?problemId=${scope.row['problemId']}`">
               <b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="语言">
+        <el-table-column label="编程语言">
           <template slot-scope="scope">
-            {{ languages[scope.row.language] }}
+            <div style="display: flex; align-items: center;">
+              <img class="language-icon" :src="languageIcons[scope.row['language']]" alt="">
+              {{ languages[scope.row['language']] }}
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="结果" width="120px" align="center">
+        <el-table-column label="结果" width="140px" align="center">
           <template slot-scope="scope">
             <el-tooltip content="点击查看代码" placement="right">
               <el-tag style="cursor: pointer" effect="plain"
-                      :type="resultTags[scope.row.result].type">
+                      :type="resultTags[scope.row.result].type"
+                      @click="showCode(scope.row.code)">
                 <i :class="resultTags[scope.row.result].icon">
                   {{ resultTags[scope.row.result].text }}
                 </i>
@@ -34,9 +38,14 @@
             </el-tooltip>
           </template>
         </el-table-column>
+        <el-table-column label="耗时" width="100px" align="right">
+          <template slot-scope="scope">
+            <span v-if="scope.row.result < 4">{{ scope.row['time'] }}ms</span>
+          </template>
+        </el-table-column>
         <el-table-column label="得分" width="100px" align="right">
           <template slot-scope="scope">
-            <b>{{ scope.row.score }}</b>
+            <b>{{ scope.row['score'] }}</b>
           </template>
         </el-table-column>
         <el-table-column label="提交时间" width="180px" align="center">
@@ -81,7 +90,9 @@ export default {
         {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
         {text: '部分通过', type: 'warning', icon: 'el-icon-warning'},
         {text: '答案错误', type: 'danger', icon: 'el-icon-error'},
-        {text: '编译错误', type: 'info', icon: 'el-icon-info'}
+        {text: '编译错误', type: 'info', icon: 'el-icon-info'},
+        {text: '运行错误', type: 'info', icon: 'el-icon-info'},
+        {text: '判题异常', type: 'error', icon: 'el-icon-error'}
       ],
       languages: {
         0: 'C',
@@ -90,6 +101,14 @@ export default {
         3: 'Python',
         4: 'Bash Shell',
         5: 'C#'
+      },
+      languageIcons: {
+        0: './icons/c.svg',
+        1: './icons/cpp.svg',
+        2: './icons/java.svg',
+        3: './icons/python.svg',
+        4: './icons/bash.svg',
+        5: './icons/c-sharp.svg'
       }
     }
   },
@@ -125,6 +144,11 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    showCode(code) {
+      this.$alert(`<pre class="sample">${code}</pre>`,
+          '代码预览',
+          {dangerouslyUseHTMLString: true});
     }
   }
 }
@@ -136,5 +160,10 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
+}
+
+.language-icon {
+  height: 24px;
+  margin-right: 5px;
 }
 </style>
