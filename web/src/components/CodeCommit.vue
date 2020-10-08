@@ -374,5 +374,6 @@ export default {
   margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
+  min-width: 1200px !important;
 }
 </style>

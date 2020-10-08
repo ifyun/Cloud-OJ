@@ -86,7 +86,8 @@ export default {
         '1': '/',
         '2': '/contest',
         '3': '/ranking',
-        '4': '/manage'
+        '4': '/manage',
+        '5': '/help'
       }
     }
   },

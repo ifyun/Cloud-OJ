@@ -10,6 +10,7 @@ const History = () => import('@/page/CommitHistory')
 const Ranking = () => import('@/page/Ranking')
 const Manage = () => import('@/page/Manage')
 const Commit = () => import('@/page/Commit')
+const Help = () => import('@/page/Help')
 
 const routes = [
     {path: '/login', component: Login},
@@ -19,7 +20,8 @@ const routes = [
     {path: '/history', component: History},
     {path: '/ranking', component: Ranking},
     {path: '/manage', component: Manage},
-    {path: '/commit', component: Commit}
+    {path: '/commit', component: Commit},
+    {path: '/help', component: Help}
 ]
 
 const router = new VueRouter({
