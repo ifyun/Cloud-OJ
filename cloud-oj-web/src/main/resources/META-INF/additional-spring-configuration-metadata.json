@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "project.gateway-host",
-      "type": "java.lang.String",
-      "description": "网关的 IP 地址."
-  }
-] }
