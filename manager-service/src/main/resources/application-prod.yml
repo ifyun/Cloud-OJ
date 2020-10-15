@@ -51,4 +51,4 @@ logging:
     name: /app/log/manager-service.log
 
 project:
-  test-data-dir: /test_data/
+  file-dir: /oj_file/

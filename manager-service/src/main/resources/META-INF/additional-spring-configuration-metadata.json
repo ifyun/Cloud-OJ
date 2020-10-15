@@ -1,8 +1,8 @@
 {
   "properties": [
     {
-      "name": "project.test-data-dir",
+      "name": "project.file-dir",
       "type": "java.lang.String",
-      "description": "测试数据目录."
-  }
-] }
+      "description": "文件存放目录."
+    }
+  ] }

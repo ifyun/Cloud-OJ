@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @RequestMapping("pro/backup")
 public class DataBackupController {
 
-    @Value("${project.test-data-dir}")
-    private String testDataDir;
+    @Value("${project.file-dir}")
+    private String fileDir;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -74,6 +74,7 @@ public class DataBackupController {
      */
     private List<String> getTestData(int id, String ext) {
         List<String> data = null;
+        String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + id);
 
         File[] files = dir.listFiles(pathname -> {
