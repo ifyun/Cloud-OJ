@@ -32,6 +32,7 @@
                      @click="onEditClick(scope.row)">编辑
           </el-button>
           <el-button size="mini" icon="el-icon-delete" type="danger"
+                     :disabled="scope.row.userId === 'root'"
                      @click="onDeleteClick(scope.row)">
           </el-button>
         </template>
@@ -77,7 +78,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" @click="onDelete">删除题目</el-button>
+          <el-button type="danger" @click="onDelete">删除用户</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -180,6 +181,7 @@ export default {
       this.editorDialogVisible = true
     },
     onDeleteClick(row) {
+      this.deleteForm.checkUserId = ''
       this.selectedUser = copyObject(row)
       this.deleteDialogVisible = true
     },

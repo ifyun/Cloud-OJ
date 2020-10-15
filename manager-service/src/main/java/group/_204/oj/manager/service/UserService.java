@@ -18,6 +18,7 @@ public class UserService {
     }
 
     public boolean addUser(User user) {
+        user.setRoleId(0);
         return userDao.add(user) == 1;
     }
 

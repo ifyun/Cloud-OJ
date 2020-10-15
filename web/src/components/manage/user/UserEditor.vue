@@ -60,7 +60,9 @@
 </template>
 
 <script>
-import {apiPath, handle401, userInfo} from "@/js/util";
+import {apiPath, handle401, userInfo} from "@/js/util"
+
+const bcrypt = require('bcryptjs')
 
 export default {
   name: "UserEditor",
@@ -104,7 +106,7 @@ export default {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           if (type === 'put' && this.user.newPassword !== undefined) {
-            this.user.password = this.$md5(this.user.newPassword)
+            this.user.password = bcrypt.hashSync(this.$md5(this.user.newPassword), 10)
           }
           let url = type === 'post' ? apiPath.user : apiPath.userManage
           this.$axios({

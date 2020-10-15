@@ -46,7 +46,9 @@
 </template>
 
 <script>
-import {apiPath, copyObject} from "@/js/util";
+import {apiPath, copyObject} from "@/js/util"
+
+const bcrypt = require('bcryptjs')
 
 export default {
   name: "SignupTab",
@@ -85,7 +87,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = copyObject(this.signupForm)
-          data.password = this.$md5(data.password)
+          data.password = bcrypt.hashSync(this.$md5(data.password), 10)
           this.$axios({
             url: apiPath.user,
             method: 'post',
@@ -99,6 +101,8 @@ export default {
               title: `用户${this.signupForm.name}注册成功`,
               message: `${res.status}`
             })
+            this.$refs[formName].resetFields()
+            this.$refs['deleteForm'].clearValidate()
           }).catch((error) => {
             this.$notify.error({
               title: `注册失败`,

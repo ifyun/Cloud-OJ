@@ -264,7 +264,7 @@ VALUES (3, 'ROLE_ROOT');
 -- 初始 ROOT 用户
 set character set utf8;
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-VALUES ('root', '初始管理员', '63a9f0ea7bb98050796b649e85481845', LEFT(UUID(), 8), 3);
+VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3ZXqbuxLaHVhp05LTi', LEFT(UUID(), 8), 3);
 
 INSERT INTO task (task_name)
 VALUES ('send_committed');
