@@ -64,7 +64,7 @@ services:
     networks:
       - oj-net
     volumes:
-      - "test_data:/test_data"     # 挂载测试数据目录
+      - "oj_file:/oj_file"
       - "log:/app/log"
     environment:
       EUREKA_SERVER: "eureka:8761"
@@ -74,7 +74,7 @@ services:
     networks:
       - oj-net
     volumes:
-      - "test_data:/test_data"
+      - "oj_file:/oj_file"
       - "target:/target"
       - "log:/app/log"
     environment:
@@ -129,4 +129,4 @@ volumes:
   rabbit:
   target:
   log:
-  test_data:
+  oj_file:

@@ -12,7 +12,7 @@
         <el-table-column label="题目名称">
           <template slot-scope="scope">
             <el-link type="primary"
-                     :href="`/commit?problemId=${scope.row['problemId']}`">
+                     @click="titleClick(scope.row)">
               <b>{{ scope.row.title }}</b>
             </el-link>
           </template>
@@ -149,6 +149,13 @@ export default {
       this.$alert(`<pre class="sample">${code}</pre>`,
           '代码预览',
           {dangerouslyUseHTMLString: true});
+    },
+    titleClick(solution) {
+      window.sessionStorage.setItem('code', JSON.stringify({
+        language: solution['language'],
+        code: solution['code']
+      }))
+      window.location.href = `/commit?problemId=${solution['problemId']}`
     }
   }
 }

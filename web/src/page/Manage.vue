@@ -84,6 +84,7 @@ export default {
 <style scoped>
 .side-nav {
   height: 100%;
+  border: none;
 }
 
 .side-nav:not(.el-menu--collapse) {
@@ -92,8 +93,9 @@ export default {
 
 .aside {
   margin-top: 15px;
-  height: calc(100% - 15px);
+  height: calc(100% - 30px);
   width: auto !important;
+  box-shadow: 0 0 10px #e0e0e0;
 }
 
 .container {

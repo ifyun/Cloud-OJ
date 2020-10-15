@@ -41,7 +41,9 @@
         </el-col>
         <el-col :span="4">
           <div class="account-area">
-            <el-avatar class="avatar"></el-avatar>
+            <img class="avatar"
+                 :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : ''"
+                 onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
             <span class="el-dropdown-link" style="color: #909399"
                   v-if="userInfo == null"
                   @click="login">登录
@@ -99,10 +101,17 @@ export default {
       window.location.href = '/login'
     },
     userMenuClick(command) {
-      if (command === 'history') {
-        window.location.href = '/history'
-      } else if (command === 'exit') {
-        this.logoff()
+      switch (command) {
+        case 'history':
+          window.location.href = '/history'
+          break
+        case 'profile':
+          window.location.href = '/profile'
+          break
+        case 'exit':
+          this.logoff()
+          break
+
       }
     },
     logoff() {
@@ -155,6 +164,8 @@ export default {
   cursor: pointer;
   height: 35px;
   width: 35px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
 }
 
 .el-dropdown-link {

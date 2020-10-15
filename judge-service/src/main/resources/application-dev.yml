@@ -53,8 +53,8 @@ logging:
     name: /log/judge-service.log
 
 project:
-  test-data-dir: D:/test_data/
-  target-dir: D:/target/
+  file-dir: E:/oj_file/
+  target-dir: E:/target/
   core-pool-size: 8
   max-pool-size: 16
   queue-capacity: 200

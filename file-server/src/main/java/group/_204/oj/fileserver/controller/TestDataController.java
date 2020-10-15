@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/test_data")
 public class TestDataController {
 
-    @Value("${project.test-data-dir}")
-    private String testDataDir;
+    @Value("${project.file-dir}")
+    private String fileDir;
 
     /**
      * 获取测试数据文件
@@ -32,6 +32,7 @@ public class TestDataController {
      */
     @GetMapping("{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable int problemId) {
+        String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
         File[] files = dir.listFiles();
 
@@ -66,15 +67,17 @@ public class TestDataController {
      * @return {@link ResponseEntity} 200：上传成功，500：上传失败
      */
     @PostMapping("")
-    public ResponseEntity<?> uploadTestData(@RequestParam int problemId, @RequestParam("file") MultipartFile[] files) {
+    public ResponseEntity<?> uploadTestData(@RequestParam int problemId,
+                                            @RequestParam("file") MultipartFile[] files) {
         if (files.length == 0)
             return ResponseEntity.badRequest().body("未选择文件.");
 
         // 根据题目 id 创建目录
+        String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
 
         if (!dir.exists()) {
-            if (!dir.mkdir()) {
+            if (!dir.mkdirs()) {
                 log.error("无法创建目录 {}", dir.getName());
                 return ResponseEntity.status(500).body("无法创建目录.");
             }
@@ -86,10 +89,10 @@ public class TestDataController {
 
             try {
                 file.transferTo(dest);
-                log.info("上传文件 {} 到 {}", fileName, testDataDir);
+                log.info("上传文件 {} ", dest.getAbsolutePath());
             } catch (IOException e) {
-                log.error("上传文件 {} 失败: {}", fileName, e.getMessage());
-                return ResponseEntity.status(500).body(e.getMessage());
+                log.error("上传文件 {} 失败: {}", dest.getAbsolutePath(), e.getMessage());
+                return ResponseEntity.status(500).build();
             }
         }
 
@@ -105,6 +108,7 @@ public class TestDataController {
      */
     @DeleteMapping("{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable int problemId, String name) {
+        String testDataDir = fileDir + "test_data/";
         File dest = new File(testDataDir + problemId + "/" + name);
 
         if (dest.delete()) {

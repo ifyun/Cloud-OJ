@@ -8,13 +8,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 public class FileServerConfig extends WebMvcConfigurationSupport {
 
-    @Value("${project.test-data-dir}")
-    private String testDataDir;
+    @Value(("${project.file-dir}"))
+    private String fileDir;
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/test_data/file/**")
-                .addResourceLocations("file:" + testDataDir);
+                .addResourceLocations("file:" + fileDir + "test_data/");
+        super.addResourceHandlers(registry);
+        registry.addResourceHandler("/image/**")
+                .addResourceLocations("file:" + fileDir + "image/");
         super.addResourceHandlers(registry);
     }
 }

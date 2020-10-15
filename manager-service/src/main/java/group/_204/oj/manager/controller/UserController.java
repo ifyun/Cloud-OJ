@@ -1,6 +1,7 @@
 package group._204.oj.manager.controller;
 
 import group._204.oj.manager.model.User;
+import group._204.oj.manager.service.OverviewService;
 import group._204.oj.manager.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,14 @@ public class UserController implements CRUDController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private OverviewService overviewService;
+
+    @GetMapping("overview")
+    public ResponseEntity<?> getOverview(String userId, Integer year) {
+        return buildGETResponse(overviewService.getOverview(userId, year));
+    }
 
     @GetMapping("pro")
     public ResponseEntity<?> getUsers(int page, int limit) {

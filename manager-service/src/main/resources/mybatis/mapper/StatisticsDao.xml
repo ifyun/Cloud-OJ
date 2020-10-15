@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.manager.dao.StatisticsDao">
+    <select id="getPreference" resultType="java.util.Map">
+        select language, count(solution_id) as count
+        from solution
+        where contest_id is null
+          and user_id = #{userId}
+        group by language;
+    </select>
+    <select id="getActivities" resultType="java.util.Map">
+        select DATE_FORMAT(submit_time, '%Y-%m-%d') as date,
+               count(solution_id)                   as count
+        from solution
+        where contest_id is null
+          and user_id = #{userId}
+          and year(submit_time) = #{year}
+        group by date
+    </select>
+</mapper>

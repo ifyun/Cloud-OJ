@@ -13,6 +13,13 @@
             <span v-else><b>{{ scope.row['rank'] }}</b></span>
           </template>
         </el-table-column>
+        <el-table-column width="55px" align="right">
+          <template slot-scope="scope">
+            <img class="avatar" align="center"
+                 :src="`./api/file/image/avatar/${scope.row.userId}.png`"
+                 onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
+          </template>
+        </el-table-column>
         <el-table-column label="用户名" prop="name">
         </el-table-column>
         <el-table-column label="总提交次数" width="150px" align="right">
@@ -93,5 +100,11 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
+}
+
+.avatar {
+  height: 30px;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0;
 }
 </style>

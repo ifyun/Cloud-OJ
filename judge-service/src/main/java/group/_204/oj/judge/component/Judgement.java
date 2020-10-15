@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @Component
 public class Judgement {
 
-    @Value("${project.test-data-dir}")
-    private String testDataDir;
+    @Value("${project.file-dir}")
+    private String fileDir;
 
     @Value("${project.target-dir}")
     private String targetDir;
@@ -278,7 +278,7 @@ public class Judgement {
      */
     private List<String> getData(int problemId, String ext) {
         List<String> data = new ArrayList<>();
-
+        String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
         File[] files = dir.listFiles(pathname -> {
             String name = pathname.getName();

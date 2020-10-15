@@ -2,16 +2,18 @@
   <div>
     <TopNavigation active="5"/>
     <el-container class="container">
-      <el-card style="margin-bottom: 30px">
+      <el-card style="margin-bottom: 50px">
         <markdown-it-vue :content="helpDoc">
         </markdown-it-vue>
       </el-card>
+      <BottomArea/>
     </el-container>
   </div>
 </template>
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
+import BottomArea from "@/components/common/BottomArea";
 import MarkdownItVue from "markdown-it-vue"
 import 'markdown-it-vue/dist/markdown-it-vue.css'
 
@@ -19,6 +21,7 @@ export default {
   name: "Help",
   components: {
     TopNavigation,
+    BottomArea,
     MarkdownItVue
   },
   mounted() {

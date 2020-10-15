@@ -5,31 +5,27 @@
                     @back="back">
     </el-page-header>
     <el-divider></el-divider>
-    <el-row style="margin-bottom: 20px" :gutter="10"
-            v-if="alertData.title !== undefined">
-      <el-col :span="12">
-        <el-row :gutter="10" type="flex" align="middle">
-          <el-col :span="23">
-            <el-alert show-icon
-                      :closable="false"
-                      :type="alertData.type"
-                      :title="alertData.title"
-                      :description="alertData.desc">
-            </el-alert>
-          </el-col>
-          <el-col :span="1">
-            <el-button icon="el-icon-refresh" type="text"
-                       :disabled="disableRefresh"
-                       @click="getResult(solutionId, 1)">
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
     <div style="width: 100%" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
           <el-card style="height: 964px;overflow: auto">
+            <el-row :gutter="10" type="flex" align="middle"
+                    v-if="alertData.title !== undefined">
+              <el-col :span="23">
+                <el-alert show-icon
+                          :closable="false"
+                          :type="alertData.type"
+                          :title="alertData.title"
+                          :description="alertData.desc">
+                </el-alert>
+              </el-col>
+              <el-col :span="1">
+                <el-button icon="el-icon-refresh" type="text"
+                           :disabled="disableRefresh"
+                           @click="getResult(solutionId, 1)">
+                </el-button>
+              </el-col>
+            </el-row>
             <h4>题目描述</h4>
             <pre class="problem-content">{{ problem.description }}</pre>
             <h4>输入说明</h4>
@@ -48,7 +44,7 @@
         <el-col :span="12">
           <el-card>
             <el-form :inline="true">
-              <el-form-item label="主题">
+              <el-form-item label="代码高亮">
                 <el-select v-model="cmOptions.theme">
                   <el-option v-for="theme in codeStyle"
                              :key="theme.id"
@@ -58,7 +54,7 @@
                 </el-select>
               </el-form-item>
               <el-row>
-                <el-form-item label="语言">
+                <el-form-item label="编程语言">
                   <el-select v-model="language" placeholder="请选择语言"
                              @change="languageChange">
                     <el-option v-for="lang in enabledLanguages"
@@ -128,6 +124,7 @@ export default {
     this.getLanguages()
     this.getProblem()
     this.cmOptions.mode = languageMode[this.language]
+    this.getCachedCode()
   },
   computed: {
     disableCommit: vm => {
@@ -169,6 +166,15 @@ export default {
   methods: {
     back() {
       window.history.back()
+    },
+    getCachedCode() {
+      let code = window.sessionStorage.getItem('code');
+      if (code != null) {
+        code = JSON.parse(code)
+        this.language = code['language']
+        this.code = code['code']
+        window.sessionStorage.removeItem('code')
+      }
     },
     getLanguages() {
       // 如果是来着竞赛/作业的题目，先获取允许的语言

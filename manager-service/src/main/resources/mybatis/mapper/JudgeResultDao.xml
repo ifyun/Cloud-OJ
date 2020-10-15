@@ -5,6 +5,7 @@
         select sql_calc_found_rows *
         from judge_result
         where user_id = #{userId}
+        order by submit_time desc
         limit #{start}, #{limit};
         select found_rows();
     </select>

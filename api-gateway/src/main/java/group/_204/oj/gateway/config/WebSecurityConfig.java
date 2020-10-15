@@ -7,6 +7,7 @@ import group._204.oj.gateway.filter.LogoffFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -39,6 +40,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    private static class ROLE {
+        static String[] ALL = {"USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT"};
+        static String UA = "USER_ADMIN";
+        static String PA = "PROBLEM_ADMIN";
+        static String SU = "ROOT";
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
@@ -49,21 +57,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new LogoffFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/logoff").permitAll()
-                // 用户管理权限设置
-                .antMatchers("/api/manager/user/pro/**").hasAnyRole("USER_ADMIN", "ROOT")
-                // 题目管理权限设置
-                .antMatchers("/api/manager/problem/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
-                .antMatchers("/api/manager/result").hasAnyRole("USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT")
-                // 竞赛/作业管理权限设置
-                .antMatchers("/api/manager/contest/pro/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
+                .antMatchers("/api/manager/user/pro/**").hasAnyRole(ROLE.UA, ROLE.SU)
+                .antMatchers("/api/manager/problem/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
+                .antMatchers("/api/manager/result").hasAnyRole(ROLE.ALL)
+                .antMatchers("/api/manager/contest/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers("/api/manager/contest/lang/**").permitAll()
-                // 文件上传权限设置
-                .antMatchers("/api/file/**").hasAnyRole("PROBLEM_ADMIN", "ROOT")
-                // 判题服务权限设置
-                .antMatchers("/api/judge/**").hasAnyRole("USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT")
-                // WEB 页面的权限设置
-                .antMatchers("/manager_user").hasAnyRole("USER_ADMIN", "ROOT")
-                .antMatchers("/manager_problem", "/manager_contest").hasAnyRole("PROBLEM_ADMIN", "ROOT");
+                .antMatchers("/api/file/test_data/**").hasAnyRole(ROLE.PA, ROLE.SU)
+                .antMatchers(HttpMethod.GET, "/api/file/image/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/file/image/**").hasAnyRole(ROLE.ALL)
+                .antMatchers("/api/judge/**").hasAnyRole(ROLE.ALL)
+                .antMatchers("/manager_user").hasAnyRole(ROLE.UA, ROLE.SU)
+                .antMatchers("/manager_problem", "/manager_contest").hasAnyRole(ROLE.PA, ROLE.SU);
     }
 
     @Override

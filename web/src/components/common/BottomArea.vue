@@ -1,22 +1,25 @@
 <template>
   <div class="bottom-area">
     <div class="flex">
-      <p>©2020 Cloud Li</p>
-      <p>MIT License</p>
-      <p>
-        <el-link type="primary"
-                 href="https://github.com/imcloudfloating/Cloud-OJ">GitHub
+      <span>© Cloud Li</span>
+      <el-divider direction="vertical"></el-divider>
+      <span>MIT License</span>
+      <el-divider direction="vertical"></el-divider>
+      <span>
+        <el-link href="https://github.com/imcloudfloating/Cloud-OJ">GitHub
         </el-link>
-      </p>
+      </span>
     </div>
-    <div class="flex" style="margin: 6px">Based on</div>
+    <span class="flex" style="margin: 6px">Based on</span>
     <div class="flex">
       <img class="framework-logo" src="@/assets/img/vue.png" alt="Vue.js">
       <a class="framework-link" style="color: #38495e"
          href="https://cn.vuejs.org/" target="_blank"><b>Vue.js</b></a>
+      <el-divider direction="vertical"></el-divider>
       <img class="framework-logo" src="@/assets/img/spring-cloud.png" alt="Spring Cloud">
       <a class="framework-link" style="color: #75b240"
          href="https://spring.io/projects/spring-cloud/" target="_blank"><b>Spring Cloud</b></a>
+      <el-divider direction="vertical"></el-divider>
       <img class="framework-logo" src="@/assets/img/docker.png" alt="Docker">
       <a class="framework-link" style="color: #4196eb"
          href="https://www.docker.com/" target="_blank"><b>Docker</b></a>
@@ -33,7 +36,7 @@ export default {
 <style scoped>
 .bottom-area {
   padding: 15px;
-  margin: 0 20px;
+  margin: 0 0 10px;
   color: black;
   font-size: 10pt;
   border-top: 1px solid #e6e6e6;
@@ -45,17 +48,12 @@ export default {
   align-items: center;
 }
 
-p {
-  margin: 0 5px;
-}
-
 .framework-logo {
   height: 20px;
 }
 
 .framework-link {
   margin-left: 5px;
-  margin-right: 15px;
   text-decoration: none;
 }
 

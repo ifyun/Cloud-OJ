@@ -30,4 +30,4 @@ logging:
     name: /app/log/file-server.log
 
 project:
-  test-data-dir: /test_data/
+  file-dir: /oj_file/

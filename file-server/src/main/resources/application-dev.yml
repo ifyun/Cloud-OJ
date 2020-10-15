@@ -27,4 +27,4 @@ logging:
     name: /log/file-server.log
 
 project:
-  test-data-dir: D:/test_data/
+  file-dir: E:/oj_file/
