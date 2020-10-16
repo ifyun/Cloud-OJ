@@ -44,6 +44,7 @@ const apiPath = {
     problem: `/api/manager/problem`,
     contest: '/api/manager/contest',
     ranking: '/api/manager/ranking',
+    contestRanking: '/api/manager/ranking/contest',
     history: '/api/manager/history',
     commit: '/api/judge/commit',
     overview: '/api/manager/user/overview'

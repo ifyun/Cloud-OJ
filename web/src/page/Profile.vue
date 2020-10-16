@@ -30,6 +30,7 @@ export default {
     if (!this.display) {
       handle401()
     }
+    document.title = '个人中心 · Cloud OJ'
   },
   components: {
     TopNavigation,

@@ -48,7 +48,7 @@ mvn-package:
     - cp -r file-server/target/*.jar docker/file-server/
     - cp -r manager-service/target/*.jar docker/manager-service/
     - cp -r judge-service/target/*.jar docker/judge-service/
-    - cp -r ./*.sql docker/mysql/
+    - cp -r mysql/init/*.sql docker/mysql/
     - du -h docker
   artifacts:
     name: "Cloud-OJ_Dockerfile"

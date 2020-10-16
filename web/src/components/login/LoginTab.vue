@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 20px">
+  <div style="margin: 25px 45px">
     <el-form ref="loginForm"
              :rules="loginRules"
              :model="loginForm">
@@ -18,7 +18,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button class="login-button" type="primary"
+        <el-button class="login-button" type="primary" round
                    :disabled="disableLogin"
                    @click="onLogin">登录
         </el-button>

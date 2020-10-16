@@ -268,3 +268,6 @@ VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3Z
 
 INSERT INTO task (task_name)
 VALUES ('send_committed');
+
+ALTER TABLE problem
+    AUTO_INCREMENT = 1000

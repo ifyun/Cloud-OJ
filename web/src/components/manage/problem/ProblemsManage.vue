@@ -11,7 +11,8 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search"
-                     @click="search(keyword)">搜索
+                     @click="search(keyword)">
+            搜索
           </el-button>
         </el-form-item>
         <el-form-item>
@@ -24,11 +25,13 @@
         <el-form-item style="float: right">
           <el-button type="success"
                      icon="el-icon-circle-plus"
-                     @click="onAddProblemClick()">添加题目
+                     @click="onAddProblemClick()">
+            添加题目
           </el-button>
         </el-form-item>
         <el-form-item style="float: right">
           <el-button icon="el-icon-refresh" @click="getProblems">
+            刷新
           </el-button>
         </el-form-item>
       </el-form>
@@ -61,22 +64,17 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180px" align="center">
+      <el-table-column label="操作" width="189px" align="center">
         <template slot-scope="scope">
-          <el-dropdown style="margin-right: 10px" trigger="click"
-                       @command="onEditClick($event, scope.row)">
-            <el-button size="mini"
-                       icon="el-icon-edit-outline">编辑
-              <i class="el-icon-arrow-down el-icon--right"></i>
+          <el-button-group>
+            <el-button size="mini" icon="el-icon-edit-outline"
+                       @click="onEditClick(scope.row)">
             </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="edit">编辑题目</el-dropdown-item>
-              <el-dropdown-item command="test-data">管理测试数据</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <el-button size="mini" type="danger" icon="el-icon-delete"
-                     @click="onDeleteClick(scope.row)">
-          </el-button>
+            <el-button size="mini" @click="manageTestData(scope.row)">管理数据</el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete"
+                       @click="onDeleteClick(scope.row)">
+            </el-button>
+          </el-button-group>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="150px" align="center">
@@ -279,16 +277,16 @@ export default {
       this.saveType = 'post'
       this.editorDialogVisible = true
     },
-    onEditClick(command, row) {
+    onEditClick(row) {
       this.selectedId = row.problemId
-      if (command === 'edit') {
-        this.saveType = 'put'
-        this.editorTitle = `编辑【${row.title}】`
-        this.editorDialogVisible = true
-      } else if (command === 'test-data') {
-        this.selectedTitle = row.title
-        this.testDataDialogVisible = true
-      }
+      this.saveType = 'put'
+      this.editorTitle = `编辑【${row.title}】`
+      this.editorDialogVisible = true
+    },
+    manageTestData(row) {
+      this.selectedId = row.problemId
+      this.selectedTitle = row.title
+      this.testDataDialogVisible = true
     },
     onDeleteClick(row) {
       this.selectedId = row.problemId

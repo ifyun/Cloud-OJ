@@ -28,13 +28,15 @@
       </el-table-column>
       <el-table-column label="操作" width="200px" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" icon="el-icon-edit"
-                     @click="onEditClick(scope.row)">编辑
-          </el-button>
-          <el-button size="mini" icon="el-icon-delete" type="danger"
-                     :disabled="scope.row.userId === 'root'"
-                     @click="onDeleteClick(scope.row)">
-          </el-button>
+          <el-button-group>
+            <el-button size="mini" icon="el-icon-edit"
+                       @click="onEditClick(scope.row)">编辑
+            </el-button>
+            <el-button size="mini" icon="el-icon-delete" type="danger"
+                       :disabled="scope.row.userId === 'root'"
+                       @click="onDeleteClick(scope.row)">
+            </el-button>
+          </el-button-group>
         </template>
       </el-table-column>
       <el-table-column label="注册时间" width="220px" align="center">

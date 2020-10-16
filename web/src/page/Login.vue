@@ -2,7 +2,8 @@
   <div style="height: 100%">
     <el-header class="header">
       <div class="header-wrapper">
-        <a href="./"><img class="logo" src="@/assets/logo.png" alt="logo"></a>
+        <a href="./"><img class="logo" src="@/assets/logo.png" align="center" alt="logo"></a>
+        <div style="font-size: 18pt; margin-left: 10px">登录/注册</div>
       </div>
     </el-header>
     <el-container class="container">
@@ -15,7 +16,7 @@
         </el-tab-pane>
       </el-tabs>
     </el-container>
-    <BottomArea/>
+    <BottomArea style="margin: 0 25px"/>
   </div>
 </template>
 
@@ -51,6 +52,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
+  box-shadow: 0 5px 8px -5px #e6e6e6;
 }
 
 .header-wrapper {
@@ -64,7 +66,7 @@ export default {
 .container {
   justify-content: center;
   align-items: flex-start;
-  height: 100% !important;
+  height: calc(100% - 150px) !important;
 }
 
 .login-tabs {

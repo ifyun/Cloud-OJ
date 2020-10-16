@@ -5,6 +5,7 @@
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`, r.*
         from (select *
               from ranking_list
+              where total_score &gt; 0
               order by total_score desc) r,
              (select @ranking := #{start}) rn
         limit #{start}, #{limit};
@@ -12,7 +13,10 @@
     </select>
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`, r.*
-        from (select * from contest_ranking_list order by total_score desc) r,
+        from (select *
+              from contest_ranking_list
+              where total_score &gt; 0
+              order by total_score desc) r,
              (select @ranking := #{start}) rn
         where contest_id = #{contestId}
         limit #{start}, #{limit};

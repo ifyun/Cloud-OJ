@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 20px">
+  <div style="margin: 25px 45px">
     <el-form ref="signupForm"
              :model="signupForm"
              :rules="rules">
@@ -36,7 +36,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button class="login-button" type="success"
+        <el-button class="login-button" type="success" round
                    :disabled="disableSignup"
                    @click="signup('signupForm')">注册
         </el-button>

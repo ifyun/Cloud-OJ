@@ -12,14 +12,22 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" width="300px" align="center">
+        <el-table-column label="开始时间" width="200px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" width="300px" align="center">
+        <el-table-column label="结束时间" width="200px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
+          </template>
+        </el-table-column>
+        <el-table-column width="200px" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" plain
+                       @click="seeRanking(scope.row)">
+              查看排行榜
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -75,6 +83,13 @@ export default {
           message: `${res.status} ${res.statusText}`
         })
       })
+    },
+    seeRanking(contest) {
+      window.sessionStorage.setItem('contest', JSON.stringify({
+        id: contest.contestId,
+        name: contest.contestName
+      }))
+      window.location.href = `./ranking`
     }
   }
 }

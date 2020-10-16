@@ -1,11 +1,12 @@
 <template>
   <el-container class="container">
-    <el-page-header v-if="problem.problemId !== undefined"
-                    :content="`${problemId}. ${problem.title}`"
-                    @back="back">
-    </el-page-header>
-    <el-divider></el-divider>
-    <div style="width: 100%" v-if="problem.problemId !== undefined">
+    <el-card>
+      <el-page-header v-if="problem.problemId !== undefined"
+                      :content="`${problemId}. ${problem.title}`"
+                      @back="back">
+      </el-page-header>
+    </el-card>
+    <div style="width: 100%; margin-top: 20px" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
           <el-card style="height: 964px;overflow: auto">

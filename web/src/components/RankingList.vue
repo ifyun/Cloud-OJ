@@ -1,6 +1,10 @@
 <template>
   <el-container class="container" v-loading="loading">
     <el-card style="width: 100%">
+      <div v-if="contest != null"
+           style="font-size: 14pt;font-weight: bold; margin-bottom: 20px">
+        {{ contest.name }}
+      </div>
       <el-table :data="ranking.data" stripe>
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
@@ -55,6 +59,8 @@ import {apiPath} from "@/js/util";
 export default {
   name: "RankingList",
   mounted() {
+    this.contest = JSON.parse(window.sessionStorage.getItem('contest'))
+    window.sessionStorage.removeItem('contest')
     this.getRankingList()
   },
   data() {
@@ -64,6 +70,7 @@ export default {
         data: [],
         count: 0
       },
+      contest: {},
       currentPage: 1,
       pageSize: 25
     }
@@ -72,7 +79,8 @@ export default {
     getRankingList() {
       this.loading = true
       this.$axios({
-        url: apiPath.ranking,
+        url: this.contest == null ?
+            apiPath.ranking : `${apiPath.contestRanking}/${this.contest.id}`,
         method: 'get',
         params: {
           page: this.currentPage,

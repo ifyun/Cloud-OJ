@@ -1,13 +1,12 @@
 <template>
   <el-container class="container">
-    <div v-if="contestId != null" style="width: 100%">
-      <el-page-header style="align-self: flex-start; margin-top: 10px;"
+    <el-card v-if="contestId != null" style="width: 100%">
+      <el-page-header style="align-self: flex-start;"
                       @back="back"
                       :content="contestName">
       </el-page-header>
-      <el-divider></el-divider>
-    </div>
-    <el-card style="width: 100%">
+    </el-card>
+    <el-card style="width: 100%; margin-top: 20px">
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>

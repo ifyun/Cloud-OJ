@@ -5,11 +5,13 @@
     <el-form :inline="true">
       <el-form-item>
         <el-button type="success" icon="el-icon-circle-plus"
-                   @click="onAddContestClick">创建新竞赛/作业
+                   @click="onAddContestClick">
+          创建新竞赛/作业
         </el-button>
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-refresh" @click="getContests">
+          刷新
         </el-button>
       </el-form-item>
     </el-form>
@@ -32,20 +34,15 @@
       <!-- Operation -->
       <el-table-column label="操作" width="200px" align="center">
         <template slot-scope="scope">
-          <el-dropdown style="margin-right: 10px" trigger="click"
-                       @command="onEditClick($event, scope.$index)">
-            <el-button size="mini"
-                       icon="el-icon-edit-outline">编辑
-              <i class="el-icon-arrow-down el-icon--right"></i>
+          <el-button-group>
+            <el-button size="mini" icon="el-icon-edit-outline"
+                       @click="onEditClick(scope.$index)">
             </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="edit">编辑</el-dropdown-item>
-              <el-dropdown-item command="manage-problems">题目管理</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <el-button size="mini" type="danger" icon="el-icon-delete"
-                     @click="onDeleteClick(scope.$index)">
-          </el-button>
+            <el-button size="mini" @click="manageProblems(scope.$index)">题目管理</el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete"
+                       @click="onDeleteClick(scope.$index)">
+            </el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -189,17 +186,15 @@ export default {
         }
       })
     },
-    onEditClick(command, index) {
-      // 克隆对象，避免编辑时与表格同步
+    onEditClick(index) {
       this.selectedContest = copyObject(this.contests.data[index])
-      // 编辑
-      if (command === 'edit') {
-        this.saveType = 'put'
-        this.contestDialogTitle = '编辑'
-        this.editorDialogVisible = true
-      } else if (command === 'manage-problems') {
-        this.problemsDialogVisible = true
-      }
+      this.saveType = 'put'
+      this.contestDialogTitle = '编辑'
+      this.editorDialogVisible = true
+    },
+    manageProblems(index) {
+      this.selectedContest = copyObject(this.contests.data[index])
+      this.problemsDialogVisible = true
     },
     onAddContestClick() {
       this.saveType = 'post'

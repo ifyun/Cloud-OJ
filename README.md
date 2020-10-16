@@ -42,7 +42,7 @@
 搭建数据库和消息队列，两种方式：
 
 1. 安装 Docker，直接运行 `mysql` 目录下的 `start.cmd`（For Debug）
-2. 手动安装 RabbitMQ 和 MySQL，使用 `oj-database.sql` 建库建表（For Deploy）
+2. 手动安装 RabbitMQ 和 MySQL，使用 `./mysql/init/init-database.sql` 建库建表（For Deploy）
 
 设置测试数据目录临时目录：
 
