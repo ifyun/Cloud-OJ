@@ -199,14 +199,17 @@ export default {
       }
     },
     getProblem() {
-      let url = `${apiPath.problem}/${this.problemId}`
-      let params = {}
+      let url = `${apiPath.problem}/${userInfo()['roleId'] >= 2 ? 'pro/' : ''}${this.problemId}`
+      let params = {userId: userInfo().userId}
       if (this.contestId !== undefined) {
-        params = {contestId: this.contestId}
+        params.contestId = this.contestId
       }
       this.$axios({
         url: url,
         method: 'get',
+        headers: {
+          'token': userInfo().token
+        },
         params: params
       }).then((res) => {
         if (res.status === 200) {

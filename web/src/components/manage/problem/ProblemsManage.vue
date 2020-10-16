@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column label="题目名称" width="250px">
         <template slot-scope="scope">
-          <el-link type="primary">
+          <el-link type="primary" :href="`./commit?problemId=${scope.row.problemId}`">
             <b>{{ scope.row.title }}</b>
           </el-link>
         </template>
