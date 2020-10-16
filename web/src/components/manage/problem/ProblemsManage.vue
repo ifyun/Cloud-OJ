@@ -249,17 +249,28 @@ export default {
           title: `${row.title}已${state}`,
           message: `${res.status} ${res.statusText}`
         })
-        this.getProblems()
       }).catch((error) => {
         let res = error.response
-        if (res.status === 401) {
-          handle401()
-        } else {
-          this.$notify.error({
-            title: `${state}失败`,
-            message: `${res.status} ${res.statusText}`
-          })
+        switch (res.status) {
+          case 401:
+            handle401()
+            break
+          case 400:
+            this.$notify.error({
+              offset: 50,
+              title: `${state}失败`,
+              message: `${res.data.text}`
+            })
+            break
+          default:
+            this.$notify.error({
+              offset: 50,
+              title: `${state}失败`,
+              message: `${res.status} ${res.statusText}`
+            })
         }
+      }).finally(() => {
+        this.getProblems()
       })
     },
     onAddProblemClick() {
@@ -298,22 +309,34 @@ export default {
             }
           }).then((res) => {
             this.deleteDialogVisible = false
-            this.getProblems()
             this.$notify({
+              offset: 50,
               title: `${this.selectedTitle}已删除`,
               type: 'info',
               message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
             let res = error.response
-            if (res.status === 401) {
-              handle401()
-            } else {
-              this.$notify.error({
-                title: `${this.selectedTitle}删除失败`,
-                message: `${res.status} ${res.statusText}`
-              })
+            switch (res.status) {
+              case 401:
+                handle401()
+                break
+              case 400:
+                this.$notify.error({
+                  offset: 50,
+                  title: `【${this.selectedTitle}】删除失败`,
+                  message: `${res.data.text}`
+                })
+                break
+              default:
+                this.$notify.error({
+                  offset: 50,
+                  title: `【${this.selectedTitle}】删除失败`,
+                  message: `${res.status} ${res.statusText}`
+                })
             }
+          }).finally(() => {
+            this.getProblems()
           })
         } else {
           return false

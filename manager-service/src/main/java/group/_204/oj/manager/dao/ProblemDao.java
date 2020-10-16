@@ -22,5 +22,7 @@ public interface ProblemDao {
 
     int delete(int problemId);
 
+    int inContest(int problemId);
+
     int toggleEnable(int problemId, boolean enable);
 }

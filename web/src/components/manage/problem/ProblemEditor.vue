@@ -234,19 +234,30 @@ export default {
         this.$emit('update:dialogVisible', false)
         this.$emit('refresh')
         this.$notify({
-          title: `${this.problem.title}已${type === 'post' ? '创建' : '保存'}`,
+          offset: 50,
+          title: `【${this.problem.title}】已${type === 'post' ? '创建' : '保存'}`,
           type: 'success',
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
         let res = error.response
-        if (res.status === 401) {
-          handle401()
-        } else {
-          this.$notify.error({
-            title: `${this.problem.title}${type === 'post' ? '创建' : '保存'}失败`,
-            message: `${res.status} ${res.statusText}`
-          })
+        switch (res.status) {
+          case 401:
+            handle401()
+            break
+          case 400:
+            this.$notify.error({
+              offset: 50,
+              title: `【${this.problem.title}】保存失败`,
+              message: `${res.data.text}`
+            })
+            break
+          default:
+            this.$notify.error({
+              offset: 50,
+              title: `【${this.problem.title}】${type === 'post' ? '创建' : '保存'}失败`,
+              message: `${res.status} ${res.statusText}`
+            })
         }
       })
     }

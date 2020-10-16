@@ -83,6 +83,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         this.$notify.error({
+          offset: 50,
           title: '获取排行榜失败',
           message: `${res.status} ${res.statusText}`
         })

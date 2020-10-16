@@ -134,7 +134,8 @@ export default {
             data: JSON.stringify(contest)
           }).then((res) => {
             this.$notify({
-              title: `${contest.contestName}已保存`,
+              offset: 50,
+              title: `【${contest.contestName}】已保存`,
               type: 'success',
               message: `Status: ${res.status}`
             })
@@ -145,7 +146,8 @@ export default {
               handle401()
             } else {
               this.$notify.error({
-                title: `${contest.contestName}保存失败`,
+                offset: 50,
+                title: `【${contest.contestName}】保存失败`,
                 message: `${error.response.status}`
               })
             }

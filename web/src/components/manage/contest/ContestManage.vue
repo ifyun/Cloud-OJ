@@ -182,6 +182,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: `获取数据失败`,
             message: `${error.response.status}`
           })
@@ -227,7 +228,8 @@ export default {
             this.deleteDialogVisible = false
             this.getContests()
             this.$notify.info({
-              title: `${this.selectedContest.contestName}已删除`,
+              offset: 50,
+              title: `【${this.selectedContest.contestName}】已删除`,
               message: `Status: ${res.status}`
             })
           }).catch((error) => {
@@ -235,7 +237,8 @@ export default {
               handle401()
             } else {
               this.$notify.error({
-                title: `${this.selectedContest.contestName}删除失败`,
+                offset: 50,
+                title: `【${this.selectedContest.contestName}】删除失败`,
                 message: `${error.response.status}`
               })
             }

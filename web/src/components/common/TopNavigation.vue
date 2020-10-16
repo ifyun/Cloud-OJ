@@ -162,10 +162,10 @@ export default {
 
 .avatar {
   cursor: pointer;
-  height: 35px;
-  width: 35px;
+  height: 32px;
+  width: 32px;
   border: 1px solid #e0e0e0;
-  border-radius: 20px;
+  border-radius: 16px;
 }
 
 .el-dropdown-link {

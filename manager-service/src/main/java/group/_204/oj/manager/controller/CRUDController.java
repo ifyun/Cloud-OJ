@@ -1,5 +1,6 @@
 package group._204.oj.manager.controller;
 
+import group._204.oj.manager.model.Msg;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import group._204.oj.manager.model.PagedResult;
@@ -38,13 +39,11 @@ public interface CRUDController {
     /**
      * 更新操作
      *
-     * @param result 操作结果
+     * @param msg 消息
      * @return {@link ResponseEntity} 200：更新成功，304：未修改
      */
-    default ResponseEntity<Void> buildPUTResponse(boolean result) {
-        return result ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+    default ResponseEntity<?> buildPUTResponse(Msg msg) {
+        return ResponseEntity.status(msg.getStatus()).body(msg);
     }
 
     /**
@@ -53,7 +52,7 @@ public interface CRUDController {
      * @param result 异常
      * @return {@link ResponseEntity} 201：已创建，400：请求数据不正确
      */
-    default ResponseEntity<Object> buildPOSTResponse(boolean result) {
+    default ResponseEntity<?> buildPOSTResponse(boolean result) {
         return result ?
                 ResponseEntity.status(HttpStatus.CREATED).build() :
                 ResponseEntity.badRequest().build();
@@ -62,12 +61,10 @@ public interface CRUDController {
     /**
      * 删除操作
      *
-     * @param result 操作结果
-     * @return {@link ResponseEntity} 204：删除成功，410：要删除的数据不存在
+     * @param msg 异常
+     * @return {@link ResponseEntity} 204：删除成功
      */
-    default ResponseEntity<Void> buildDELETEResponse(boolean result) {
-        return result ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.status(HttpStatus.GONE).build();
+    default ResponseEntity<?> buildDELETEResponse(Msg msg) {
+        return ResponseEntity.status(msg.getStatus()).body(msg);
     }
 }

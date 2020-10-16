@@ -34,12 +34,12 @@ public class UserController implements CRUDController {
     }
 
     @PutMapping("pro")
-    public ResponseEntity<Void> updateUser(@RequestBody User user) {
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
         return buildPUTResponse(userService.updateUser(user));
     }
 
     @DeleteMapping("pro/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         return buildDELETEResponse(userService.deleteUser(userId));
     }
 }

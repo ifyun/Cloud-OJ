@@ -106,6 +106,7 @@ export default {
         this.problems = res.data
       }).catch((error) => {
         this.$notify.error({
+          offset: 50,
           title: `获取数据失败`,
           message: `${error.response.status}`
         })
@@ -123,20 +124,23 @@ export default {
         }
       }).then((res) => {
         this.$notify({
-          title: `${title}移除成功`,
+          offset: 50,
+          title: `【${title}】移除成功`,
           type: 'success',
           message: `Status: ${res.status}`
         })
-        this.getProblems()
       }).catch((error) => {
         if (error.response.status === 401) {
           handle401()
         } else {
           this.$notify.error({
-            title: `${title}移除失败`,
+            offset: 50,
+            title: `【${title}】移除失败`,
             message: `${error.response.status}`
           })
         }
+      }).finally(() => {
+        this.getProblems()
       })
     }
   }

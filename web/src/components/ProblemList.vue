@@ -133,6 +133,7 @@ export default {
         this.loading = false
         let res = error.response
         this.$notify.error({
+          offset: 50,
           title: '获取题目失败',
           message: `${res.status} ${res.statusText}`
         })

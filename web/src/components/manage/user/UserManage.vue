@@ -198,6 +198,7 @@ export default {
             this.getUsers()
             this.deleteDialogVisible = false
             this.$notify({
+              offset: 50,
               type: 'info',
               title: `用户【${this.selectedUser.userId}】已删除`,
               message: `${res.status} ${res.statusText}`
@@ -208,6 +209,7 @@ export default {
               handle401()
             } else {
               this.$notify.error({
+                offset: 50,
                 title: `用户【${this.selectedUser.userId}】删除失败`,
                 message: `${res.status} ${res.statusText}`
               })

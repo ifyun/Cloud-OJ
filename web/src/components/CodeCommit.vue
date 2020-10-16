@@ -264,6 +264,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: '提交失败',
             message: `${res.status} ${res.statusText}`
           })
@@ -308,6 +309,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: '无法获取结果',
             message: `${res.status} ${res.statusText}`
           })

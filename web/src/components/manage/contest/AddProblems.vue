@@ -87,6 +87,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: `获取数据失败`,
             message: `${error.response.status}`
           })
@@ -105,20 +106,23 @@ export default {
         }
       }).then((res) => {
         this.$notify({
+          offset: 50,
           type: 'success',
-          title: `${title}已添加`,
+          title: `【${title}】已添加`,
           message: `${res.status}`
         })
-        this.getProblems()
       }).catch((error) => {
         if (error.response.status === 401) {
           handle401()
         } else {
           this.$notify.error({
-            title: `${title}添加失败`,
+            offset: 50,
+            title: `【${title}】添加失败`,
             message: `${error.response.status}`
           })
         }
+      }).finally(() => {
+        this.getProblems()
       })
     }
   }

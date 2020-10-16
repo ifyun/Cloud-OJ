@@ -1,6 +1,7 @@
 package group._204.oj.manager.service;
 
 import group._204.oj.manager.dao.UserDao;
+import group._204.oj.manager.model.Msg;
 import group._204.oj.manager.model.User;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,13 @@ public class UserService {
         return userDao.add(user) == 1;
     }
 
-    public boolean updateUser(User user) {
-        return userDao.update(user) == 1;
+    public Msg updateUser(User user) {
+        int status = userDao.update(user) == 1 ? 200 : 304;
+        return new Msg(status, null);
     }
 
-    public boolean deleteUser(String userId) {
-        return userDao.delete(userId) == 1;
+    public Msg deleteUser(String userId) {
+        int status = userDao.delete(userId) == 1 ? 204 : 410;
+        return new Msg(status);
     }
 }

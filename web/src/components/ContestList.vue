@@ -68,7 +68,12 @@ export default {
       }).then((res) => {
         this.contests = res.data
       }).catch((error) => {
-        console.log(error)
+        let res = error.response
+        this.$notify.error({
+          offset: 50,
+          title: '获取竞赛/作业失败',
+          message: `${res.status} ${res.statusText}`
+        })
       })
     }
   }

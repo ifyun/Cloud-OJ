@@ -96,6 +96,12 @@
             category      = #{category}
         where problem_id = #{problemId}
     </update>
+    <select id="inContest" resultType="java.lang.Integer">
+        select count(problem_id)
+        from `contest-problem`
+        where problem_id = #{problemId}
+        limit 1;
+    </select>
     <delete id="delete">
         delete
         from problem

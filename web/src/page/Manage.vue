@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       userInfo: userInfo(),
-      collapse: false,
+      collapse: true,
       active: '',
       currentView: 'ManagerProfile'
     }

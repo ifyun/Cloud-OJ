@@ -2,6 +2,7 @@ package group._204.oj.manager.service;
 
 import group._204.oj.manager.dao.ContestDao;
 import group._204.oj.manager.model.Contest;
+import group._204.oj.manager.model.Msg;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,12 +30,14 @@ public class ContestService {
         return contestDao.addContest(contest) == 1;
     }
 
-    public boolean updateContest(Contest contest) {
-        return contestDao.updateContest(contest) == 1;
+    public Msg updateContest(Contest contest) {
+        int status = contestDao.updateContest(contest) == 1 ? 200 : 304;
+        return new Msg(status);
     }
 
-    public boolean deleteContest(int contestId) {
-        return contestDao.deleteContest(contestId) == 1;
+    public Msg deleteContest(int contestId) {
+        int status = contestDao.deleteContest(contestId) == 1 ? 204 : 401;
+        return new Msg(status);
     }
 
     public List<List<?>> getProblemsNotInContest(int contestId, int page, int limit) {
@@ -49,7 +52,8 @@ public class ContestService {
         return contestDao.addProblem(contestId, problemId) == 1;
     }
 
-    public boolean deleteProblemFromContest(int contestId, int problemId) {
-        return contestDao.deleteProblem(contestId, problemId) == 1;
+    public Msg deleteProblemFromContest(int contestId, int problemId) {
+        int status = contestDao.deleteProblem(contestId, problemId) == 1 ? 204 : 410;
+        return new Msg(status);
     }
 }

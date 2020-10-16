@@ -97,14 +97,16 @@ export default {
             data: JSON.stringify(data)
           }).then((res) => {
             this.$notify({
+              offset: 50,
               type: 'success',
-              title: `用户${this.signupForm.name}注册成功`,
+              title: `用户 ${this.signupForm.name} 注册成功`,
               message: `${res.status}`
             })
             this.$refs[formName].resetFields()
             this.$refs['deleteForm'].clearValidate()
           }).catch((error) => {
             this.$notify.error({
+              offset: 50,
               title: `注册失败`,
               message: `${error.response.status}`
             })

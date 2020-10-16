@@ -13,7 +13,8 @@ import 'echarts/theme/sakura'
 import 'echarts/theme/macarons'
 import {apiPath, userInfo} from "@/js/util";
 
-let year = new Date().getFullYear()
+const year = new Date().getFullYear()
+const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#']
 
 export default {
   name: "Overview",
@@ -25,7 +26,6 @@ export default {
   },
   data() {
     return {
-      languages: ['C', 'C++', 'Java', 'Python', 'Bash', 'C#'],
       pieOption: {
         title: {
           text: '语言偏好',
@@ -41,7 +41,7 @@ export default {
           left: 'left',
           top: '50',
           orient: 'vertical',
-          data: this.languages
+          data: languages
         },
         series: [
           {
@@ -129,7 +129,7 @@ export default {
 
       for (let i = 0; i < preference.length; i++) {
         preferenceData.push({
-          name: this.languages[preference[i]['language']],
+          name: languages[preference[i]['language']],
           value: preference[i]['count']
         })
       }

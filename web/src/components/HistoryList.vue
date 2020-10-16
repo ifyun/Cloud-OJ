@@ -137,6 +137,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: '获取提交记录失败',
             message: `${res.status} ${res.statusText}`
           })

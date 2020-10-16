@@ -44,12 +44,12 @@ public class ProblemController implements CRUDController {
     }
 
     @PutMapping("pro")
-    public ResponseEntity<Void> update(@RequestBody Problem problem) {
+    public ResponseEntity<?> update(@RequestBody Problem problem) {
         return buildPUTResponse(problemService.updateProblem(problem));
     }
 
     @PutMapping("pro/{problemId}")
-    public ResponseEntity<Void> updateEnable(@PathVariable int problemId, boolean enable) {
+    public ResponseEntity<?> updateEnable(@PathVariable int problemId, boolean enable) {
         return buildPUTResponse(problemService.toggleEnable(problemId, enable));
     }
 
@@ -59,7 +59,7 @@ public class ProblemController implements CRUDController {
     }
 
     @DeleteMapping("pro/{problemId}")
-    public ResponseEntity<Void> delete(@PathVariable int problemId) {
+    public ResponseEntity<?> delete(@PathVariable int problemId) {
         return buildDELETEResponse(problemService.deleteProblem(problemId));
     }
 }

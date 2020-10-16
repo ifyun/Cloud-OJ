@@ -1,8 +1,8 @@
 import qs from 'qs'
 
 let tagColor = 1,
-    colorMap = new Map(),
-    tokenKey = 'cloud_oj_token'
+    colorMap = new Map()
+const tokenKey = 'cloud_oj_token'
 
 function getTagColor(tag) {
     if (colorMap[tag] === undefined) {
@@ -32,7 +32,7 @@ function copyObject(src) {
     return JSON.parse(JSON.stringify(src))
 }
 
-let apiPath = {
+const apiPath = {
     login: '/api/login',
     logoff: '/api/logoff',
     testDataManage: '/api/file/test_data',

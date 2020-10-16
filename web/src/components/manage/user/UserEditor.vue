@@ -124,6 +124,7 @@ export default {
             this.$emit('refresh')
             this.$emit('update:dialogVisible', false)
             this.$notify({
+              offset: 50,
               type: 'success',
               title: type === 'post' ? `用户【${this.user.userId}】已创建` : '已保存',
               message: `${res.status} ${res.statusText}`
@@ -134,6 +135,7 @@ export default {
               handle401()
             } else {
               this.$notify.error({
+                offset: 50,
                 title: type === 'post' ? `用户【${this.user.userId}】创建失败` : '保存失败',
                 message: `${res.status} ${res.statusText}`
               })
