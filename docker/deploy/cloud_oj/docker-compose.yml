@@ -37,7 +37,7 @@ services:
       DB_POOL_SIZE: 12
 
   web:
-    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/cloud-oj-web
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
     networks:
       - oj-net
     ports:
