@@ -2,14 +2,14 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2"
   DOCKER_HOST: tcp://172.16.15.212:2375
   # Image tag
-  API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
-  REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloudli/register-center
-  MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/monitor-service
-  FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloudli/file-server
-  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
-  WEB: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
-  JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
-  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloudli/oj-mysql:8.0
+  API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/api-gateway
+  REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/register-center
+  MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor-service
+  FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
+  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
+  WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/cloud-oj-web
+  JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
+  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
 cache:
   key: maven
   paths:

@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   eureka:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/register-center
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/register-center
     networks:
       - oj-net
     ports:
@@ -11,7 +11,7 @@ services:
       - "log:/app/log"
 
   monitor_service:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/monitor-service
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor-service
     networks:
       - oj-net
     ports:
@@ -22,7 +22,7 @@ services:
       EUREKA_SERVER: "eureka:8761"
 
   gateway:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/api-gateway
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/api-gateway
     networks:
       - oj-net
     ports:
@@ -37,7 +37,7 @@ services:
       DB_POOL_SIZE: 12
 
   web:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/cloud-oj-web
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/cloud-oj-web
     networks:
       - oj-net
     ports:
@@ -46,7 +46,7 @@ services:
       API_HOST: "gateway"
 
   manager_service:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/manager-service
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
     networks:
       - oj-net
     volumes:
@@ -60,7 +60,7 @@ services:
       DB_POOL_SIZE: 12
 
   file_server:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/file-server
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
     networks:
       - oj-net
     volumes:
@@ -70,7 +70,7 @@ services:
       EUREKA_SERVER: "eureka:8761"
 
   judge_service:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/judge-service
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
     networks:
       - oj-net
     volumes:
@@ -92,7 +92,7 @@ services:
       QUEUE_CAPACITY: 200
 
   mysql:
-    image: registry.cn-hangzhou.aliyuncs.com/cloudli/oj-mysql:8.0
+    image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
     networks:
       - oj-net
     ports:
