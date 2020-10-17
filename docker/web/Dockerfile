@@ -1,3 +1,5 @@
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY nginx.conf nginx.https.conf /templates/
 COPY dist /usr/share/nginx/html
+COPY config.sh /docker-entrypoint.d/00-config.sh
+RUN chmod +x /docker-entrypoint.d/00-config.sh
