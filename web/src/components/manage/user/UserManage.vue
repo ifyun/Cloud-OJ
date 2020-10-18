@@ -5,11 +5,13 @@
     <el-form :inline="true">
       <el-form-item>
         <el-button icon="el-icon-circle-plus" type="success"
-                   @click="onAddClick">创建新用户
+                   @click="onAddClick">
+          创建新用户
         </el-button>
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-refresh" @click="getUsers">
+          刷新
         </el-button>
       </el-form-item>
     </el-form>

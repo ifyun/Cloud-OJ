@@ -2,6 +2,7 @@
   <div>
     <el-upload ref="upload"
                :action="uploadUrl"
+               :multiple="true"
                :auto-upload="false"
                :data="{'problemId': this.problemId}"
                :headers="uploadHeaders"
