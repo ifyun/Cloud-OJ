@@ -31,7 +31,7 @@
       <el-table :data="problems.data" v-loading="loading">
         <el-table-column label="ID" prop="problemId" width="100px" align="center">
         </el-table-column>
-        <el-table-column label="题目名称" width="270px">
+        <el-table-column label="题目名称" width="260px">
           <template slot-scope="scope">
             <el-link type="primary"
                      :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
@@ -39,7 +39,16 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="分数" prop="score" width="100px" align="right">
+        <el-table-column align="left" width="110px">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.result !== undefined"
+                    style="cursor: pointer" effect="plain"
+                    :type="resultTags[scope.row.result].type">
+              <i :class="resultTags[scope.row.result].icon">
+                {{ resultTags[scope.row.result].text }}
+              </i>
+            </el-tag>
+          </template>
         </el-table-column>
         <el-table-column v-if="contestId == null" label="通过人数" width="120px" align="right">
           <template slot-scope="scope">
@@ -65,7 +74,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="160px" align="center">
+        <el-table-column label="分数" prop="score" width="100px" align="right">
+        </el-table-column>
+        <el-table-column label="创建时间" width="180px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row.createAt }}</i>
           </template>
@@ -105,7 +116,16 @@ export default {
       pageSize: 25,
       currentPage: 1,
       keyword: '',
-      showKeyword: false
+      showKeyword: false,
+      resultTags: [
+        {text: '完全正确', type: 'success', icon: 'el-icon-success'},
+        {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
+        {text: '部分通过', type: 'warning', icon: 'el-icon-warning'},
+        {text: '答案错误', type: 'danger', icon: 'el-icon-error'},
+        {text: '编译错误', type: 'info', icon: 'el-icon-info'},
+        {text: '运行错误', type: 'info', icon: 'el-icon-info'},
+        {text: '判题异常', type: 'error', icon: 'el-icon-error'}
+      ]
     }
   },
   methods: {

@@ -24,7 +24,7 @@
         </el-table-column>
         <el-table-column width="200px" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" plain
+            <el-button type="primary" size="medium" plain
                        @click="seeRanking(scope.row)">
               查看排行榜
             </el-button>
