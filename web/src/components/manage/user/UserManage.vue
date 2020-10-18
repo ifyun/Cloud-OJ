@@ -16,7 +16,10 @@
     <el-table :data="users.data" border stripe v-loading="loading">
       <el-table-column label="ID" prop="userId" width="150px">
       </el-table-column>
-      <el-table-column label="用户名/昵称" prop="name">
+      <el-table-column label="用户名" prop="name">
+        <template slot-scope="scope">
+          <b>{{ scope.row.name }}</b>
+        </template>
       </el-table-column>
       <el-table-column label="角色/权限" width="200px" align="center">
         <template slot-scope="scope">
@@ -48,7 +51,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 25, 50]"
+                   :page-sizes="[10, 20, 30, 50]"
                    :page-size.sync="pageSize"
                    :total="users.count"
                    :current-page.sync="currentPage"
@@ -125,7 +128,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 25,
+      pageSize: 20,
       deleteForm: {
         checkUserId: ''
       },

@@ -42,7 +42,7 @@
       <el-pagination style="margin-top: 10px"
                      background
                      layout="total, sizes, prev, pager, next, jumper"
-                     :page-sizes="[10, 25, 50, 100]"
+                     :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="ranking.count"
                      :current-page.sync="currentPage"
@@ -72,7 +72,7 @@ export default {
       },
       contest: {},
       currentPage: 1,
-      pageSize: 25
+      pageSize: 20
     }
   },
   methods: {

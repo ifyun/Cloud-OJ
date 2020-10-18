@@ -85,7 +85,7 @@
       <el-pagination style="margin-top: 10px"
                      background
                      layout="total, sizes, prev, pager, next, jumper"
-                     :page-sizes="[10, 25, 50, 100]"
+                     :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="problems.count"
                      :current-page.sync="currentPage"
@@ -113,7 +113,7 @@ export default {
         data: [],
         count: 0
       },
-      pageSize: 25,
+      pageSize: 20,
       currentPage: 1,
       keyword: '',
       showKeyword: false,

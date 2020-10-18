@@ -19,7 +19,10 @@
     <el-table :data="contests.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
-      <el-table-column label="名称" prop="contestName" width="300px">
+      <el-table-column label="名称" width="300px">
+        <template slot-scope="scope">
+          <b>{{ scope.row.contestName }}</b>
+        </template>
       </el-table-column>
       <el-table-column label="开始时间" align="center">
         <template slot-scope="scope">
@@ -49,7 +52,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 25, 50]"
+                   :page-sizes="[10, 20, 30, 50]"
                    :page-size.sync="pageSize"
                    :total="contests.count"
                    :current-page.sync="currentPage"
@@ -140,7 +143,7 @@ export default {
         {id: 5, name: 'C#'}
       ],
       enabledLanguages: [],
-      pageSize: 25,
+      pageSize: 20,
       currentPage: 1,
       editorDialogVisible: false,
       deleteDialogVisible: false,

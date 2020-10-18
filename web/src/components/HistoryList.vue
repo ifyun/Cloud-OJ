@@ -56,7 +56,7 @@
       <el-pagination style="margin-top: 10px"
                      background
                      layout="total, sizes, prev, pager, next, jumper"
-                     :page-sizes="[10, 25, 50, 100]"
+                     :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="histories.count"
                      :current-page.sync="currentPage"
@@ -83,7 +83,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 25,
+      pageSize: 20,
       resultTags: [
         {text: '完全正确', type: 'success', icon: 'el-icon-success'},
         {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},

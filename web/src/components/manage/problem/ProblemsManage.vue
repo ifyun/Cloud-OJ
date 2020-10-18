@@ -86,7 +86,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 25, 50]"
+                   :page-sizes="[10, 20, 30, 50]"
                    :page-size.sync="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
@@ -165,7 +165,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 25,
+      pageSize: 20,
       editorTitle: '',
       editorDialogVisible: false,
       testDataDialogVisible: false,
@@ -208,6 +208,7 @@ export default {
           handle401()
         } else {
           this.$notify.error({
+            offset: 50,
             title: `获取数据失败`,
             message: `${error.response.status}`
           })
@@ -243,8 +244,9 @@ export default {
         }
       }).then((res) => {
         this.$notify({
+          offset: 50,
           type: value === true ? 'success' : 'info',
-          title: `${row.title}已${state}`,
+          title: `【${row.title}】已${state}`,
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -256,14 +258,14 @@ export default {
           case 400:
             this.$notify.error({
               offset: 50,
-              title: `${state}失败`,
+              title: `【${row.title}】${state}失败`,
               message: `${res.data.text}`
             })
             break
           default:
             this.$notify.error({
               offset: 50,
-              title: `${state}失败`,
+              title: `【${row.title}】${state}失败`,
               message: `${res.status} ${res.statusText}`
             })
         }
