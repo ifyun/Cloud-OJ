@@ -4,11 +4,13 @@
     <ProblemList
         :contest-id="this.contestId"
         :contest-name="this.contestName"/>
+    <BottomArea style="margin: 50px 45px 45px"/>
   </div>
 </template>
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
+import BottomArea from "@/components/common/BottomArea"
 import ProblemList from "@/components/ProblemList"
 import {searchParams} from "@/js/util";
 
@@ -26,6 +28,7 @@ export default {
   },
   components: {
     TopNavigation,
+    BottomArea,
     ProblemList
   }
 }

@@ -12,7 +12,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <BottomArea class="about"/>
+      <BottomArea style="width: 100%;margin-top: 50px;"/>
     </el-container>
   </div>
 </template>
@@ -53,10 +53,5 @@ export default {
   flex-direction: column;
   align-items: center;
   max-width: 1200px;
-}
-
-.about {
-  width: 100%;
-  margin-top: 100px;
 }
 </style>

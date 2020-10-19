@@ -3,7 +3,7 @@
     <el-header class="header">
       <div class="header-wrapper">
         <a href="./"><img class="logo" src="@/assets/logo.png" align="center" alt="logo"></a>
-        <div style="font-size: 18pt; margin-left: 10px">登录/注册</div>
+        <div style="font-size: 16pt; margin-left: 10px">登录/注册</div>
       </div>
     </el-header>
     <el-container class="container">
@@ -41,11 +41,6 @@ export default {
 </script>
 
 <style scoped>
-.logo {
-  height: 35px;
-  border-radius: 5px;
-}
-
 .header {
   position: fixed;
   margin: 0 auto;

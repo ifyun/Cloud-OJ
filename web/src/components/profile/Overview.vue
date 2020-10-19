@@ -2,15 +2,15 @@
   <div>
     <ECharts theme="macarons" :options="pieOption" style=""/>
     <el-divider></el-divider>
-    <ECharts theme="sakura" :options="activitiesOption" style="width: 100%;"/>
+    <ECharts theme="royal" :options="activitiesOption" style="width: 100%;"/>
   </div>
 </template>
 
 <script>
 import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/pie'
-import 'echarts/theme/sakura'
 import 'echarts/theme/macarons'
+import 'echarts/theme/royal'
 import {apiPath, userInfo} from "@/js/util";
 
 const year = new Date().getFullYear()
@@ -57,7 +57,7 @@ export default {
       activitiesOption: {
         title: {
           top: 0,
-          text: `${year}年的做题情况`,
+          text: '年度做题情况',
           textStyle: {
             color: '#333'
           }
@@ -115,6 +115,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         this.$notify.error({
+          offset: 50,
           title: '获取数据失败',
           message: `${res.status} ${res.statusText}`
         })

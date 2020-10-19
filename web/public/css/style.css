@@ -21,6 +21,22 @@ html, body {
     border-bottom: solid 1px #e6e6e6;
 }
 
+.logo {
+    height: 32px;
+    border-radius: 5px;
+}
+
+.logo-div {
+    display: flex;
+    align-items: center;
+}
+
+.app-name {
+    margin-left: 6px;
+    font-weight: bold !important;
+    font-size: 16pt !important;
+}
+
 .tag {
     cursor: pointer;
     border-radius: 20px;

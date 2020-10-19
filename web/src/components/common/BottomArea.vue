@@ -6,7 +6,10 @@
       <span>MIT License</span>
       <el-divider direction="vertical"></el-divider>
       <span>
-        <el-link href="https://github.com/imcloudfloating/Cloud-OJ">GitHub
+        <img height="16" align="center" src="@/assets/img/github.svg" alt="GitHub Link">
+        <el-link style="margin-left: 5px" target="_blank"
+                 href="https://github.com/imcloudfloating/Cloud-OJ">
+          GitHub
         </el-link>
       </span>
     </div>

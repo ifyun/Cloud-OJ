@@ -3,10 +3,9 @@
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
         <el-col :span="4">
-          <div>
-            <a href="/">
-              <img class="logo" src="@/assets/logo.png" alt="logo"/>
-            </a>
+          <div class="logo-div">
+            <img class="logo" src="@/assets/logo.png" alt="logo"/>
+            <el-link class="app-name" type="primary" href="/">Cloud OJ</el-link>
           </div>
         </el-col>
         <el-col :span="16" style="display: flex; justify-content: center">
@@ -137,12 +136,6 @@ export default {
 </script>
 
 <style scoped>
-.logo {
-  height: 35px;
-  float: left;
-  border-radius: 5px;
-}
-
 .top-nav {
   border: none !important;
 }
