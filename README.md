@@ -1,11 +1,12 @@
-# Cloud-OJ
+# Cloud OJ
 
-![Last commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
-![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?style=flat-square)
+![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?style=flat-square&logo=github)
+![Top Languages](https://img.shields.io/github/languages/top/imcloudfloating/Cloud-OJ?style=flat-squre&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?style=flat-square&logo=github)
 ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ?style=flat-square)
+![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
 
-这是一个微服务架构的 Online Judge，基于 Spring Cloud 和 Vue.js。
+微服务架构的 Online Judge，基于 Spring Cloud 和 Vue.js。
 
 > 本项目参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
 
