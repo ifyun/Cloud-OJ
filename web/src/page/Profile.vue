@@ -12,7 +12,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <BottomArea style="width: 100%;margin-top: 50px;"/>
+      <BottomArea style="margin-top: 35px"/>
     </el-container>
   </div>
 </template>

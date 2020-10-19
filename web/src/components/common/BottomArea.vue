@@ -42,7 +42,6 @@ export default {
   margin: 0 0 10px;
   color: black;
   font-size: 10pt;
-  border-top: 1px solid #e6e6e6;
 }
 
 .flex {

@@ -2,11 +2,11 @@
   <div>
     <TopNavigation active="5"/>
     <el-container class="container">
-      <el-card style="margin-bottom: 50px">
+      <el-card style="padding: 20px">
         <markdown-it-vue :content="helpDoc">
         </markdown-it-vue>
       </el-card>
-      <BottomArea/>
+      <BottomArea style="margin-top: 35px"/>
     </el-container>
   </div>
 </template>
