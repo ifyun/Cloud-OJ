@@ -30,4 +30,4 @@ logging:
     name: /app/log/file-server.log
 
 project:
-  file-dir: /oj_file/
+  file-dir: /var/lib/cloud_oj/

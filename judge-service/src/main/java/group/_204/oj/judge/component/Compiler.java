@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @Component
 class Compiler {
 
-    @Value("${project.target-dir}")
-    private String targetDir;
+    @Value("${project.code-dir}")
+    private String codeDir;
 
     @Value("${project.runner-image}")
     private String runnerImage;
@@ -41,12 +41,12 @@ class Compiler {
      */
     @PostConstruct
     public void init() {
-        File dir = new File(targetDir);
+        File dir = new File(codeDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
-                log.info("目录 {} 不存在, 已创建", targetDir);
+                log.info("目录 {} 不存在, 已创建", codeDir);
             } else {
-                log.info("无法创建目录 {}", targetDir);
+                log.info("无法创建目录 {}", codeDir);
             }
         }
     }
@@ -89,7 +89,7 @@ class Compiler {
             return new Compile(solutionId, -1, "不支持的语言.");
         }
 
-        String solutionDir = targetDir + solutionId;
+        String solutionDir = codeDir + solutionId;
         List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "-v", solutionDir + ":" + solutionDir, runnerImage));
 
         // 构造编译命令
@@ -158,7 +158,7 @@ class Compiler {
      */
     private String writeCode(String solutionId, int language, String source) {
         File file;
-        File solutionDir = new File(targetDir + solutionId);
+        File solutionDir = new File(codeDir + solutionId);
 
         if (!solutionDir.mkdirs()) {
             log.error("无法创建目录 {}", solutionDir.getName());

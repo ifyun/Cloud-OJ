@@ -14,12 +14,12 @@ import java.util.Objects;
 @Component
 public class FileCleaner {
 
-    @Value("${project.target-dir}")
-    private String targetDir;
+    @Value("${project.code-dir}")
+    private String codeDir;
 
     @PostConstruct
     public void init() {
-        File dir = new File(targetDir);
+        File dir = new File(codeDir);
 
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             delete(file);
@@ -34,7 +34,7 @@ public class FileCleaner {
             return;
         }
 
-        delete(new File(targetDir + solutionId));
+        delete(new File(codeDir + solutionId));
     }
 
     private void delete(File dir) {

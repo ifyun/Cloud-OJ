@@ -1,9 +1,9 @@
 {
   "properties": [
     {
-      "name": "project.target-dir",
+      "name": "project.code-dir",
       "type": "java.lang.String",
-      "description": "编译临时目录."
+      "description": "代码临时目录."
     },
     {
       "name": "project.max-wait-time",

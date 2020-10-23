@@ -29,8 +29,8 @@ public class Judgement {
     @Value("${project.file-dir}")
     private String fileDir;
 
-    @Value("${project.target-dir}")
-    private String targetDir;
+    @Value("${project.code-dir}")
+    private String codeDir;
 
     @Value("${project.runner-image}")
     private String runnerImage;
@@ -190,7 +190,7 @@ public class Judgement {
         String stderr = getOutput(process.getErrorStream());
 
         if (stderr.isEmpty()) {
-            String solutionDir = targetDir + solutionId;
+            String solutionDir = codeDir + solutionId;
             // Get run result
             String stdout = getOutputFromFile(solutionDir + "/result.out");
             result = objectMapper.readValue(stdout, RunResult.class);
@@ -235,7 +235,7 @@ public class Judgement {
         Language language = Language.get(solution.getLanguage());
         assert language != null;
 
-        String solutionDir = targetDir + solution.getSolutionId();
+        String solutionDir = codeDir + solution.getSolutionId();
 
         ProcessBuilder builder = new ProcessBuilder();
 
