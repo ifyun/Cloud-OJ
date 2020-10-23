@@ -44,9 +44,5 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
 
-logging:
-  file:
-    name: /log/manager-service.log
-
 project:
-  file-dir: E:/oj_file/
+  file-dir: /home/cloud/oj_file/

@@ -1,6 +1,5 @@
 package group._204.oj.judge.component;
 
-import group._204.oj.judge.JudgeServiceApplication;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.model.Solution;
@@ -52,10 +51,7 @@ public class JudgementAsync {
             solution.setState(SolutionState.JUDGED.ordinal());
         }
 
-        // 删除临时文件
-        fileCleaner.deleteTempFile(solution.getSolutionId(),
-                solution.getLanguage(),
-                JudgeServiceApplication.isWindows);
+        fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage());
 
         if (solutionDao.update(solution) != 0)
             log.info("solutionId: {} 判题完成.", solution.getSolutionId());

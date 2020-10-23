@@ -27,41 +27,25 @@ public class FileCleaner {
     }
 
     @Async
-    public void deleteTempFile(String solutionId, int languageId, boolean isWindows) {
+    public void deleteTempFile(String solutionId, int languageId) {
         Language language = Language.get(languageId);
 
-        if (language == null)
+        if (language == null) {
             return;
-
-        switch (language) {
-            case JAVA:
-                delete(new File(targetDir + solutionId));
-                break;
-            case PYTHON:
-                delete(new File(targetDir + solutionId + ".py"));
-                break;
-            case BASH:
-                delete(new File(targetDir + solutionId + ".sh"));
-                break;
-            case C:
-                delete(new File(targetDir + solutionId + ".c"));
-            case CPP:
-                delete(isWindows ? new File(targetDir + solutionId + ".exe")
-                        : new File(targetDir + solutionId));
-                delete(new File(targetDir + solutionId + ".cpp"));
-                break;
         }
+
+        delete(new File(targetDir + solutionId));
     }
 
-    private void delete(File file) {
-        if (file.isDirectory()) {
-            for (File f : Objects.requireNonNull(file.listFiles())) {
-                delete(f);
-            }
+    private void delete(File dir) {
+        boolean emptyDir = true;
+
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            emptyDir = file.delete();
         }
-        if (file.exists()) {
-            if (!file.delete())
-                log.info("{} 删除失败.", file.getName());
+
+        if (emptyDir) {
+            log.info("Delete directory: path={}, result={}", dir.getAbsolutePath(), dir.delete());
         }
     }
 }

@@ -74,10 +74,13 @@ services:
     networks:
       - oj-net
     volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/usr/bin/docker:/usr/bin/docker"
       - "oj_file:/oj_file"
       - "target:/target"
       - "log:/app/log"
     environment:
+      RUNNER_IMAGE: "registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner"
       EUREKA_SERVER: "eureka:8761"
       MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
       MYSQL_USER: "root"

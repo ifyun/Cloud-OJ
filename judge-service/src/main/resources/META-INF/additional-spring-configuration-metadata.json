@@ -29,5 +29,10 @@
       "name": "project.file-dir",
       "type": "java.lang.String",
       "description": "文件存放目录."
+    },
+    {
+      "name": "project.runner-image",
+      "type": "java.lang.String",
+      "description": "执行判题的Docker镜像."
     }
   ] }

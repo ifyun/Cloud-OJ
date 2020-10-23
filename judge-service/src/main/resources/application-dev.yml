@@ -48,13 +48,10 @@ mybatis:
     map-underscore-to-camel-case: on
   mapper-locations: classpath:mybatis/mapper/*.xml
 
-logging:
-  file:
-    name: /log/judge-service.log
-
 project:
-  file-dir: E:/oj_file/
-  target-dir: E:/target/
+  file-dir: /home/cloud/oj_file/
+  target-dir: /home/cloud/target/
+  runner-image: runner
   core-pool-size: 8
   max-pool-size: 16
   queue-capacity: 200

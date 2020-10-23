@@ -1,6 +1,6 @@
 package group._204.oj.judge.component;
 
-import group._204.oj.judge.JudgeServiceApplication;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.*;
@@ -8,11 +8,13 @@ import group._204.oj.judge.model.Runtime;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -29,6 +31,15 @@ public class Judgement {
 
     @Value("${project.target-dir}")
     private String targetDir;
+
+    @Value("${project.runner-image}")
+    private String runnerImage;
+
+    private static final String MAX_MEM_LIMIT = "524287";
+    private static final String MEM_LIMIT = "65535";
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     @Resource
     private RuntimeDao runtimeDao;
@@ -55,45 +66,48 @@ public class Judgement {
      */
     public void judge(Solution solution) {
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
-        List<String> input = getInputData(solution.getProblemId());
+        List<File> input = getInputFiles(solution.getProblemId());
         List<String> expect = getOutputData(solution.getProblemId());
 
-        ProcessBuilder cmd = buildCommand(solution);
-        log.info("正在执行 solutionId: {}", solution.getSolutionId());
+        log.info("Judging: solutionId={}", solution.getSolutionId());
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
-        // 执行并获取输出
-        List<String> output = execute(Objects.requireNonNull(cmd), input, runtime, timeout);
-        // 比较结果
-        compareResult(solution, runtime, expect, output, timeout);
+
+        List<RunResult> results = execute(solution, input, runtime, timeout);
+        compareResult(solution, runtime, expect, results);
     }
 
     /**
-     * 比较结果
+     * Calculate results
      *
-     * @param solution {@link Solution} 答案对象
-     * @param expect   期望输出
-     * @param output   实际输出
+     * @param expect  Correct output
+     * @param results List of run result
      */
-    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<String> output, long timeout) {
+    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<RunResult> results) {
         int total = expect.size();
         int passed = 0;
 
         if (runtime.getResult() == SolutionResult.JUDGE_ERROR.ordinal()
                 || runtime.getResult() == SolutionResult.RUNTIME_ERROR.ordinal()) {
             solution.setResult(runtime.getResult());
-        } else if (runtime.getTime() > timeout) {
-            solution.setResult(SolutionResult.TIMEOUT.ordinal());
         } else {
-            int size = Math.min(output.size(), expect.size());
+            int size = Math.min(results.size(), expect.size());
+            Integer timeUsed = 0;
+
+            // Compare output
             for (int i = 0; i < size; i++) {
-                if (expect.get(i).equals(output.get(i)))
+                RunResult res = results.get(i);
+                if (timeUsed < res.getTimeUsed())
+                    timeUsed = res.getTimeUsed();
+                if (res.getStatus() == 0 && expect.get(i).equals(res.getStdout()))
                     passed++;
             }
 
             runtime.setTotal(total);
             runtime.setPassed(passed);
+            runtime.setTime(timeUsed);
+
             runtimeDao.update(runtime);
 
             if (passed == 0) {
@@ -113,90 +127,83 @@ public class Judgement {
     }
 
     /**
-     * 执行编译后的程序
+     * Execute the compiled code
      *
-     * @param input 输入数据
-     * @return 程序执行结果
+     * @param inputFiles File of input
+     * @return List of run result
      */
-    private List<String> execute(ProcessBuilder cmd, List<String> input, Runtime runtime, long timeout) {
-        List<String> output = new ArrayList<>();
+    private List<RunResult> execute(Solution solution, @Nullable List<File> inputFiles, Runtime runtime, long timeout) {
+        List<RunResult> results = new ArrayList<>();
 
         try {
-            StopWatch stopWatch = new StopWatch("GET-EXECUTE-TIME");
-            log.info("cmd: {}", cmd.command());
+            // No input file
+            if (inputFiles == null) {
+                ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), MEM_LIMIT, MAX_MEM_LIMIT, null);
 
-            if (input.size() == 0) {
-                // 执行程序
-                Process process = cmd.start();
-                stopWatch.start();
-
-                if (!process.waitFor(timeout + 150, TimeUnit.MILLISECONDS)) {
-                    throw new InterruptedException("时间超限.");
-                }
-
-                stopWatch.stop();
-                // 计算运行时间
-                runtime.setTime(stopWatch.getTotalTimeMillis());
-
-                // 获取标准错误流
-                String stderr = getOutput(process.getErrorStream());
-                if (stderr.isEmpty()) {
-                    // 获取标准输出流
-                    String stdout = getOutput(process.getInputStream());
-                    output.add(stdout);
-                } else {
-                    throw new RuntimeError(stderr);
-                }
+                assert cmd != null;
+                RunResult result = run(cmd, solution.getSolutionId());
+                results.add(result);
             } else {
                 long maxTime = 0;
 
-                for (String s : input) {
-                    Process process = cmd.start();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-                    // 输入数据
-                    writer.write(s);
-                    writer.close();
+                // Run code with each input file
+                for (File input : inputFiles) {
+                    ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), MEM_LIMIT, MAX_MEM_LIMIT,
+                            input.getAbsolutePath());
 
-                    stopWatch.start();
-
-                    if (!process.waitFor(timeout + 150, TimeUnit.MILLISECONDS)) {
-                        throw new TimeoutError("时间超限.");
-                    }
-
-                    stopWatch.stop();
-
-                    long time = stopWatch.getTotalTimeMillis();
-                    maxTime = Math.max(time, maxTime);
-
-                    // 获取标准错误流
-                    String stderr = getOutput(process.getErrorStream());
-                    if (stderr.isEmpty()) {
-                        // 获取标准输出流
-                        String stdout = getOutput(process.getInputStream());
-                        output.add(stdout);
-                    } else {
-                        throw new RuntimeError(stderr);
-                    }
+                    assert cmd != null;
+                    RunResult result = run(cmd, solution.getSolutionId());
+                    log.info(result.toString());
+                    results.add(result);
                 }
 
                 runtime.setTime(maxTime);
             }
         } catch (RuntimeError e) {
-            output.clear();
+            log.error("Judge Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
-        } catch (TimeoutError e) {
-            log.error(e.getMessage());
-            runtime.setTime(timeout);
-        } catch (InterruptedException | IOException e) {
-            log.error(e.getMessage());
+            runtime.setOutput(e.getMessage());
+        } catch (InterruptedException | IOException | TimeoutError e) {
+            log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.JUDGE_ERROR.ordinal());
-            output.clear();
         }
 
-        runtime.setOutput(String.join("\n", output));
         runtimeDao.update(runtime);
-        return output;
+        return results;
+    }
+
+    /**
+     * Run command and get result
+     *
+     * @param cmd Command to run
+     * @return {@link RunResult} Contains status and stdout
+     */
+    private RunResult run(ProcessBuilder cmd, String solutionId) throws RuntimeError, TimeoutError, IOException, InterruptedException {
+        Process process = cmd.start();
+
+        if (!process.waitFor(6000, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutError("时间超限.");
+        }
+
+        RunResult result;
+        String stderr = getOutput(process.getErrorStream());
+
+        if (stderr.isEmpty()) {
+            String solutionDir = targetDir + solutionId;
+            // Get run result
+            String stdout = getOutputFromFile(solutionDir + "/result.out");
+            result = objectMapper.readValue(stdout, RunResult.class);
+            // stdout of solution
+            File file = new File(solutionDir + "/output.out");
+            // Read output file
+            result.setStdout(getOutput(new FileInputStream(file)));
+        } else {
+            log.error(stderr);
+            throw new RuntimeError(stderr);
+        }
+
+        return result;
     }
 
     @SneakyThrows
@@ -207,42 +214,60 @@ public class Judgement {
         return output;
     }
 
+    @SneakyThrows
+    private String getOutputFromFile(String filePath) {
+        File file = new File(filePath);
+
+        if (file.exists()) {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        }
+
+        return "";
+    }
+
     /**
-     * 构造执行命令
+     * Build command to run code
      *
-     * @param solution {@link Solution} 答案对象
-     * @return {@link ProcessBuilder}
+     * @param solution {@link Solution} Solution object
+     * @return {@link ProcessBuilder} Command to run
      */
-    private ProcessBuilder buildCommand(Solution solution) {
+    private ProcessBuilder buildCommand(Solution solution, String timeout, String memLimit, String maxMemLimit, String in) {
         Language language = Language.get(solution.getLanguage());
         assert language != null;
 
-        String filePath = targetDir + solution.getSolutionId();
+        String solutionDir = targetDir + solution.getSolutionId();
+
         ProcessBuilder builder = new ProcessBuilder();
+
+        List<String> cmd = new ArrayList<>(Arrays.asList(
+                "docker", "run", "--rm", "--network", "none", "-v", solutionDir + ":" + solutionDir,
+                "-v", fileDir + ":" + fileDir + ":ro", "-w", solutionDir, runnerImage, "runner"
+        ));
+
+        if (in == null)
+            in = "/dev/null";
 
         switch (language) {
             case C:
             case CPP:
-                // NOTE Windows 和 Linux 生成的目标文件不一样
-                if (JudgeServiceApplication.isWindows) {
-                    builder.command(filePath + ".exe");
-                } else {
-                    builder.command(filePath);
-                }
+                cmd.addAll(Arrays.asList("./Solution", timeout, memLimit, memLimit, in));
+                builder.command(cmd);
                 return builder;
             case JAVA:
-                builder.command("java", "Solution");
-                // NOTE Java 语言必须切换到 class 文件所在目录
-                builder.directory(new File(filePath));
+                cmd.addAll(Arrays.asList("java@Solution", timeout, memLimit, maxMemLimit, in));
+                builder.command(cmd);
                 return builder;
             case PYTHON:
-                builder.command("python", filePath + ".py");
+                cmd.addAll(Arrays.asList("python@Solution.py", timeout, memLimit, memLimit, in));
+                builder.command(cmd);
                 return builder;
             case BASH:
-                builder.command("sh", filePath + ".sh");
+                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, memLimit, memLimit, in));
+                builder.command(cmd);
                 return builder;
             case C_SHARP:
-                builder.command("mono", filePath + "/Solution.exe");
+                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, memLimit, memLimit, in));
+                builder.command(cmd);
                 return builder;
             default:
                 return null;
@@ -250,43 +275,41 @@ public class Judgement {
     }
 
     /**
-     * 获取测试输入数据
-     *
-     * @param problemId 题目 Id
-     * @return 每一组输入数据
+     * Get input files
      */
-    private List<String> getInputData(int problemId) {
-        return getData(problemId, ".in");
+    private List<File> getInputFiles(int problemId) {
+        String testDataDir = fileDir + "test_data/";
+        File dir = new File(testDataDir + problemId);
+
+        File[] files = dir.listFiles(pathname -> {
+            String name = pathname.getName();
+            return name.substring(name.lastIndexOf('.')).equals(".in");
+        });
+
+        if (files != null && files.length > 0) {
+            return Arrays.stream(files)
+                    .sorted(Comparator.comparing(File::getName))
+                    .collect(Collectors.toList());
+        }
+
+        return null;
     }
 
     /**
      * 获取测试输出数据
-     *
-     * @param problemId 题目 Id
-     * @return 每一组输出数据
      */
     private List<String> getOutputData(int problemId) {
-        return getData(problemId, ".out");
-    }
-
-    /**
-     * 读取测试数据
-     *
-     * @param problemId 题目 Id
-     * @param ext       文件扩展名
-     * @return 测试数据集合
-     */
-    private List<String> getData(int problemId, String ext) {
         List<String> data = new ArrayList<>();
+
         String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
+
         File[] files = dir.listFiles(pathname -> {
             String name = pathname.getName();
-            return name.substring(name.lastIndexOf('.')).equals(ext);
+            return name.substring(name.lastIndexOf('.')).equals(".out");
         });
 
         if (files != null) {
-            // 按文件名排序
             List<File> fileList = Arrays.stream(files)
                     .sorted(Comparator.comparing(File::getName))
                     .collect(Collectors.toList());

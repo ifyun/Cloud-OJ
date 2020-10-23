@@ -54,6 +54,7 @@ logging:
 project:
   file-dir: /oj_file/
   target-dir: /target/
+  runner-image: ${RUNNER_IMAGE:runner}
   core-pool-size: ${CORE_POOL_SIZE:8}
   max-pool-size: ${MAX_POOL_SIZE:16}
   queue-capacity: ${QUEUE_CAPACITY:200}

@@ -2,13 +2,14 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2"
   DOCKER_HOST: tcp://172.16.15.212:2375
   # Image tag
+  WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
   API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/api-gateway
   REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/register-center
   MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor-service
   FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
-  WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
+  RUNNER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner
   MYSQL: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
 cache:
   key: maven
@@ -60,13 +61,14 @@ docker-build:
   stage: build-images
   script:
     - docker -v
+    - docker build -t $WEB ./docker/web/
     - docker build -t $API_GATEWAY ./docker/api-gateway/
     - docker build -t $REGISTER_CENTER ./docker/register-center/
     - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
     - docker build -t $FILE_SERVER ./docker/file-server/
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
-    - docker build -t $WEB ./docker/web/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
+    - docker build -t $RUNNER ./docker/runner/
     - docker build -t $MYSQL ./docker/mysql/
 docker-deploy:
   only:

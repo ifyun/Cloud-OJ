@@ -1,6 +1,5 @@
 package group._204.oj.judge.component;
 
-import group._204.oj.judge.JudgeServiceApplication;
 import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.model.Language;
 import lombok.SneakyThrows;
@@ -10,6 +9,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +25,16 @@ class Compiler {
     @Value("${project.target-dir}")
     private String targetDir;
 
+    @Value("${project.runner-image}")
+    private String runnerImage;
+
     private final ProcessBuilder processBuilder = new ProcessBuilder();
+
+    private static class CompileError extends Exception {
+        CompileError(String msg) {
+            super(msg);
+        }
+    }
 
     /**
      * 初始化
@@ -35,7 +47,6 @@ class Compiler {
                 log.info("目录 {} 不存在, 已创建", targetDir);
             } else {
                 log.info("无法创建目录 {}", targetDir);
-                System.exit(-1);
             }
         }
     }
@@ -74,41 +85,51 @@ class Compiler {
     public Compile compileSource(String solutionId, int languageId, String src) {
         Language language = Language.get(languageId);
 
-        if (language == null)
+        if (language == null) {
             return new Compile(solutionId, -1, "不支持的语言.");
+        }
 
-        // NOTE 构造编译命令
+        String solutionDir = targetDir + solutionId;
+        List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "-v", solutionDir + ":" + solutionDir, runnerImage));
+
+        // 构造编译命令
         switch (language) {
             case C:
-                processBuilder.command("gcc", src, "-o", src.substring(0, src.indexOf(".")));
+                cmd.addAll(Arrays.asList("gcc", src, "-o", src.substring(0, src.indexOf("."))));
+                processBuilder.command(cmd);
                 break;
             case CPP:
-                processBuilder.command("g++", src, "-o", src.substring(0, src.indexOf(".")));
+                cmd.addAll(Arrays.asList("g++", src, "-o", src.substring(0, src.indexOf("."))));
+                processBuilder.command(cmd);
                 break;
             case JAVA:
-                processBuilder.command("javac", "-encoding", "UTF-8", src);
+                cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", src));
+                processBuilder.command(cmd);
                 break;
             case PYTHON:
                 return new Compile(solutionId, 0, "Python.");
             case BASH:
                 return new Compile(solutionId, 0, "Bash.");
             case C_SHARP:
-                processBuilder.command(JudgeServiceApplication.isWindows ? "mcs.bat" : "mcs", src);
+                cmd.addAll(Arrays.asList("mcs", src));
+                processBuilder.command(cmd);
         }
 
         try {
+            log.info("Start compile: {}", processBuilder.command());
             Process process = processBuilder.start();
+            process.waitFor(3000, TimeUnit.MILLISECONDS);
             // 获取错误流，为空说明编译成功
             String error = getOutput(process.getErrorStream());
 
             if (error.isEmpty()) {
-                log.info("编译完成: solutionId: {}", solutionId);
+                log.info("编译完成: solutionId={}", solutionId);
                 return new Compile(solutionId, 0, "编译成功");
+            } else {
+                throw new CompileError(error);
             }
-
-            return new Compile(solutionId, -1, error);
-        } catch (IOException e) {
-            log.error("编译异常: solutionId: {}", e.getMessage());
+        } catch (IOException | InterruptedException | CompileError e) {
+            log.error("编译异常: solutionId={}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -137,26 +158,19 @@ class Compiler {
      */
     private String writeCode(String solutionId, int language, String source) {
         File file;
+        File solutionDir = new File(targetDir + solutionId);
+
+        if (!solutionDir.mkdirs()) {
+            log.error("无法创建目录 {}", solutionDir.getName());
+            return "";
+        }
 
         if (Language.get(language) == Language.JAVA) {
-            // Java 语言文件名和类名必须相同
-            File dir = new File(targetDir + solutionId);
-            if (dir.mkdirs()) {
-                file = new File(targetDir + solutionId + "/Solution.java");
-            } else {
-                log.error("无法创建目录 {}", dir.getName());
-                return "";
-            }
+            file = new File(solutionDir + "/Solution.java");
         } else if (Language.get(language) == Language.C_SHARP) {
-            File dir = new File(targetDir + solutionId);
-            if (dir.mkdirs()) {
-                file = new File(targetDir + solutionId + "/Solution.cs");
-            } else {
-                log.error("无法创建目录 {}", dir.getName());
-                return "";
-            }
+            file = new File(solutionDir + "/Solution.cs");
         } else {
-            file = new File(targetDir + solutionId + Language.getExt(language));
+            file = new File(solutionDir + "/Solution" + Language.getExt(language));
         }
 
         try {
@@ -165,6 +179,7 @@ class Compiler {
                 writer.write(source);
                 writer.flush();
                 writer.close();
+
                 return file.getPath();
             } else {
                 log.error("无法创建文件 {}", file.getName());

@@ -121,11 +121,11 @@ export default {
   components: {
     codemirror
   },
-  beforeMount() {
+  mounted() {
     this.getLanguages()
     this.getProblem()
-    this.cmOptions.mode = languageMode[this.language]
     this.getCachedCode()
+    this.$forceUpdate()
   },
   computed: {
     disableCommit: vm => {
@@ -173,12 +173,13 @@ export default {
       if (code != null) {
         code = JSON.parse(code)
         this.language = code['language']
+        this.languageChange(this.language)
         this.code = code['code']
         window.sessionStorage.removeItem('code')
       }
     },
     getLanguages() {
-      // 如果是来着竞赛/作业的题目，先获取允许的语言
+      // 如果是竞赛/作业的题目，先获取允许的语言
       if (this.contestId !== undefined) {
         this.$axios({
           url: `${apiPath.contest}/lang/${this.contestId}`,

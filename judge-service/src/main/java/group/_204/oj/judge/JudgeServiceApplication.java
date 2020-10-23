@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JudgeServiceApplication {
 
-    public static boolean isWindows = System.getProperty("os.name").contains("Windows");    // 给开发环境使用
-
     public static void main(String[] args) {
         SpringApplication.run(JudgeServiceApplication.class, args);
     }
