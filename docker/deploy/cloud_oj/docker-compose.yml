@@ -76,7 +76,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/usr/bin/docker:/usr/bin/docker"
-      - "/var/lib/cloud_oj:/var/lib/cloud_oj"
+      - "/var/lib/cloud_oj:/var/lib/cloud_oj:ro"
       - "/tmp/code:/tmp/code"
       - "log:/app/log"
     environment:

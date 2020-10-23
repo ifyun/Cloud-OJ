@@ -98,10 +98,14 @@ public class Judgement {
             // Compare output
             for (int i = 0; i < size; i++) {
                 RunResult res = results.get(i);
-                if (timeUsed < res.getTimeUsed())
+
+                if (timeUsed < res.getTimeUsed()) {
                     timeUsed = res.getTimeUsed();
-                if (res.getStatus() == 0 && expect.get(i).equals(res.getStdout()))
+                }
+
+                if (res.getStatus() == 0 && expect.get(i).equals(res.getStdout())) {
                     passed++;
+                }
             }
 
             runtime.setTotal(total);
@@ -163,10 +167,10 @@ public class Judgement {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
-            runtime.setOutput(e.getMessage());
         } catch (InterruptedException | IOException | TimeoutError e) {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.JUDGE_ERROR.ordinal());
+            runtime.setInfo(e.getMessage());
         }
 
         runtimeDao.update(runtime);
@@ -183,7 +187,7 @@ public class Judgement {
         Process process = cmd.start();
 
         if (!process.waitFor(6000, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutError("时间超限.");
+            throw new TimeoutError("Wait timeout.");
         }
 
         RunResult result;
@@ -198,6 +202,10 @@ public class Judgement {
             File file = new File(solutionDir + "/output.out");
             // Read output file
             result.setStdout(getOutput(new FileInputStream(file)));
+
+            if (!file.delete()) {
+                log.error("Delete stdout failed: {}", file.getAbsolutePath());
+            }
         } else {
             log.error(stderr);
             throw new RuntimeError(stderr);
