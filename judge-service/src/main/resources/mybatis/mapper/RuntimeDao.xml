@@ -10,8 +10,8 @@
         set total  = #{total},
             passed = #{passed},
             time   = #{time},
-            info   = #{info},
-            output = #{output}
+            memory = #{memory},
+            info   = #{info}
         where id = #{id}
     </update>
     <select id="getTimeout" resultType="java.lang.Long">

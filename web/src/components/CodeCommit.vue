@@ -125,7 +125,6 @@ export default {
     this.getLanguages()
     this.getProblem()
     this.getCachedCode()
-    this.$forceUpdate()
   },
   computed: {
     disableCommit: vm => {
@@ -144,7 +143,7 @@ export default {
         {id: 'solarized', name: 'Solarized'}
       ],
       cmOptions: {
-        mode: '',
+        mode: 'text/x-csrc',
         theme: 'monokai',
         tabSize: 4,
         smartIndent: true,
@@ -172,9 +171,10 @@ export default {
       let code = window.sessionStorage.getItem('code');
       if (code != null) {
         code = JSON.parse(code)
+        this.code = code['code']
         this.language = code['language']
         this.languageChange(this.language)
-        this.code = code['code']
+        this.$forceUpdate()
         window.sessionStorage.removeItem('code')
       }
     },
@@ -340,44 +340,51 @@ export default {
           break
         case 1:
           this.alertData = {
-            type: 'error',
-            title: '时间超限',
+            type: 'warning',
+            title: `时间超限(${data["passRate"] * 100})`,
             desc: '时间复杂度有待优化'
           }
           break
         case 2:
           this.alertData = {
             type: 'warning',
-            title: `部分通过(${data["passRate"] * 100})`,
-            desc: '漏掉了部分情况哦'
+            title: `内存超限(${data["passRate"] * 100})`,
+            desc: '空间复杂度有待优化'
           }
           break
         case 3:
           this.alertData = {
-            type: 'error',
-            title: '答案错误',
-            desc: '继续努力'
+            type: 'warning',
+            title: `部分通过(${data["passRate"] * 100})`,
+            desc: '漏掉了部分情况'
           }
           break
         case 4:
+          this.alertData = {
+            type: 'error',
+            title: '答案错误',
+            desc: '再接再厉'
+          }
+          break
+        case 5:
           this.alertData = {
             type: 'info',
             title: '编译错误',
             desc: '请仔细检查代码'
           }
           break
-        case 5:
+        case 6:
           this.alertData = {
             type: 'info',
             title: '运行错误',
             desc: '对于解释型语言，请检查是否存在语法错误'
           }
           break
-        case 6:
+        case 7:
           this.alertData = {
             type: 'error',
             title: '判题异常',
-            desc: '判题服务器可能出现了异常，可尝试重新提交'
+            desc: '判题服务器出现了异常或者你提交了恶意代码'
           }
       }
     }

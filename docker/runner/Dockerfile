@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-buster
+FROM openjdk:8-jdk-stretch
 ENV TIME_ZONE Asia/Shanghai
 COPY ./sources.list /etc/apt/sources.list
 COPY ./runner.cpp ./

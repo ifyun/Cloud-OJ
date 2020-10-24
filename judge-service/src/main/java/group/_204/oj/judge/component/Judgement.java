@@ -75,7 +75,7 @@ public class Judgement {
         runtimeDao.add(runtime);
 
         List<RunResult> results = execute(solution, input, runtime, timeout);
-        compareResult(solution, runtime, expect, results);
+        compareResult(solution, runtime, expect, results, timeout);
     }
 
     /**
@@ -84,7 +84,7 @@ public class Judgement {
      * @param expect  Correct output
      * @param results List of run result
      */
-    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<RunResult> results) {
+    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<RunResult> results, long timeout) {
         int total = expect.size();
         int passed = 0;
 
@@ -93,31 +93,47 @@ public class Judgement {
             solution.setResult(runtime.getResult());
         } else {
             int size = Math.min(results.size(), expect.size());
-            Integer timeUsed = 0;
+            Long time = 0L;
+            Long memory = 0L;
 
             // Compare output
             for (int i = 0; i < size; i++) {
                 RunResult res = results.get(i);
 
-                if (timeUsed < res.getTimeUsed()) {
-                    timeUsed = res.getTimeUsed();
+                if (time < res.getTimeUsed()) {
+                    time = res.getTimeUsed();
                 }
 
-                if (res.getStatus() == 0 && expect.get(i).equals(res.getStdout())) {
+                if (memory < res.getMemUsed()) {
+                    memory = res.getMemUsed();
+                }
+
+                if (res.getStatus() == 0 && expect.get(i).length() == res.getStdout().length()
+                        && expect.get(i).equals(res.getStdout())) {
                     passed++;
                 }
             }
 
             runtime.setTotal(total);
             runtime.setPassed(passed);
-            runtime.setTime(timeUsed);
+            runtime.setTime(time);
+            runtime.setMemory(memory);
 
             runtimeDao.update(runtime);
 
             if (passed == 0) {
                 solution.setResult(SolutionResult.WRONG.ordinal());
             } else if (passed < total) {
-                solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
+                if (time > timeout) {
+                    // TIME OUT
+                    solution.setResult(SolutionResult.TIMEOUT.ordinal());
+                } else if (memory > Long.parseLong(MEM_LIMIT)) {
+                    // OUT OF MEMORY LIMIT
+                    solution.setResult(SolutionResult.OUT_OF_MEM.ordinal());
+                } else {
+                    // PARTLY PASSED
+                    solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
+                }
             } else {
                 solution.setResult(SolutionResult.ALL_PASSED.ordinal());
             }
@@ -154,10 +170,8 @@ public class Judgement {
                 for (File input : inputFiles) {
                     ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), MEM_LIMIT, MAX_MEM_LIMIT,
                             input.getAbsolutePath());
-
                     assert cmd != null;
                     RunResult result = run(cmd, solution.getSolutionId());
-                    log.info(result.toString());
                     results.add(result);
                 }
 
