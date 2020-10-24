@@ -6,25 +6,15 @@
     </el-card>
     <el-card style="width: 100%; margin-top: 20px; margin-bottom: 25px">
       <el-table :data="histories.data" v-loading="loading">
-        <el-table-column label="题目ID" prop="problemId" width="120px" align="center">
-        </el-table-column>
-        <el-table-column label="题目名称">
+        <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
             <el-link type="primary"
                      @click="titleClick(scope.row)">
-              <b>{{ scope.row.title }}</b>
+              <b>{{ scope.row.problemId }} - {{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="编程语言">
-          <template slot-scope="scope">
-            <div style="display: flex; align-items: center;">
-              <img class="language-icon" :src="languageIcons[scope.row['language']]" alt="">
-              {{ languages[scope.row['language']] }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="结果" width="140px" align="center">
+        <el-table-column label="结果" align="center">
           <template slot-scope="scope">
             <el-tooltip content="点击查看代码" placement="right">
               <el-tag style="cursor: pointer" effect="plain"
@@ -37,9 +27,22 @@
             </el-tooltip>
           </template>
         </el-table-column>
+        <el-table-column label="编程语言">
+          <template slot-scope="scope">
+            <div style="display: flex; align-items: center;">
+              <img class="language-icon" :src="languageIcons[scope.row['language']]" alt="">
+              {{ languages[scope.row['language']] }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="耗时" width="100px" align="right">
           <template slot-scope="scope">
-            <span v-if="scope.row.result < 4">{{ scope.row['time'] }}ms</span>
+            <span v-if="scope.row.result < 4">{{ scope.row['time'] }} ms</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="内存" width="100px" align="right">
+          <template slot-scope="scope">
+            <span v-if="scope.row.result < 4">{{ scope.row['memory'] }} KB</span>
           </template>
         </el-table-column>
         <el-table-column label="得分" width="100px" align="right">
@@ -47,7 +50,7 @@
             <b>{{ scope.row['score'] }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="提交时间" width="180px" align="center">
+        <el-table-column label="提交时间" width="180px" align="right">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['submitTime'] }}</i>
           </template>
@@ -64,6 +67,9 @@
                      @current-change="getHistories">
       </el-pagination>
     </el-card>
+    <el-dialog title="代码预览" :visible.sync="codeDialogVisible">
+      <pre class="sample">{{ code }}</pre>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -87,6 +93,7 @@ export default {
       resultTags: [
         {text: '完全正确', type: 'success', icon: 'el-icon-success'},
         {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
+        {text: '内存超限', type: 'warning', icon: 'el-icon-warning'},
         {text: '部分通过', type: 'warning', icon: 'el-icon-warning'},
         {text: '答案错误', type: 'danger', icon: 'el-icon-error'},
         {text: '编译错误', type: 'info', icon: 'el-icon-info'},
@@ -98,7 +105,7 @@ export default {
         1: 'C++',
         2: 'Java',
         3: 'Python',
-        4: 'Bash Shell',
+        4: 'Bash',
         5: 'C#'
       },
       languageIcons: {
@@ -108,7 +115,9 @@ export default {
         3: './icons/python.svg',
         4: './icons/bash.svg',
         5: './icons/c-sharp.svg'
-      }
+      },
+      codeDialogVisible: false,
+      code: ''
     }
   },
   methods: {
@@ -146,9 +155,8 @@ export default {
       })
     },
     showCode(code) {
-      this.$alert(`<pre class="sample">${code}</pre>`,
-          '代码预览',
-          {dangerouslyUseHTMLString: true});
+      this.code = code
+      this.codeDialogVisible = true
     },
     titleClick(solution) {
       window.sessionStorage.setItem('code', JSON.stringify({

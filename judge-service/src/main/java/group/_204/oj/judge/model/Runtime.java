@@ -8,16 +8,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Runtime {
-    private int id;
+    private Integer id;
     private String solutionId;
     private int total;
     private int passed;
-    private long time;
+    private Long time;
+    private Long memory;
     private int result;
     private String info;
-    private String output;
 
     public Runtime(String solutionId) {
-        this(0, solutionId, 0, 0, 0, 0, null, null);
+        this(null, solutionId, 0, 0, null, null, 0, null);
     }
 }

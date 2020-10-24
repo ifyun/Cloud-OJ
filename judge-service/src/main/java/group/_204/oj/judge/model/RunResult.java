@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RunResult {
     private Integer status;
-    private Integer timeUsed;
-    private Integer memUsed;
+    private Long timeUsed;
+    private Long memUsed;
 
     @JsonIgnore
     private String stdout;

@@ -108,9 +108,9 @@ create table runtime
     solution_id char(36) not null,
     total       int      null comment '总测试点数量',
     passed      int      null comment '通过的测试点数量',
-    time        bigint   null comment '耗时（ms）',
+    time        bigint   null comment '耗时(ms)',
+    memory      bigint   null comment '内存占用(KB)',
     info        text     null,
-    output      text     null comment '输出',
     constraint runtime_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
@@ -218,9 +218,8 @@ select `s`.`solution_id`                         AS `solution_id`,
        `s`.`submit_time`                         AS `submit_time`,
        round((`s`.`pass_rate` * `p`.`score`), 1) AS `score`,
        `sc`.`code`                               AS `code`,
-       `c`.`state`                               AS `compile_state`,
-       `c`.`info`                                AS `compile_info`,
-       `r`.`time`                                AS `time`
+       `r`.`time`                                AS `time`,
+       `r`.memory                                AS `memory`
 from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
          join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
 order by `s`.`submit_time`;
