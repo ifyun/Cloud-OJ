@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-buster
+FROM openjdk:8-jre-stretch
 ENV TIME_ZONE Asia/Shanghai
 COPY ./sources.list /etc/apt/sources.list
 COPY ./judge-service-*.jar /app/judge-service.jar
