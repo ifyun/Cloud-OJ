@@ -62,7 +62,7 @@ cd ./docker/runner
 docker build -t runner .
 ```
 
-> 提示：Judge 仅支持在 Linux 下运行，如果你需要在 Windows 上调试，请在 Step 1 中使用 Linux 风格的路径。
+> 提示：judge-service 仅支持在 Linux 下运行。
 
 #### Step 3
 
