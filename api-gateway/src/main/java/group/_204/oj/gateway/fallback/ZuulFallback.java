@@ -2,7 +2,6 @@ package group._204.oj.gateway.fallback;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,7 +9,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 @Slf4j
@@ -26,12 +25,14 @@ public class ZuulFallback implements FallbackProvider {
         String msg = cause.getCause().getMessage();
         log.error("到 {} 的路由无法转发，{}.", route, msg);
         if (msg.contains("Read timed out"))
-            return errorPage(HttpStatus.GATEWAY_TIMEOUT);
+            return errorPage(HttpStatus.GATEWAY_TIMEOUT,
+                    "{\"msg\": \"Zuul Gateway Timeout\"}");
         else
-            return errorPage(HttpStatus.BAD_GATEWAY);
+            return errorPage(HttpStatus.BAD_GATEWAY,
+                    "{\"msg\": \"Zuul Bad Gateway\"}");
     }
 
-    private ClientHttpResponse errorPage(HttpStatus status) {
+    private ClientHttpResponse errorPage(HttpStatus status, String msg) {
         return new ClientHttpResponse() {
 
             @NonNull
@@ -57,15 +58,15 @@ public class ZuulFallback implements FallbackProvider {
 
             @NonNull
             @Override
-            public InputStream getBody() throws IOException {
-                return new ClassPathResource("static/error/" + status.value() + ".html").getInputStream();
+            public InputStream getBody() {
+                return new ByteArrayInputStream(msg.getBytes());
             }
 
             @NonNull
             @Override
             public HttpHeaders getHeaders() {
                 HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.TEXT_HTML);
+                headers.setContentType(MediaType.APPLICATION_JSON);
                 return headers;
             }
         };
