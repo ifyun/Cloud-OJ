@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
-
+const Page404 = () => import('@/page/404')
 const Login = () => import('@/page/Login')
 const Problems = () => import('@/page/Problems')
 const Contest = () => import('@/page/Contest')
@@ -14,6 +14,7 @@ const Commit = () => import('@/page/Commit')
 const Help = () => import('@/page/Help')
 
 const routes = [
+    {path: '*', component: Page404},
     {path: '/login', component: Login},
     {path: '/', redirect: 'problems'},
     {path: '/problems', component: Problems},

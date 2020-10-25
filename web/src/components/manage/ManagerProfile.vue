@@ -2,7 +2,7 @@
   <el-card>
     <span>管理员信息</span>
     <el-divider></el-divider>
-    <el-form label-width="100px" style="width: 500px">
+    <el-form label-width="140px" style="width: 500px">
       <el-form-item label="管理员ID：">
         <span>{{ manager.userId }}</span>
       </el-form-item>
@@ -20,7 +20,7 @@
           </el-tag>
         </template>
       </el-form-item>
-      <el-form-item label="登录失效于：">
+      <el-form-item label="Token 过期时间：">
         <span>{{ manager.expire }}</span>
       </el-form-item>
     </el-form>

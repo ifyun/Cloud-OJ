@@ -26,10 +26,10 @@ public class ZuulFallback implements FallbackProvider {
         log.error("到 {} 的路由无法转发，{}.", route, msg);
         if (msg.contains("Read timed out"))
             return errorPage(HttpStatus.GATEWAY_TIMEOUT,
-                    "{\"msg\": \"Zuul Gateway Timeout\"}");
+                    "{\"msg\": \"网关超时\"}");
         else
             return errorPage(HttpStatus.BAD_GATEWAY,
-                    "{\"msg\": \"Zuul Bad Gateway\"}");
+                    "{\"msg\": \"网关找不到服务\"}");
     }
 
     private ClientHttpResponse errorPage(HttpStatus status, String msg) {
