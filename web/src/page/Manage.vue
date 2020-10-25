@@ -30,9 +30,14 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main>
-        <component :is="currentView"></component>
-      </el-main>
+      <el-container class="main-container">
+        <el-main>
+          <component :is="currentView"></component>
+        </el-main>
+        <el-footer>
+          <BottomArea/>
+        </el-footer>
+      </el-container>
     </el-container>
   </div>
 </template>
@@ -43,6 +48,7 @@ import ManagerProfile from "@/components/manage/ManagerProfile"
 import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
 import UserManage from "@/components/manage/user/UserManage"
+import BottomArea from "@/components/common/BottomArea"
 import {userInfo} from "@/js/util"
 
 let page = new Map([
@@ -58,7 +64,8 @@ export default {
     ManagerProfile,
     ProblemsManage,
     ContestManage,
-    UserManage
+    UserManage,
+    BottomArea
   },
   data() {
     return {
@@ -101,5 +108,12 @@ export default {
 .container {
   padding: 0 20px;
   height: calc(100% - 61px);
+}
+
+.main-container {
+  min-width: initial !important;
+  overflow-x: auto;
+  padding-bottom: 50px;
+  height: 100%;
 }
 </style>

@@ -1,29 +1,36 @@
 <template>
   <div>
     <TopNavigation active=""/>
-    <HistoryList/>
+    <Error style="margin-top: 35px" :error="error"/>
     <BottomArea style="margin-top: 35px"/>
   </div>
 </template>
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import HistoryList from "@/components/HistoryList"
+import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
 
 export default {
-  name: "CommitHistory",
+  name: "Page404",
   components: {
-    HistoryList,
     TopNavigation,
+    Error,
     BottomArea
   },
   mounted() {
-    document.title = '提交记录 · Cloud OJ'
+    document.title = '404 · Cloud OJ'
+  },
+  data() {
+    return {
+      error: {
+        code: 404,
+        text: '页面不存在'
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

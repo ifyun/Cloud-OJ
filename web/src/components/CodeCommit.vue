@@ -1,5 +1,7 @@
 <template>
-  <el-container class="container">
+  <Error style="margin-top: 35px" v-if="error.code !== undefined"
+         :error="error"/>
+  <el-container v-else class="container">
     <el-card>
       <el-page-header v-if="problem.problemId !== undefined"
                       :content="`${problemId}. ${problem.title}`"
@@ -85,6 +87,7 @@
 </template>
 
 <script>
+import Error from "@/components/Error"
 import {apiPath, handle401, searchParams, userInfo} from "@/js/util";
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
@@ -92,9 +95,9 @@ import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/shell/shell.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/monokai.css'
+import 'codemirror/theme/material.css'
 import 'codemirror/theme/material-darker.css'
 import 'codemirror/theme/dracula.css'
-import 'codemirror/theme/solarized.css'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/edit/closebrackets.js'
 
@@ -112,14 +115,15 @@ let languageOptions = [
   {id: 1, name: 'C++', version: 'g++(std=14)'},
   {id: 2, name: 'Java', version: '1.8'},
   {id: 3, name: 'Python', version: '3.5'},
-  {id: 4, name: 'Bash Shell'},
+  {id: 4, name: 'Bash'},
   {id: 5, name: 'C#', version: 'Mono'}
 ]
 
 export default {
   name: "CodeCommit",
   components: {
-    codemirror
+    codemirror,
+    Error
   },
   mounted() {
     this.getLanguages()
@@ -133,14 +137,18 @@ export default {
   },
   data() {
     return {
+      error: {
+        code: undefined,
+        text: ''
+      },
       problemId: searchParams().problemId,
       contestId: searchParams().contestId,
       code: '',
       codeStyle: [
         {id: 'monokai', name: 'Monokai'},
+        {id: 'material', name: 'Material'},
         {id: 'material-darker', name: 'Material Darker'},
         {id: 'dracula', name: 'Dracula'},
-        {id: 'solarized', name: 'Solarized'}
       ],
       cmOptions: {
         mode: 'text/x-csrc',
@@ -221,10 +229,28 @@ export default {
           this.problem = res.data
           document.title = `${this.problem.title} · Cloud OJ`
         } else if (res.status === 204) {
-          alert('题目不存在')
+          this.error = {
+            code: 404,
+            text: '题目不存在'
+          }
         }
       }).catch((error) => {
-        console.log(error)
+        let res = error.response
+        if (res.status === 401) {
+          handle401()
+        } else {
+          let data = res.data;
+          let errorText = data === undefined ? res.statusText : data.msg
+          this.error = {
+            code: res.status,
+            text: errorText
+          }
+          this.$notify.error({
+            offset: 50,
+            title: '获取题目失败',
+            message: `${res.status} ${errorText}`
+          })
+        }
       })
     },
     languageChange(value) {
@@ -271,10 +297,11 @@ export default {
         if (res.status === 401) {
           handle401()
         } else {
+          let data = res.data;
           this.$notify.error({
             offset: 50,
             title: '提交失败',
-            message: `${res.status} ${res.statusText}`
+            message: `${res.status} ${data === undefined ? res.statusText : data.msg}`
           })
         }
       })
