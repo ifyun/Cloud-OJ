@@ -46,7 +46,7 @@ public class JudgementAsync {
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("判题出现异常: {}", e.getMessage());
-            solution.setResult(SolutionResult.WRONG.ordinal());
+            solution.setResult(SolutionResult.JUDGE_ERROR.ordinal());
         } finally {
             solution.setState(SolutionState.JUDGED.ordinal());
         }
