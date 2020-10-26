@@ -39,7 +39,8 @@
                timeout,
                score,
                category
-        from problem;
+        from problem for
+        update
     </select>
     <select id="getSingle" resultMap="Map.Problem">
         select *
@@ -78,7 +79,8 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <insert id="add" parameterType="group._204.oj.manager.model.Problem">
+    <insert id="add" parameterType="group._204.oj.manager.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
+        keyProperty="problemId">
         insert into problem(title, description, input, output, sample_input, sample_output, enable, category, score)
             value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{enable},
                    #{category}, #{score})

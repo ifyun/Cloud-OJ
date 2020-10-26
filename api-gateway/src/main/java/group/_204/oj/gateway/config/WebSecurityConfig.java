@@ -57,6 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new LogoffFilter(userDao), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/logoff").permitAll()
+                .antMatchers("/api/manager/backup").hasAnyRole(ROLE.SU, ROLE.PA)
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole(ROLE.UA, ROLE.SU)
                 .antMatchers("/api/manager/problem/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers("/api/manager/result").hasAnyRole(ROLE.ALL)
@@ -65,9 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/file/test_data/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers(HttpMethod.GET, "/api/file/image/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/file/image/**").hasAnyRole(ROLE.ALL)
-                .antMatchers("/api/judge/**").hasAnyRole(ROLE.ALL)
-                .antMatchers("/manager_user").hasAnyRole(ROLE.UA, ROLE.SU)
-                .antMatchers("/manager_problem", "/manager_contest").hasAnyRole(ROLE.PA, ROLE.SU);
+                .antMatchers("/api/judge/**").hasAnyRole(ROLE.ALL);
     }
 
     @Override
