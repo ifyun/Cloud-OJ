@@ -47,7 +47,8 @@ const apiPath = {
     contestRanking: '/api/manager/ranking/contest',
     history: '/api/manager/history',
     commit: '/api/judge/commit',
-    overview: '/api/manager/user/overview'
+    overview: '/api/manager/user/overview',
+    backup: '/api/manager/backup'
 }
 
 export {

@@ -1,5 +1,8 @@
 package group._204.oj.manager.controller;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.manager.model.Problem;
 import group._204.oj.manager.service.ProblemService;
@@ -9,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +53,16 @@ public class DataBackupController {
 
     @PostMapping("")
     @SneakyThrows
-    public ResponseEntity<?> importProblems(@RequestBody List<Problem> problems) {
-        problemService.importProblems(problems);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<?> importProblems(@RequestParam("file") MultipartFile file) {
+        try {
+            List<Problem> problems = objectMapper.readValue(file.getBytes(),
+                    new TypeReference<List<Problem>>() {
+                    });
+            problemService.importProblems(problems);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (JsonParseException | JsonMappingException e) {
+            log.error("Cannot import problems: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
