@@ -96,5 +96,7 @@ html, body {
 
 .CodeMirror {
     height: 800px !important;
-    font-size: 12pt;
+    word-spacing: 0.2em;
+    font-size: 14pt;
+    font-family: sans-serif !important;
 }

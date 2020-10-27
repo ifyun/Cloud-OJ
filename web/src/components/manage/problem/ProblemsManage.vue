@@ -16,6 +16,11 @@
           </el-button>
         </el-form-item>
         <el-form-item>
+          <el-button icon="el-icon-refresh" @click="getProblems">
+            刷新
+          </el-button>
+        </el-form-item>
+        <el-form-item>
           <el-tag type="success"
                   v-if="showKeyword"
                   closable
@@ -23,16 +28,19 @@
           </el-tag>
         </el-form-item>
         <el-form-item style="float: right">
-          <el-button type="success"
-                     icon="el-icon-circle-plus"
-                     @click="onAddProblemClick()">
-            添加题目
-          </el-button>
-        </el-form-item>
-        <el-form-item style="float: right">
-          <el-button icon="el-icon-refresh" @click="getProblems">
-            刷新
-          </el-button>
+          <el-button-group>
+            <el-button type="success"
+                       icon="el-icon-circle-plus"
+                       @click="onAddProblemClick()">
+              添加题目
+            </el-button>
+            <el-button icon="el-icon-upload2" @click="importDialogVisible = true">
+              导入题目
+            </el-button>
+            <el-button icon="el-icon-download" @click="backupProblems">
+              导出题目
+            </el-button>
+          </el-button-group>
         </el-form-item>
       </el-form>
     </div>
@@ -129,6 +137,16 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog title="导入题目" :visible.sync="importDialogVisible">
+      <el-upload drag action="./api/manager/backup"
+                 :headers="{token: userInfo.token}"
+                 :data="{userId: userInfo.userId}"
+                 :on-success="importSuccess">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传json文件，导入的题目会自动生成新的ID</div>
+      </el-upload>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -154,6 +172,7 @@ export default {
       callback()
     }
     return {
+      userInfo: userInfo(),
       keyword: '',
       showKeyword: false,
       selectedId: null,
@@ -170,6 +189,7 @@ export default {
       editorDialogVisible: false,
       testDataDialogVisible: false,
       deleteDialogVisible: false,
+      importDialogVisible: false,
       deleteForm: {
         checkTitle: ''
       },
@@ -343,6 +363,15 @@ export default {
         }
       })
       this.deleteForm.checkTitle = ''
+    },
+    backupProblems() {
+      let newWindow = window.open('_blank')
+      newWindow.location.href =
+          `${apiPath.backup}?userId=${userInfo().userId}&token=${userInfo().token}`
+    },
+    importSuccess() {
+      this.importDialogVisible = false
+      this.getProblems()
     }
   }
 }
