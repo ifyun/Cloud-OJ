@@ -81,7 +81,10 @@ void run_cmd(char *args[], long timeLimit, int maxMemLimit, std::string in, std:
     }
     else
     {
-        std::cerr << "Failed to open file!\n";
+        if (newstdin == -1)
+            std::cerr << "Failed to open " << in << std::endl;
+        if (newstdout == -1)
+            std::cerr << "Failed to open " << out << std::endl;
     }
 }
 

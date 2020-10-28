@@ -178,7 +178,7 @@ public class Judgement {
                 runtime.setTime(maxTime);
             }
         } catch (RuntimeError e) {
-            log.error("Judge Error: {}", e.getMessage());
+            log.error("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
         } catch (InterruptedException | IOException | TimeoutError e) {
@@ -221,7 +221,6 @@ public class Judgement {
                 log.error("Delete stdout failed: {}", file.getAbsolutePath());
             }
         } else {
-            log.error(stderr);
             throw new RuntimeError(stderr);
         }
 
