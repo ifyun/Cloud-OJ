@@ -323,11 +323,11 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        if (res.status === 204 && count <= 6) {
+        if (res.status === 204 && count <= 15) {
           setTimeout(() => {
             this.getResult(solutionId, count + 1)
           }, 1000)
-        } else if (count > 6) {
+        } else if (count > 15) {
           this.alertData = {
             type: 'info',
             title: '未获取到结果',
@@ -390,7 +390,7 @@ export default {
           this.alertData = {
             type: 'error',
             title: '答案错误',
-            desc: '再接再厉'
+            desc: '继续努力'
           }
           break
         case 5:
