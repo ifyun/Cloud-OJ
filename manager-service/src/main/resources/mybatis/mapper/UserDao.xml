@@ -19,10 +19,14 @@
                 password = #{password},
             </when>
         </choose>
+        <choose>
+            <when test="roleId != null">
+                role_id = #{roleId},
+            </when>
+        </choose>
         email = #{email},
-        section = #{section},
-        role_id = #{roleId}
-        where user_id = #{userId};
+        section = #{section}
+        where user_id = #{userId}
     </update>
     <delete id="delete">
         delete

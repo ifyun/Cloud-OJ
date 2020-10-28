@@ -58,6 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/login", "/api/logoff").permitAll()
                 .antMatchers("/api/manager/backup").hasAnyRole(ROLE.SU, ROLE.PA)
+                .antMatchers("/api/manager/user/profile").hasAnyRole(ROLE.ALL)
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole(ROLE.UA, ROLE.SU)
                 .antMatchers("/api/manager/problem/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers("/api/manager/result").hasAnyRole(ROLE.ALL)

@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <ECharts theme="macarons" :options="pieOption" style=""/>
+  <div style="position:relative">
+    <ECharts theme="macarons" :options="pieOption"/>
+    <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
     <el-divider></el-divider>
     <ECharts theme="royal" :options="activitiesOption" style="width: 100%;"/>
   </div>
@@ -150,5 +151,10 @@ export default {
 </script>
 
 <style scoped>
-
+.no-record {
+  position: absolute;
+  top: 20%;
+  left: 22%;
+  font-size: 22pt;
+}
 </style>

@@ -14,11 +14,15 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
       <el-divider></el-divider>
-      <el-form>
-        <el-form-item>
+      <el-alert style="margin-bottom: 15px"
+                :closable="false" show-icon type="info"
+                title="保存成功后重新登录生效">
+      </el-alert>
+      <el-form ref="profileForm" :model="userProfile" :rules="rules">
+        <el-form-item prop="name">
           <el-input prefix-icon="el-icon-user" v-model="userProfile.name"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="email">
           <el-input prefix-icon="el-icon-message" v-model="userProfile.email"></el-input>
         </el-form-item>
         <el-form-item>
@@ -73,6 +77,15 @@ export default {
         email: '',
         section: ''
       },
+      rules: {
+        name: [
+          {required: true, message: '请输入用户名', trigger: 'blur'},
+          {min: 2, max: 16, message: '长度在 2 ~ 16 个字符', trigger: 'blur'}
+        ],
+        email: [
+          {type: 'email', message: '请输入邮箱', trigger: 'blur'}
+        ]
+      },
       editable: false
     }
   },
@@ -109,8 +122,39 @@ export default {
       this.editable = true
     },
     save() {
-      // TODO 保存修改
-      alert('还没有实现!')
+      this.$refs['profileForm'].validate((valid) => {
+        if (valid) {
+          this.$axios({
+            url: apiPath.profile,
+            method: 'put',
+            headers: {
+              'Content-Type': 'application/json',
+              'token': userInfo().token
+            },
+            params: {
+              'userId': userInfo().userId
+            },
+            data: JSON.stringify(this.userProfile)
+          }).then((res) => {
+            this.editable = false
+            this.$notify({
+              offset: 50,
+              type: 'success',
+              title: '已保存',
+              message: `${res.status}`
+            })
+          }).catch((error) => {
+            let res = error.response
+            this.$notify.error({
+              offset: 50,
+              title: `保存失败`,
+              message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
+            })
+          })
+        } else {
+          return false
+        }
+      })
     }
   }
 }
