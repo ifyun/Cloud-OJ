@@ -5,7 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -18,11 +18,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Jwt token 验证过滤器
@@ -31,19 +28,6 @@ import java.util.stream.Collectors;
 public class JwtVerifyFilter extends GenericFilterBean {
 
     private final UserDao userDao;
-
-    private String errorPage;
-
-    {
-        InputStreamReader inputStreamReader;
-        try {
-            inputStreamReader = new InputStreamReader(new ClassPathResource("static/error/401.html").getInputStream());
-            errorPage = new BufferedReader(inputStreamReader)
-                    .lines().collect(Collectors.joining("\n"));
-        } catch (IOException ignore) {
-
-        }
-    }
 
     public JwtVerifyFilter(UserDao userDao) {
         this.userDao = userDao;
@@ -88,9 +72,9 @@ public class JwtVerifyFilter extends GenericFilterBean {
             } catch (JwtException | IllegalArgumentException e) {
                 log.error(e.getMessage());
                 ((HttpServletResponse) response).setStatus(401);
-                response.setContentType("text/html");
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setCharacterEncoding("utf-8");
-                response.getWriter().write(errorPage);
+                response.getWriter().write("{\"msg\":\"" + e.getMessage() + "\"}");
             }
         }
     }

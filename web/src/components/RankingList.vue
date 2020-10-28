@@ -24,7 +24,10 @@
                  onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
           </template>
         </el-table-column>
-        <el-table-column label="用户名" prop="name">
+        <el-table-column label="用户名">
+          <template slot-scope="scope">
+            <b>{{ scope.row.name }}</b>
+          </template>
         </el-table-column>
         <el-table-column label="总提交次数" width="150px" align="right">
           <template slot-scope="scope">

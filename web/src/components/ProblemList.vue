@@ -29,13 +29,11 @@
         </el-form>
       </div>
       <el-table :data="problems.data" v-loading="loading">
-        <el-table-column label="ID" prop="problemId" width="100px" align="center">
-        </el-table-column>
-        <el-table-column label="题目名称" width="260px">
+        <el-table-column label="题目名称" width="280px">
           <template slot-scope="scope">
             <el-link type="primary"
                      :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
-              <b>{{ scope.row.title }}</b>
+              <b>{{ scope.row.problemId }} - {{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
@@ -50,7 +48,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null" label="通过人数" width="120px" align="right">
+        <el-table-column v-if="contestId == null" label="通过人数" width="90px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined">
             {{ scope.row['passed'] }} 人通过
@@ -74,9 +72,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="分数" prop="score" width="100px" align="right">
+        <el-table-column label="分数" prop="score" width="90px" align="right">
         </el-table-column>
-        <el-table-column label="创建时间" width="180px" align="center">
+        <el-table-column label="创建时间" width="160px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row.createAt }}</i>
           </template>

@@ -41,6 +41,7 @@ const apiPath = {
     contestManage: '/api/manager/contest/pro',
     userManage: '/api/manager/user/pro',
     user: '/api/manager/user',
+    profile: '/api/manager/user/profile',
     problem: `/api/manager/problem`,
     contest: '/api/manager/contest',
     ranking: '/api/manager/ranking',
