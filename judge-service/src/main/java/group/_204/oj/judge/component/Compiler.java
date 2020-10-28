@@ -60,7 +60,6 @@ class Compiler {
      * @return {@link Compile} 编译结果
      */
     public Compile compile(String solutionId, int languageId, String source) {
-        log.info("正在编译 solutionId: {}, 语言: {}", solutionId, Language.get(languageId));
         String src = writeCode(solutionId, languageId, source);
 
         if (src.isEmpty())
@@ -90,20 +89,21 @@ class Compiler {
         }
 
         String solutionDir = codeDir + solutionId;
-        List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "-v", solutionDir + ":" + solutionDir, runnerImage));
+        List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "--network", "none",
+                "-v", solutionDir + ":" + solutionDir, "-w", solutionDir, runnerImage));
 
         // 构造编译命令
         switch (language) {
             case C:
-                cmd.addAll(Arrays.asList("gcc", src, "-o", src.substring(0, src.indexOf("."))));
+                cmd.addAll(Arrays.asList("gcc", "Solution.c", "-o", "Solution"));
                 processBuilder.command(cmd);
                 break;
             case CPP:
-                cmd.addAll(Arrays.asList("g++", src, "-o", src.substring(0, src.indexOf("."))));
+                cmd.addAll(Arrays.asList("g++", "Solution.cpp", "-o", "Solution"));
                 processBuilder.command(cmd);
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", src));
+                cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
                 processBuilder.command(cmd);
                 break;
             case PYTHON:
@@ -111,12 +111,11 @@ class Compiler {
             case BASH:
                 return new Compile(solutionId, 0, "Bash.");
             case C_SHARP:
-                cmd.addAll(Arrays.asList("mcs", src));
+                cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
                 processBuilder.command(cmd);
         }
 
         try {
-            log.info("Start compile: {}", processBuilder.command());
             Process process = processBuilder.start();
             process.waitFor(3000, TimeUnit.MILLISECONDS);
             // 获取错误流，为空说明编译成功
