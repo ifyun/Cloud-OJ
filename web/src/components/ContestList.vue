@@ -6,9 +6,11 @@
         </el-table-column>
         <el-table-column label="竞赛/作业" prop="contestName">
           <template slot-scope="scope">
-            <el-link type="primary"
+            <el-link :type="scope.row.ended? 'info' : 'success'"
                      :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
-              <b>{{ scope.row.contestName }}</b>
+              <b v-if="scope.row.ended">[已结束]</b>
+              <b v-else>[进行中]</b>
+              <b>&nbsp;{{ scope.row.contestName }}</b>
             </el-link>
           </template>
         </el-table-column>

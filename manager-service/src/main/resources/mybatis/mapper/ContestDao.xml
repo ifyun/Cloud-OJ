@@ -8,7 +8,8 @@
         select found_rows()
     </select>
     <select id="getStartedContest" resultMap="Map.Contest, Map.Total">
-        select sql_calc_found_rows *
+        select sql_calc_found_rows *,
+                                   if(end_at &lt;= now(), true, false) as ended
         from contest
         where start_at &lt;= now()
         limit #{start}, #{limit};

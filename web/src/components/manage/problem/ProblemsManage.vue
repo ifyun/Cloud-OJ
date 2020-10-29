@@ -29,15 +29,17 @@
         </el-form-item>
         <el-form-item style="float: right">
           <el-button-group>
-            <el-button type="success"
+            <el-button type="success" size="medium"
                        icon="el-icon-circle-plus"
                        @click="onAddProblemClick()">
               添加题目
             </el-button>
-            <el-button icon="el-icon-upload2" @click="importDialogVisible = true">
+            <el-button icon="el-icon-upload2" size="medium"
+                       @click="importDialogVisible = true">
               导入题目
             </el-button>
-            <el-button icon="el-icon-download" @click="backupProblems">
+            <el-button icon="el-icon-download" size="medium"
+                       @click="backupProblems">
               导出题目
             </el-button>
           </el-button-group>
@@ -49,7 +51,7 @@
       </el-table-column>
       <el-table-column label="题目名称" width="250px">
         <template slot-scope="scope">
-          <el-link type="primary" :href="`./commit?problemId=${scope.row.problemId}`">
+          <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             <b>{{ scope.row.title }}</b>
           </el-link>
         </template>

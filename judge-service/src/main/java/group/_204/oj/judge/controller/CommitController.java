@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -47,7 +46,7 @@ public class CommitController {
 
         if (contestId != null) {
             Contest contest = contestDao.getContest(contestId);
-            if (contest.getEndAt().before(new Date()))
+            if (contest.isEnded())
                 return ResponseEntity.ok("当前竞赛/作业已结束！");
             int lang = data.getLanguage();
             int languages = contest.getLanguages();
@@ -58,6 +57,7 @@ public class CommitController {
 
         data.setSolutionId(UUID.randomUUID().toString());
         rabbitTemplate.convertAndSend(commitQueue.getName(), data);
+
         return ResponseEntity.accepted().body(data.getSolutionId());
     }
 

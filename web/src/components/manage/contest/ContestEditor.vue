@@ -137,18 +137,19 @@ export default {
               offset: 50,
               title: `【${contest.contestName}】已保存`,
               type: 'success',
-              message: `Status: ${res.status}`
+              message: `${res.status} ${res.statusText}`
             })
             this.$emit('update:dialogVisible', false)
             this.$emit('refresh')
           }).catch((error) => {
-            if (error.response.status === 401) {
+            let res = error.response
+            if (res.status === 401) {
               handle401()
             } else {
               this.$notify.error({
                 offset: 50,
                 title: `【${contest.contestName}】保存失败`,
-                message: `${error.response.status}`
+                message: `${res.status} ${res.statusText}`
               })
             }
           })
