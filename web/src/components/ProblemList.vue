@@ -1,12 +1,12 @@
 <template>
   <el-container class="container">
-    <el-card v-if="contestId != null" style="width: 100%">
+    <el-card v-if="contestId != null" style="width: 100%;margin-bottom: 20px">
       <el-page-header style="align-self: flex-start;"
                       @back="back"
                       :content="contestName">
       </el-page-header>
     </el-card>
-    <el-card style="width: 100%; margin-top: 20px">
+    <el-card style="width: 100%">
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
@@ -31,9 +31,9 @@
       <el-table :data="problems.data" v-loading="loading">
         <el-table-column label="题目名称" width="280px">
           <template slot-scope="scope">
-            <el-link type="primary"
-                     :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
-              <b>{{ scope.row.problemId }} - {{ scope.row.title }}</b>
+            <el-link
+                :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
+              <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>

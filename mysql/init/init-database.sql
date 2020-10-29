@@ -127,13 +127,6 @@ create table source_code
             on update cascade on delete cascade
 );
 
-create table task
-(
-    task_name char(32) not null
-        primary key,
-    uuid      char(36) null
-);
-
 create index user_name_index
     on user (name);
 
@@ -264,9 +257,6 @@ VALUES (3, 'ROLE_ROOT');
 set character set utf8;
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
 VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3ZXqbuxLaHVhp05LTi', LEFT(UUID(), 8), 3);
-
-INSERT INTO task (task_name)
-VALUES ('send_committed');
 
 ALTER TABLE problem
     AUTO_INCREMENT = 1000
