@@ -131,7 +131,7 @@ export default {
     getProblems() {
       this.loading = true
       let userId = userInfo() != null ? userInfo().userId : ''
-      let path = this.contestId != null ? `contest/${this.contestId}` : 'problem'
+      let path = this.contestId != null ? `contest/${this.contestId}/problem` : 'problem'
       let params = {
         page: this.currentPage,
         limit: this.pageSize,

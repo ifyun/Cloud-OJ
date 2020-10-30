@@ -31,6 +31,9 @@
                 from contest_problem cp
             </otherwise>
         </choose>
+        <if test="onlyStarted">
+            join contest c on cp.contest_id = c.contest_id and c.start_at &lt;= now()
+        </if>
         where cp.contest_id = #{contestId}
         limit #{start}, #{limit};
         select found_rows()
