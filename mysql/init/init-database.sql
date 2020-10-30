@@ -186,7 +186,7 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                     max((`s`.`pass_rate` * `p`.`score`)) AS `score`,
                     `s`.`contest_id`                     AS `contest_id`,
                     `c`.`contest_name`                   AS `contest_name`
-             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+             from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`) and (`u`.`role_id` = 0)))
                  join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
                       join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
@@ -231,7 +231,7 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                     `u`.`name`                           AS `name`,
                     count(`p`.`problem_id`)              AS `committed`,
                     max((`s`.`pass_rate` * `p`.`score`)) AS `score`
-             from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
+             from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`) and (`u`.`role_id` = 0)))
                       join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
              where contest_id is null
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`) `problem_score`
