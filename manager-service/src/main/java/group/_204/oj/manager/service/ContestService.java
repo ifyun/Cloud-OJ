@@ -44,8 +44,8 @@ public class ContestService {
         return contestDao.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
     }
 
-    public List<List<?>> getProblemsFromContest(String userId, int contestId, int page, int limit) {
-        return contestDao.getProblems(userId, contestId, (page - 1) * limit, limit);
+    public List<List<?>> getProblemsFromContest(String userId, int contestId, boolean onlyStarted, int page, int limit) {
+        return contestDao.getProblems(userId, contestId, onlyStarted, (page - 1) * limit, limit);
     }
 
     public boolean addProblemToContest(int contestId, int problemId) {

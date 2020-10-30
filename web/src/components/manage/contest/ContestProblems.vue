@@ -1,18 +1,14 @@
 <template>
   <div>
-    <el-alert type="info" show-icon style="margin-bottom: 10px"
+    <el-alert type="info" show-icon style="margin-bottom: 20px"
               title="只能添加未开放的题目"
               description="从竞赛/作业中移除题目并不会删除题目"
               :closable="false">
     </el-alert>
-    <el-form>
-      <el-form-item>
-        <el-button type="primary" size="medium"
-                   @click="showProblemsDialog = true">添加题目
-        </el-button>
-      </el-form-item>
-    </el-form>
-    <el-table :data="problems.data" border>
+    <el-button type="primary" size="medium"
+               @click="showProblemsDialog = true">添加题目
+    </el-button>
+    <el-table :data="problems.data" border style="margin-top: 10px">
       <el-table-column label="ID" prop="problemId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="题目名称">
@@ -96,19 +92,24 @@ export default {
   methods: {
     getProblems() {
       this.$axios({
-        url: `${apiPath.contest}/${this.contestId}`,
+        url: `${apiPath.contest}/pro/${this.contestId}/problem`,
         method: 'get',
+        headers: {
+          'token': userInfo().token
+        },
         params: {
+          userId: userInfo().userId,
           page: this.currentPage,
           limit: this.pageSize
         }
       }).then((res) => {
         this.problems = res.data
       }).catch((error) => {
+        let res = error.response
         this.$notify.error({
           offset: 50,
           title: `获取数据失败`,
-          message: `${error.response.status}`
+          message: `${res.status} ${res.statusText}`
         })
       })
     },

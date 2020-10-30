@@ -12,7 +12,7 @@ public interface ContestDao {
 
     List<List<?>> getStartedContest(int start, int limit);
 
-    List<List<?>> getProblems(String userId, int contestId, int start, int limit);
+    List<List<?>> getProblems(String userId, int contestId, boolean onlyStarted, int start, int limit);
 
     List<List<?>> getProblemsNotInContest(int contestId, int start, int limit);
 

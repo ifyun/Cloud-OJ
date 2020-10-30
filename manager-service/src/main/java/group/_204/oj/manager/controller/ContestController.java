@@ -29,9 +29,14 @@ public class ContestController implements CRUDController {
         return buildGETResponse(contestService.getLanguages(contestId));
     }
 
-    @GetMapping("{contestId}")
-    public ResponseEntity<?> getProblems(@PathVariable int contestId, String userId, int page, int limit) {
-        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, page, limit));
+    @GetMapping("{contestId}/problem")
+    public ResponseEntity<?> getProblemsFromStartedContest(@PathVariable int contestId, String userId, int page, int limit) {
+        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, true, page, limit));
+    }
+
+    @GetMapping("pro/{contestId}/problem")
+    public ResponseEntity<?> getProblemsFromContest(@PathVariable int contestId, String userId, int page, int limit) {
+        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, false, page, limit));
     }
 
     @GetMapping("pro/{contestId}")
