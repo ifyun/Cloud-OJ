@@ -44,7 +44,6 @@
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import ManagerProfile from "@/components/manage/ManagerProfile"
 import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
 import UserManage from "@/components/manage/user/UserManage"
@@ -61,18 +60,26 @@ export default {
   name: "Manager",
   components: {
     TopNavigation,
-    ManagerProfile,
     ProblemsManage,
     ContestManage,
     UserManage,
     BottomArea
+  },
+  mounted() {
+    if (this.userInfo['roleId'] === 1) {
+      this.active = 3
+      this.onSelect('3')
+    } else {
+      this.active = 1
+      this.onSelect('1')
+    }
   },
   data() {
     return {
       userInfo: userInfo(),
       collapse: true,
       active: '',
-      currentView: 'ManagerProfile'
+      currentView: ''
     }
   },
   methods: {
