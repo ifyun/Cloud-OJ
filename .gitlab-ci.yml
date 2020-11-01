@@ -27,9 +27,8 @@ npm-build:
   stage: npm-build
   script:
     - cd web && ls
-    - npm install -g nrm
-    - nrm use taobao
-    - npm install --progress=false
+    - npm config set registry http://registry.npm.taobao.org/
+    - npm install
     - npm run build
     - cd ../ && cp -r web/dist docker/web/
   artifacts:
