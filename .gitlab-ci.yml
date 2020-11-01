@@ -61,13 +61,13 @@ docker-build:
   script:
     - docker -v
     - docker build -t $WEB ./docker/web/
+    - docker build -t $RUNNER ./docker/runner/
     - docker build -t $API_GATEWAY ./docker/api-gateway/
     - docker build -t $REGISTER_CENTER ./docker/register-center/
     - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
     - docker build -t $FILE_SERVER ./docker/file-server/
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
-    - docker build -t $RUNNER ./docker/runner/
     - docker build -t $MYSQL ./docker/mysql/
 docker-deploy:
   only:
