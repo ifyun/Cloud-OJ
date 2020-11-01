@@ -1,7 +1,7 @@
 package group._204.oj.judge.component;
 
 import group._204.oj.judge.model.Compile;
-import group._204.oj.judge.model.Language;
+import group._204.oj.judge.type.Language;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

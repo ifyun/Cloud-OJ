@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import group._204.oj.judge.model.Language;
+import group._204.oj.judge.type.Language;
 
 import javax.annotation.PostConstruct;
 import java.io.File;

@@ -1,6 +1,7 @@
 package group._204.oj.judge.service;
 
 import group._204.oj.judge.model.*;
+import group._204.oj.judge.type.SolutionState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -48,7 +49,7 @@ public class CommitService {
         solution.setSourceCode(commitData.getSourceCode());
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
 
-        solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
+        solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.update(solution);
 
         log.debug("加入判题队列: solutionId={}.", solution.getSolutionId());

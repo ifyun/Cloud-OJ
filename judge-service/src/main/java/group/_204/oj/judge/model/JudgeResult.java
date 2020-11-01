@@ -1,5 +1,7 @@
 package group._204.oj.judge.model;
 
+import group._204.oj.judge.type.SolutionResult;
+import group._204.oj.judge.type.SolutionState;
 import lombok.Data;
 
 import java.sql.Date;
@@ -10,8 +12,8 @@ public class JudgeResult {
     private int problemId;
     private String userId;
     private int language;
-    private int state;
-    private int result;
+    private SolutionState state;
+    private SolutionResult result;
     private int compileState;
     private String compileInfo;
     private double passRate;

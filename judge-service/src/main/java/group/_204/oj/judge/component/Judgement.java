@@ -6,6 +6,9 @@ import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.*;
 import group._204.oj.judge.model.Runtime;
+import group._204.oj.judge.type.Language;
+import group._204.oj.judge.type.SolutionResult;
+import group._204.oj.judge.type.SolutionState;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,13 +78,13 @@ public class Judgement {
     public void judge(Solution solution) {
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
 
-        log.info("正在判题: solutionId={}", solution.getSolutionId());
+        log.info("正在判题: solutionId={}.", solution.getSolutionId());
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
 
         List<RunResult> results = execute(solution, runtime, timeout);
-        compareResult(solution, runtime, results, timeout);
+        calcResult(solution, runtime, results);
     }
 
     /**
@@ -89,11 +92,9 @@ public class Judgement {
      *
      * @param results List of run result
      */
-    private void compareResult(Solution solution, Runtime runtime, List<RunResult> results, long timeout) {
-        int total = getOutputCount(solution.getProblemId());
-
-        if (runtime.getResult() == SolutionResult.JUDGE_ERROR.ordinal()
-                || runtime.getResult() == SolutionResult.RUNTIME_ERROR.ordinal()) {
+    private void calcResult(Solution solution, Runtime runtime, List<RunResult> results) {
+        if (runtime.getResult() == SolutionResult.JUDGE_ERROR
+                || runtime.getResult() == SolutionResult.RUNTIME_ERROR) {
             solution.setResult(runtime.getResult());
         } else {
             Long time = results.stream().max(Comparator.comparingLong(RunResult::getTimeUsed)).get().getTimeUsed();
@@ -108,6 +109,8 @@ public class Judgement {
                     mle = statusMap.get(MLE),
                     re = statusMap.get(RE);
 
+            int total = results.size();
+
             runtime.setTotal(total);
             runtime.setPassed(ac);
             runtime.setTime(time);
@@ -116,26 +119,26 @@ public class Judgement {
             double passRate = 0;
 
             if (ac == null) {
-                solution.setResult(SolutionResult.WRONG.ordinal());
+                solution.setResult(SolutionResult.WRONG);
             } else if (ac < total) {
                 passRate = (double) ac / total;
-                solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
+                solution.setResult(SolutionResult.PARTLY_PASSED);
             } else {
                 passRate = 1;
-                solution.setResult(SolutionResult.ALL_PASSED.ordinal());
+                solution.setResult(SolutionResult.PASSED);
             }
 
             if (tle != null)
-                solution.setResult(SolutionResult.TIMEOUT.ordinal());
+                solution.setResult(SolutionResult.TIMEOUT);
             if (mle != null)
-                solution.setResult(SolutionResult.OUT_OF_MEM.ordinal());
+                solution.setResult(SolutionResult.OOM);
             if (re != null)
-                solution.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
+                solution.setResult(SolutionResult.RUNTIME_ERROR);
 
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
 
-        solution.setState(SolutionState.JUDGED.ordinal());
+        solution.setState(SolutionState.JUDGED);
         runtimeDao.update(runtime);
         solutionDao.update(solution);
     }
@@ -155,10 +158,10 @@ public class Judgement {
         } catch (RuntimeError e) {
             log.warn("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
-            runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
+            runtime.setResult(SolutionResult.RUNTIME_ERROR);
         } catch (InterruptedException | IOException | TimeoutError | LanguageNotSupportError e) {
             log.error("Judge Error: {}", e.getMessage());
-            runtime.setResult(SolutionResult.JUDGE_ERROR.ordinal());
+            runtime.setResult(SolutionResult.JUDGE_ERROR);
             runtime.setInfo(e.getMessage());
         }
 
@@ -259,22 +262,5 @@ public class Judgement {
             default:
                 throw new LanguageNotSupportError("Language not support.");
         }
-    }
-
-    /**
-     * 获取输出数据个数
-     */
-    private int getOutputCount(int problemId) {
-        List<String> data = new ArrayList<>();
-
-        String testDataDir = fileDir + "test_data/";
-        File dir = new File(testDataDir + problemId);
-
-        File[] files = dir.listFiles(pathname -> {
-            String name = pathname.getName();
-            return name.substring(name.lastIndexOf('.')).equals(".out");
-        });
-
-        return files == null ? 0 : files.length;
     }
 }

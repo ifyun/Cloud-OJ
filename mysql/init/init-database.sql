@@ -1,6 +1,7 @@
 create database cloud_oj character set utf8mb4;
 use cloud_oj;
 set character set utf8;
+
 create table contest
 (
     contest_id   int auto_increment
@@ -8,7 +9,7 @@ create table contest
     contest_name varchar(64)   null,
     start_at     timestamp     not null comment '开始时间',
     end_at       timestamp     not null comment '结束时间',
-    languages    int default 0 not null comment '支持的语言范围'
+    languages int default 0 not null comment '支持的语言范围，掩码表示法'
 );
 
 create table problem
@@ -54,11 +55,11 @@ create table user
 (
     user_id   varchar(32)                         not null
         primary key,
-    name      varchar(16)                         not null comment '用户名',
+    name      varchar(16)                         not null,
     password  varchar(100)                        not null,
-    secret    char(8)                             not null comment '秘钥',
+    secret    char(8)                             not null comment '秘钥，用于生成 jwt',
     email     varchar(32)                         null,
-    section   varchar(16)                         null comment '班级',
+    section   varchar(16)                         null,
     role_id   int       default 0                 not null,
     create_at timestamp default CURRENT_TIMESTAMP null,
     constraint user_role_role_id_fk
@@ -68,16 +69,16 @@ create table user
 
 create table solution
 (
-    solution_id char(36)
+    solution_id char(36)                                                                                                     not null
         primary key,
-    problem_id  int                                null,
-    contest_id  int                                null,
-    language    int                                not null,
-    state       int      default 2                 not null comment '状态(2->已提交,1->在判题队列,0->已判题)',
-    result      int                                null comment '结果(4->编译错误,3->答案错误,2->部分通过,1->时间超限,0->完全正确)',
-    pass_rate   double   default 0                 not null comment '通过率',
-    user_id     varchar(32)                        null,
-    submit_time datetime default CURRENT_TIMESTAMP not null comment '提交时间',
+    problem_id  int                                                                                                          null,
+    contest_id  int                                                                                                          null,
+    language    int                                                                                                          not null,
+    state       enum ('JUDGED', 'IN_JUDGED_QUEUE', 'ACCEPTED') default 'ACCEPTED'                                            not null,
+    result      enum ('PASSED', 'TIMEOUT', 'OOM', 'PARTLY_PASSED', 'WRONG', 'COMPILE_ERROR', 'RUNTIME_ERROR', 'JUDGE_ERROR') null,
+    pass_rate   double                                         default 0                                                     not null,
+    user_id     varchar(32)                                                                                                  null,
+    submit_time datetime                                       default CURRENT_TIMESTAMP                                     not null,
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,
@@ -95,7 +96,7 @@ create table compile
         primary key,
     solution_id char(36) not null,
     state       int      not null comment '编译状态(0->编译成功,-1->编译出错)',
-    info        text     null comment '编译信息',
+    info        text     null,
     constraint compile_solution_solution_id_fk
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
