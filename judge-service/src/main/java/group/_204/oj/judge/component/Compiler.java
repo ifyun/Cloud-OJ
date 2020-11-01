@@ -107,9 +107,9 @@ class Compiler {
                 processBuilder.command(cmd);
                 break;
             case PYTHON:
-                return new Compile(solutionId, 0, "Python.");
+                return new Compile(solutionId, 0, "Python");
             case BASH:
-                return new Compile(solutionId, 0, "Bash.");
+                return new Compile(solutionId, 0, "Bash");
             case C_SHARP:
                 cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
                 processBuilder.command(cmd);
@@ -122,8 +122,8 @@ class Compiler {
             String error = getOutput(process.getErrorStream());
 
             if (error.isEmpty()) {
-                log.info("编译完成: solutionId={}", solutionId);
-                return new Compile(solutionId, 0, "编译成功");
+                log.info("编译成功: solutionId={}", solutionId);
+                return new Compile(solutionId, 0, null);
             } else {
                 throw new CompileError(error);
             }

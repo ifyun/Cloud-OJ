@@ -45,7 +45,8 @@ public class FileCleaner {
         }
 
         if (emptyDir) {
-            log.info("Delete directory: path={}, result={}", dir.getAbsolutePath(), dir.delete());
+            if (!dir.delete())
+                log.warn("Delete directory failed: path={}", dir.getAbsolutePath());
         }
     }
 }

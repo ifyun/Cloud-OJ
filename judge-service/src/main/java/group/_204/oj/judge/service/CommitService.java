@@ -51,7 +51,7 @@ public class CommitService {
         solution.setState(SolutionState.IN_JUDGE_QUEUE.ordinal());
         solutionDao.update(solution);
 
-        log.info("Solution {} in JudgeQueue.", solution.getSolutionId());
+        log.debug("加入判题队列: solutionId={}.", solution.getSolutionId());
     }
 
     public JudgeResult getResult(String solutionId) {

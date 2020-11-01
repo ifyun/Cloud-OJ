@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 #include <ios>
 #include <unistd.h>
 #include <fcntl.h>
@@ -9,15 +10,16 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/user.h>
-#include <sys/ptrace.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include "utils.h"
 
-const unsigned EXIT_0 = 0;
-const unsigned TLE = 1;
-const unsigned MLE = 2;
-const unsigned RE = 3;
+const unsigned AC = 0;
+const unsigned WA = 1;
+const unsigned TLE = 2;
+const unsigned MLE = 3;
+const unsigned RE = 4;
 
 struct result
 {
@@ -38,7 +40,7 @@ struct result
 };
 
 /**
- * 设置资源限制
+ * Set resource limit.
  */
 void setProcessLimit(int timeLimit, int maxMemLimit)
 {
@@ -57,7 +59,7 @@ void setProcessLimit(int timeLimit, int maxMemLimit)
 }
 
 /**
- * 执行命令
+ * Execute user code.
  */
 void run_cmd(char *args[], long timeLimit, int maxMemLimit, std::string in, std::string out)
 {
@@ -73,7 +75,8 @@ void run_cmd(char *args[], long timeLimit, int maxMemLimit, std::string in, std:
 
         if (execvp(args[0], args) == -1)
         {
-            std::cerr << "Failed to start the process!\n";
+            std::cerr << "[ERROR] Failed to start the process!\n";
+            exit(-1);
         }
 
         close(newstdin);
@@ -82,23 +85,29 @@ void run_cmd(char *args[], long timeLimit, int maxMemLimit, std::string in, std:
     else
     {
         if (newstdin == -1)
-            std::cerr << "Failed to open " << in << std::endl;
+        {
+            std::cerr << "[ERROR] Failed to open " << in << std::endl;
+            exit(-1);
+        }
         if (newstdout == -1)
-            std::cerr << "Failed to open " << out << std::endl;
+        {
+            std::cerr << "[ERROR] Failed to open " << out << std::endl;
+            exit(-1);
+        }
     }
 }
 
 /**
- * 检查结果
+ * Check result.
  */
-void watch_result(pid_t pid, int timeLimit, int memLimit, struct result *rest)
+void watch_result(pid_t pid, int timeLimit, int memLimit, std::string out, std::string expect, struct result *rest)
 {
     int status;
     struct rusage ru;
 
     if (wait4(pid, &status, 0, &ru) == -1)
     {
-        std::cerr << "wait4 failure!\n";
+        rest->status = RE;
     }
 
     rest->timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 + ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
@@ -130,20 +139,20 @@ void watch_result(pid_t pid, int timeLimit, int memLimit, struct result *rest)
         else if (rest->memUsed > memLimit)
             rest->status = MLE;
         else
-            rest->status = EXIT_0;
+            rest->status = diff(out, expect) ? WA : AC;
     }
 }
 
 /**
- * 创建子进程,执行命令
+ * Create process, execute command.
  */
-void run(char *args[], int timeLimit, int memLimit, int maxMemLimit, const char *in, const char *out, struct result *res)
+void run(char *args[], int timeLimit, int memLimit, int maxMemLimit, const char *in, std::string out, std::string expect, struct result *res)
 {
     pid_t pid = fork();
 
     if (pid < 0)
     {
-        std::cerr << "fork error!\n";
+        res->status = RE;
     }
     else if (pid == 0)
     {
@@ -151,42 +160,76 @@ void run(char *args[], int timeLimit, int memLimit, int maxMemLimit, const char 
     }
     else
     {
-        watch_result(pid, timeLimit, memLimit, res);
+        watch_result(pid, timeLimit, memLimit, out, expect, res);
     }
 }
 
+/**
+ * Split command to execute.
+ */
 void split(char **arr, char *str, const char *del)
 {
     char *s = NULL;
     s = strtok(str, del);
+
     while (s != NULL)
     {
         *arr++ = s;
         s = strtok(NULL, del);
     }
+
     *arr++ = NULL;
 }
 
 /**
- * 结果写入文件
+ * argv:
+ *   argv[1]: Command to execute, use '@' replace space.
+ *   argv[2]: Time limit(ms).
+ *   argv[3]: Memory limit(KB).
+ *   argv[4]: Max memory limit(KB), set for jvm.
+ *   argv[5]: Directory of input and output files.
  */
-void write_result(std::string res)
-{
-    std::ofstream out_file;
-    out_file.open("./result.out", std::ios_base::out | std::ios_base::trunc);
-    out_file << res;
-    out_file.close();
-}
-
 int main(int argc, char *argv[])
 {
     char *cmd[32];
     split(cmd, argv[1], "@");
 
-    struct result res;
-    run(cmd, atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), argv[5], "./output.out", &res);
+    int time_limit = atoi(argv[2]);
+    int mem_limit = atoi(argv[3]);
+    int max_mem_limit = atoi(argv[4]);
 
-    write_result(res.toJson());
+    std::vector<std::string> results;
+
+    // get input files
+    std::vector<std::string> input_files = get_files(argv[5], "in");
+    std::vector<std::string> output_files = get_files(argv[5], "out");
+
+    if (input_files.size() > 0)
+    {
+        // if input_files.size() != output_files.size(), just exit.
+        if (input_files.size() != output_files.size())
+        {
+            std::cerr << "[ERROR] The number of input and output files is not equal.";
+            exit(-1);
+        }
+        // run user code with input files
+        for (auto i = 0; i < input_files.size(); i++)
+        {
+            struct result res;
+            std::string out = std::to_string(i + 1) + std::string(".out");
+            run(cmd, time_limit, mem_limit, max_mem_limit, input_files[i].c_str(), out, output_files[i], &res);
+            results.push_back(res.toJson());
+        }
+    }
+    else
+    {
+        struct result res;
+        std::string expect = get_files(argv[5], ".out")[0]; // no input files, only one out
+        run(cmd, time_limit, mem_limit, max_mem_limit, "/dev/null", "./1.out", expect, &res);
+        results.push_back(res.toJson());
+    }
+
+    write_result(results);
 
     return 0;
 }
