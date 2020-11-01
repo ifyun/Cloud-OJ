@@ -11,13 +11,13 @@ public class Runtime {
     private Integer id;
     private String solutionId;
     private int total;
-    private int passed;
+    private Long passed;
     private Long time;
     private Long memory;
     private int result;
     private String info;
 
     public Runtime(String solutionId) {
-        this(null, solutionId, 0, 0, null, null, 0, null);
+        this(null, solutionId, 0, 0L, null, null, 0, null);
     }
 }

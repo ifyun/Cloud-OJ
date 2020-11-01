@@ -383,7 +383,7 @@ export default {
           this.alertData = {
             type: 'warning',
             title: `部分通过(${data["passRate"] * 100})`,
-            desc: '漏掉了部分情况'
+            desc: '可能漏掉了部分情况'
           }
           break
         case 4:

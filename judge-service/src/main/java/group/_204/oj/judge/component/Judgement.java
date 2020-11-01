@@ -1,5 +1,6 @@
 package group._204.oj.judge.component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
@@ -8,7 +9,6 @@ import group._204.oj.judge.model.Runtime;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -59,6 +59,14 @@ public class Judgement {
         }
     }
 
+    private static class LanguageNotSupportError extends Exception {
+        LanguageNotSupportError(String msg) {
+            super(msg);
+        }
+    }
+
+    private static final int AC = 0, TLE = 2, MLE = 3, RE = 4;
+
     /**
      * 判题
      *
@@ -66,128 +74,96 @@ public class Judgement {
      */
     public void judge(Solution solution) {
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
-        List<File> input = getInputFiles(solution.getProblemId());
-        List<String> expect = getOutputData(solution.getProblemId());
 
-        log.info("Judging: solutionId={}", solution.getSolutionId());
+        log.info("正在判题: solutionId={}", solution.getSolutionId());
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
 
-        List<RunResult> results = execute(solution, input, runtime, timeout);
-        compareResult(solution, runtime, expect, results, timeout);
+        List<RunResult> results = execute(solution, runtime, timeout);
+        compareResult(solution, runtime, results, timeout);
     }
 
     /**
      * Calculate results
      *
-     * @param expect  Correct output
      * @param results List of run result
      */
-    private void compareResult(Solution solution, Runtime runtime, List<String> expect, List<RunResult> results, long timeout) {
-        int total = expect.size();
-        int passed = 0;
+    private void compareResult(Solution solution, Runtime runtime, List<RunResult> results, long timeout) {
+        int total = getOutputCount(solution.getProblemId());
 
         if (runtime.getResult() == SolutionResult.JUDGE_ERROR.ordinal()
                 || runtime.getResult() == SolutionResult.RUNTIME_ERROR.ordinal()) {
             solution.setResult(runtime.getResult());
         } else {
-            int size = Math.min(results.size(), expect.size());
-            Long time = 0L;
-            Long memory = 0L;
+            Long time = results.stream().max(Comparator.comparingLong(RunResult::getTimeUsed)).get().getTimeUsed();
+            Long memory = results.stream().max(Comparator.comparingLong(RunResult::getMemUsed)).get().getMemUsed();
 
-            // Compare output
-            for (int i = 0; i < size; i++) {
-                RunResult res = results.get(i);
+            // Group by status
+            Map<Integer, Long> statusMap =
+                    results.stream().collect(Collectors.groupingBy(RunResult::getStatus, Collectors.counting()));
 
-                if (time < res.getTimeUsed()) {
-                    time = res.getTimeUsed();
-                }
-
-                if (memory < res.getMemUsed()) {
-                    memory = res.getMemUsed();
-                }
-
-                if (res.getStatus() == 0 && expect.get(i).length() == res.getStdout().length()
-                        && expect.get(i).equals(res.getStdout())) {
-                    passed++;
-                }
-            }
+            Long ac = statusMap.get(AC),
+                    tle = statusMap.get(TLE),
+                    mle = statusMap.get(MLE),
+                    re = statusMap.get(RE);
 
             runtime.setTotal(total);
-            runtime.setPassed(passed);
+            runtime.setPassed(ac);
             runtime.setTime(time);
             runtime.setMemory(memory);
 
-            runtimeDao.update(runtime);
+            double passRate = 0;
 
-            if (passed == 0) {
+            if (ac == null) {
                 solution.setResult(SolutionResult.WRONG.ordinal());
-            } else if (passed < total) {
-                if (time > timeout) {
-                    // TIME OUT
-                    solution.setResult(SolutionResult.TIMEOUT.ordinal());
-                } else if (memory > Long.parseLong(MEM_LIMIT)) {
-                    // OUT OF MEMORY LIMIT
-                    solution.setResult(SolutionResult.OUT_OF_MEM.ordinal());
-                } else {
-                    // PARTLY PASSED
-                    solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
-                }
+            } else if (ac < total) {
+                passRate = (double) ac / total;
+                solution.setResult(SolutionResult.PARTLY_PASSED.ordinal());
             } else {
+                passRate = 1;
                 solution.setResult(SolutionResult.ALL_PASSED.ordinal());
             }
 
-            double passRate = (double) passed / total;
+            if (tle != null)
+                solution.setResult(SolutionResult.TIMEOUT.ordinal());
+            if (mle != null)
+                solution.setResult(SolutionResult.OUT_OF_MEM.ordinal());
+            if (re != null)
+                solution.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
+
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
 
         solution.setState(SolutionState.JUDGED.ordinal());
+        runtimeDao.update(runtime);
         solutionDao.update(solution);
     }
 
     /**
      * Execute the compiled code
      *
-     * @param inputFiles File of input
      * @return List of run result
      */
-    private List<RunResult> execute(Solution solution, @Nullable List<File> inputFiles, Runtime runtime, long timeout) {
-        List<RunResult> results = new ArrayList<>();
+    private List<RunResult> execute(Solution solution, Runtime runtime, long timeout) {
+        List<RunResult> results = null;
 
         try {
-            // No input file
-            if (inputFiles == null) {
-                ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), MEM_LIMIT, MAX_MEM_LIMIT, null);
-
-                assert cmd != null;
-                RunResult result = run(cmd, solution.getSolutionId());
-                results.add(result);
-            } else {
-                long maxTime = 0;
-
-                // Run code with each input file
-                for (File input : inputFiles) {
-                    ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), MEM_LIMIT, MAX_MEM_LIMIT,
-                            input.getAbsolutePath());
-                    assert cmd != null;
-                    RunResult result = run(cmd, solution.getSolutionId());
-                    results.add(result);
-                }
-
-                runtime.setTime(maxTime);
-            }
+            String testDataDir = fileDir + "test_data/" + solution.getProblemId();
+            ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
+            results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
-            log.error("Runtime Error: {}", e.getMessage());
+            log.warn("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR.ordinal());
-        } catch (InterruptedException | IOException | TimeoutError e) {
+        } catch (InterruptedException | IOException | TimeoutError | LanguageNotSupportError e) {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.JUDGE_ERROR.ordinal());
             runtime.setInfo(e.getMessage());
         }
 
         runtimeDao.update(runtime);
+
         return results;
     }
 
@@ -197,34 +173,27 @@ public class Judgement {
      * @param cmd Command to run
      * @return {@link RunResult} Contains status and stdout
      */
-    private RunResult run(ProcessBuilder cmd, String solutionId) throws RuntimeError, TimeoutError, IOException, InterruptedException {
+    private List<RunResult> run(ProcessBuilder cmd, String solutionId) throws RuntimeError, TimeoutError, IOException, InterruptedException {
         Process process = cmd.start();
 
         if (!process.waitFor(6000, TimeUnit.MILLISECONDS)) {
             throw new TimeoutError("Wait timeout.");
         }
 
-        RunResult result;
+        List<RunResult> results;
         String stderr = getOutput(process.getErrorStream());
 
         if (stderr.isEmpty()) {
             String solutionDir = codeDir + solutionId;
             // Get run result
-            String stdout = getOutputFromFile(solutionDir + "/result.out");
-            result = objectMapper.readValue(stdout, RunResult.class);
-            // stdout of solution
-            File file = new File(solutionDir + "/output.out");
-            // Read output file
-            result.setStdout(getOutput(new FileInputStream(file)));
-
-            if (!file.delete()) {
-                log.error("Delete stdout failed: {}", file.getAbsolutePath());
-            }
+            String resultStr = getOutputFromFile(solutionDir + "/result.json");
+            results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
+            });
         } else {
             throw new RuntimeError(stderr);
         }
 
-        return result;
+        return results;
     }
 
     @SneakyThrows
@@ -252,7 +221,7 @@ public class Judgement {
      * @param solution {@link Solution} Solution object
      * @return {@link ProcessBuilder} Command to run
      */
-    private ProcessBuilder buildCommand(Solution solution, String timeout, String memLimit, String maxMemLimit, String in) {
+    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir) throws LanguageNotSupportError {
         Language language = Language.get(solution.getLanguage());
         assert language != null;
 
@@ -265,61 +234,37 @@ public class Judgement {
                 "-v", fileDir + ":" + fileDir + ":ro", "-w", solutionDir, runnerImage, "runner"
         ));
 
-        if (in == null)
-            in = "/dev/null";
-
         switch (language) {
             case C:
             case CPP:
-                cmd.addAll(Arrays.asList("./Solution", timeout, memLimit, memLimit, in));
+                cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
                 builder.command(cmd);
                 return builder;
             case JAVA:
-                cmd.addAll(Arrays.asList("java@Solution", timeout, memLimit, maxMemLimit, in));
+                cmd.addAll(Arrays.asList("java@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT, testDataDir));
                 builder.command(cmd);
                 return builder;
             case PYTHON:
-                cmd.addAll(Arrays.asList("python@Solution.py", timeout, memLimit, memLimit, in));
+                cmd.addAll(Arrays.asList("python@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
                 builder.command(cmd);
                 return builder;
             case BASH:
-                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, memLimit, memLimit, in));
+                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
                 builder.command(cmd);
                 return builder;
             case C_SHARP:
-                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, memLimit, memLimit, in));
+                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
                 builder.command(cmd);
                 return builder;
             default:
-                return null;
+                throw new LanguageNotSupportError("Language not support.");
         }
     }
 
     /**
-     * Get input files
+     * 获取输出数据个数
      */
-    private List<File> getInputFiles(int problemId) {
-        String testDataDir = fileDir + "test_data/";
-        File dir = new File(testDataDir + problemId);
-
-        File[] files = dir.listFiles(pathname -> {
-            String name = pathname.getName();
-            return name.substring(name.lastIndexOf('.')).equals(".in");
-        });
-
-        if (files != null && files.length > 0) {
-            return Arrays.stream(files)
-                    .sorted(Comparator.comparing(File::getName))
-                    .collect(Collectors.toList());
-        }
-
-        return null;
-    }
-
-    /**
-     * 获取测试输出数据
-     */
-    private List<String> getOutputData(int problemId) {
+    private int getOutputCount(int problemId) {
         List<String> data = new ArrayList<>();
 
         String testDataDir = fileDir + "test_data/";
@@ -330,21 +275,6 @@ public class Judgement {
             return name.substring(name.lastIndexOf('.')).equals(".out");
         });
 
-        if (files != null) {
-            List<File> fileList = Arrays.stream(files)
-                    .sorted(Comparator.comparing(File::getName))
-                    .collect(Collectors.toList());
-
-            for (File file : fileList) {
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                    data.add(reader.lines().collect(Collectors.joining("\n")));
-                } catch (FileNotFoundException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }
-
-        return data;
+        return files == null ? 0 : files.length;
     }
 }

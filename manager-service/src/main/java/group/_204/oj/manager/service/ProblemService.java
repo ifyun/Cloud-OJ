@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,9 +125,13 @@ public class ProblemService {
             return name.substring(name.lastIndexOf('.')).equals(ext);
         });
 
-        if (files != null) {
+        if (files != null && files.length > 0) {
             data = new ArrayList<>(files.length);
-            for (File file : files) {
+            List<File> fileList = Arrays.stream(files)
+                    .sorted(Comparator.comparing(File::getName))
+                    .collect(Collectors.toList());
+
+            for (File file : fileList) {
                 try {
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(new FileInputStream(file))
