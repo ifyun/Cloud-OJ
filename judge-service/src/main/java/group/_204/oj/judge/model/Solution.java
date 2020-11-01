@@ -1,5 +1,7 @@
 package group._204.oj.judge.model;
 
+import group._204.oj.judge.type.SolutionResult;
+import group._204.oj.judge.type.SolutionState;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,8 +13,8 @@ public class Solution implements Serializable {
     private Integer contestId;
     private String userId;
     private Integer language;
-    private int state;
-    private int result;
+    private SolutionState state;
+    private SolutionResult result;
     private double passRate;
     private String sourceCode;
 

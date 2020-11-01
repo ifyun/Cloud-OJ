@@ -1,4 +1,4 @@
-package group._204.oj.judge.model;
+package group._204.oj.judge.type;
 
 public enum Language {
     C(0, ".c"),

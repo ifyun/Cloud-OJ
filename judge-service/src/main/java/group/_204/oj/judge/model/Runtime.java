@@ -1,5 +1,6 @@
 package group._204.oj.judge.model;
 
+import group._204.oj.judge.type.SolutionResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,10 @@ public class Runtime {
     private Long passed;
     private Long time;
     private Long memory;
-    private int result;
+    private SolutionResult result;
     private String info;
 
     public Runtime(String solutionId) {
-        this(null, solutionId, 0, 0L, null, null, 0, null);
+        this(null, solutionId, 0, 0L, null, null, null, null);
     }
 }

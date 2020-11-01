@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.JudgeResultDao">
     <select id="getHistoryByUserId" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows *
+        select sql_calc_found_rows solution_id,
+                                   problem_id,
+                                   contest_id,
+                                   title,
+                                   language,
+                                   state - 1  as state,
+                                   result - 1 as result,
+                                   pass_rate,
+                                   user_id,
+                                   submit_time,
+                                   score,
+                                   code,
+                                   time,
+                                   memory
         from judge_result
         where user_id = #{userId}
         order by submit_time desc
