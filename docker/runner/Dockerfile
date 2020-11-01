@@ -10,5 +10,5 @@ RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && apt-get update \
     && apt-get install -y $libs \
     && apt-get clean && apt-get autoclean \
-    && ln -s /usr/bin/python3 /usr/bin/python \
-    && g++ ./runner.cpp ./utils.cpp -o /usr/bin/runner && rm ./runner.cpp
+    && ln -s /usr/bin/python3 /usr/bin/python
+RUN g++ ./runner.cpp ./utils.cpp -o /usr/bin/runner && rm ./*.cpp ./*.h
