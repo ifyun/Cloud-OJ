@@ -68,10 +68,20 @@ export default {
             sessionStorage.setItem('cloud_oj_token', JSON.stringify(res.data))
             window.location.href = '../'
           }).catch((error) => {
-            this.$notify.error({
-              title: '登录失败',
-              message: `${error.response.status}`
-            })
+            let res = error.response
+            if (res.status === 400) {
+              this.$notify.warning({
+                offset: 50,
+                title: '登录失败',
+                message: '用户名或密码错误!'
+              })
+            } else {
+              this.$notify.error({
+                offset: 50,
+                title: '登录失败',
+                message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
+              })
+            }
           }).finally(() => {
             this.disableLogin = false
           })
