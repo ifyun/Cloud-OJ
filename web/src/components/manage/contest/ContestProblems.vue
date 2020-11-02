@@ -5,7 +5,7 @@
               description="从竞赛/作业中移除题目并不会删除题目"
               :closable="false">
     </el-alert>
-    <el-button type="primary" size="medium"
+    <el-button type="success" size="medium" icon="el-icon-circle-plus"
                @click="showProblemsDialog = true">添加题目
     </el-button>
     <el-table :data="problems.data" border style="margin-top: 10px">
