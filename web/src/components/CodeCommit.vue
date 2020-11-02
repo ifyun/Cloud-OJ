@@ -12,23 +12,6 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <el-card style="height: 964px;overflow: auto">
-            <el-row :gutter="10" type="flex" align="middle"
-                    v-if="alertData.title !== undefined">
-              <el-col :span="23">
-                <el-alert show-icon
-                          :closable="false"
-                          :type="alertData.type"
-                          :title="alertData.title"
-                          :description="alertData.desc">
-                </el-alert>
-              </el-col>
-              <el-col :span="1">
-                <el-button icon="el-icon-refresh" type="text"
-                           :disabled="disableRefresh"
-                           @click="getResult(solutionId, 1)">
-                </el-button>
-              </el-col>
-            </el-row>
             <h4>题目描述</h4>
             <pre class="problem-content">{{ problem.description }}</pre>
             <h4>输入说明</h4>
@@ -83,6 +66,26 @@
         </el-col>
       </el-row>
     </div>
+    <el-dialog title="获取判题结果"
+               :visible.sync="resultDialog.visible"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <el-steps simple :active="resultDialog.active" finish-status="success">
+        <el-step title="提交代码"></el-step>
+        <el-step title="等待判题"></el-step>
+        <el-step title="获取结果"></el-step>
+      </el-steps>
+      <el-alert v-if="result.title !== undefined" style="margin-top: 15px"
+                show-icon :closable="false" :type="result.type"
+                :title="result.title"
+                :description="result.desc">
+      </el-alert>
+      <el-button style="margin-top: 15px" icon="el-icon-refresh"
+                 :disabled="resultDialog.disableRefresh"
+                 @click="getResult(solutionId, 1)">
+        <span>重试</span>
+      </el-button>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -101,7 +104,7 @@ import 'codemirror/theme/dracula.css'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/edit/closebrackets.js'
 
-let languageMode = [
+const languageMode = [
   'text/x-csrc',
   'text/x-c++src',
   'text/x-java',
@@ -110,7 +113,7 @@ let languageMode = [
   'text/x-csharp'
 ]
 
-let languageOptions = [
+const languageOptions = [
   {id: 0, name: 'C', version: 'gcc'},
   {id: 1, name: 'C++', version: 'g++(std=14)'},
   {id: 2, name: 'Java', version: '1.8'},
@@ -118,6 +121,8 @@ let languageOptions = [
   {id: 4, name: 'Bash'},
   {id: 5, name: 'C#', version: 'Mono'}
 ]
+
+const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
 
 export default {
   name: "CodeCommit",
@@ -167,8 +172,12 @@ export default {
       enabledLanguages: [],
       language: 0,
       solutionId: '',
-      alertData: {},
-      disableRefresh: true
+      result: {},
+      resultDialog: {
+        disableRefresh: true,
+        visible: false,
+        active: undefined
+      }
     }
   },
   methods: {
@@ -264,7 +273,7 @@ export default {
         alert('请先登录！')
         return
       }
-      this.alertData = {}
+      this.result = {}
       let data = {
         userId: userInfo().userId,
         problemId: this.problemId,
@@ -285,11 +294,7 @@ export default {
         },
         data: JSON.stringify(data)
       }).then((res) => {
-        this.alertData = {
-          type: 'success',
-          title: '已提交，正在等待结果',
-          desc: '你的代码已被接受，请稍候...'
-        }
+        this.resultDialog.visible = true
         this.solutionId = res.data
         this.getResult(res.data, 1)
       }).catch((error) => {
@@ -308,6 +313,7 @@ export default {
     },
     /**
      * 获取结果
+     *
      * @param solutionId 答案 uuid
      * @param count 重试次数
      */
@@ -328,15 +334,31 @@ export default {
             this.getResult(solutionId, count + 1)
           }, 1000)
         } else if (count > 15) {
-          this.alertData = {
+          this.result = {
             type: 'info',
             title: '未获取到结果',
             desc: '可能提交人数过多，可手动刷新'
           }
-          this.disableRefresh = false
+          this.resultDialog.disableRefresh = false
         } else {
-          this.getResultText(res.data)
-          this.disableRefresh = true
+          switch (res.data['state']) {
+            case ACCEPT:
+              this.resultDialog.active = 1
+              setTimeout(() => {
+                this.getResult(solutionId, count + 1)
+              }, 1000)
+              break
+            case IN_QUEUE:
+              this.resultDialog.active = 2
+              setTimeout(() => {
+                this.getResult(solutionId, count + 1)
+              }, 1000)
+              break
+            case JUDGED:
+              this.resultDialog.active = 3
+              this.getResultText(res.data)
+              this.resultDialog.disableRefresh = true
+          }
         }
       }).catch((error) => {
         let res = error.response
@@ -348,7 +370,7 @@ export default {
             title: '无法获取结果',
             message: `${res.status} ${res.statusText}`
           })
-          this.disableRefresh = false
+          this.resultDialog.disableRefresh = false
         }
       })
     },
@@ -359,56 +381,56 @@ export default {
     getResultText(data) {
       switch (data.result) {
         case 0:
-          this.alertData = {
+          this.result = {
             type: 'success',
             title: '完全正确',
             desc: '已通过全部测试点'
           }
           break
         case 1:
-          this.alertData = {
+          this.result = {
             type: 'warning',
             title: `时间超限(${data["passRate"] * 100})`,
             desc: '时间复杂度有待优化'
           }
           break
         case 2:
-          this.alertData = {
+          this.result = {
             type: 'warning',
             title: `内存超限(${data["passRate"] * 100})`,
             desc: '空间复杂度有待优化'
           }
           break
         case 3:
-          this.alertData = {
+          this.result = {
             type: 'warning',
             title: `部分通过(${data["passRate"] * 100})`,
             desc: '可能漏掉了部分情况'
           }
           break
         case 4:
-          this.alertData = {
+          this.result = {
             type: 'error',
             title: '答案错误',
             desc: '继续努力'
           }
           break
         case 5:
-          this.alertData = {
+          this.result = {
             type: 'info',
             title: '编译错误',
             desc: '请仔细检查代码'
           }
           break
         case 6:
-          this.alertData = {
+          this.result = {
             type: 'info',
             title: '运行错误',
             desc: '对于解释型语言，请检查是否存在语法错误'
           }
           break
         case 7:
-          this.alertData = {
+          this.result = {
             type: 'error',
             title: '判题异常',
             desc: '判题服务器出现了异常或者你提交了恶意代码'
