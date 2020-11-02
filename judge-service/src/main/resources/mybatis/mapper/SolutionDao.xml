@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.judge.dao.SolutionDao">
-    <select id="getSubmitted" resultType="group._204.oj.judge.model.Solution">
-        select *
-        from solution
-        where state = 2
-        limit 200
-    </select>
     <select id="getResultBySolutionId" resultType="group._204.oj.judge.model.JudgeResult">
         select solution_id,
                state + 0  as state,
@@ -17,7 +11,6 @@
                memory
         from judge_result
         where solution_id = #{solutionId}
-          and state = 1;
     </select>
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
             parameterType="group._204.oj.judge.model.Solution">
