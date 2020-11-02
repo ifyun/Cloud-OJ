@@ -20,7 +20,7 @@
             <when test="userId != null">
                 select sql_calc_found_rows cp.*, result
                 from contest_problem cp
-                left join (select user_id, problem_id, contest_id, min(result) result
+                left join (select user_id, problem_id, contest_id, min(result - 1) result
                 from judge_result
                 where user_id = #{userId}
                 group by user_id, problem_id, contest_id) jr

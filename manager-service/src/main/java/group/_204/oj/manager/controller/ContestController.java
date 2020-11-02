@@ -35,8 +35,8 @@ public class ContestController implements CRUDController {
     }
 
     @GetMapping("pro/{contestId}/problem")
-    public ResponseEntity<?> getProblemsFromContest(@PathVariable int contestId, String userId, int page, int limit) {
-        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, false, page, limit));
+    public ResponseEntity<?> getProblemsFromContest(@PathVariable int contestId, int page, int limit) {
+        return buildGETResponse(contestService.getProblemsFromContest(null, contestId, false, page, limit));
     }
 
     @GetMapping("pro/{contestId}")

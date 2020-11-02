@@ -196,7 +196,8 @@ export default {
       this.editorDialogVisible = true
     },
     manageProblems(index) {
-      this.selectedContest = copyObject(this.contests.data[index])
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
       this.problemsDialogVisible = true
     },
     onAddContestClick() {
