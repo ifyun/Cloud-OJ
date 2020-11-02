@@ -105,10 +105,11 @@ export default {
             this.$refs[formName].resetFields()
             this.$refs['deleteForm'].clearValidate()
           }).catch((error) => {
+            let res = error.response
             this.$notify.error({
               offset: 50,
-              title: `注册失败`,
-              message: `${error.response.status}`
+              title: '注册失败',
+              message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
             })
           }).finally(() => {
             this.disableSignup = false

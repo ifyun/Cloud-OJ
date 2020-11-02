@@ -49,7 +49,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         // 读取请求中的用户名和密码
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        log.info(String.format("user: %s, attempts login.", username));
+        log.info(String.format("User: %s, attempts login.", username));
 
         return getAuthenticationManager()
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -84,6 +84,8 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         writer.write(objectMapper.writeValueAsString(user));
         writer.flush();
         writer.close();
+
+        log.info("User: {}, login success.", user.getUserId());
     }
 
     @Override
