@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import {getTagColor, userInfo} from '@/js/util'
+import {getTagColor, userInfo} from '@/script/util'
 
 export default {
   name: "ProblemList",

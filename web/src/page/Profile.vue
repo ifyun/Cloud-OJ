@@ -22,7 +22,7 @@ import TopNavigation from "@/components/common/TopNavigation";
 import BottomArea from "@/components/common/BottomArea";
 import UserProfile from "@/components/profile/UserProfile";
 import Overview from "@/components/profile/Overview";
-import {handle401, userInfo} from "@/js/util";
+import {handle401, userInfo} from "@/script/util";
 
 export default {
   name: "Profile",

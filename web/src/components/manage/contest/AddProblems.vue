@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, handle401} from "@/js/util";
+import {apiPath, userInfo, handle401} from "@/script/util";
 
 export default {
   name: "AddProblems",

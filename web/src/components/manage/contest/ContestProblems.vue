@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, handle401} from "@/js/util"
+import {apiPath, userInfo, handle401} from "@/script/util"
 import AddProblems from "@/components/manage/contest/AddProblems"
 
 export default {

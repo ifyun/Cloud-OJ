@@ -12,7 +12,7 @@
 import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import ProblemList from "@/components/ProblemList"
-import {searchParams} from "@/js/util"
+import {searchParams} from "@/script/util"
 
 export default {
   name: 'Problems',
