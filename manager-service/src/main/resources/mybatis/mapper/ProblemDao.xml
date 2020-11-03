@@ -81,9 +81,9 @@
     </select>
     <insert id="add" parameterType="group._204.oj.manager.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
             keyProperty="problemId">
-        insert into problem(title, description, input, output, sample_input, sample_output, enable, category, score)
-            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{enable},
-                   #{category}, #{score})
+        insert into problem(title, description, input, output, sample_input, sample_output, category, score)
+            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{category},
+                   #{score})
     </insert>
     <update id="update" parameterType="group._204.oj.manager.model.Problem">
         update problem
@@ -93,7 +93,6 @@
             output        = #{output},
             sample_input  = #{sampleInput},
             sample_output = #{sampleOutput},
-            enable        = #{enable},
             score         = #{score},
             category      = #{category}
         where problem_id = #{problemId}

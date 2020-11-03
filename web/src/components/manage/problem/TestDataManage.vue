@@ -1,5 +1,9 @@
 <template>
   <div>
+    <el-alert style="margin-bottom: 20px"
+              :closable="false" type="warning" show-icon
+              title="文件中的换行符应该为 LF，不可使用 CRLF">
+    </el-alert>
     <el-upload ref="upload"
                :action="uploadUrl"
                :multiple="true"
@@ -119,7 +123,7 @@ export default {
             message: `${res.status} ${res.statusText}`
           })
         }
-      }).finally(()=>{
+      }).finally(() => {
         this.loading = false
       })
     },
