@@ -62,8 +62,8 @@ public class Judgement {
         }
     }
 
-    private static class LanguageNotSupportError extends Exception {
-        LanguageNotSupportError(String msg) {
+    private static class UnsupportedLanguageError extends Exception {
+        UnsupportedLanguageError(String msg) {
             super(msg);
         }
     }
@@ -97,17 +97,27 @@ public class Judgement {
                 || runtime.getResult() == SolutionResult.RUNTIME_ERROR) {
             solution.setResult(runtime.getResult());
         } else {
-            Long time = results.stream().max(Comparator.comparingLong(RunResult::getTimeUsed)).get().getTimeUsed();
-            Long memory = results.stream().max(Comparator.comparingLong(RunResult::getMemUsed)).get().getMemUsed();
+            long time = 0, memory = 0, ac = 0, tle = 0, mle = 0, re = 0;
 
-            // Group by status
-            Map<Integer, Long> statusMap =
-                    results.stream().collect(Collectors.groupingBy(RunResult::getStatus, Collectors.counting()));
+            for (RunResult result : results) {
+                switch (result.getStatus()) {
+                    case AC:
+                        ac++;
+                        break;
+                    case TLE:
+                        tle++;
+                        break;
+                    case MLE:
+                        mle++;
+                        break;
+                    case RE:
+                        re++;
+                        break;
+                }
 
-            Long ac = statusMap.get(AC),
-                    tle = statusMap.get(TLE),
-                    mle = statusMap.get(MLE),
-                    re = statusMap.get(RE);
+                time = result.getTimeUsed() > time ? result.getTimeUsed() : time;
+                memory = result.getMemUsed() > memory ? result.getMemUsed() : memory;
+            }
 
             int total = results.size();
 
@@ -118,7 +128,7 @@ public class Judgement {
 
             double passRate = 0;
 
-            if (ac == null) {
+            if (ac == 0) {
                 solution.setResult(SolutionResult.WRONG);
             } else if (ac < total) {
                 passRate = (double) ac / total;
@@ -128,11 +138,11 @@ public class Judgement {
                 solution.setResult(SolutionResult.PASSED);
             }
 
-            if (tle != null)
+            if (tle != 0)
                 solution.setResult(SolutionResult.TIMEOUT);
-            if (mle != null)
+            if (mle != 0)
                 solution.setResult(SolutionResult.OOM);
-            if (re != null)
+            if (re != 0)
                 solution.setResult(SolutionResult.RUNTIME_ERROR);
 
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
@@ -154,12 +164,14 @@ public class Judgement {
         try {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
             ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
-            results = run(cmd, solution.getSolutionId());
+            int outputCount = getOutputCount(solution.getProblemId());
+            long waitTime = (outputCount + 1) * timeout;
+            results = run(cmd, solution.getSolutionId(), waitTime);
         } catch (RuntimeError e) {
             log.warn("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR);
-        } catch (InterruptedException | IOException | TimeoutError | LanguageNotSupportError e) {
+        } catch (InterruptedException | IOException | TimeoutError | UnsupportedLanguageError e) {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.JUDGE_ERROR);
             runtime.setInfo(e.getMessage());
@@ -176,10 +188,11 @@ public class Judgement {
      * @param cmd Command to run
      * @return {@link RunResult} Contains status and stdout
      */
-    private List<RunResult> run(ProcessBuilder cmd, String solutionId) throws RuntimeError, TimeoutError, IOException, InterruptedException {
+    private List<RunResult> run(ProcessBuilder cmd, String solutionId, long waitTime)
+            throws RuntimeError, TimeoutError, IOException, InterruptedException {
         Process process = cmd.start();
 
-        if (!process.waitFor(6000, TimeUnit.MILLISECONDS)) {
+        if (!process.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
             throw new TimeoutError("Wait timeout.");
         }
 
@@ -224,7 +237,7 @@ public class Judgement {
      * @param solution {@link Solution} Solution object
      * @return {@link ProcessBuilder} Command to run
      */
-    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir) throws LanguageNotSupportError {
+    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir) throws UnsupportedLanguageError {
         Language language = Language.get(solution.getLanguage());
         assert language != null;
 
@@ -260,7 +273,25 @@ public class Judgement {
                 builder.command(cmd);
                 return builder;
             default:
-                throw new LanguageNotSupportError("Language not support.");
+                throw new UnsupportedLanguageError("Unsupported language.");
         }
     }
+
+    /**
+     * 获取输出数据个数
+     */
+    private int getOutputCount(int problemId) {
+        List<String> data = new ArrayList<>();
+
+        String testDataDir = fileDir + "test_data/";
+        File dir = new File(testDataDir + problemId);
+
+        File[] files = dir.listFiles(pathname -> {
+            String name = pathname.getName();
+            return name.substring(name.lastIndexOf('.')).equals(".out");
+        });
+
+        return files == null ? 0 : files.length;
+    }
+
 }
