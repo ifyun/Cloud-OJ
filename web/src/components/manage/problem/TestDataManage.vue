@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {apiPath, handle401, userInfo} from "@/js/util";
+import {apiPath, handle401, userInfo} from "@/script/util";
 
 export default {
   name: "TestDataManage",

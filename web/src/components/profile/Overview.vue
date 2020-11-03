@@ -12,7 +12,7 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/pie'
 import 'echarts/theme/macarons'
 import 'echarts/theme/royal'
-import {apiPath, userInfo} from "@/js/util";
+import {apiPath, userInfo} from "@/script/util";
 
 const year = new Date().getFullYear()
 const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#']

@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo} from "@/js/util";
+import {apiPath, userInfo} from "@/script/util";
 
 export default {
   name: "UserProfile",

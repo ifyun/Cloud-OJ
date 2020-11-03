@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import {apiPath} from "@/js/util";
+import {apiPath} from "@/script/util";
 
 export default {
   name: "RankingList",

@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import {apiPath, clearToken, userInfo} from "@/js/util";
+import {apiPath, clearToken, userInfo} from "@/script/util";
 
 export default {
   name: "TopNavigation",

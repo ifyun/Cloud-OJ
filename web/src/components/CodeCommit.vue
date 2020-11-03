@@ -91,7 +91,7 @@
 
 <script>
 import Error from "@/components/Error"
-import {apiPath, handle401, searchParams, userInfo} from "@/js/util";
+import {apiPath, handle401, searchParams, userInfo} from "@/script/util";
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'

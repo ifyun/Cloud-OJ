@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject, userInfo, handle401} from "@/js/util";
+import {apiPath, copyObject, userInfo, handle401} from "@/script/util";
 import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems";
 import ContestEditor from "@/components/manage/contest/ContestEditor";
 

@@ -48,7 +48,7 @@ import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
 import UserManage from "@/components/manage/user/UserManage"
 import BottomArea from "@/components/common/BottomArea"
-import {userInfo} from "@/js/util"
+import {userInfo} from "@/script/util"
 
 let page = new Map([
   ['1', 'ProblemsManage'],

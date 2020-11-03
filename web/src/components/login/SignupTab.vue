@@ -37,8 +37,9 @@
       </el-form-item>
       <el-form-item>
         <el-button class="login-button" type="success" round
-                   :disabled="disableSignup"
-                   @click="signup('signupForm')">注册
+                   :loading="loading"
+                   @click="signup('signupForm')">
+          注册
         </el-button>
       </el-form-item>
     </el-form>
@@ -46,7 +47,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject} from "@/js/util"
+import {apiPath, copyObject} from "@/script/util"
 
 const bcrypt = require('bcryptjs')
 
@@ -54,7 +55,7 @@ export default {
   name: "SignupTab",
   data() {
     return {
-      disableSignup: false,
+      loading: false,
       signupForm: {
         name: '',
         userId: '',
@@ -83,7 +84,7 @@ export default {
   },
   methods: {
     signup(formName) {
-      this.disableSignup = true
+      this.loading = true
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = copyObject(this.signupForm)
@@ -112,10 +113,10 @@ export default {
               message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
             })
           }).finally(() => {
-            this.disableSignup = false
+            this.loading = false
           })
         } else {
-          this.disableSignup = false
+          this.loading = false
           return false
         }
       })

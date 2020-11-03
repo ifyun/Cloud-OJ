@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import {apiPath, handle401, userInfo} from "@/js/util";
+import {apiPath, handle401, userInfo} from "@/script/util";
 
 export default {
   name: "HistoryList",
@@ -109,12 +109,12 @@ export default {
         5: 'C#'
       },
       languageIcons: {
-        0: './icons/c.svg',
-        1: './icons/cpp.svg',
-        2: './icons/java.svg',
-        3: './icons/python.svg',
-        4: './icons/bash.svg',
-        5: './icons/c-sharp.svg'
+        0: './icons/lang/c.svg',
+        1: './icons/lang/cpp.svg',
+        2: './icons/lang/java.svg',
+        3: './icons/lang/python.svg',
+        4: './icons/lang/bash.svg',
+        5: './icons/lang/csharp.svg'
       },
       codeDialogVisible: false,
       code: ''

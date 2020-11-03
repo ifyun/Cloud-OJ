@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject, handle401, userInfo} from "@/js/util";
+import {apiPath, copyObject, handle401, userInfo} from "@/script/util";
 import UserEditor from "@/components/manage/user/UserEditor";
 
 export default {

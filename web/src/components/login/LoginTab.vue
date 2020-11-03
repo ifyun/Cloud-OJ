@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item>
         <el-button class="login-button" type="primary" round
-                   :disabled="disableLogin"
+                   :loading="loading"
                    @click="onLogin">登录
         </el-button>
       </el-form-item>
@@ -28,13 +28,13 @@
 </template>
 
 <script>
-import {apiPath, copyObject} from "@/js/util";
+import {apiPath, copyObject} from "@/script/util";
 
 export default {
   name: "LoginTab",
   data() {
     return {
-      disableLogin: false,
+      loading: false,
       loginForm: {
         username: '',
         password: ''
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     onLogin() {
-      this.disableLogin = true
+      this.loading = true
       this.$refs['loginForm'].validate((valid) => {
         if (valid) {
           let data = copyObject(this.loginForm)
@@ -83,10 +83,10 @@ export default {
               })
             }
           }).finally(() => {
-            this.disableLogin = false
+            this.loading = false
           })
         } else {
-          this.disableLogin = false
+          this.loading = false
           return false
         }
       })

@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, getTagColor, handle401} from "@/js/util"
+import {apiPath, userInfo, getTagColor, handle401} from "@/script/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor";
 import TestDataManage from "@/components/manage/problem/TestDataManage";
 
