@@ -15,8 +15,8 @@
           <SignupTab/>
         </el-tab-pane>
       </el-tabs>
+      <BottomArea style="margin-top: 120px"/>
     </el-container>
-    <BottomArea style="margin: 0 25px"/>
   </div>
 </template>
 
@@ -47,6 +47,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
+  background-color: white;
 }
 
 .header-wrapper {
@@ -55,15 +56,16 @@ export default {
   align-items: center;
   height: 100%;
   z-index: 10;
+  background-color: inherit;
 }
 
 .container {
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   height: calc(100% - 150px) !important;
 }
 
 .login-tabs {
-  margin-top: 180px;
+  margin-top: 160px;
 }
 </style>
