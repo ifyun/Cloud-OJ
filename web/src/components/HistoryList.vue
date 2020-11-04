@@ -89,7 +89,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 20,
+      pageSize: 10,
       resultTags: [
         {text: '完全正确', type: 'success', icon: 'el-icon-success'},
         {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},

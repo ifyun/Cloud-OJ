@@ -143,7 +143,7 @@ export default {
         {id: 5, name: 'C#'}
       ],
       enabledLanguages: [],
-      pageSize: 20,
+      pageSize: 10,
       currentPage: 1,
       editorDialogVisible: false,
       deleteDialogVisible: false,

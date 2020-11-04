@@ -47,7 +47,6 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
-  box-shadow: 0 5px 8px -5px #e6e6e6;
 }
 
 .header-wrapper {

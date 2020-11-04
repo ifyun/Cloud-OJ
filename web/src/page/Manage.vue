@@ -30,14 +30,10 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-container class="main-container">
-        <el-main>
-          <component :is="currentView"></component>
-        </el-main>
-        <el-footer>
-          <BottomArea/>
-        </el-footer>
-      </el-container>
+      <el-main style="margin-top: 15px">
+        <component :is="currentView"/>
+        <BottomArea style="margin-top: 50px"/>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -97,7 +93,6 @@ export default {
 
 <style scoped>
 .side-nav {
-  height: 100%;
   border: none;
 }
 
@@ -106,21 +101,14 @@ export default {
 }
 
 .aside {
-  margin-top: 15px;
-  height: calc(100% - 30px);
+  margin-top: 1px;
+  height: 100%;
   width: auto !important;
-  box-shadow: 0 0 10px #e0e0e0;
+  border-right: 1px solid #EBEEF5;
 }
 
 .container {
   padding: 0 20px;
   height: calc(100% - 61px);
-}
-
-.main-container {
-  min-width: initial !important;
-  overflow-x: auto;
-  padding-bottom: 50px;
-  height: 100%;
 }
 </style>
