@@ -192,8 +192,8 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
                       join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`, `s`.`contest_id`, `c`.`contest_name`) `problem_score`
        group by `problem_score`.`user_id`, `problem_score`.`contest_id`) `ranking`
-         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
-               from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
+         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 1) then 1 end)) AS `passed`
+               from (select `s`.`user_id` AS `user_id`, (`s`.`result` + 0) AS `result`
                      from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
                               join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
                      group by `s`.`problem_id`, `s`.`user_id`, `c`.`contest_id`, `s`.`result`) `t`
@@ -214,9 +214,11 @@ select `s`.`solution_id`                         AS `solution_id`,
        `sc`.`code`                               AS `code`,
        `r`.`time`                                AS `time`,
        `r`.memory                                AS `memory`
-from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
+from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
+    join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`)))
+    left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
          join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
-order by `s`.`submit_time`;
+order by `s`.`submit_time` desc;
 
 create definer = root@`%` view ranking_list as
 select `ranking`.`user_id`     AS `user_id`,
@@ -237,8 +239,8 @@ from ((select `problem_score`.`user_id`        AS `user_id`,
              where contest_id is null
              group by `s`.`user_id`, `u`.`name`, `p`.`problem_id`) `problem_score`
        group by `problem_score`.`user_id`) `ranking`
-         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 0) then 1 end)) AS `passed`
-               from (select `s`.`user_id` AS `user_id`, `s`.`result` AS `result`
+         join (select `t`.`user_id` AS `user_id`, count((case when (`t`.`result` = 1) then 1 end)) AS `passed`
+               from (select `s`.`user_id` AS `user_id`, (`s`.`result` + 0) AS `result`
                      from (`cloud_oj`.`solution` `s`
                               join `cloud_oj`.`user` `u` on ((`s`.`user_id` = `u`.`user_id`)))
                      group by `s`.`problem_id`, `s`.`user_id`, `s`.`result`) `t`
