@@ -8,11 +8,11 @@
       <el-table :data="ranking.data" stripe>
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
-            <img v-if="scope.row['rank'] === 1" align="center"
-                 src="@/assets/icons/medal-no.1.svg" height="36px" alt="1">
-            <img v-else-if="scope.row['rank'] === 2" align="center"
+            <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
+                 src="@/assets/icons/medal-no.1.svg" alt="1">
+            <img v-else-if="scope.row['rank'] === 2" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.2.svg" alt="2">
-            <img v-else-if="scope.row['rank'] === 3" align="center"
+            <img v-else-if="scope.row['rank'] === 3" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.3.svg" alt="3">
             <span v-else><b>{{ scope.row['rank'] }}</b></span>
           </template>
@@ -118,5 +118,9 @@ export default {
   height: 30px;
   border-radius: 15px;
   border: 1px solid #e0e0e0;
+}
+
+.ranking-icon {
+  height: 36px;
 }
 </style>
