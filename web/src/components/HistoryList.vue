@@ -1,10 +1,8 @@
 <template>
   <el-container class="container">
-    <el-card style="width: 100%">
-      <el-page-header content="提交记录" @back="back">
-      </el-page-header>
-    </el-card>
-    <el-card style="width: 100%; margin-top: 20px; margin-bottom: 25px">
+    <el-page-header style="align-self: flex-start; margin-top: 5px" content="提交记录" @back="back">
+    </el-page-header>
+    <el-card style="width: 100%; margin-top: 25px">
       <el-table :data="histories.data" v-loading="loading">
         <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
