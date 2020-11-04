@@ -1,6 +1,5 @@
 html, body {
     height: 100%;
-    min-height: 800px;
     padding: 0;
     margin: 0;
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
@@ -16,6 +15,10 @@ html, body {
     min-width: 1100px !important;
     max-width: 1400px;
     margin: 0 auto;
+}
+
+.el-card {
+    box-shadow: none !important;
 }
 
 .header-wrapper {
@@ -95,7 +98,7 @@ html, body {
 }
 
 .CodeMirror {
-    height: 800px !important;
+    height: 720px !important;
     word-spacing: 0.2em;
     font-size: 12pt;
     font-family: sans-serif !important;

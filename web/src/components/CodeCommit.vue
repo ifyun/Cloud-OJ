@@ -2,16 +2,14 @@
   <Error style="margin-top: 35px" v-if="error.code !== undefined"
          :error="error"/>
   <el-container v-else class="container">
-    <el-card>
-      <el-page-header v-if="problem.problemId !== undefined"
-                      :content="`${problemId}. ${problem.title}`"
-                      @back="back">
-      </el-page-header>
-    </el-card>
-    <div style="width: 100%; margin-top: 20px" v-if="problem.problemId !== undefined">
+    <el-page-header v-if="problem.problemId !== undefined" style="margin-top: 5px"
+                    :content="`${problemId}. ${problem.title}`"
+                    @back="back">
+    </el-page-header>
+    <div style="width: 100%; margin-top: 25px" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-card style="height: 964px;overflow: auto">
+          <el-card style="height: 884px;overflow: auto">
             <h4>题目描述</h4>
             <pre class="problem-content">{{ problem.description }}</pre>
             <h4>输入说明</h4>

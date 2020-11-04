@@ -1,12 +1,10 @@
 <template>
   <el-container class="container">
-    <el-card v-if="contestId != null" style="width: 100%;margin-bottom: 20px">
-      <el-page-header style="align-self: flex-start;"
-                      @back="back"
-                      :content="contestName">
-      </el-page-header>
-    </el-card>
-    <el-card style="width: 100%">
+    <el-page-header v-if="contestId != null" style="align-self: flex-start; margin-top: 5px"
+                    @back="back"
+                    :content="contestName">
+    </el-page-header>
+    <el-card style="width: 100%; margin-top: 25px">
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
@@ -28,7 +26,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" v-loading="loading">
+      <el-table :data="problems.data" stripe v-loading="loading">
         <el-table-column label="题目名称" width="280px">
           <template slot-scope="scope">
             <el-link
@@ -111,7 +109,7 @@ export default {
         data: [],
         count: 0
       },
-      pageSize: 20,
+      pageSize: 10,
       currentPage: 1,
       keyword: '',
       showKeyword: false,
@@ -152,7 +150,7 @@ export default {
         this.$notify.error({
           offset: 50,
           title: '获取题目失败',
-          message: `${res.status} ${res.statusText}`
+          message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
         })
       })
     },
