@@ -11,6 +11,6 @@ RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && apt-get install -y $libs \
     && apt-get clean && apt-get autoclean
 WORKDIR /app
-EXPOSE 8000
+EXPOSE 8002
 ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
 CMD ["java", "-jar", "-Dspring.profiles.active=prod", "judge-service.jar"]

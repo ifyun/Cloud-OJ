@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
 
-微服务架构的 Online Judge，基于 Spring Cloud 和 Vue.js。
+微服务架构的 Online Judge，基于 Spring Cloud、Vue.js、Docker。
 
 > 本项目参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
 
@@ -38,14 +38,14 @@
 
 ### 手动构建
 
-#### Step 1
+#### 1. 搭建数据库和消息队列
 
-搭建数据库和消息队列，两种方式：
+两种方式：
 
 1. 安装 Docker，执行 `mysql` 目录下的 `start.sh`
 2. 手动安装 RabbitMQ 和 MySQL，使用 `./mysql/init/init-database.sql` 建库建表
 
-设置数据目录，修改 `file-server`、`manager-service`、 `judge-service` 的配置文件：
+设置数据目录，修改 `file-server`、`manager-service`、 `judge-service` 的配置文件（application-prod.yml）：
 
 ```yaml
 project:
@@ -53,26 +53,36 @@ project:
   code-dir: <临时存放代码和可执行文件的目录>   # 此项在 judge-service
 ```
 
-#### Step 2
+#### 2. 构建用于判题的 Docker 镜像
 
 安装 Docker，构建 `runner` 镜像：
 
 ```bash
-cd ./docker/runner
-docker build -t runner .
+docker build -t runner ./docker/runner
 ```
 
-> 提示：judge-service 仅支持在 Linux 下运行。
+`judge-service` 的配置文件中可以指定镜像：
 
-#### Step 3
+```yaml
+project:
+  runner-image: ${RUNNER_IMAGE:runner}
+```
 
-Build Services：
+> 如果不想构建镜像，可以直接使用 `registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner`
+
+**提示：judge-service 仅支持在 Linux 下运行**。
+
+#### 3. 构建、打包
+
+构建服务（需要 Maven）：
 
 ```bash
 mvn -B package '-Dmaven.test.skip=true' --file pom.xml
 ```
 
-Build Web：
+> 启动服务时，指定 `prod` 配置文件：`java -jar -Dspring.profiles.active=prod xxx.jar`
+
+构建 Web（需要 Node.js）：
 
 ```bash
 cd web && npm install && npm run build

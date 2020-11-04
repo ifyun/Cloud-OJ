@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8001
   tomcat:
     accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
     max-threads: ${TOMCAT_MAX_THREADS:800}

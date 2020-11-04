@@ -7,5 +7,5 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 COPY ./manager-service-*.jar /app/manager-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
-EXPOSE 8000
+EXPOSE 8001
 CMD ["java", "-jar", "-Dspring.profiles.active=prod", "manager-service.jar"]
