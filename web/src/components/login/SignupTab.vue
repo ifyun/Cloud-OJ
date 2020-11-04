@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 25px 45px">
-    <el-form ref="signupForm"
+    <el-form ref="signupForm" status-icon
              :model="signupForm"
              :rules="rules">
       <el-form-item prop="name">
@@ -29,6 +29,12 @@
                   placeholder="6 ~ 16位">
         </el-input>
       </el-form-item>
+      <el-form-item prop="checkPassword">
+        <el-input class="login-input" type="password" prefix-icon="el-icon-lock"
+                  v-model="signupForm.checkPassword" auto-complete="new-password"
+                  placeholder="重复密码">
+        </el-input>
+      </el-form-item>
       <el-form-item>
         <el-input class="login-input" prefix-icon="el-icon-school"
                   v-model="signupForm.section"
@@ -54,12 +60,21 @@ const bcrypt = require('bcryptjs')
 export default {
   name: "SignupTab",
   data() {
+    let validatePassword = (rule, value, callback) => {
+      if (value === '')
+        callback(new Error('请再次输入密码'))
+      else if (value !== this.signupForm.password)
+        callback(new Error('两次输入密码不一致'))
+      else
+        callback()
+    }
     return {
       loading: false,
       signupForm: {
         name: '',
         userId: '',
         password: '',
+        checkPassword: '',
         section: '',
         email: ''
       },
@@ -78,6 +93,9 @@ export default {
         password: [
           {required: true, message: '请输入密码', trigger: 'blur'},
           {min: 6, max: 16, message: '长度在 6 ~ 16 位字符', trigger: 'blur'}
+        ],
+        checkPassword: [
+          {validator: validatePassword, trigger: 'blur'}
         ]
       }
     }
@@ -88,6 +106,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = copyObject(this.signupForm)
+          data.checkPassword = ''
           data.password = bcrypt.hashSync(this.$md5(data.password), 10)
           this.$axios({
             url: apiPath.user,
@@ -107,10 +126,15 @@ export default {
             this.$refs['deleteForm'].clearValidate()
           }).catch((error) => {
             let res = error.response
+            let msg
+            if (res.status === 409)
+              msg = '用户已存在'
+            else
+              msg = res.data.msg === undefined ? res.statusText : res.data.msg
             this.$notify.error({
               offset: 50,
               title: '注册失败',
-              message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
+              message: `${res.status} ${msg}`
             })
           }).finally(() => {
             this.loading = false
