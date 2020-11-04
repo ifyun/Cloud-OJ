@@ -15,6 +15,10 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <el-alert show-icon type="info" :closable="false" style="margin-bottom: 20px"
+              title="只能删除未产生做题记录的用户"
+              description="如果用户已有做题记录，只能通过操作数据库删除">
+    </el-alert>
     <el-table :data="users.data" border stripe v-loading="loading">
       <el-table-column label="ID" prop="userId" width="150px">
       </el-table-column>
@@ -215,10 +219,15 @@ export default {
             if (res.status === 401) {
               handle401()
             } else {
+              let msg
+              if (res.status === 409)
+                msg = `此用户存在做题记录，无法删除`
+              else
+                msg = res.data.msg === undefined ? res.statusText : res.data.msg
               this.$notify.error({
                 offset: 50,
                 title: `用户【${this.selectedUser.userId}】删除失败`,
-                message: `${res.status} ${res.statusText}`
+                message: `${res.status} ${msg}`
               })
             }
           })
