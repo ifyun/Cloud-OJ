@@ -43,13 +43,15 @@ import TopNavigation from "@/components/common/TopNavigation"
 import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
 import UserManage from "@/components/manage/user/UserManage"
+import Settings from "@/components/manage/Settings"
 import BottomArea from "@/components/common/BottomArea"
 import {userInfo} from "@/script/util"
 
 let page = new Map([
   ['1', 'ProblemsManage'],
   ['2', 'ContestManage'],
-  ['3', 'UserManage']
+  ['3', 'UserManage'],
+  ['4', 'Settings']
 ])
 
 export default {
@@ -59,14 +61,15 @@ export default {
     ProblemsManage,
     ContestManage,
     UserManage,
+    Settings,
     BottomArea
   },
   mounted() {
     if (this.userInfo['roleId'] === 1) {
-      this.active = 3
+      this.active = '3'
       this.onSelect('3')
     } else {
-      this.active = 1
+      this.active = '1'
       this.onSelect('1')
     }
   },
@@ -109,6 +112,7 @@ export default {
 
 .container {
   padding: 0 20px;
+  min-width: 1150px !important;
   height: calc(100% - 61px);
 }
 </style>

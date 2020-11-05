@@ -7,6 +7,7 @@ services:
     ports:
       - "3306:3306"
     environment:
+      TZ: "Asia/Shanghai"
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_ROOT_HOST: "%"
     volumes:

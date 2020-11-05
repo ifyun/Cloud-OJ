@@ -20,5 +20,6 @@ public class Contest {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endAt;
     private int languages;
+    private boolean started;
     private boolean ended;
 }

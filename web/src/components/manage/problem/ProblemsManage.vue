@@ -49,7 +49,7 @@
     <el-table :data="problems.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="80px" align="center">
       </el-table-column>
-      <el-table-column label="题目名称" width="250px">
+      <el-table-column label="题目名称" width="220px">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             <b>{{ scope.row.title }}</b>
@@ -74,7 +74,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="189px" align="center">
+      <el-table-column label="操作" width="190px" align="center">
         <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit-outline"
@@ -87,7 +87,7 @@
           </el-button-group>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="创建时间" width="130px" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"> {{ scope.row.createAt }}</i>
         </template>
@@ -281,7 +281,7 @@ export default {
             this.$notify.error({
               offset: 50,
               title: `【${row.title}】${state}失败`,
-              message: `${res.data.text}`
+              message: `${res.data.msg}`
             })
             break
           default:
@@ -347,7 +347,7 @@ export default {
                 this.$notify.error({
                   offset: 50,
                   title: `【${this.selectedTitle}】删除失败`,
-                  message: `${res.data.text}`
+                  message: `${res.data.msg}`
                 })
                 break
               default:

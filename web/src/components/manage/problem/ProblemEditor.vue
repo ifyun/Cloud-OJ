@@ -249,7 +249,7 @@ export default {
             this.$notify.error({
               offset: 50,
               title: `【${this.problem.title}】保存失败`,
-              message: `${res.data.text}`
+              message: `${res.data.msg}`
             })
             break
           default:

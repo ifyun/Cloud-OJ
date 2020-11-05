@@ -15,15 +15,15 @@ public class ContestService {
     private ContestDao contestDao;
 
     public List<List<?>> getAllContest(int page, int limit) {
-        return contestDao.getAllContest((page - 1) * limit, limit);
+        return contestDao.getContests((page - 1) * limit, limit, false);
     }
 
     public Contest getLanguages(int contestId) {
-        return contestDao.getContest(contestId);
+        return contestDao.getContestById(contestId);
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {
-        return contestDao.getStartedContest((page - 1) * limit, limit);
+        return contestDao.getContests((page - 1) * limit, limit, true);
     }
 
     public boolean addContest(Contest contest) {

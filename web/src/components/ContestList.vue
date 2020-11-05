@@ -2,31 +2,31 @@
   <el-container class="container">
     <el-card style="width: 100%">
       <el-table :data="contests.data" stripe>
-        <el-table-column label="ID" prop="contestId" width="120px" align="center">
-        </el-table-column>
         <el-table-column label="竞赛/作业" prop="contestName">
           <template slot-scope="scope">
-            <el-link :type="scope.row.ended? 'info' : 'success'"
+            <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
+                     :disabled="scope.row['ended'] ? false : !scope.row['started']"
                      :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
-              <b v-if="scope.row.ended">[已结束]</b>
-              <b v-else>[进行中]</b>
+              <b v-if="scope.row['ended']">[已结束]</b>
+              <b v-else-if="scope.row['started']">[进行中]</b>
+              <b v-else>[未开始]</b>
               <b>&nbsp;{{ scope.row.contestName }}</b>
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" width="200px" align="center">
+        <el-table-column label="开始时间" width="240px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" width="200px" align="center">
+        <el-table-column label="结束时间" width="240px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column width="200px" align="center">
+        <el-table-column label="操作" width="200px" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="medium" plain
+            <el-button v-if="scope.row['started']" type="success" size="mini" plain
                        @click="seeRanking(scope.row)">
               查看排行榜
             </el-button>

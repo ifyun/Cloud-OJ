@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.ContestDao">
-    <select id="getAllContest" resultMap="Map.Contest, Map.Total">
-        select sql_calc_found_rows *
+    <select id="isContestEnded" resultType="java.lang.Boolean">
+        select if(end_at &lt;= now(), true, false)
         from contest
-        limit #{start}, #{limit};
-        select found_rows()
+        where contest_id = #{contestId};
     </select>
-    <select id="getStartedContest" resultMap="Map.Contest, Map.Total">
+    <select id="getContests" resultMap="Map.Contest, Map.Total">
         select sql_calc_found_rows *,
-                                   if(end_at &lt;= now(), true, false) as ended
+        if(start_at &lt;= now(), true, false) as started,
+        if(end_at &lt;= now(), true, false) as ended
         from contest
-        where start_at &lt;= now()
+        <if test="onlyStarted">
+            where start_at &lt;= now()
+        </if>
         limit #{start}, #{limit};
         select found_rows()
     </select>
@@ -46,7 +48,7 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getContest" resultMap="Map.Contest">
+    <select id="getContestById" resultMap="Map.Contest">
         select *
         from contest
         where contest_id = #{contestId}
