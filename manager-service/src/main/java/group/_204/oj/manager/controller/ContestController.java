@@ -1,12 +1,15 @@
 package group._204.oj.manager.controller;
 
 import group._204.oj.manager.service.ContestService;
+import group._204.oj.manager.service.SystemSettings;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import group._204.oj.manager.model.Contest;
 
 import javax.annotation.Resource;
 
+@Slf4j
 @RestController
 @RequestMapping("contest")
 public class ContestController implements CRUDController {
@@ -14,9 +17,15 @@ public class ContestController implements CRUDController {
     @Resource
     private ContestService contestService;
 
+    @Resource
+    private SystemSettings systemSettings;
+
     @GetMapping("")
-    public ResponseEntity<?> startedContests(int page, int limit) {
-        return buildGETResponse(contestService.getStartedContest(page, limit));
+    public ResponseEntity<?> Contests(int page, int limit) {
+        if (systemSettings.getConfig().isShowNotStartedContest())
+            return buildGETResponse(contestService.getAllContest(page, limit));
+        else
+            return buildGETResponse(contestService.getStartedContest(page, limit));
     }
 
     @GetMapping("pro")
@@ -51,6 +60,7 @@ public class ContestController implements CRUDController {
 
     @PutMapping("pro")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
+        log.info(contest.toString());
         return buildPUTResponse(contestService.updateContest(contest));
     }
 

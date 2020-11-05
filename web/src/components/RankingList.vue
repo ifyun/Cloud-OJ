@@ -1,11 +1,19 @@
 <template>
   <el-container class="container" v-loading="loading">
-    <el-card style="width: 100%">
-      <div v-if="contest != null"
-           style="font-size: 14pt;font-weight: bold; margin-bottom: 20px">
-        {{ contest.name }}
+    <Error style="margin-top: 35px"
+           v-if="error.code !== undefined"
+           :error="error"/>
+    <el-card v-else style="width: 100%">
+      <div style="margin-bottom: 25px">
+        <span v-if="contest != null" style="font-size: 14pt;font-weight: bold;">
+          {{ contest.name }}
+        </span>
+        <el-button icon="el-icon-refresh" size="medium" style="float: right"
+                   @click="getRankingList">
+          刷新
+        </el-button>
       </div>
-      <el-table :data="ranking.data" stripe>
+      <el-table :data="ranking.data" stripe v-loading="loading">
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
@@ -57,10 +65,14 @@
 </template>
 
 <script>
-import {apiPath} from "@/script/util";
+import {apiPath, userInfo} from "@/script/util"
+import Error from "@/components/Error"
 
 export default {
   name: "RankingList",
+  components: {
+    Error
+  },
   mounted() {
     this.contest = JSON.parse(window.sessionStorage.getItem('contest'))
     window.sessionStorage.removeItem('contest')
@@ -75,29 +87,54 @@ export default {
       },
       contest: {},
       currentPage: 1,
-      pageSize: 20
+      pageSize: 20,
+      error: {
+        code: undefined,
+        text: ''
+      }
     }
   },
   methods: {
     getRankingList() {
       this.loading = true
+      let url
+      if (this.contest == null)
+        url = apiPath.ranking
+      else {
+        if (userInfo()['roleId'] >= 2) {
+          url = apiPath.adminContestRanking
+        } else {
+          url = apiPath.contestRanking
+        }
+        url += `/${this.contest.id}`
+      }
       this.$axios({
-        url: this.contest == null ?
-            apiPath.ranking : `${apiPath.contestRanking}/${this.contest.id}`,
+        url: url,
         method: 'get',
+        headers: {
+          'token': userInfo().token
+        },
         params: {
           page: this.currentPage,
-          limit: this.pageSize
+          limit: this.pageSize,
+          userId: userInfo().userId
         }
       }).then((res) => {
         this.ranking = res.data
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
-          title: '获取排行榜失败',
-          message: `${res.status} ${res.statusText}`
-        })
+        if (res.status === 403) {
+          this.error = {
+            code: res.status,
+            text: res.data.msg
+          }
+        } else {
+          this.$notify.error({
+            offset: 50,
+            title: '获取排行榜失败',
+            message: `${res.status} ${res.statusText}`
+          })
+        }
       }).finally(() => {
         this.loading = false
       })

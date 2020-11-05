@@ -8,7 +8,7 @@ spring:
   application:
     name: manager-service
   datasource:
-    url: jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true
+    url: jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai
     type: com.zaxxer.hikari.HikariDataSource
     username: root
     password: root
@@ -21,6 +21,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
     date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 management:
   endpoints:

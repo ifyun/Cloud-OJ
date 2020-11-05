@@ -2,9 +2,10 @@
   <div class="error-404">
     <span class="error-code">{{ error.code }}</span>
     <span class="error-text">{{ error.text }}</span>
-    <el-button style="margin-top: 20px" size="medium" @click="gotoIndex">
-      返回主页
-    </el-button>
+    <el-button-group style="margin-top: 25px">
+      <el-button size="medium" @click="back">返回上页</el-button>
+      <el-button size="medium" @click="gotoIndex">返回主页</el-button>
+    </el-button-group>
   </div>
 </template>
 
@@ -20,6 +21,9 @@ export default {
   methods: {
     gotoIndex() {
       window.location.href = './'
+    },
+    back() {
+      window.history.back()
     }
   }
 }

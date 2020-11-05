@@ -6,10 +6,14 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Msg {
-    private int status;
-    private String text;
+    private Integer status;
+    private String msg;
 
     public Msg(int status) {
         this(status, null);
+    }
+
+    public Msg(String msg) {
+        this.msg = msg;
     }
 }
