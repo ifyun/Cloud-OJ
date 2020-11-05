@@ -32,7 +32,7 @@ public class SystemSettings {
     @Resource
     private ObjectMapper objectMapper;
 
-    private Config config;
+    private Config config = new Config();
 
     @PostConstruct
     public void init() {

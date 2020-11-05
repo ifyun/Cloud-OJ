@@ -45,8 +45,6 @@ eureka:
 
 
 logging:
-  level:
-    top.cloudli: info
   file:
     name: /app/log/manager-service.log
 
