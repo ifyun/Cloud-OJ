@@ -6,9 +6,9 @@
               :closable="false">
     </el-alert>
     <el-button type="success" size="medium" icon="el-icon-circle-plus"
-               @click="showProblemsDialog = true">添加题目
+               @click="problemsDialogVisible = true">添加题目
     </el-button>
-    <el-table :data="problems.data" border style="margin-top: 10px">
+    <el-table style="margin-top: 10px" :data="problems.data" border v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="题目名称">
@@ -51,9 +51,9 @@
         @current-change="getProblems">
     </el-pagination>
     <el-dialog title="添加题目" append-to-body width="800px"
-               :visible.sync="showProblemsDialog"
+               :visible.sync="problemsDialogVisible"
                @close="getProblems">
-      <AddProblems :contest-id="contestId"/>
+      <AddProblems :contest-id="contestId" :visibility="problemsDialogVisible"/>
     </el-dialog>
   </div>
 </template>
@@ -80,17 +80,19 @@ export default {
   },
   data() {
     return {
+      loading: true,
       problems: {
         data: [],
         count: 0
       },
       pageSize: 10,
       currentPage: 1,
-      showProblemsDialog: false
+      problemsDialogVisible: false
     }
   },
   methods: {
     getProblems() {
+      this.loading = true
       this.$axios({
         url: `${apiPath.contest}/pro/${this.contestId}/problem`,
         method: 'get',
@@ -103,7 +105,7 @@ export default {
           limit: this.pageSize
         }
       }).then((res) => {
-        this.problems = res.data
+        this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
         this.$notify.error({
@@ -111,6 +113,8 @@ export default {
           title: `获取数据失败`,
           message: `${res.status} ${res.statusText}`
         })
+      }).finally(() => {
+        this.loading = false
       })
     },
     deleteProblem(problemId, title) {

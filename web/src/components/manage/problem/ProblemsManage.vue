@@ -221,8 +221,7 @@ export default {
         },
         params: params
       }).then((res) => {
-        this.problems = res.data
-        this.loading = false
+        this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         if (error.response.status === 401) {
           toLoginPage()
@@ -233,6 +232,7 @@ export default {
             message: `${error.response.status}`
           })
         }
+      }).finally(() => {
         this.loading = false
       })
     },

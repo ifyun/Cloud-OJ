@@ -172,10 +172,8 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        this.loading = false
-        this.contests = res.data
+        this.contests = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
-        this.loading = false
         if (error.response.status === 401) {
           toLoginPage()
         } else {
@@ -185,6 +183,8 @@ export default {
             message: `${error.response.status}`
           })
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     onEditClick(index) {
