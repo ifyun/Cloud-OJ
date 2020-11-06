@@ -142,16 +142,16 @@ export default {
         method: 'get',
         params: params
       }).then((res) => {
-        this.loading = false
-        this.problems = res.data
+        this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
-        this.loading = false
         let res = error.response
         this.$notify.error({
           offset: 50,
           title: '获取题目失败',
           message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
         })
+      }).finally(() => {
+        this.loading = false
       })
     },
     onTagClose() {

@@ -1,7 +1,7 @@
 <template>
   <el-container class="container">
     <el-card style="width: 100%">
-      <el-table :data="contests.data" stripe>
+      <el-table :data="contests.data" stripe v-loading="loading">
         <el-table-column label="竞赛/作业" prop="contestName">
           <template slot-scope="scope">
             <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
@@ -58,6 +58,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       contests: {
         data: [],
         count: 0
@@ -68,6 +69,7 @@ export default {
   },
   methods: {
     getContests() {
+      this.loading = true
       this.$axios({
         url: apiPath.contest,
         method: 'get',
@@ -76,7 +78,7 @@ export default {
           limit: this.pageSize
         }
       }).then((res) => {
-        this.contests = res.data
+        this.contests = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
         this.$notify.error({
@@ -84,6 +86,8 @@ export default {
           title: '获取竞赛/作业失败',
           message: `${res.status} ${res.statusText}`
         })
+      }).finally(() => {
+        this.loading = false
       })
     },
     seeRanking(contest) {

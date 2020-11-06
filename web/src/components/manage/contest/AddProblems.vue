@@ -4,7 +4,7 @@
               title="点击名称可预览题目内容"
               :closable="false">
     </el-alert>
-    <el-table :data="problems.data" border>
+    <el-table :data="problems.data" border v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="题目名称">
@@ -47,10 +47,11 @@ import {apiPath, userInfo, toLoginPage} from "@/script/util";
 export default {
   name: "AddProblems",
   props: {
-    contestId: Number
+    contestId: Number,
+    visibility: Boolean
   },
   watch: {
-    contestId: {
+    visibility: {
       immediate: true,
       handler() {
         this.getProblems()
@@ -59,6 +60,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       problems: {
         data: [],
         count: 0
@@ -81,7 +83,7 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        this.problems = res.data
+        this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         if (error.response.status === 401) {
           toLoginPage()
@@ -92,6 +94,8 @@ export default {
             message: `${error.response.status}`
           })
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     addProblemToContest(problemId, title) {

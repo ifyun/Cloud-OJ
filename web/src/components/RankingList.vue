@@ -142,8 +142,7 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        if (res.status === 200)
-          this.ranking = res.data
+        this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
           console.log('Refresh ranking.')
           this.$message({

@@ -162,10 +162,8 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        this.loading = false
-        this.users = res.data
+        this.users = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
-        this.loading = false
         let res = error.response
         if (res.status === 401) {
           toLoginPage()
@@ -175,6 +173,8 @@ export default {
             message: `${res.status} ${res.statusText}`
           })
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     onAddClick() {

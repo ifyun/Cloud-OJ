@@ -136,7 +136,7 @@ export default {
           limit: this.pageSize
         }
       }).then((res) => {
-        this.histories = res.data
+        this.histories = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
