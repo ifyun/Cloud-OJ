@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, handle401} from "@/script/util";
+import {apiPath, userInfo, toLoginPage} from "@/script/util";
 
 export default {
   name: "AddProblems",
@@ -84,7 +84,7 @@ export default {
         this.problems = res.data
       }).catch((error) => {
         if (error.response.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             offset: 50,
@@ -113,7 +113,7 @@ export default {
         })
       }).catch((error) => {
         if (error.response.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             offset: 50,

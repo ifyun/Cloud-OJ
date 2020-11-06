@@ -22,13 +22,13 @@ import TopNavigation from "@/components/common/TopNavigation";
 import BottomArea from "@/components/common/BottomArea";
 import UserProfile from "@/components/profile/UserProfile";
 import Overview from "@/components/profile/Overview";
-import {handle401, userInfo} from "@/script/util";
+import {toLoginPage, userInfo} from "@/script/util";
 
 export default {
   name: "Profile",
   beforeMount() {
     if (!this.display) {
-      handle401()
+      toLoginPage()
     }
     document.title = '个人中心 · Cloud OJ'
   },

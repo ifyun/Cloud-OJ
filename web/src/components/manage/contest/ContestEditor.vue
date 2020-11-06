@@ -37,7 +37,7 @@
 
 <script>
 import moment from "moment";
-import {apiPath, userInfo, handle401} from "@/script/util";
+import {apiPath, userInfo, toLoginPage} from "@/script/util";
 
 export default {
   name: "ContestEditor",
@@ -144,7 +144,7 @@ export default {
           }).catch((error) => {
             let res = error.response
             if (res.status === 401) {
-              handle401()
+              toLoginPage()
             } else {
               this.$notify.error({
                 offset: 50,

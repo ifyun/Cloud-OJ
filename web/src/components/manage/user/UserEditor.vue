@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import {apiPath, handle401, userInfo} from "@/script/util"
+import {apiPath, toLoginPage, userInfo} from "@/script/util"
 
 const bcrypt = require('bcryptjs')
 
@@ -132,7 +132,7 @@ export default {
           }).catch((error) => {
             let res = error.response
             if (res.status === 401) {
-              handle401()
+              toLoginPage()
             } else {
               this.$notify.error({
                 offset: 50,

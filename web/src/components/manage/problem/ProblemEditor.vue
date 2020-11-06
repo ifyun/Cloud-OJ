@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, handle401} from "@/script/util"
+import {apiPath, userInfo, toLoginPage} from "@/script/util"
 
 export default {
   name: "ProblemEditor",
@@ -193,7 +193,7 @@ export default {
         this.tags = this.problem.category.split(',')
       }).catch((error) => {
         if (error.response.status === 401) {
-          handle401()
+          toLoginPage()
         }
       })
     },
@@ -243,7 +243,7 @@ export default {
         let res = error.response
         switch (res.status) {
           case 401:
-            handle401()
+            toLoginPage()
             break
           case 400:
             this.$notify.error({
