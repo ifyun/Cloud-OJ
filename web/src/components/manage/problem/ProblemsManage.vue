@@ -1,7 +1,5 @@
 <template>
   <el-card>
-    <span>题库管理</span>
-    <el-divider></el-divider>
     <div style="align-self: flex-start">
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item>

@@ -1,5 +1,6 @@
 package group._204.oj.judge.task;
 
+import group._204.oj.judge.config.RabbitConfig;
 import group._204.oj.judge.model.CommitData;
 import group._204.oj.judge.service.CommitService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +26,13 @@ public class TaskReceiver {
     private JudgementAsync judgementAsync;
 
     @RabbitHandler
-    @RabbitListener(queues = "JudgeQueue")
+    @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
     public void receiveTask(Solution solution) {
         judgementAsync.judge(solution);
     }
 
     @RabbitHandler
-    @RabbitListener(queues = "CommitQueue")
+    @RabbitListener(queues = RabbitConfig.COMMIT_QUEUE)
     public void receiveCommit(CommitData data) {
         commitService.commit(data);
     }

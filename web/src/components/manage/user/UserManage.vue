@@ -1,7 +1,5 @@
 <template>
   <el-card>
-    <span class="table-title">用户管理</span>
-    <el-divider></el-divider>
     <el-form :inline="true">
       <el-form-item>
         <el-button icon="el-icon-circle-plus" type="success"

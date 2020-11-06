@@ -1,7 +1,5 @@
 <template>
   <el-card>
-    <span>竞赛/作业管理</span>
-    <el-divider></el-divider>
     <el-form :inline="true">
       <el-form-item>
         <el-button type="success" icon="el-icon-circle-plus"
