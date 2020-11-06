@@ -4,14 +4,21 @@
            v-if="error.code !== undefined"
            :error="error"/>
     <el-card v-else style="width: 100%">
-      <div style="margin-bottom: 25px">
-        <span v-if="contest != null" style="font-size: 14pt;font-weight: bold;">
+      <div v-if="contest != null" class="head">
+        <span style="font-size: 14pt;font-weight: bold;">
           {{ contest.name }}
         </span>
-        <el-button icon="el-icon-refresh" size="medium" style="float: right"
-                   @click="getRankingList">
-          刷新
-        </el-button>
+        <div class="refresh-div">
+          <div>
+            <span>自动刷新：</span>
+            <el-switch v-model="autoRefresh" @change="toggleAutoRefresh">
+            </el-switch>
+          </div>
+          <el-button icon="el-icon-refresh" size="medium" style="margin-left: 15px"
+                     @click="getRankingList">
+            刷新
+          </el-button>
+        </div>
       </div>
       <el-table :data="ranking.data" stripe v-loading="loading">
         <el-table-column label="排名" width="150px" align="center">
@@ -81,13 +88,15 @@ export default {
   data() {
     return {
       loading: true,
+      autoRefresh: false,
+      timer: null,
       ranking: {
         data: [],
         count: 0
       },
       contest: {},
       currentPage: 1,
-      pageSize: 20,
+      pageSize: 10,
       error: {
         code: undefined,
         text: ''
@@ -95,7 +104,20 @@ export default {
     }
   },
   methods: {
-    getRankingList() {
+    toggleAutoRefresh(autoRefresh) {
+      if (autoRefresh) {
+        this.timer = setInterval(this.autoGetRankingList(), 10000)
+      } else {
+        clearInterval(this.timer)
+      }
+    },
+    autoGetRankingList() {
+      let self = this
+      return function () {
+        self.getRankingList(true)
+      }
+    },
+    getRankingList(refresh) {
       this.loading = true
       let url
       if (this.contest == null)
@@ -120,7 +142,17 @@ export default {
           userId: userInfo().userId
         }
       }).then((res) => {
-        this.ranking = res.data
+        if (res.status === 200)
+          this.ranking = res.data
+        if (refresh === true) {
+          console.log('Refresh ranking.')
+          this.$message({
+            offset: 75,
+            message: '排行榜已刷新',
+            type: 'success',
+            duration: 1500
+          })
+        }
       }).catch((error) => {
         let res = error.response
         if (res.status === 403) {
@@ -159,5 +191,18 @@ export default {
 
 .ranking-icon {
   height: 36px;
+}
+
+.head {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.refresh-div {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 </style>
