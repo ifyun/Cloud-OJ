@@ -25,14 +25,14 @@ public class ZuulFallback implements FallbackProvider {
         String msg = cause.getCause().getMessage();
         log.error("到 {} 的路由无法转发，{}.", route, msg);
         if (msg.contains("Read timed out"))
-            return errorPage(HttpStatus.GATEWAY_TIMEOUT,
+            return errorResponse(HttpStatus.GATEWAY_TIMEOUT,
                     "{\"msg\": \"网关超时\"}");
         else
-            return errorPage(HttpStatus.BAD_GATEWAY,
-                    "{\"msg\": \"网关找不到服务\"}");
+            return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "{\"msg\": \"内部错误\"}");
     }
 
-    private ClientHttpResponse errorPage(HttpStatus status, String msg) {
+    private ClientHttpResponse errorResponse(HttpStatus status, String msg) {
         return new ClientHttpResponse() {
 
             @NonNull
