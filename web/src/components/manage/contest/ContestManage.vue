@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject, userInfo, handle401} from "@/script/util";
+import {apiPath, copyObject, userInfo, toLoginPage} from "@/script/util";
 import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems";
 import ContestEditor from "@/components/manage/contest/ContestEditor";
 
@@ -179,7 +179,7 @@ export default {
       }).catch((error) => {
         this.loading = false
         if (error.response.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             offset: 50,
@@ -233,7 +233,7 @@ export default {
             })
           }).catch((error) => {
             if (error.response.status === 401) {
-              handle401()
+              toLoginPage()
             } else {
               this.$notify.error({
                 offset: 50,

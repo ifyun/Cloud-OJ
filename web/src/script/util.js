@@ -19,7 +19,7 @@ function searchParams() {
     return qs.parse(location.search.replace('?', ''))
 }
 
-function handle401() {
+function toLoginPage() {
     clearToken()
     window.location.href = '/login'
 }
@@ -58,7 +58,7 @@ export {
     getTagColor,
     userInfo,
     searchParams,
-    handle401,
+    toLoginPage,
     clearToken,
     copyObject,
     apiPath

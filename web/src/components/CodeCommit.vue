@@ -89,7 +89,7 @@
 
 <script>
 import Error from "@/components/Error"
-import {apiPath, handle401, searchParams, userInfo} from "@/script/util";
+import {apiPath, toLoginPage, searchParams, userInfo} from "@/script/util";
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'
@@ -244,7 +244,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           let data = res.data;
           let errorText = data === undefined ? res.statusText : data.msg
@@ -298,7 +298,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           let data = res.data;
           this.$notify.error({
@@ -361,7 +361,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             offset: 50,

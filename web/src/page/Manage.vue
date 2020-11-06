@@ -1,7 +1,11 @@
 <template>
   <div style="height: 100%">
     <TopNavigation active="4"/>
-    <el-container class="container">
+    <div v-if="error.code !== undefined">
+      <Error style="margin-top: 35px" :error="error"/>
+      <BottomArea style="margin-top: 35px"/>
+    </div>
+    <el-container v-else class="container">
       <el-aside class="aside">
         <el-menu class="side-nav" mode="vertical"
                  :collapse="collapse"
@@ -44,8 +48,9 @@ import ProblemsManage from "@/components/manage/problem/ProblemsManage"
 import ContestManage from "@/components/manage/contest/ContestManage"
 import UserManage from "@/components/manage/user/UserManage"
 import Settings from "@/components/manage/Settings"
+import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
-import {userInfo} from "@/script/util"
+import {toLoginPage, userInfo} from "@/script/util"
 
 let page = new Map([
   ['1', 'ProblemsManage'],
@@ -62,7 +67,18 @@ export default {
     ContestManage,
     UserManage,
     Settings,
+    Error,
     BottomArea
+  },
+  beforeMount() {
+    if (this.userInfo == null) {
+      toLoginPage()
+    } else if (this.userInfo['roleId'] === 0) {
+      this.error = {
+        code: 403,
+        text: '你没有权限访问此页面'
+      }
+    }
   },
   mounted() {
     if (this.userInfo['roleId'] === 1) {
@@ -78,7 +94,11 @@ export default {
       userInfo: userInfo(),
       collapse: true,
       active: '',
-      currentView: ''
+      currentView: '',
+      error: {
+        code: undefined,
+        text: ''
+      }
     }
   },
   methods: {

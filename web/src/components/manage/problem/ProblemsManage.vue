@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import {apiPath, userInfo, getTagColor, handle401} from "@/script/util"
+import {apiPath, userInfo, getTagColor, toLoginPage} from "@/script/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor";
 import TestDataManage from "@/components/manage/problem/TestDataManage";
 
@@ -227,7 +227,7 @@ export default {
         this.loading = false
       }).catch((error) => {
         if (error.response.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             offset: 50,
@@ -275,7 +275,7 @@ export default {
         let res = error.response
         switch (res.status) {
           case 401:
-            handle401()
+            toLoginPage()
             break
           case 400:
             this.$notify.error({
@@ -341,7 +341,7 @@ export default {
             let res = error.response
             switch (res.status) {
               case 401:
-                handle401()
+                toLoginPage()
                 break
               case 400:
                 this.$notify.error({

@@ -7,7 +7,9 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <h3>隐藏进行中的竞赛排行榜</h3>
-            <span>开启后，只有当竞赛/作业结束后可以查看排行榜。</span>
+            <el-alert show-icon type="info" :closable="false"
+                      title="开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）">
+            </el-alert>
           </el-col>
           <el-col :span="12">
             <el-switch class="switch" v-model="settings.showRankingAfterEnded" active-color="#67C23A">
@@ -18,7 +20,9 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <h3>显示未开始的竞赛</h3>
-            <span>开启后，未开始的竞赛/作业会显示在列表中，但不可查看题目。</span>
+            <el-alert show-icon type="info" :closable="false"
+                      title="开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目">
+            </el-alert>
           </el-col>
           <el-col :span="12">
             <el-switch class="switch" v-model="settings.showNotStartedContest" active-color="#67C23A">
@@ -110,6 +114,6 @@ h3 {
 
 .switch {
   margin-top: 5px;
-  margin-left: 45px;
+  margin-left: 50px;
 }
 </style>

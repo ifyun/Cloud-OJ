@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject, handle401, userInfo} from "@/script/util";
+import {apiPath, copyObject, toLoginPage, userInfo} from "@/script/util";
 import UserEditor from "@/components/manage/user/UserEditor";
 
 export default {
@@ -170,7 +170,7 @@ export default {
         this.loading = false
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             title: '获取数据失败',
@@ -217,7 +217,7 @@ export default {
           }).catch((error) => {
             let res = error.response
             if (res.status === 401) {
-              handle401()
+              toLoginPage()
             } else {
               let msg
               if (res.status === 409)

@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {apiPath, handle401, userInfo} from "@/script/util";
+import {apiPath, toLoginPage, userInfo} from "@/script/util";
 
 export default {
   name: "TestDataManage",
@@ -116,7 +116,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             title: '获取数据失败',
@@ -167,7 +167,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
-          handle401()
+          toLoginPage()
         } else {
           this.$notify.error({
             title: `${fileName}删除失败`,

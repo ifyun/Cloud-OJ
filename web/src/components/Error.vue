@@ -3,8 +3,8 @@
     <span class="error-code">{{ error.code }}</span>
     <span class="error-text">{{ error.text }}</span>
     <el-button-group style="margin-top: 25px">
-      <el-button size="medium" @click="back">返回上页</el-button>
-      <el-button size="medium" @click="gotoIndex">返回主页</el-button>
+      <el-button size="mini" @click="back">返回上页</el-button>
+      <el-button size="mini" @click="gotoIndex">返回主页</el-button>
     </el-button-group>
   </div>
 </template>
