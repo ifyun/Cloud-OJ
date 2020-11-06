@@ -35,6 +35,7 @@ services:
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "cloud"
       DB_POOL_SIZE: 12
+      TOKEN_VALID_TIME: 4
 
   web:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
