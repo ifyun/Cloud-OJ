@@ -50,6 +50,7 @@ const apiPath = {
     adminContestRanking: '/api/manager/ranking/pro/contest',
     history: '/api/manager/history',
     commit: '/api/judge/commit',
+    queueInfo: '/api/judge/pro/queue_info',
     overview: '/api/manager/user/overview',
     backup: '/api/manager/backup'
 }

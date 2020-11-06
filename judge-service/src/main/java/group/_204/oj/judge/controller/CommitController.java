@@ -7,6 +7,7 @@ import group._204.oj.judge.model.JudgeResult;
 import group._204.oj.judge.service.CommitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
