@@ -8,8 +8,6 @@
 
 微服务架构的 Online Judge，基于 Spring Cloud、Vue.js、Docker。
 
-> 本项目参考了 [HUSTOJ](https://github.com/zhblue/hustoj)。
-
 ## 支持语言
 
 - C
@@ -19,22 +17,16 @@
 - Bash Shell
 - C#
 
-## 使用的组件
+## 判题方式
 
-- 服务注册与发现：Eureka
-- 负载均衡：Zuul with Ribbon
-- 路由网关：Zuul & Nginx
-- 权限验证：Spring Security with JWT
-- 服务监控：Spring Boot Admin
-- ORM：MyBatis
-- 数据库：MySQL
-- 前端：Vue.js, Element UI
+本项目没有直接使用 `ptrace` 和 `seccomp` 来限制系统调用，而是构建一个包含各种语言运行环境的 Docker 镜像，
+将测试数据和用户的代码挂载到容器进行编译和判题，以此达到沙盒的效果。
 
 ## 使用指南
 
 ### 自动部署
 
-使用部署脚本(仅支持 Docker)：[Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)
+若没有二次开发的需求，推荐使用部署脚本(仅支持 Docker、Docker Swarm)：[Cloud Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)
 
 ### 手动构建
 
@@ -50,7 +42,7 @@
 ```yaml
 project:
   file-dir: <测试数据和其他文件的存放目录>
-  code-dir: <临时存放代码和可执行文件的目录>   # 此项在 judge-service
+  code-dir: <临时存放代码和可执行文件的目录>   # in judge-service
 ```
 
 #### 2. 构建用于判题的 Docker 镜像
@@ -70,8 +62,6 @@ project:
 
 > 如果不想构建镜像，可以直接使用 `registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner`
 
-**提示：judge-service 仅支持在 Linux 下运行**。
-
 #### 3. 构建、打包
 
 构建服务（需要 Maven）：
@@ -80,10 +70,24 @@ project:
 mvn -B package '-Dmaven.test.skip=true' --file pom.xml
 ```
 
-> 启动服务时，指定 `prod` 配置文件：`java -jar -Dspring.profiles.active=prod xxx.jar`
-
 构建 Web（需要 Node.js）：
 
 ```bash
 cd web && npm install && npm run build
 ```
+
+### 4. 部署
+
+- 运行服务，指定 `prod` 配置文件：`java -jar -Dspring.profiles.active=prod xxx.jar`
+- Web 可使用 Nginx 部署
+
+若需要扩展服务，请改用 NFS 存储 OJ 文件并在节点挂载（默认目录是：`/var/lib/cloud_oj`）。
+
+**提示：judge-service 仅支持在 Linux 下运行**。
+
+## Acknowledgement
+
+- Thanks to [HUSTOJ](https://github.com/zhblue/hustoj)
+- Thanks to JetBrains' Open Source License support.
+
+[![JetBrains](./.assets/jetbrains.svg)](https://www.jetbrains.com/?from=CloudOJ)
