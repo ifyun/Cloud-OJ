@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       userInfo: userInfo(),
-      collapse: true,
+      collapse: false,
       active: '',
       currentView: '',
       error: {

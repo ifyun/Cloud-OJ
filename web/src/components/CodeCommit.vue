@@ -69,7 +69,7 @@
                :close-on-click-modal="false"
                :close-on-press-escape="false">
       <el-steps simple :active="resultDialog.active" finish-status="success">
-        <el-step title="提交代码"></el-step>
+        <el-step title="写入代码"></el-step>
         <el-step title="等待判题"></el-step>
         <el-step title="获取结果"></el-step>
       </el-steps>
@@ -78,7 +78,7 @@
                 :title="result.title"
                 :description="result.desc">
       </el-alert>
-      <el-button style="margin-top: 15px" icon="el-icon-refresh"
+      <el-button style="margin-top: 25px" icon="el-icon-refresh"
                  :disabled="resultDialog.disableRefresh"
                  @click="getResult(solutionId, 1)">
         <span>重试</span>
@@ -94,6 +94,7 @@ import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/shell/shell.js'
+import 'codemirror/mode/javascript/javascript'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/monokai.css'
 import 'codemirror/theme/material.css'
@@ -108,7 +109,8 @@ const languageMode = [
   'text/x-java',
   'text/x-python',
   'text/x-sh',
-  'text/x-csharp'
+  'text/x-csharp',
+  'text/javascript'
 ]
 
 const languageOptions = [
@@ -117,7 +119,8 @@ const languageOptions = [
   {id: 2, name: 'Java', version: '1.8'},
   {id: 3, name: 'Python', version: '3.5'},
   {id: 4, name: 'Bash'},
-  {id: 5, name: 'C#', version: 'Mono'}
+  {id: 5, name: 'C#', version: 'Mono'},
+  {id: 6, name: 'JavaScript', version: 'Node v14'}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0

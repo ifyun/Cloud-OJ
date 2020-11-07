@@ -17,17 +17,17 @@
     <el-table :data="contests.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
-      <el-table-column label="名称" width="300px">
+      <el-table-column label="名称">
         <template slot-scope="scope">
           <b>{{ scope.row.contestName }}</b>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" align="center">
+      <el-table-column label="开始时间" width="200px" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"> {{ scope.row.startAt }}</i>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" align="center">
+      <el-table-column label="结束时间" width="200px" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"> {{ scope.row.endAt }}</i>
         </template>
@@ -132,15 +132,6 @@ export default {
       },
       contestDialogTitle: '',
       saveType: '',
-      languageOptions: [
-        {id: 0, name: 'C'},
-        {id: 1, name: 'C++'},
-        {id: 2, name: 'Java'},
-        {id: 3, name: 'Python'},
-        {id: 4, name: 'Bash Shell'},
-        {id: 5, name: 'C#'}
-      ],
-      enabledLanguages: [],
       pageSize: 10,
       currentPage: 1,
       editorDialogVisible: false,
@@ -202,7 +193,6 @@ export default {
       this.saveType = 'post'
       this.contestDialogTitle = '创建竞赛/作业'
       this.selectedContest = {}
-      this.enabledLanguages = []
       this.editorDialogVisible = true
     },
     onDeleteClick(index) {

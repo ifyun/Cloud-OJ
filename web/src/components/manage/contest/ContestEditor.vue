@@ -20,7 +20,7 @@
       <el-form-item label="语言限制" prop="languages">
         <el-checkbox-group v-model="enabledLanguages">
           <el-checkbox name="language"
-                       v-for="lang in languageOptions"
+                       v-for="lang in languages"
                        :label="lang.id"
                        :key="lang.id">{{ lang.name }}
           </el-checkbox>
@@ -36,8 +36,20 @@
 </template>
 
 <script>
-import moment from "moment";
-import {apiPath, userInfo, toLoginPage} from "@/script/util";
+import moment from "moment"
+import {apiPath, userInfo, toLoginPage} from "@/script/util"
+
+const MAX_LANG_ID = 6
+
+const languageOptions = [
+  {id: 0, name: 'C'},
+  {id: 1, name: 'C++'},
+  {id: 2, name: 'Java'},
+  {id: 3, name: 'Python'},
+  {id: 4, name: 'Bash Shell'},
+  {id: 5, name: 'C#'},
+  {id: 6, name: 'JavaScript'}
+]
 
 export default {
   name: "ContestEditor",
@@ -50,20 +62,7 @@ export default {
     contest: {
       immediate: true,
       handler() {
-        this.enabledLanguages = []
-        let formLoaded = this.$refs['edit-contest'] !== undefined
-        if (formLoaded)
-          this.$refs['edit-contest'].clearValidate()
-        if (Object.keys(this.contest).length > 0) {
-          let lang = this.contest.languages
-          // 列出语言
-          for (let i = 0; i <= 5; i++) {
-            let t = 1 << i
-            if ((lang & t) === t) {
-              this.enabledLanguages.push(i)
-            }
-          }
-        }
+        this.listLanguages()
       }
     }
   },
@@ -96,17 +95,26 @@ export default {
         ]
       },
       enabledLanguages: [],
-      languageOptions: [
-        {id: 0, name: 'C'},
-        {id: 1, name: 'C++'},
-        {id: 2, name: 'Java'},
-        {id: 3, name: 'Python'},
-        {id: 4, name: 'Bash Shell'},
-        {id: 5, name: 'C#'}
-      ],
+      languages: languageOptions
     }
   },
   methods: {
+    listLanguages() {
+      this.enabledLanguages = []
+      let formLoaded = this.$refs['edit-contest'] !== undefined
+      if (formLoaded)
+        this.$refs['edit-contest'].clearValidate()
+      if (Object.keys(this.contest).length > 0) {
+        let lang = this.contest.languages
+        // 列出语言
+        for (let i = 0; i <= MAX_LANG_ID; i++) {
+          let t = 1 << i
+          if ((lang & t) === t) {
+            this.enabledLanguages.push(i)
+          }
+        }
+      }
+    },
     onSave(type) {
       this.$refs['edit-contest'].validate((valid) => {
         if (valid) {
