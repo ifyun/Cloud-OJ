@@ -113,6 +113,9 @@ class Compiler {
             case C_SHARP:
                 cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
                 processBuilder.command(cmd);
+                break;
+            case JAVA_SCRIPT:
+                return new Compile(solutionId, 0, "JavaScript");
         }
 
         try {

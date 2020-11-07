@@ -28,8 +28,8 @@
         <el-table-column label="编程语言">
           <template slot-scope="scope">
             <div style="display: flex; align-items: center;">
-              <img class="language-icon" :src="languageIcons[scope.row['language']]" alt="">
-              {{ languages[scope.row['language']] }}
+              <img class="language-icon" :src="languages[scope.row['language']].icon" alt="">
+              {{ languages[scope.row['language']].name }}
             </div>
           </template>
         </el-table-column>
@@ -99,20 +99,13 @@ export default {
         {text: '判题异常', type: 'error', icon: 'el-icon-error'}
       ],
       languages: {
-        0: 'C',
-        1: 'C++',
-        2: 'Java',
-        3: 'Python',
-        4: 'Bash',
-        5: 'C#'
-      },
-      languageIcons: {
-        0: './icons/lang/c.svg',
-        1: './icons/lang/cpp.svg',
-        2: './icons/lang/java.svg',
-        3: './icons/lang/python.svg',
-        4: './icons/lang/bash.svg',
-        5: './icons/lang/csharp.svg'
+        0: {name: 'C', icon: './icons/lang/c.svg'},
+        1: {name: 'C++', icon: './icons/lang/cpp.svg'},
+        2: {name: 'Java', icon: './icons/lang/java.svg'},
+        3: {name: 'Python', icon: './icons/lang/python.svg'},
+        4: {name: 'Bash', icon: './icons/lang/bash.svg'},
+        5: {name: 'C#', icon: './icons/lang/csharp.svg'},
+        6: {name: 'JavaScript', icon: './icons/lang/js.svg'}
       },
       codeDialogVisible: false,
       code: ''

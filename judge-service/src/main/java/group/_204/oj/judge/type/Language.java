@@ -6,7 +6,8 @@ public enum Language {
     JAVA(2, ".java"),
     PYTHON(3, ".py"),
     BASH(4, ".sh"),
-    C_SHARP(5, ".cs");
+    C_SHARP(5, ".cs"),
+    JAVA_SCRIPT(6, ".js");
 
     private final int code;
     private final String ext;
