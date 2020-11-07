@@ -9,7 +9,6 @@ variables:
   FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
-  RUNNER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner
   MYSQL: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
 cache:
   key: maven
@@ -61,7 +60,6 @@ docker-build:
   script:
     - docker -v
     - docker build -t $WEB ./docker/web/
-    - docker build -t $RUNNER ./docker/runner/
     - docker build -t $API_GATEWAY ./docker/api-gateway/
     - docker build -t $REGISTER_CENTER ./docker/register-center/
     - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
