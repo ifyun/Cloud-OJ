@@ -26,7 +26,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" stripe v-loading="loading">
+      <el-table :data="problems.data" v-loading="loading">
         <el-table-column label="题目名称" width="280px">
           <template slot-scope="scope">
             <el-link
@@ -79,8 +79,8 @@
         </el-table-column>
       </el-table>
       <el-pagination style="margin-top: 10px"
-                     background
-                     layout="total, sizes, prev, pager, next, jumper"
+                     background :hide-on-single-page="true"
+                     layout="total, sizes, prev, pager, next"
                      :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="problems.count"

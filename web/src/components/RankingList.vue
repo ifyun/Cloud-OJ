@@ -20,7 +20,7 @@
           </el-button>
         </div>
       </div>
-      <el-table :data="ranking.data" stripe v-loading="loading">
+      <el-table :data="ranking.data" v-loading="loading">
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
@@ -58,8 +58,8 @@
         </el-table-column>
       </el-table>
       <el-pagination style="margin-top: 10px"
-                     background
-                     layout="total, sizes, prev, pager, next, jumper"
+                     background :hide-on-single-page="true"
+                     layout="total, sizes, prev, pager, next"
                      :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="ranking.count"

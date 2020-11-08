@@ -1,7 +1,7 @@
 <template>
   <el-container class="container">
     <el-card style="width: 100%">
-      <el-table :data="contests.data" stripe v-loading="loading">
+      <el-table :data="contests.data" v-loading="loading">
         <el-table-column label="竞赛/作业" prop="contestName">
           <template slot-scope="scope">
             <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
@@ -14,28 +14,29 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" width="240px" align="center">
+        <el-table-column label="开始时间" width="180px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" width="240px" align="center">
+        <el-table-column label="结束时间" width="180px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200px" align="center">
+        <el-table-column label="操作" width="120px" align="center">
           <template slot-scope="scope">
-            <el-button v-if="scope.row['started']" type="success" size="mini" plain
+            <el-button v-if="scope.row['started']" size="mini" plain
+                       icon="el-icon-s-data"
                        @click="seeRanking(scope.row)">
-              查看排行榜
+              排行榜
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination style="margin-top: 10px"
-                     background
-                     layout="total, sizes, prev, pager, next, jumper"
+                     background :hide-on-single-page="true"
+                     layout="total, sizes, prev, pager, next"
                      :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="contests.count"

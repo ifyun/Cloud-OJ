@@ -47,7 +47,7 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
+  margin-top: 50px;
   padding: 0 20px;
   flex-direction: column;
   max-width: 1100px;

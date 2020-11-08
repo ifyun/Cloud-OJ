@@ -68,7 +68,7 @@ class Compiler {
         Language language = Language.get(languageId);
 
         if (language != null)
-            return compileSource(solutionId, languageId, src);
+            return compileSource(solutionId, languageId);
         else
             return new Compile(solutionId, -1, "不支持的语言");
     }
@@ -78,10 +78,9 @@ class Compiler {
      *
      * @param solutionId 答案 Id
      * @param languageId 语言类型
-     * @param src        源码文件路径
      * @return {@link Compile} 编译结果
      */
-    public Compile compileSource(String solutionId, int languageId, String src) {
+    public Compile compileSource(String solutionId, int languageId) {
         Language language = Language.get(languageId);
 
         if (language == null) {
@@ -96,15 +95,12 @@ class Compiler {
         switch (language) {
             case C:
                 cmd.addAll(Arrays.asList("gcc", "Solution.c", "-o", "Solution"));
-                processBuilder.command(cmd);
                 break;
             case CPP:
                 cmd.addAll(Arrays.asList("g++", "Solution.cpp", "-o", "Solution"));
-                processBuilder.command(cmd);
                 break;
             case JAVA:
                 cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
-                processBuilder.command(cmd);
                 break;
             case PYTHON:
                 return new Compile(solutionId, 0, "Python");
@@ -112,13 +108,15 @@ class Compiler {
                 return new Compile(solutionId, 0, "Bash");
             case C_SHARP:
                 cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
-                processBuilder.command(cmd);
                 break;
             case JAVA_SCRIPT:
                 return new Compile(solutionId, 0, "JavaScript");
+            case KOTLIN:
+                cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
         }
 
         try {
+            processBuilder.command(cmd);
             Process process = processBuilder.start();
             process.waitFor(3000, TimeUnit.MILLISECONDS);
             // 获取错误流，为空说明编译成功

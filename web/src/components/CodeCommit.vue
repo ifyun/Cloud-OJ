@@ -110,7 +110,8 @@ const languageMode = [
   'text/x-python',
   'text/x-sh',
   'text/x-csharp',
-  'text/javascript'
+  'text/javascript',
+  'text/x-kotlin'
 ]
 
 const languageOptions = [
@@ -120,7 +121,8 @@ const languageOptions = [
   {id: 3, name: 'Python', version: '3.5'},
   {id: 4, name: 'Bash'},
   {id: 5, name: 'C#', version: 'Mono'},
-  {id: 6, name: 'JavaScript', version: 'Node v14'}
+  {id: 6, name: 'JavaScript', version: 'Node v14'},
+  {id: 7, name: 'Kotlin', version: '1.4.10'}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
@@ -274,6 +276,7 @@ export default {
         alert('请先登录！')
         return
       }
+      this.resultDialog.active = undefined
       this.result = {}
       let data = {
         userId: userInfo().userId,

@@ -10,12 +10,16 @@
 
 ## 支持语言
 
-- C
-- C++
-- Java
-- Python
-- Bash Shell
-- C#
+Language        | Compiler/Interpreter/Version
+----------------|-------------------------------
+C               | gcc
+C++             | g++ std=14
+Java            | OpenJDK 1.8
+Python          | 3.5
+Bash            |
+C#              | Mono
+JavaScript      | Node v14
+Kotlin          | 1.4.10
 
 ## 判题方式
 

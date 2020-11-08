@@ -37,8 +37,8 @@
     <div class="profile-div" v-else>
       <img class="avatar" :src="avatarUrl" onerror="this.src='/icons/no_avatar.svg'"
            alt="avatar">
-      <span style="font-size: 14pt;font-weight: bold;">{{ userInfo.name }}</span>
-      <span style="font-weight: lighter">{{ userInfo.userId }}</span>
+      <span class="name">{{ userInfo.name }}</span>
+      <span class="user-id">{{ userInfo.userId }}</span>
       <span v-if="userInfo.email !== undefined"
             style="margin-top: 15px;">
         <i class="el-icon-message"></i>
@@ -163,7 +163,7 @@ export default {
 <style scoped>
 .profile-div {
   display: flex;
-  height: 900px;
+  height: 800px;
   border-right: 1px solid #e0e0e0;
   flex-direction: column;
   padding-left: 5px;
@@ -177,6 +177,17 @@ export default {
   border-radius: 200px;
   border: 3px solid #e0e0e0;
   margin: 0 auto 15px;
+}
+
+.name {
+  font-size: 14pt;
+  font-weight: bold;
+  color: #303133;
+}
+
+.user-id {
+  font-weight: lighter;
+  color: #606266;
 }
 </style>
 
