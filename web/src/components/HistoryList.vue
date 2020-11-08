@@ -6,8 +6,7 @@
       <el-table :data="histories.data" v-loading="loading">
         <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
-            <el-link type="primary"
-                     @click="titleClick(scope.row)">
+            <el-link @click="titleClick(scope.row)">
               <b>{{ scope.row.problemId }} - {{ scope.row.title }}</b>
             </el-link>
           </template>
@@ -55,8 +54,8 @@
         </el-table-column>
       </el-table>
       <el-pagination style="margin-top: 10px"
-                     background
-                     layout="total, sizes, prev, pager, next, jumper"
+                     background :hide-on-single-page="true"
+                     layout="total, sizes, prev, pager, next"
                      :page-sizes="[10, 20, 30, 50]"
                      :page-size.sync="pageSize"
                      :total="histories.count"
@@ -105,7 +104,8 @@ export default {
         3: {name: 'Python', icon: './icons/lang/python.svg'},
         4: {name: 'Bash', icon: './icons/lang/bash.svg'},
         5: {name: 'C#', icon: './icons/lang/csharp.svg'},
-        6: {name: 'JavaScript', icon: './icons/lang/js.svg'}
+        6: {name: 'JavaScript', icon: './icons/lang/js.svg'},
+        7: {name: 'Kotlin', icon: './icons/lang/kotlin.svg'}
       },
       codeDialogVisible: false,
       code: ''
@@ -169,7 +169,7 @@ export default {
 }
 
 .language-icon {
-  height: 24px;
+  height: 20px;
   margin-right: 5px;
 }
 </style>

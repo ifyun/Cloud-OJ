@@ -3,7 +3,7 @@
     <ECharts theme="macarons" :options="pieOption"/>
     <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
     <el-divider></el-divider>
-    <ECharts theme="royal" :options="activitiesOption" style="width: 100%;"/>
+    <ECharts theme="royal" :options="activitiesOption" style="width: 100%;height: 200px"/>
   </div>
 </template>
 
@@ -15,7 +15,7 @@ import 'echarts/theme/royal'
 import {apiPath, userInfo} from "@/script/util";
 
 const year = new Date().getFullYear()
-const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#']
+const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#', 'JavaScript', 'Kotlin']
 
 export default {
   name: "Overview",
@@ -48,7 +48,7 @@ export default {
           {
             name: '语言偏好',
             type: 'pie',
-            center: ['45%', '50%'],
+            center: ['55%', '50%'],
             radius: [35, 120],
             roseType: 'area',
             data: []

@@ -48,7 +48,7 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
+  margin-top: 50px;
   padding: 0 10px;
   flex-direction: column;
   align-items: center;

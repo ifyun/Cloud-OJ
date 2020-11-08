@@ -254,32 +254,30 @@ public class Judgement {
             case C:
             case CPP:
                 cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
-                builder.command(cmd);
                 break;
             case JAVA:
                 cmd.addAll(Arrays.asList("java@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT, testDataDir));
-                builder.command(cmd);
                 break;
             case PYTHON:
                 cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
-                builder.command(cmd);
                 break;
             case BASH:
                 cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
-                builder.command(cmd);
                 break;
             case C_SHARP:
                 cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
-                builder.command(cmd);
                 break;
             case JAVA_SCRIPT:
                 cmd.addAll(Arrays.asList("node@Solution.js", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
-                builder.command(cmd);
+                break;
+            case KOTLIN:
+                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MAX_MEM_LIMIT, testDataDir));
                 break;
             default:
                 throw new UnsupportedLanguageError("Unsupported language.");
         }
 
+        builder.command(cmd);
         return builder;
     }
 

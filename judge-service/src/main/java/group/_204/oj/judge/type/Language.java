@@ -7,7 +7,8 @@ public enum Language {
     PYTHON(3, ".py"),
     BASH(4, ".sh"),
     C_SHARP(5, ".cs"),
-    JAVA_SCRIPT(6, ".js");
+    JAVA_SCRIPT(6, ".js"),
+    KOTLIN(7, ".kt");
 
     private final int code;
     private final String ext;

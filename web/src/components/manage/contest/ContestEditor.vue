@@ -39,7 +39,7 @@
 import moment from "moment"
 import {apiPath, userInfo, toLoginPage} from "@/script/util"
 
-const MAX_LANG_ID = 6
+const MAX_LANG_ID = 7
 
 const languageOptions = [
   {id: 0, name: 'C'},
@@ -48,7 +48,8 @@ const languageOptions = [
   {id: 3, name: 'Python'},
   {id: 4, name: 'Bash Shell'},
   {id: 5, name: 'C#'},
-  {id: 6, name: 'JavaScript'}
+  {id: 6, name: 'JavaScript'},
+  {id: 7, name: 'Kotlin'}
 ]
 
 export default {
