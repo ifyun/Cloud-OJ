@@ -48,11 +48,11 @@ public class CommitController {
         if (contestId != null) {
             Contest contest = contestDao.getContest(contestId);
             if (contest.isEnded())
-                return ResponseEntity.ok("当前竞赛/作业已结束！");
+                return ResponseEntity.status(403).body("{\"msg\":\"当前竞赛/作业已结束\"}");
             int lang = data.getLanguage();
             int languages = contest.getLanguages();
             if ((languages & 1 << lang) != 1 << lang) {
-                return ResponseEntity.badRequest().body("不允许使用该语言.");
+                return ResponseEntity.badRequest().body("{\"msg\":\"不允许使用该语言\"");
             }
         }
 

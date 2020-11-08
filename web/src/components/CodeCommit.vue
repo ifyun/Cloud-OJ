@@ -306,11 +306,10 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          let data = res.data;
           this.$notify.error({
             offset: 50,
             title: '提交失败',
-            message: `${res.status} ${data === undefined ? res.statusText : data.msg}`
+            message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
           })
         }
       })
