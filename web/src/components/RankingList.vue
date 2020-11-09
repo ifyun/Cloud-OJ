@@ -120,10 +120,10 @@ export default {
     getRankingList(refresh) {
       this.loading = true
       let url
-      if (this.contest == null)
+      if (this.contest == null) {
         url = apiPath.ranking
-      else {
-        if (userInfo()['roleId'] >= 2) {
+      } else {
+        if (userInfo() != null && userInfo()['roleId'] >= 2) {
           url = apiPath.adminContestRanking
         } else {
           url = apiPath.contestRanking
@@ -134,12 +134,12 @@ export default {
         url: url,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          token: userInfo() == null ? null : userInfo().token
         },
         params: {
           page: this.currentPage,
           limit: this.pageSize,
-          userId: userInfo().userId
+          userId: userInfo() == null ? null : userInfo().userId
         }
       }).then((res) => {
         this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
