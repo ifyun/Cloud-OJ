@@ -1,15 +1,19 @@
-## 支持的语言
+## 帮助文档
 
-Language        | 编译器/解释器  | 备注
-----------------|---------------|--------
-C               | gcc           |
-C++             | g++           | std=14
-Java            | jdk           | 支持 Java 8 特性
-Python          | python        | 仅支持 3.5
-Bash Shell      |               |
-C#              | Mono          |
+### 支持的语言
 
-## 注意事项
+Language        | Compiler/Interpreter/Version
+----------------|-------------------------------
+C               | gcc
+C++             | g++ std=14
+Java            | OpenJDK 1.8
+Python          | 3.5
+Bash            |
+C#              | Mono
+JavaScript      | Node v14
+Kotlin          | 1.4.10
+
+### 注意事项
 
 Java 语言的类名必须为 `Solution`，示例：
 
@@ -21,11 +25,11 @@ public class Solution {
 }
 ```
 
-::: warning
+::: info
 类名为其他名称将无法运行
 :::
 
-## 答题示例
+### 答题示例
 
 题目：输入两个数，输出他们的和。
 
@@ -43,14 +47,14 @@ public class Solution {
 
 示例代码如下：
 
-### Python
+#### Python
 
 ```python
 a, b = map(int, input().split())
 print(a + b)
 ```
 
-### C++
+#### C++
 
 ```c++
 #include <iostream>
@@ -65,7 +69,7 @@ int main()
 }
 ```
 
-### Java
+#### Java
 
 ```java
 import java.util.*;
@@ -79,3 +83,22 @@ public class Solution {
     }
 }
 ```
+
+### 判题结果
+
+用户提交的代码，按测试点通过数量计分：得分 = (通过数量 / 总测试点数量) * 此题分值。
+
+有以下几种结果：
+
+- 完全正确
+- 部分通过
+- 答案错误
+- 时间超限
+- 内存超限
+- 编译错误
+- 运行错误
+- 判题异常
+
+::: info
+对于内存和时间超限，仅超限的那一组测试点为 0 分
+:::
