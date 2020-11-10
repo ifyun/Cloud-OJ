@@ -97,10 +97,10 @@ export default {
         url: `${apiPath.contest}/pro/${this.contestId}/problem`,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
-          userId: userInfo().userId,
           page: this.currentPage,
           limit: this.pageSize
         }
@@ -122,11 +122,9 @@ export default {
         url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
         method: 'delete',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
-        params: {
-          userId: userInfo().userId
-        }
       }).then((res) => {
         this.$notify({
           offset: 50,

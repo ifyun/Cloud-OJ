@@ -19,4 +19,8 @@ public class RankingService {
     public List<List<?>> getContestRanking(int contestId, int page, int limit) {
         return rankingDao.getContestRanking(contestId, (page - 1) * limit, limit);
     }
+
+    public List<?> getDetail(int contestId, String userId) {
+        return rankingDao.getDetail(contestId, userId);
+    }
 }

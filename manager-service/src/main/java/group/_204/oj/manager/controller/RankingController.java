@@ -42,4 +42,9 @@ public class RankingController implements CRUDController {
     public ResponseEntity<?> getRankingListAdmin(@PathVariable int contestId, int page, int limit) {
         return buildGETResponse(rankingService.getContestRanking(contestId, page, limit));
     }
+
+    @GetMapping("pro/contest/detail")
+    public ResponseEntity<?> getDetail(int contestId, String userId) {
+        return buildGETResponse(rankingService.getDetail(contestId, userId));
+    }
 }

@@ -20,7 +20,7 @@
           </el-button>
         </div>
       </div>
-      <el-table :data="ranking.data" v-loading="loading">
+      <el-table :data="ranking.data" v-loading="loading" @row-dblclick="getDetail">
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
@@ -68,6 +68,22 @@
                      @current-change="getRankingList">
       </el-pagination>
     </el-card>
+    <el-dialog :title="detailDialog.title" :visible.sync="detailDialog.visible" width="700px">
+      <el-table :data="detailDialog.details">
+        <el-table-column label="题目">
+          <template slot-scope="scope">
+            <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
+          </template>
+        </el-table-column>
+        <el-table-column label="通过率" width="100px" align="right">
+          <template slot-scope="scope">
+            <span>{{ scope.row['passRate'] * 100 }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="得分" prop="score" width="100px" align="right">
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -82,7 +98,6 @@ export default {
   },
   mounted() {
     this.contest = JSON.parse(window.sessionStorage.getItem('contest'))
-    window.sessionStorage.removeItem('contest')
     this.getRankingList()
   },
   data() {
@@ -97,6 +112,11 @@ export default {
       contest: {},
       currentPage: 1,
       pageSize: 10,
+      detailDialog: {
+        visible: false,
+        title: '',
+        details: []
+      },
       error: {
         code: undefined,
         text: ''
@@ -134,12 +154,12 @@ export default {
         url: url,
         method: 'get',
         headers: {
-          token: userInfo() == null ? null : userInfo().token
+          token: userInfo() == null ? null : userInfo().token,
+          userId: userInfo() == null ? null : userInfo().userId
         },
         params: {
           page: this.currentPage,
           limit: this.pageSize,
-          userId: userInfo() == null ? null : userInfo().userId
         }
       }).then((res) => {
         this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
@@ -169,6 +189,26 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    getDetail(row) {
+      if (this.contest != null && userInfo() != null && userInfo()['roleId'] >= 2) {
+        this.detailDialog.visible = true
+        this.detailDialog.title = `${row.name} 每题得分`
+        this.$axios.get(apiPath.contestDetail, {
+          headers: {
+            token: userInfo().token,
+            userId: userInfo().userId
+          },
+          params: {
+            contestId: row.contestId,
+            userId: row.userId
+          }
+        }).then((res) => {
+          this.detailDialog.details = res.data
+        }).catch((error) => {
+          console.log(error.response.status)
+        })
+      }
     }
   }
 }

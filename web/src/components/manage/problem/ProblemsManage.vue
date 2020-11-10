@@ -207,8 +207,7 @@ export default {
       this.loading = true
       let params = {
         page: this.currentPage,
-        limit: this.pageSize,
-        userId: userInfo().userId
+        limit: this.pageSize
       }
       if (this.keyword !== '')
         params.keyword = this.keyword
@@ -217,7 +216,7 @@ export default {
         method: 'get',
         headers: {
           'token': userInfo().token,
-          'Accept': 'application/json'
+          'userId': userInfo().userId
         },
         params: params
       }).then((res) => {
@@ -256,11 +255,11 @@ export default {
         url: `${apiPath.problemManage}/${row.problemId}`,
         method: 'put',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
-          enable: value,
-          userId: userInfo().userId
+          enable: value
         }
       }).then((res) => {
         this.$notify({
@@ -322,10 +321,8 @@ export default {
             url: `${apiPath.problemManage}/${this.selectedId}`,
             method: 'delete',
             headers: {
-              'token': userInfo().token
-            },
-            params: {
-              userId: userInfo().userId
+              'token': userInfo().token,
+              'userId': userInfo().userId
             }
           }).then((res) => {
             this.deleteDialogVisible = false

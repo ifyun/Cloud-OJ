@@ -33,7 +33,7 @@ public class LogoffFilter extends GenericFilterBean {
 
         if (request.getServletPath().equals("/api/logoff")) {
             if (request.getMethod().equals("DELETE")) {
-                String userId = request.getParameter("userId");
+                String userId = request.getHeader("userId");
                 String token = request.getHeader("token");
                 String secret = userDao.getSecret(userId);
 

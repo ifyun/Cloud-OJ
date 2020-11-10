@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.RankingDao">
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
-        select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`, r.*
+        select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
+                                   r.*
         from (select *
               from ranking_list
               where total_score &gt; 0
@@ -12,7 +13,8 @@
         select found_rows();
     </select>
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
-        select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`, r.*
+        select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
+                                   r.*
         from (select *
               from contest_ranking_list
               where total_score &gt; 0
@@ -21,5 +23,17 @@
         where contest_id = #{contestId}
         limit #{start}, #{limit};
         select found_rows();
+    </select>
+    <select id="getDetail" resultType="group._204.oj.manager.model.JudgeResult">
+        select problem_id,
+               title,
+               max(pass_rate) as pass_rate,
+               max(score)     as score
+        from judge_result
+        where state + 0 = 1
+          and contest_id = #{contestId}
+          and user_id = #{userId}
+        group by problem_id, title
+        order by problem_id;
     </select>
 </mapper>

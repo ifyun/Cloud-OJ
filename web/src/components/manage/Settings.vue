@@ -84,9 +84,7 @@ export default {
     getQueueInfo() {
       this.$axios.get(apiPath.queueInfo, {
         headers: {
-          'token': userInfo().token
-        },
-        params: {
+          'token': userInfo().token,
           'userId': userInfo().userId
         }
       }).then((res) => {
@@ -103,9 +101,7 @@ export default {
     getSettings() {
       this.$axios.get(apiPath.settings, {
         headers: {
-          'token': userInfo().token
-        },
-        params: {
+          'token': userInfo().token,
           'userId': userInfo().userId
         }
       }).then((res) => {
@@ -125,10 +121,8 @@ export default {
         method: 'put',
         headers: {
           'token': userInfo().token,
+          'userId': userInfo().userId,
           'Content-Type': 'application/json'
-        },
-        params: {
-          'userId': userInfo().userId
         },
         data: JSON.stringify(this.settings)
       }).then((res) => {

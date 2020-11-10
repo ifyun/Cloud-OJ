@@ -7,7 +7,7 @@
         <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
-              <b>{{ scope.row.problemId }} - {{ scope.row.title }}</b>
+              <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
@@ -34,12 +34,12 @@
         </el-table-column>
         <el-table-column label="耗时" width="100px" align="right">
           <template slot-scope="scope">
-            <span v-if="scope.row.result < 4">{{ scope.row['time'] }} ms</span>
+            <span v-if="scope.row.result <= 4">{{ scope.row['time'] }}&nbsp;ms</span>
           </template>
         </el-table-column>
         <el-table-column label="内存" width="100px" align="right">
           <template slot-scope="scope">
-            <span v-if="scope.row.result < 4">{{ scope.row['memory'] }} KB</span>
+            <span v-if="scope.row.result <= 4">{{ prettyMemory(scope.row['memory']) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="得分" width="100px" align="right">
@@ -155,6 +155,12 @@ export default {
         code: solution['code']
       }))
       window.location.href = `/commit?problemId=${solution['problemId']}`
+    },
+    prettyMemory(mem) {
+      if (mem <= 1024)
+        return `${mem} KB`
+      else
+        return `${(mem / 1024).toFixed(2)} MB`
     }
   }
 }

@@ -36,16 +36,10 @@ public class JwtVerifyFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         SecurityContextHolder.clearContext();
 
-        // 获取 url 中的 jwt token
-        String jwtToken = request.getParameter("token");
-        String userId = request.getParameter("userId");
-
-        // 获取 Header 中的 jwt token
-        if (jwtToken == null)
-            jwtToken = ((HttpServletRequest) request).getHeader("token");
+        String jwtToken = ((HttpServletRequest) request).getHeader("token");
+        String userId = ((HttpServletRequest) request).getHeader("userId");
 
         if (userId == null || jwtToken == null) {
             // 没有 token 时交给 Spring Security 去处理
