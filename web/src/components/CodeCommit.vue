@@ -225,7 +225,7 @@ export default {
       let headers = {}, params = {}
       if (userInfo() != null && userInfo()['roleId'] >= 2) {
         url = `${apiPath.problem}/pro`
-        params.userId = userInfo().userId
+        headers.userId = userInfo().userId
         headers.token = userInfo().token
       }
       if (this.contestId !== undefined) {
@@ -290,11 +290,9 @@ export default {
         url: apiPath.commit,
         method: 'post',
         headers: {
+          'userId': userInfo().userId,
           'token': userInfo().token,
           'Content-Type': 'application/json'
-        },
-        params: {
-          userId: userInfo().userId
         },
         data: JSON.stringify(data)
       }).then((res) => {
@@ -325,7 +323,8 @@ export default {
         url: apiPath.commit,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
           solutionId: this.solutionId,

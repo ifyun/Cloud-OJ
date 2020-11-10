@@ -155,12 +155,12 @@ export default {
         url: apiPath.contestManage,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
           page: this.currentPage,
-          limit: this.pageSize,
-          userId: userInfo().userId
+          limit: this.pageSize
         }
       }).then((res) => {
         this.contests = res.status === 200 ? res.data : {data: [], count: 0}
@@ -206,11 +206,9 @@ export default {
             url: `${apiPath.contestManage}/${this.selectedContest.contestId}`,
             method: 'delete',
             headers: {
-              'token': userInfo().token
+              'token': userInfo().token,
+              'userId': userInfo().userId
             },
-            params: {
-              userId: userInfo().userId
-            }
           }).then((res) => {
             this.deleteDialogVisible = false
             this.getContests()

@@ -134,11 +134,9 @@ export default {
             url: apiPath.contestManage,
             method: type,
             headers: {
-              "Content-Type": "application/json",
-              "token": userInfo().token
-            },
-            params: {
-              userId: userInfo().userId
+              'Content-Type': "application/json",
+              'token': userInfo().token,
+              'userId': userInfo().userId
             },
             data: JSON.stringify(contest)
           }).then((res) => {

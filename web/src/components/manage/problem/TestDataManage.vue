@@ -95,7 +95,8 @@ export default {
       fileList: [],
       uploadUrl: `${apiPath.testDataManage}?userId=${userInfo().userId}`,
       uploadHeaders: {
-        'token': userInfo().token
+        'token': userInfo().token,
+        'userId': userInfo().userId
       }
     }
   },
@@ -106,10 +107,8 @@ export default {
         url: `${apiPath.testDataManage}/${this.problemId}`,
         method: 'get',
         headers: {
-          'token': userInfo().token
-        },
-        params: {
-          userId: userInfo().userId
+          'token': userInfo().token,
+          'userId': userInfo().userId
         }
       }).then((res) => {
         this.testData = res.data
@@ -151,11 +150,11 @@ export default {
         url: `${apiPath.testDataManage}/${this.problemId}`,
         method: 'delete',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
-          name: fileName,
-          userId: userInfo().userId
+          name: fileName
         }
       }).then((res) => {
         this.getTestData()

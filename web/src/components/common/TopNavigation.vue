@@ -94,6 +94,8 @@ export default {
   },
   methods: {
     onSelect(key) {
+      if (key === '3')
+        window.sessionStorage.removeItem('contest')
       window.location.href = this.paths[key]
     },
     login() {
@@ -118,10 +120,8 @@ export default {
         url: apiPath.logoff,
         method: 'delete',
         headers: {
-          'token': userInfo().token
-        },
-        params: {
-          userId: userInfo().userId
+          'token': userInfo().token,
+          'userId': userInfo().userId
         }
       }).then(() => {
         clearToken()

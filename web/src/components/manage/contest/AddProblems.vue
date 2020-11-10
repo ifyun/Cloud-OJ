@@ -75,12 +75,12 @@ export default {
         url: `${apiPath.contestManage}/${this.contestId}`,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
           page: this.currentPage,
-          limit: this.pageSize,
-          userId: userInfo().userId
+          limit: this.pageSize
         }
       }).then((res) => {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
@@ -103,10 +103,8 @@ export default {
         url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
         method: 'post',
         headers: {
-          'token': userInfo().token
-        },
-        params: {
-          userId: userInfo().userId
+          'token': userInfo().token,
+          'userId': userInfo().userId
         }
       }).then((res) => {
         this.$notify({

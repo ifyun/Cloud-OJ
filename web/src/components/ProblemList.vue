@@ -37,8 +37,7 @@
         </el-table-column>
         <el-table-column align="left" width="110px">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.result !== undefined"
-                    style="cursor: pointer" effect="plain"
+            <el-tag v-if="scope.row.result !== undefined" effect="plain"
                     :type="resultTags[scope.row.result].type">
               <i :class="resultTags[scope.row.result].icon">
                 {{ resultTags[scope.row.result].text }}

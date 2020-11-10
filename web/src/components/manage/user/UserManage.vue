@@ -154,12 +154,12 @@ export default {
         url: apiPath.userManage,
         method: 'get',
         headers: {
-          'token': userInfo().token
+          'token': userInfo().token,
+          'userId': userInfo().userId
         },
         params: {
           page: this.currentPage,
           limit: this.pageSize,
-          userId: userInfo().userId
         }
       }).then((res) => {
         this.users = res.status === 200 ? res.data : {data: [], count: 0}
@@ -198,10 +198,11 @@ export default {
       this.$refs['deleteForm'].validate((valid) => {
         if (valid) {
           this.$axios({
-            url: `${apiPath.userManage}/${this.selectedUser.userId}?userId=${userInfo().userId}`,
+            url: `${apiPath.userManage}/${this.selectedUser.userId}`,
             method: 'delete',
             headers: {
-              'token': userInfo().token
+              'token': userInfo().token,
+              'userId': userInfo().userId
             }
           }).then((res) => {
             this.getUsers()

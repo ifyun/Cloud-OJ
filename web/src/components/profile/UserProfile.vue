@@ -68,7 +68,8 @@ export default {
     return {
       uploadPath: apiPath.avatar,
       uploadHeaders: {
-        'token': userInfo().token
+        'token': userInfo().token,
+        'userId': userInfo().userId
       },
       avatarUrl: '',
       userInfo: userInfo(),
@@ -129,7 +130,8 @@ export default {
             method: 'put',
             headers: {
               'Content-Type': 'application/json',
-              'token': userInfo().token
+              'token': userInfo().token,
+              'userId': userInfo().userId
             },
             params: {
               'userId': userInfo().userId

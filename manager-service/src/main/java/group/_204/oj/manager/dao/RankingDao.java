@@ -10,4 +10,6 @@ public interface RankingDao {
     List<List<?>> getRanking(int start, int limit);
 
     List<List<?>> getContestRanking(int contestId, int start, int limit);
+
+    List<List<?>> getDetail(int contestId, String userId);
 }

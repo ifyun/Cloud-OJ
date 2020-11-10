@@ -35,7 +35,7 @@ public class ErrorFilter extends ZuulFilter {
         if (e instanceof ZuulException) {
             ctx.remove("throwable");
             Throwable error = ((ZuulException) e).getCause().getCause();
-            log.error(error.getMessage() + " " + error.getCause().getMessage());
+            log.error(error.getMessage() + ": " + error.getCause().getMessage());
 
             ctx.setResponseStatusCode(502);
             ctx.getResponse().setContentType(MediaType.APPLICATION_JSON_VALUE);

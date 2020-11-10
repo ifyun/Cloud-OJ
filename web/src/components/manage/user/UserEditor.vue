@@ -114,10 +114,8 @@ export default {
             method: type,
             headers: {
               'token': userInfo().token,
+              'userId': userInfo().userId,
               'Content-Type': 'application/json'
-            },
-            params: {
-              userId: userInfo().userId
             },
             data: JSON.stringify(this.user)
           }).then((res) => {

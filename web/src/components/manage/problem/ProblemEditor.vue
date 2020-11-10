@@ -183,10 +183,8 @@ export default {
         url: `${apiPath.problemManage}/${this.problemId}`,
         method: 'get',
         headers: {
-          'token': userInfo().token
-        },
-        params: {
-          userId: userInfo().userId
+          'token': userInfo().token,
+          'userId': userInfo().userId
         }
       }).then((res) => {
         this.problem = res.data
@@ -224,10 +222,8 @@ export default {
         method: type,
         headers: {
           'token': userInfo().token,
+          'userId': userInfo().userId,
           'Content-Type': 'application/json'
-        },
-        params: {
-          userId: userInfo().userId
         },
         data: JSON.stringify(this.problem)
       }).then((res) => {
