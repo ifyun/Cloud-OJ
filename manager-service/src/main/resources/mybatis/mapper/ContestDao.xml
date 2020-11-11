@@ -53,6 +53,13 @@
         from contest
         where contest_id = #{contestId}
     </select>
+    <select id="getLanguages" resultMap="Map.Contest">
+        select contest_id,
+               contest_name,
+               languages
+        from contest
+        where contest_id = #{contestId}
+    </select>
     <insert id="addContest" parameterType="group._204.oj.manager.model.Contest">
         insert into contest(contest_name, start_at, end_at, languages)
             value (#{contestName}, #{startAt}, #{endAt}, #{languages})

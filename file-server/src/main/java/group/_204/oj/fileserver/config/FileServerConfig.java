@@ -13,7 +13,7 @@ public class FileServerConfig extends WebMvcConfigurationSupport {
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/test_data/file/**")
+        registry.addResourceHandler("/test_data/download/**")
                 .addResourceLocations("file:" + fileDir + "test_data/");
         super.addResourceHandlers(registry);
         registry.addResourceHandler("/image/**")

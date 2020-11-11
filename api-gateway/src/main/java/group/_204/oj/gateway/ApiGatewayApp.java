@@ -1,17 +1,17 @@
-package group._204.oj.register;
+package group._204.oj.gateway;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
 @Slf4j
+@EnableZuulProxy
 @SpringBootApplication
-@EnableEurekaServer
-public class RegisterCenterApplication {
+public class ApiGatewayApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(RegisterCenterApplication.class, args);
+        SpringApplication.run(ApiGatewayApp.class, args);
     }
 
 }

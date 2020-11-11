@@ -32,7 +32,7 @@ public interface CRUDController {
      */
     default ResponseEntity<?> buildGETResponse(List<List<?>> data) {
         return data.get(0).size() > 0 ?
-                ResponseEntity.ok(new PagedResult(data.get(0), (Long) data.get(1).get(0))) :
+                ResponseEntity.ok(new PagedResult(data.get(0), (Integer) data.get(1).get(0))) :
                 ResponseEntity.noContent().build();
     }
 
@@ -40,7 +40,7 @@ public interface CRUDController {
      * 更新操作
      *
      * @param msg 消息
-     * @return {@link ResponseEntity} 200：更新成功，304：未修改
+     * @return {@link ResponseEntity} 200：更新成功
      */
     default ResponseEntity<?> buildPUTResponse(Msg msg) {
         return ResponseEntity.status(msg.getStatus()).body(msg);

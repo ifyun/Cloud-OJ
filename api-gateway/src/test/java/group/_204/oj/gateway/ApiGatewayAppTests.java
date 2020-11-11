@@ -1,10 +1,10 @@
-package group._204.oj.manager;
+package group._204.oj.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ManagerServiceApplicationTests {
+class ApiGatewayAppTests {
 
     @Test
     void contextLoads() {

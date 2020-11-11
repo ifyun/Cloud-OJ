@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableAdminServer
 @SpringBootApplication
-public class MonitorServiceApplication {
+public class MonitorServiceApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(MonitorServiceApplication.class, args);
+        SpringApplication.run(MonitorServiceApp.class, args);
     }
 
 }

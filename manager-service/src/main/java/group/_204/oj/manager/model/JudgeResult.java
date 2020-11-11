@@ -1,10 +1,12 @@
 package group._204.oj.manager.model;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.sql.Date;
 
 @Data
+@ApiModel(description = "判题结果")
 public class JudgeResult {
     private String solutionId;
     private Integer problemId;

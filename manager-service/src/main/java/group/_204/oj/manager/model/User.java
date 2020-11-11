@@ -1,10 +1,12 @@
 package group._204.oj.manager.model;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@ApiModel(description = "用户")
 public class User {
     private String userId;
     private String name;

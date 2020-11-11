@@ -19,7 +19,7 @@ public class ContestService {
     }
 
     public Contest getLanguages(int contestId) {
-        return contestDao.getContestById(contestId);
+        return contestDao.getLanguages(contestId);
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {

@@ -45,18 +45,15 @@ eureka:
 
 zuul:
   routes:
-    manager:
+    manager-service:
       path: /api/manager/**
       serviceId: manager-service
-    judge:
-      path: /api/judge/**
+    judge-service:
+      path: /api/judgement/**
       serviceId: judge-service
     file-server:
       path: /api/file/**
       serviceId: file-server
-    web:
-      path: /**
-      url: http://localhost:8081/
   host:
     max-per-route-connections: 1000
     max-total-connections: 1000

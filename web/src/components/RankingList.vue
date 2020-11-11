@@ -139,12 +139,16 @@ export default {
     },
     getRankingList(refresh) {
       this.loading = true
-      let url
+      let url, headers = {}
       if (this.contest == null) {
         url = apiPath.ranking
       } else {
         if (userInfo() != null && userInfo()['roleId'] >= 2) {
           url = apiPath.adminContestRanking
+          headers = {
+            token: userInfo() == null ? null : userInfo().token,
+            userId: userInfo() == null ? null : userInfo().userId
+          }
         } else {
           url = apiPath.contestRanking
         }
@@ -153,10 +157,7 @@ export default {
       this.$axios({
         url: url,
         method: 'get',
-        headers: {
-          token: userInfo() == null ? null : userInfo().token,
-          userId: userInfo() == null ? null : userInfo().userId
-        },
+        headers: headers,
         params: {
           page: this.currentPage,
           limit: this.pageSize,
