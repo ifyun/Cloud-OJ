@@ -1,6 +1,7 @@
 package group._204.oj.manager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class SystemSettings {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @ApiModel(description = "系统设置")
     public static class Config {
         private boolean showRankingAfterEnded = false;
         private boolean showNotStartedContest = false;

@@ -2,6 +2,10 @@ package group._204.oj.judge.controller;
 
 import com.rabbitmq.client.AMQP;
 import group._204.oj.judge.config.RabbitConfig;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +21,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RestController
 @RequestMapping("pro/queue_info")
+@Api(tags = "队列信息")
 public class QueueInfoController {
 
     @Resource
@@ -30,7 +35,11 @@ public class QueueInfoController {
         private int inJudgeQueue = 0;
     }
 
-    @GetMapping
+    @ApiOperation(value = "获取消息队列信息", notes = "返回 RabbitMQ 队列中消息的数量")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "成功", response = QueueInfo.class)
+    })
+    @GetMapping(produces = "application/json")
     public ResponseEntity<?> getQueueInfo() {
         QueueInfo queueInfo = new QueueInfo(
                 getMessageCount(RabbitConfig.COMMIT_QUEUE),

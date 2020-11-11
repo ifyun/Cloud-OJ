@@ -1,10 +1,10 @@
-package group._204.oj.fileserver;
+package group._204.oj.register;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FileServerApplicationTests {
+class RegisterCenterAppTests {
 
     @Test
     void contextLoads() {

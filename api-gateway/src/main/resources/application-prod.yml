@@ -44,10 +44,10 @@ eureka:
 
 zuul:
   routes:
-    manager:
+    manager-service:
       path: /api/manager/**
       serviceId: manager-service
-    judge:
+    judge-service:
       path: /api/judge/**
       serviceId: judge-service
     file-server:

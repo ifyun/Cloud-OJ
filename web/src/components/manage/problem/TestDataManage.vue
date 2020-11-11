@@ -93,7 +93,7 @@ export default {
       loading: Boolean,
       testData: [],
       fileList: [],
-      uploadUrl: `${apiPath.testDataManage}?userId=${userInfo().userId}`,
+      uploadUrl: apiPath.testDataManage,
       uploadHeaders: {
         'token': userInfo().token,
         'userId': userInfo().userId
@@ -127,7 +127,7 @@ export default {
       })
     },
     download(fileName) {
-      let link = `${apiPath.testDataManage}/file/${this.problemId}`
+      let link = `${apiPath.testDataManage}/download/${this.problemId}`
           + `/${fileName}?userId=${userInfo().userId}&token=${userInfo().token}`
       window.open(link, '_blank')
     },

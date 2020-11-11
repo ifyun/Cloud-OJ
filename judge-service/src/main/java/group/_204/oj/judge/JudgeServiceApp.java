@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 @SpringBootApplication
 @EnableTransactionManagement
-public class JudgeServiceApplication {
+public class JudgeServiceApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(JudgeServiceApplication.class, args);
+        SpringApplication.run(JudgeServiceApp.class, args);
     }
 
 }

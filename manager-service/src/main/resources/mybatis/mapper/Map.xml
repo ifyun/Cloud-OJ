@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Map">
-    <resultMap id="Total" type="java.lang.Long" />
+    <resultMap id="Total" type="java.lang.Integer"/>
     <resultMap id="User" type="group._204.oj.manager.model.User" />
     <resultMap id="Problem" type="group._204.oj.manager.model.Problem" />
     <resultMap id="Contest" type="group._204.oj.manager.model.Contest" />

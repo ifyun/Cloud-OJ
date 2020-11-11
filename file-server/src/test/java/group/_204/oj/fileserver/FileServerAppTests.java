@@ -1,10 +1,10 @@
-package group._204.oj.monitor;
+package group._204.oj.fileserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MonitorServiceApplicationTests {
+class FileServerAppTests {
 
     @Test
     void contextLoads() {

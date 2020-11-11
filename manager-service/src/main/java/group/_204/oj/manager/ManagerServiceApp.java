@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
-public class ManagerServiceApplication {
+public class ManagerServiceApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(ManagerServiceApplication.class, args);
+        SpringApplication.run(ManagerServiceApp.class, args);
     }
 
 }
