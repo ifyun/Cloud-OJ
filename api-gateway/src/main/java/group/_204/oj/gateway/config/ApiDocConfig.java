@@ -18,7 +18,7 @@ public class ApiDocConfig implements SwaggerResourcesProvider {
 
     private static final String[][] SERVICES = {
             {"manager-service", "/api/manager"},
-            {"judge-service", "/api/judge"},
+            {"judge-service", "/api/judgement"},
             {"file-server", "/api/file"}
     };
 
