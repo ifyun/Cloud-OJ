@@ -16,19 +16,18 @@ import java.util.List;
 @EnableSwagger2
 public class ApiDocConfig implements SwaggerResourcesProvider {
 
-    private static final String[] SERVICES = {
-            "manager-service",
-            "judge-service",
-            "file-server"
+    private static final String[][] SERVICES = {
+            {"manager-service", "/api/manager"},
+            {"judge-service", "/api/judge"},
+            {"file-server", "/api/file"}
     };
 
     @Override
     public List<SwaggerResource> get() {
         List<SwaggerResource> resources = new ArrayList<>();
 
-        for (String service : SERVICES) {
-            resources.add(swaggerResource(service,
-                    "/" + service + "/v2/api-docs")
+        for (String[] service : SERVICES) {
+            resources.add(swaggerResource(service[0], service[1] + "/v2/api-docs")
             );
         }
 
