@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +12,13 @@ import java.util.List;
 @Slf4j
 @Primary
 @Configuration
-@EnableSwagger2
 public class ApiDocConfig implements SwaggerResourcesProvider {
 
     private static final String[][] SERVICES = {
-            {"manager-service", "/api/manager"},
-            {"judge-service", "/api/judgement"},
-            {"file-server", "/api/file"}
+            {"API-GATEWAY", "/api/auth"},
+            {"MANAGER-SERVICE", "/api/manager"},
+            {"FILE-SERVER", "/api/file"},
+            {"JUDGE-SERVICE", "/api/judgement"}
     };
 
     @Override
@@ -27,8 +26,7 @@ public class ApiDocConfig implements SwaggerResourcesProvider {
         List<SwaggerResource> resources = new ArrayList<>();
 
         for (String[] service : SERVICES) {
-            resources.add(swaggerResource(service[0], service[1] + "/v2/api-docs")
-            );
+            resources.add(swaggerResource(service[0], service[1] + "/v2/api-docs"));
         }
 
         return resources;

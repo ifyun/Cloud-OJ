@@ -33,8 +33,8 @@ function copyObject(src) {
 }
 
 const apiPath = {
-    login: '/api/login',
-    logoff: '/api/logoff',
+    login: '/api/auth/login',
+    logoff: '/api/auth/logoff',
     testDataManage: '/api/file/test_data',
     avatar: '/api/file/image/avatar',
     problemManage: '/api/manager/problem/pro',
