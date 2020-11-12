@@ -48,7 +48,7 @@ zuul:
       path: /api/manager/**
       serviceId: manager-service
     judge-service:
-      path: /api/judge/**
+      path: /api/judgement/**
       serviceId: judge-service
     file-server:
       path: /api/file/**
