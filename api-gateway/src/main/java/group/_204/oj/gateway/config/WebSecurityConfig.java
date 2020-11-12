@@ -1,10 +1,7 @@
 package group._204.oj.gateway.config;
 
-import group._204.oj.gateway.dao.UserDao;
-import group._204.oj.gateway.filter.JwtLoginFilter;
-import group._204.oj.gateway.filter.JwtVerifyFilter;
-import group._204.oj.gateway.filter.LogoffFilter;
-import org.springframework.beans.factory.annotation.Value;
+import group._204.oj.gateway.filter.TokenVerifyFilter;
+import group._204.oj.gateway.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,21 +22,6 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${project.token-valid-time:3}")
-    private int validTime;
-
-    @Resource
-    private UserService userService;
-
-    @Resource
-    private UserDao userDao;
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
     private static class ROLE {
         static String[] ALL = {"USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT"};
         static String UA = "USER_ADMIN";
@@ -47,19 +29,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         static String SU = "ROOT";
     }
 
+    @Resource
+    private UserService userService;
+
+    @Bean
+    public LoginFilter loginFilter() throws Exception {
+        return new LoginFilter("/login", authenticationManager());
+    }
+
+    @Bean
+    public TokenVerifyFilter tokenVerifyFilter() {
+        return new TokenVerifyFilter();
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
         http.csrf().disable()
-                .addFilterBefore(new JwtLoginFilter(validTime, "/api/login", authenticationManager()),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtVerifyFilter(userDao), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LogoffFilter(userDao), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenVerifyFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/manager-service/**").denyAll()
                 .antMatchers("/judge-service/**").denyAll()
                 .antMatchers("/file-server/**").denyAll()
-                .antMatchers("/api/login", "/api/logoff").permitAll()
                 .antMatchers("/api/manager/backup").hasAnyRole(ROLE.SU, ROLE.PA)
                 .antMatchers("/api/manager/user/profile").hasAnyRole(ROLE.ALL)
                 .antMatchers("/api/manager/user/pro/**").hasAnyRole(ROLE.UA, ROLE.SU)

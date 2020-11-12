@@ -9,7 +9,7 @@
     <div style="width: 100%; margin-top: 25px" v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-card style="height: 884px;overflow: auto">
+          <el-card style="height: 926px;overflow: auto">
             <h4>题目描述</h4>
             <pre class="problem-content">{{ problem.description }}</pre>
             <h4>输入说明</h4>
@@ -27,7 +27,7 @@
         </el-col>
         <el-col :span="12">
           <el-card>
-            <el-form :inline="true">
+            <el-form :inline="true" size="medium">
               <el-form-item label="代码高亮">
                 <el-select v-model="cmOptions.theme">
                   <el-option v-for="theme in codeStyle"
@@ -58,6 +58,9 @@
                 </el-form-item>
               </el-row>
             </el-form>
+            <el-alert style="margin-bottom: 15px" show-icon="true" type="info" :closable="false"
+                      title="将文件拖入可以自动导入代码">
+            </el-alert>
             <codemirror v-model="code" :options="cmOptions">
             </codemirror>
           </el-card>

@@ -54,6 +54,9 @@ zuul:
     file-server:
       path: /api/file/**
       serviceId: file-server
+    auth:
+      path: /api/auth/**
+      serviceId: api-gateway
   host:
     max-per-route-connections: 1000
     max-total-connections: 1000

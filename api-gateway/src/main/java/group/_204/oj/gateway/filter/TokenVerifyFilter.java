@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -25,13 +26,10 @@ import java.util.List;
  * Jwt token 验证过滤器
  */
 @Slf4j
-public class JwtVerifyFilter extends GenericFilterBean {
+public class TokenVerifyFilter extends GenericFilterBean {
 
-    private final UserDao userDao;
-
-    public JwtVerifyFilter(UserDao userDao) {
-        this.userDao = userDao;
-    }
+    @Resource
+    private UserDao userDao;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)

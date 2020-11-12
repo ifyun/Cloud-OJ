@@ -12,6 +12,10 @@
           GitHub
         </el-link>
       </span>
+      <el-divider direction="vertical"></el-divider>
+      <el-link target="_blank" href="./swagger-ui/index.html">
+        API
+      </el-link>
     </div>
     <span class="flex" style="margin: 6px">Based on</span>
     <div class="flex">

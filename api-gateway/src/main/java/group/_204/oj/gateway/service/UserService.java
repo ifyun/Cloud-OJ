@@ -23,12 +23,18 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userDao.findUserById(userId);
 
-        user.setRoles(new ArrayList<Role>(){
-            {
-                add(new Role(user.getRoleId(), user.getRoleName()));
-            }
-        });
+        if (user != null) {
+            user.setRoles(new ArrayList<Role>() {
+                {
+                    add(new Role(user.getRoleId(), user.getRoleName()));
+                }
+            });
 
-        return user;
+            return user;
+        } else {
+            String error = String.format("User(%s) not found.", userId);
+            log.error(error);
+            throw new UsernameNotFoundException(error);
+        }
     }
 }

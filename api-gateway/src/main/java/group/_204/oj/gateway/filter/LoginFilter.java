@@ -1,19 +1,22 @@
 package group._204.oj.gateway.filter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group._204.oj.gateway.dao.UserDao;
+import group._204.oj.gateway.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import group._204.oj.gateway.model.User;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,52 +26,59 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Jwt 登录过滤器
+ * 登录过滤器
  * 用户通过验证后生成 token
  */
 @Slf4j
-public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final int validTime;
+    @Value("${project.token-valid-time:3}")
+    private int tokenValidTime;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Resource
+    private UserDao userDao;
 
-    {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    }
+    @Resource
+    private ObjectMapper objectMapper;
 
-    public JwtLoginFilter(int validTime, String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
+    public LoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher(defaultFilterProcessesUrl, "POST"));
-        this.validTime = validTime;
         setAuthenticationManager(authenticationManager);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        // 读取请求中的用户名和密码
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        log.info(String.format("User: %s, attempts login.", username));
 
-        return getAuthenticationManager()
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        if (username != null && password != null) {
+            log.info("User({}) attempts login.", username);
+
+            return getAuthenticationManager()
+                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } else {
+            throw new AuthenticationServiceException("username or password null.");
+        }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException {
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
-
         StringBuilder authoritiesString = new StringBuilder();
 
         for (GrantedAuthority authority : authorities)
             authoritiesString.append(authority.getAuthority()).append(",");
 
         User user = (User) authResult.getPrincipal();
+        String userId = user.getUserId();
+        // 更新 Secret
+        log.info("Update secret of user({}): {}", userId, userDao.updateSecret(userId) == 1);
+        user.setSecret(userDao.getSecret(userId));
 
         // 生成 jwt token
-        Date expireAt = new Date(System.currentTimeMillis() + validTime * 3600000);
+        Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000);
         String jwt = Jwts.builder()
                 .claim("authorities", authoritiesString)
                 .setSubject(authResult.getName())
@@ -85,11 +95,12 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         writer.flush();
         writer.close();
 
-        log.info("User: {}, login success.", user.getUserId());
+        log.info("Login success, userId={}.", user.getUserId());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        log.error("Authenticate Failed: {}", failed.getMessage());
         response.setStatus(400);
     }
 }
