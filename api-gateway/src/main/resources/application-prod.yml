@@ -1,8 +1,8 @@
 server:
   port: 80
   tomcat:
-    accept-count: ${TOMCAT_ACCEPT_COUNT:4000}
-    max-threads: ${TOMCAT_MAX_THREADS:1000}
+    accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
+    max-threads: ${TOMCAT_MAX_THREADS:200}
 
 spring:
   application:
@@ -71,6 +71,9 @@ ribbon:
 logging:
   file:
     name: /app/log/api-gateway.log
+  level:
+    root: warn
+    group._204: info
 
 project:
   token-valid-time: ${TOKEN_VALID_TIME:4}
