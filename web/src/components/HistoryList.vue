@@ -121,10 +121,10 @@ export default {
         url: apiPath.history,
         method: 'get',
         headers: {
-          token: userInfo().token
+          token: userInfo().token,
+          userId: userInfo().userId
         },
         params: {
-          userId: userInfo().userId,
           page: this.currentPage,
           limit: this.pageSize
         }
