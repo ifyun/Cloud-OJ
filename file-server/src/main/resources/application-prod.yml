@@ -2,7 +2,7 @@ server:
   port: 8000
   tomcat:
     accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
-    max-threads: ${TOMCAT_MAX_THREADS:800}
+    max-threads: ${TOMCAT_MAX_THREADS:200}
 
 spring:
   application:
@@ -28,6 +28,9 @@ eureka:
 logging:
   file:
     name: /app/log/file-server.log
+  level:
+    root: warn
+    group._204: info
 
 project:
   file-dir: /var/lib/cloud_oj/

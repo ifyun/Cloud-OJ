@@ -1,8 +1,5 @@
 server:
   port: 8002
-  tomcat:
-    accept-count: 2000
-    max-threads: 800
 
 spring:
   application:
@@ -15,7 +12,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 6000
-      minimum-idle: 8
       maximum-pool-size: 16
       max-lifetime: 30000
   jackson:
