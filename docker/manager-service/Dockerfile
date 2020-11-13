@@ -8,4 +8,4 @@ COPY ./manager-service-*.jar /app/manager-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8001
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "manager-service.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar manager-service.jar

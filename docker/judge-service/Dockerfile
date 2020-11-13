@@ -13,4 +13,4 @@ RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
 WORKDIR /app
 EXPOSE 8002
 ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "judge-service.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar judge-service.jar

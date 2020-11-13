@@ -8,4 +8,4 @@ COPY ./file-server-*.jar /app/file-server.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8000
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "file-server.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar file-server.jar
