@@ -23,13 +23,13 @@
       <h3>系统设置</h3>
       <el-card style="margin-bottom: 35px">
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="16">
             <h3>隐藏进行中的竞赛排行榜</h3>
             <el-alert show-icon type="info" :closable="false"
                       title="开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）">
             </el-alert>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A"
                        v-model="settings.showRankingAfterEnded">
             </el-switch>
@@ -37,13 +37,13 @@
         </el-row>
         <el-divider></el-divider>
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="16">
             <h3>显示未开始的竞赛</h3>
             <el-alert show-icon type="info" :closable="false"
                       title="开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目">
             </el-alert>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A"
                        v-model="settings.showNotStartedContest">
             </el-switch>
