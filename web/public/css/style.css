@@ -38,24 +38,32 @@ html, body {
 .app-name {
     margin-left: 6px;
     font-weight: bold !important;
-    font-size: 16pt !important;
+    font-size: 18pt !important;
 }
 
 .tag {
     cursor: pointer;
     border-radius: 20px;
     padding: 1px 10px;
-    margin: 3px 2px;
+    margin: 2px 2px;
+    color: white;
+    display: inline-block;
+}
+
+.contest-tag {
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 2px 12px;
     color: white;
     display: inline-block;
 }
 
 .tag:hover {
-    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .tag-color-1 {
-    background: #5FB878;
+    background: #01AAED;
 }
 
 .tag-color-2 {
@@ -63,11 +71,11 @@ html, body {
 }
 
 .tag-color-3 {
-    background: #01AAED;
+    background: #f17c67;
 }
 
 .tag-color-4 {
-    background: #f17c67;
+    background: #5FB878;
 }
 
 .tag-color-5 {
@@ -79,7 +87,7 @@ html, body {
 }
 
 .tag-color-7 {
-    background: #FF7530;
+    background: #73c13b;
 }
 
 .sample {

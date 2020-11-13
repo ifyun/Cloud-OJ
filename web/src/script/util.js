@@ -6,7 +6,8 @@ const tokenKey = 'cloud_oj_token'
 
 function getTagColor(tag) {
     if (colorMap[tag] === undefined) {
-        colorMap[tag] = `tag-color-${(++tagColor % 7) + 1}`
+        let i = tagColor++ % 8
+        colorMap[tag] = `tag-color-${i === 0 ? 1 : i}`
     }
     return colorMap[tag]
 }

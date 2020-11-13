@@ -49,8 +49,7 @@
             </el-switch>
           </el-col>
         </el-row>
-        <el-button style="margin-top: 45px" type="success"
-                   @click="saveSettings">
+        <el-button style="margin-top: 45px" type="primary" icon="el-icon-check" @click="saveSettings">
           保存设置
         </el-button>
       </el-card>

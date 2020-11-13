@@ -7,10 +7,8 @@
     </div>
     <el-container v-else class="container">
       <el-aside class="aside">
-        <el-menu class="side-nav" mode="vertical"
-                 :collapse="collapse"
-                 :default-active="active"
-                 @select="onSelect">
+        <el-menu class="side-nav" mode="vertical" :default-active="active"
+                 :collapse="collapse" active-text-color="#73c13b" @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
             <i v-bind:class="collapse? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
@@ -22,7 +20,7 @@
           </el-menu-item>
           <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-flag"></i>
-            <span slot="title">竞赛/作业管理</span>
+            <span slot="title">竞赛/作业</span>
           </el-menu-item>
           <el-menu-item index="3" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-user-solid"></i>

@@ -13,7 +13,7 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search"
+            <el-button type="success" icon="el-icon-search"
                        @click="search(keyword)">搜索
             </el-button>
           </el-form-item>
@@ -64,9 +64,9 @@
                 </span>
               </div>
             </div>
-            <el-tag v-else effect="dark" type="success">
+            <span v-else class="contest-tag tag-color-5">
               {{ contestName }}
-            </el-tag>
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="分数" prop="score" width="90px" align="right">

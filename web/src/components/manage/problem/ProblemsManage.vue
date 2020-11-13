@@ -8,7 +8,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search"
+          <el-button type="success" icon="el-icon-search"
                      @click="search(keyword)">
             搜索
           </el-button>
@@ -27,7 +27,7 @@
         </el-form-item>
         <el-form-item style="float: right">
           <el-button-group>
-            <el-button type="success" size="medium"
+            <el-button type="primary" size="medium"
                        icon="el-icon-circle-plus"
                        @click="onAddProblemClick()">
               添加题目
