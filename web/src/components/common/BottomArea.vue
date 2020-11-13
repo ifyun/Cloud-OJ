@@ -3,10 +3,13 @@
     <div class="flex">
       <span>© Cloud Li</span>
       <el-divider direction="vertical"></el-divider>
-      <span>MIT License</span>
+      <el-link target="_blank"
+               href="https://raw.githubusercontent.com/imcloudfloating/Cloud-OJ/master/LICENSE">
+        MIT License
+      </el-link>
       <el-divider direction="vertical"></el-divider>
       <span>
-        <img height="16" align="center" src="@/assets/img/github.svg" alt="GitHub Link">
+        <img height="15" align="center" src="@/assets/img/github.svg" alt="GitHub Link">
         <el-link style="margin-left: 5px" target="_blank"
                  href="https://github.com/imcloudfloating/Cloud-OJ">
           GitHub

@@ -13,7 +13,7 @@ function getTagColor(tag) {
 }
 
 function userInfo() {
-    return JSON.parse(sessionStorage.getItem(tokenKey))
+    return JSON.parse(localStorage.getItem(tokenKey))
 }
 
 function searchParams() {
@@ -25,8 +25,12 @@ function toLoginPage() {
     window.location.href = '/login'
 }
 
+function saveToken(value) {
+    localStorage.setItem(tokenKey, value)
+}
+
 function clearToken() {
-    sessionStorage.removeItem(tokenKey)
+    localStorage.removeItem(tokenKey)
 }
 
 function copyObject(src) {
@@ -62,6 +66,7 @@ export {
     userInfo,
     searchParams,
     toLoginPage,
+    saveToken,
     clearToken,
     copyObject,
     apiPath
