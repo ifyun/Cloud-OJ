@@ -9,7 +9,6 @@ variables:
   FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
-  MYSQL: registry.cn-hangzhou.aliyuncs.com/cloud_oj/mysql:8.0
 cache:
   key: maven
   paths:
@@ -18,7 +17,6 @@ stages:
   - npm-build
   - mvn-package
   - build-images
-  - deploy
 npm-build:
   only:
     - tags
@@ -47,7 +45,6 @@ mvn-package:
     - cp -r file-server/target/*.jar docker/file-server/
     - cp -r manager-service/target/*.jar docker/manager-service/
     - cp -r judge-service/target/*.jar docker/judge-service/
-    - cp -r mysql/init/*.sql docker/mysql/
     - du -h docker
   artifacts:
     name: "Cloud-OJ_Dockerfile"
@@ -66,14 +63,4 @@ docker-build:
     - docker build -t $FILE_SERVER ./docker/file-server/
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
-    - docker build -t $MYSQL ./docker/mysql/
-docker-deploy:
-  only:
-    - tags
-  stage: deploy
-  script:
-    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add --no-cache docker-compose
-    - docker-compose -v
-    - cd ./docker/deploy/cloud_oj && docker-compose up -d
     - docker rmi $(docker images -q -f dangling=true) || true
