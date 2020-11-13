@@ -8,6 +8,8 @@
 
 微服务架构的 Online Judge，基于 Spring Cloud、Vue.js、Docker。
 
+> 本项目在功能和数据库结构上参考了 [HUSTOJ](https://github.com/zhblue/hustoj)
+
 ## 支持语言
 
 Language        | Compiler/Interpreter/Version
@@ -85,13 +87,12 @@ cd web && npm install && npm run build
 - 运行服务，指定 `prod` 配置文件：`java -jar -Dspring.profiles.active=prod xxx.jar`
 - Web 可使用 Nginx 部署
 
-若需要扩展服务，请改用 NFS 存储 OJ 文件并在节点挂载（默认目录是：`/var/lib/cloud_oj`）。
+若需要扩展服务，请改用 NFS 存储 OJ 文件并在节点挂载(默认目录是：`/var/lib/cloud_oj`)
 
-**提示：judge-service 仅支持在 Linux 下运行**。
+> **提示：judge-service 仅支持在 Linux 下运行**。
 
 ## Acknowledgement
 
-- Thanks to [HUSTOJ](https://github.com/zhblue/hustoj)
-- Thanks to JetBrains' Open Source License support.
-
 [![JetBrains](./.assets/jetbrains.svg)](https://www.jetbrains.com/?from=CloudOJ)
+
+Thanks to JetBrains' Open Source License support.
