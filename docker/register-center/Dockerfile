@@ -8,4 +8,4 @@ COPY ./register-center-*.jar /app/register-center.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8761
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "register-center.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar register-center.jar

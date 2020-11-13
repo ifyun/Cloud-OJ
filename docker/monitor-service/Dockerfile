@@ -8,4 +8,4 @@ COPY ./monitor-service-*.jar /app/monitor-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 5000
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "monitor-service.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar monitor-service.jar

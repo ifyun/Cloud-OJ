@@ -8,4 +8,4 @@ COPY ./api-gateway-*.jar /app/api-gateway.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 80
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "api-gateway.jar"]
+CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar api-gateway.jar
