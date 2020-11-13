@@ -2,8 +2,7 @@
   <div style="height: 100%">
     <el-header class="header">
       <div class="header-wrapper">
-        <a href="./"><img class="logo" src="@/assets/logo.png" align="center" alt="logo"></a>
-        <div style="font-size: 16pt; margin-left: 10px">登录/注册</div>
+        <el-link class="app-name" type="success" href="/">Cloud OJ</el-link>
       </div>
     </el-header>
     <el-container class="container">
@@ -47,7 +46,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
-  background-color: white;
+  background-color: #545c64;
 }
 
 .header-wrapper {

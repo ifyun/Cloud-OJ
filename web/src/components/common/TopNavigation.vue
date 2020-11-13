@@ -4,17 +4,13 @@
       <el-row type="flex" align="middle">
         <el-col :span="4">
           <div class="logo-div">
-            <img class="logo" src="@/assets/logo.png" alt="logo"/>
-            <el-link class="app-name" type="primary" href="/">Cloud OJ</el-link>
+            <el-link class="app-name" type="success" href="/">Cloud OJ</el-link>
           </div>
         </el-col>
         <el-col :span="16" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
-          <el-menu class="top-nav" mode="horizontal"
-                   text-color="#909399"
-                   active-text-color="#409eff"
-                   :default-active="active"
-                   @select="onSelect">
+          <el-menu class="top-nav" mode="horizontal" :default-active="active" @select="onSelect"
+                   background-color="#3A3A3A" text-color="#fff" active-text-color="#ffd04b">
             <el-menu-item index="1">
               <i class="el-icon-s-order"></i>
               <span>题库</span>
@@ -43,7 +39,7 @@
             <img class="avatar"
                  :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : ''"
                  onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
-            <span class="el-dropdown-link" style="color: #909399"
+            <span class="el-dropdown-link" style="color: lightgray"
                   v-if="userInfo == null"
                   @click="login">登录
             </span>
@@ -143,6 +139,7 @@ export default {
 .header-wrapper {
   border-bottom: solid 1px #e6e6e6;
   padding: 0 20px;
+  background-color: #3A3A3A;
 }
 
 .account-area {
@@ -156,7 +153,6 @@ export default {
   cursor: pointer;
   height: 32px;
   width: 32px;
-  border: 1px solid #e0e0e0;
   border-radius: 16px;
 }
 
@@ -168,5 +164,13 @@ export default {
 
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.el-menu-item i {
+  color: white;
+}
+
+.el-menu-item.is-active i {
+  color: inherit;
 }
 </style>

@@ -2,7 +2,7 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item>
-        <el-button type="success" icon="el-icon-circle-plus"
+        <el-button type="primary" icon="el-icon-circle-plus"
                    @click="onAddContestClick">
           创建新竞赛/作业
         </el-button>

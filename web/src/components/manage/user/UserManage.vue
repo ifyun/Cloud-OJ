@@ -2,7 +2,7 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item>
-        <el-button icon="el-icon-circle-plus" type="success"
+        <el-button icon="el-icon-circle-plus" type="primary"
                    @click="onAddClick">
           创建新用户
         </el-button>
@@ -13,10 +13,6 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-alert show-icon type="info" :closable="false" style="margin-bottom: 20px"
-              title="只能删除未产生做题记录的用户"
-              description="如果用户已有做题记录，只能通过操作数据库删除">
-    </el-alert>
     <el-table :data="users.data" border stripe v-loading="loading">
       <el-table-column label="ID" prop="userId" width="150px">
       </el-table-column>
@@ -75,7 +71,7 @@
                :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除用户：${selectedUser.userId}`"
-                description="与该题目相关的所有数据也会被删除!"
+                description="如果该用户已有做题记录，只能通过操作数据库删除"
                 :closable="false">
       </el-alert>
       <el-form ref="deleteForm"
