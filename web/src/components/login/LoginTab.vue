@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {apiPath, copyObject} from "@/script/util";
+import {apiPath, copyObject, saveToken} from "@/script/util";
 
 export default {
   name: "LoginTab",
@@ -64,8 +64,7 @@ export default {
             },
             data: this.qs.stringify(data)
           }).then((res) => {
-            // token 保存到会话存储
-            sessionStorage.setItem('cloud_oj_token', JSON.stringify(res.data))
+            saveToken(JSON.stringify(res.data))
             window.location.href = '../'
           }).catch((error) => {
             let res = error.response
