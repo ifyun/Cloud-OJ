@@ -8,7 +8,7 @@
         </el-button>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-refresh" @click="getContests">
+        <el-button icon="el-icon-refresh" @click="getContests(true)">
           刷新
         </el-button>
       </el-form-item>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import {copyObject, userInfo, toLoginPage} from "@/script/util"
+import {copyObject, userInfo, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems"
 import ContestEditor from "@/components/manage/contest/ContestEditor"
@@ -150,7 +150,7 @@ export default {
     }
   },
   methods: {
-    getContests() {
+    getContests(refresh) {
       this.loading = true
       this.$axios({
         url: apiPath.contestManage,
@@ -165,14 +165,17 @@ export default {
         }
       }).then((res) => {
         this.contests = res.status === 200 ? res.data : {data: [], count: 0}
+        if (refresh === true) {
+          Notice.message.success(this, '竞赛/作业列表已刷新')
+        }
       }).catch((error) => {
-        if (error.response.status === 401) {
+        let res = error.response
+        if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: `获取数据失败`,
-            message: `${error.response.status}`
+            message: `${res.status} ${res.statusText}`
           })
         }
       }).finally(() => {
@@ -213,19 +216,18 @@ export default {
           }).then((res) => {
             this.deleteDialogVisible = false
             this.getContests()
-            this.$notify.info({
-              offset: 50,
+            Notice.notify.info(this, {
               title: `【${this.selectedContest.contestName}】已删除`,
-              message: `Status: ${res.status}`
+              message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
-            if (error.response.status === 401) {
+            let res = error.response
+            if (res.status === 401) {
               toLoginPage()
             } else {
-              this.$notify.error({
-                offset: 50,
+              Notice.notify.error(this, {
                 title: `【${this.selectedContest.contestName}】删除失败`,
-                message: `${error.response.status}`
+                message: `${res.status} ${res.statusText}`
               })
             }
           })

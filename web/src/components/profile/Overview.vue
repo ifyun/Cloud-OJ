@@ -12,7 +12,7 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/pie'
 import 'echarts/theme/macarons'
 import 'echarts/theme/royal'
-import {userInfo} from "@/script/util"
+import {Notice, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 const year = new Date().getFullYear()
@@ -116,8 +116,7 @@ export default {
         this.setChartsData(res.data)
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '获取数据失败',
           message: `${res.status} ${res.statusText}`
         })

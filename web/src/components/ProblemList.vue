@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import {tagColor, userInfo} from '@/script/util'
+import {Notice, tagColor, userInfo} from '@/script/util'
 import {resultTags} from "@/script/env";
 
 export default {
@@ -137,8 +137,7 @@ export default {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '获取题目失败',
           message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
         })

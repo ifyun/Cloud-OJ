@@ -50,6 +50,7 @@
 
 <script>
 import {apiPath} from "@/script/env";
+import {Notice} from "@/script/util";
 
 export default {
   name: "CompetitionList",
@@ -82,8 +83,7 @@ export default {
         this.contests = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '获取竞赛/作业失败',
           message: `${res.status} ${res.statusText}`
         })

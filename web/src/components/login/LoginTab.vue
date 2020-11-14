@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {copyObject, saveToken} from "@/script/util"
+import {copyObject, Notice, saveToken} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -70,14 +70,12 @@ export default {
           }).catch((error) => {
             let res = error.response
             if (res.status === 400) {
-              this.$notify.warning({
-                offset: 50,
+              Notice.notify.warning(this, {
                 title: '登录失败',
                 message: '用户名或密码错误!'
               })
             } else {
-              this.$notify.error({
-                offset: 50,
+              Notice.notify.error(this, {
                 title: '登录失败',
                 message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
               })

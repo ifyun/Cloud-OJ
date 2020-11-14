@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import {copyObject} from "@/script/util"
+import {copyObject, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 const bcrypt = require('bcryptjs')
@@ -117,11 +117,9 @@ export default {
             },
             data: JSON.stringify(data)
           }).then((res) => {
-            this.$notify({
-              offset: 50,
-              type: 'success',
+            Notice.notify.success(this, {
               title: `用户 ${this.signupForm.name} 注册成功`,
-              message: `${res.status}`
+              message: `${res.status} ${res.statusText}`
             })
             this.$refs[formName].resetFields()
             this.$refs['deleteForm'].clearValidate()
@@ -132,8 +130,7 @@ export default {
               msg = '用户已存在'
             else
               msg = res.data.msg === undefined ? res.statusText : res.data.msg
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: '注册失败',
               message: `${res.status} ${msg}`
             })

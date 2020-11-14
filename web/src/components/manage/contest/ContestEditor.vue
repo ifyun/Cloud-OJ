@@ -37,7 +37,7 @@
 
 <script>
 import moment from "moment"
-import {userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 const MAX_LANG_ID = 7
@@ -141,10 +141,8 @@ export default {
             },
             data: JSON.stringify(contest)
           }).then((res) => {
-            this.$notify({
-              offset: 50,
+            Notice.notify.success(this, {
               title: `【${contest.contestName}】已保存`,
-              type: 'success',
               message: `${res.status} ${res.statusText}`
             })
             this.$emit('update:dialogVisible', false)
@@ -154,8 +152,7 @@ export default {
             if (res.status === 401) {
               toLoginPage()
             } else {
-              this.$notify.error({
-                offset: 50,
+              Notice.notify.error(this, {
                 title: `【${contest.contestName}】保存失败`,
                 message: `${res.status} ${res.statusText}`
               })

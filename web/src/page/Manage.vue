@@ -3,7 +3,7 @@
     <TopNavigation active="4"/>
     <div v-if="error.code !== undefined">
       <Error :error="error"/>
-      <BottomArea style="margin-top: 35px"/>
+      <BottomArea class="bottom"/>
     </div>
     <el-container v-else class="container">
       <el-aside class="aside">

@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {clearToken, userInfo} from "@/script/util"
+import {toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -121,11 +121,9 @@ export default {
           'userId': userInfo().userId
         }
       }).then(() => {
-        clearToken()
-        this.login()
+        toLoginPage()
       }).catch(() => {
-        clearToken()
-        this.login()
+        toLoginPage()
       })
     }
   }

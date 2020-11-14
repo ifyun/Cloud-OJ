@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {toLoginPage, userInfo} from "@/script/util"
+import {Notice, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -118,7 +118,7 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
+          Notice.notify.error(this, {
             title: '获取数据失败',
             message: `${res.status} ${res.statusText}`
           })
@@ -140,10 +140,9 @@ export default {
     },
     onUploadSuccess(res, file) {
       this.getTestData()
-      this.$notify({
-        type: 'success',
-        title: `${file.name}上传成功`,
-        message: ``
+      Notice.notify.success(this, {
+        title: `${file.name} 上传成功`,
+        message: ''
       })
     },
     deleteFile(fileName) {
@@ -159,9 +158,8 @@ export default {
         }
       }).then((res) => {
         this.getTestData()
-        this.$notify({
-          type: 'info',
-          title: `${fileName}已删除`,
+        Notice.notify.info(this, {
+          title: `${fileName} 已删除`,
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -169,8 +167,8 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            title: `${fileName}删除失败`,
+          Notice.notify.error(this, {
+            title: `${fileName} 删除失败`,
             message: `${res.status} ${res.statusText}`
           })
         }

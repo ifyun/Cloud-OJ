@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {toLoginPage, userInfo} from "@/script/util"
+import {Notice, toLoginPage, userInfo} from "@/script/util"
 import {apiPath, resultTags} from "@/script/env"
 
 export default {
@@ -127,8 +127,7 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: '获取提交记录失败',
             message: `${res.status} ${res.statusText}`
           })

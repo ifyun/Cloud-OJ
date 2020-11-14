@@ -117,3 +117,8 @@ html, body {
     font-family: sans-serif !important;
     border-radius: 5px;
 }
+
+.bottom {
+    margin-top: 45px;
+    margin-bottom: 15px;
+}

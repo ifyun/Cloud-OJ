@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import {userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 import AddProblems from "@/components/manage/contest/AddProblems"
 
@@ -109,8 +109,7 @@ export default {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: `获取数据失败`,
           message: `${res.status} ${res.statusText}`
         })
@@ -127,20 +126,18 @@ export default {
           'userId': userInfo().userId
         },
       }).then((res) => {
-        this.$notify({
-          offset: 50,
+        Notice.notify.success(this, {
           title: `【${title}】移除成功`,
-          type: 'success',
-          message: `Status: ${res.status}`
+          message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
-        if (error.response.status === 401) {
+        let res = error.response
+        if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: `【${title}】移除失败`,
-            message: `${error.response.status}`
+            message: `${res.status} ${res.statusText}`
           })
         }
       }).finally(() => {
