@@ -8,7 +8,6 @@ import group._204.oj.judge.type.Language;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -20,9 +19,12 @@ public class FileCleaner {
     @PostConstruct
     public void init() {
         File dir = new File(codeDir);
+        File[] files = dir.listFiles();
 
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
-            delete(file);
+        if (files != null) {
+            for (File file : files) {
+                delete(file);
+            }
         }
     }
 
@@ -37,16 +39,22 @@ public class FileCleaner {
         delete(new File(codeDir + solutionId));
     }
 
-    private void delete(File dir) {
-        boolean emptyDir = true;
+    private void delete(File file) {
+        boolean emptyDir = false;
+        File[] files = file.listFiles();
 
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
-            emptyDir = file.delete();
+        if (file.isFile()) {
+            if (!file.delete())
+                log.warn("Delete file failed: path={}", file.getAbsolutePath());
+        } else if (files != null) {
+            for (File f : files) {
+                emptyDir = f.delete();
+            }
         }
 
         if (emptyDir) {
-            if (!dir.delete())
-                log.warn("Delete directory failed: path={}", dir.getAbsolutePath());
+            if (!file.delete())
+                log.warn("Delete directory failed: path={}", file.getAbsolutePath());
         }
     }
 }
