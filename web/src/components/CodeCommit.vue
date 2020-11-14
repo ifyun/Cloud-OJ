@@ -1,5 +1,5 @@
 <template>
-  <Error style="margin-top: 35px" v-if="error.code !== undefined"
+  <Error v-if="error.code !== undefined"
          :error="error"/>
   <el-container v-else class="container">
     <el-page-header v-if="problem.problemId !== undefined" style="margin-top: 5px"
@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import Error from "@/components/Error"
-import {apiPath, toLoginPage, searchParams, userInfo} from "@/script/util";
+import {toLoginPage, searchParams, userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/mode/python/python.js'
@@ -105,6 +105,7 @@ import 'codemirror/theme/material-darker.css'
 import 'codemirror/theme/dracula.css'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import Error from "@/components/Error"
 
 const languageMode = [
   'text/x-csrc',
@@ -448,7 +449,6 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   min-width: 1200px !important;

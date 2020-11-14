@@ -58,7 +58,8 @@
 </template>
 
 <script>
-import {apiPath, userInfo} from "@/script/util";
+import {userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 export default {
   name: "Settings",

@@ -31,6 +31,7 @@ export default {
 
 <style scoped>
 .error-404 {
+  margin-top: 110px;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -1,19 +1,19 @@
 import qs from 'qs'
 
-let tagColor = 1,
+let colorIndex = 1,
     colorMap = new Map()
-const tokenKey = 'cloud_oj_token'
+const TOKEN = 'token'
 
-function getTagColor(tag) {
+function tagColor(tag) {
     if (colorMap[tag] === undefined) {
-        let i = tagColor++ % 8
+        let i = colorIndex++ % 8
         colorMap[tag] = `tag-color-${i === 0 ? 1 : i}`
     }
     return colorMap[tag]
 }
 
 function userInfo() {
-    return JSON.parse(localStorage.getItem(tokenKey))
+    return JSON.parse(localStorage.getItem(TOKEN))
 }
 
 function searchParams() {
@@ -26,48 +26,23 @@ function toLoginPage() {
 }
 
 function saveToken(value) {
-    localStorage.setItem(tokenKey, value)
+    localStorage.setItem(TOKEN, value)
 }
 
 function clearToken() {
-    localStorage.removeItem(tokenKey)
+    localStorage.removeItem(TOKEN)
 }
 
 function copyObject(src) {
     return JSON.parse(JSON.stringify(src))
 }
 
-const apiPath = {
-    login: '/api/auth/login',
-    logoff: '/api/auth/logoff',
-    testDataManage: '/api/file/test_data',
-    avatar: '/api/file/image/avatar',
-    problemManage: '/api/manager/problem/pro',
-    contestManage: '/api/manager/contest/pro',
-    userManage: '/api/manager/user/pro',
-    settings: '/api/manager/settings',
-    user: '/api/manager/user',
-    profile: '/api/manager/user/profile',
-    problem: `/api/manager/problem`,
-    contest: '/api/manager/contest',
-    ranking: '/api/manager/ranking',
-    contestRanking: '/api/manager/ranking/contest',
-    adminContestRanking: '/api/manager/ranking/pro/contest',
-    contestDetail: '/api/manager/ranking/pro/contest/detail',
-    history: '/api/manager/history',
-    commit: '/api/judgement/commit',
-    queueInfo: '/api/judgement/pro/queue_info',
-    overview: '/api/manager/user/overview',
-    backup: '/api/manager/backup'
-}
-
 export {
-    getTagColor,
+    tagColor,
     userInfo,
     searchParams,
     toLoginPage,
     saveToken,
     clearToken,
-    copyObject,
-    apiPath
+    copyObject
 }

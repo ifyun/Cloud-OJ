@@ -12,7 +12,8 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/pie'
 import 'echarts/theme/macarons'
 import 'echarts/theme/royal'
-import {apiPath, userInfo} from "@/script/util";
+import {userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 const year = new Date().getFullYear()
 const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#', 'JavaScript', 'Kotlin']

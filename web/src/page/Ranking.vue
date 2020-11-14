@@ -1,7 +1,7 @@
 <template>
   <div>
     <TopNavigation active="3"/>
-    <RankingList style="margin-top: 50px"/>
+    <RankingList/>
     <BottomArea style="margin-top: 35px"/>
   </div>
 </template>

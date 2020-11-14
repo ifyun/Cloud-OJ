@@ -1,10 +1,10 @@
 <template>
   <el-container class="container">
-    <el-page-header v-if="contestId != null" style="align-self: flex-start; margin-top: 5px"
+    <el-page-header v-if="contestId != null" style="align-self: flex-start; margin-top: 5px; margin-bottom: 25px"
                     @back="back"
                     :content="contestName">
     </el-page-header>
-    <el-card style="width: 100%; margin-top: 25px">
+    <el-card style="width: 100%">
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
@@ -80,7 +80,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30, 50]"
+                     :page-sizes="[15, 25, 35]"
                      :page-size.sync="pageSize"
                      :total="problems.count"
                      :current-page.sync="currentPage"
@@ -92,7 +92,8 @@
 </template>
 
 <script>
-import {getTagColor, userInfo} from '@/script/util'
+import {tagColor, userInfo} from '@/script/util'
+import {resultTags} from "@/script/env";
 
 export default {
   name: "ProblemList",
@@ -108,24 +109,15 @@ export default {
         data: [],
         count: 0
       },
-      pageSize: 10,
+      pageSize: 15,
       currentPage: 1,
       keyword: '',
       showKeyword: false,
-      resultTags: [
-        {text: '完全正确', type: 'success', icon: 'el-icon-success'},
-        {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
-        {text: '内存超限', type: 'warning', icon: 'el-icon-warning'},
-        {text: '部分通过', type: 'warning', icon: 'el-icon-warning'},
-        {text: '答案错误', type: 'danger', icon: 'el-icon-error'},
-        {text: '编译错误', type: 'info', icon: 'el-icon-info'},
-        {text: '运行错误', type: 'info', icon: 'el-icon-info'},
-        {text: '判题异常', type: 'danger', icon: 'el-icon-error'}
-      ]
+      resultTags: resultTags
     }
   },
   methods: {
-    getTagColor,
+    getTagColor: tagColor,
     getProblems() {
       this.loading = true
       let userId = userInfo() != null ? userInfo().userId : ''
@@ -177,7 +169,6 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   align-items: center;

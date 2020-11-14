@@ -51,7 +51,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 20, 30, 50]"
+                   :page-sizes="[15, 25, 35]"
                    :page-size.sync="pageSize"
                    :total="users.count"
                    :current-page.sync="currentPage"
@@ -91,8 +91,9 @@
 </template>
 
 <script>
-import {apiPath, copyObject, toLoginPage, userInfo} from "@/script/util";
-import UserEditor from "@/components/manage/user/UserEditor";
+import {copyObject, toLoginPage, userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
+import UserEditor from "@/components/manage/user/UserEditor"
 
 export default {
   name: "UserManage",
@@ -128,7 +129,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 15,
       deleteForm: {
         checkUserId: ''
       },

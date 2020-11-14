@@ -94,7 +94,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 20, 30, 50]"
+                   :page-sizes="[15, 25, 35]"
                    :page-size.sync="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
@@ -151,9 +151,10 @@
 </template>
 
 <script>
-import {apiPath, userInfo, getTagColor, toLoginPage} from "@/script/util"
-import ProblemEditor from "@/components/manage/problem/ProblemEditor";
-import TestDataManage from "@/components/manage/problem/TestDataManage";
+import {userInfo, tagColor, toLoginPage} from "@/script/util"
+import {apiPath} from "@/script/env"
+import ProblemEditor from "@/components/manage/problem/ProblemEditor"
+import TestDataManage from "@/components/manage/problem/TestDataManage"
 
 export default {
   name: "ProblemManager",
@@ -184,7 +185,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 15,
       editorTitle: '',
       editorDialogVisible: false,
       testDataDialogVisible: false,
@@ -202,7 +203,7 @@ export default {
     }
   },
   methods: {
-    getTagColor,
+    getTagColor: tagColor,
     getProblems() {
       this.loading = true
       let params = {

@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import {apiPath, copyObject, saveToken} from "@/script/util";
+import {copyObject, saveToken} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 export default {
   name: "LoginTab",
