@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import {toLoginPage, searchParams, userInfo} from "@/script/util"
+import {toLoginPage, searchParams, userInfo, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 import {codemirror} from 'vue-codemirror'
 import 'codemirror/mode/clike/clike.js'
@@ -261,10 +261,9 @@ export default {
             code: res.status,
             text: errorText
           }
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: '获取题目失败',
-            message: `${res.status} ${errorText}`
+            msg: `${res.status} ${errorText}`
           })
         }
       })
@@ -308,8 +307,7 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: '提交失败',
             message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
           })
@@ -371,8 +369,7 @@ export default {
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: '无法获取结果',
             message: `${res.status} ${res.statusText}`
           })
@@ -382,7 +379,6 @@ export default {
     },
     /**
      * 根据结果显示提示信息
-     * @param data JudgeResult对象
      */
     getResultText(data) {
       switch (data.result) {

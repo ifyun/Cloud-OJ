@@ -5,7 +5,7 @@
       <el-card style="margin-bottom: 35px">
         <div><b>RabbitMQ 消息队列：</b>
           <el-button style="float: right" icon="el-icon-refresh" size="mini"
-                     @click="getQueueInfo">
+                     @click="getQueueInfo(true)">
             刷新
           </el-button>
         </div>
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import {userInfo} from "@/script/util"
+import {Notice, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -81,7 +81,7 @@ export default {
     }
   },
   methods: {
-    getQueueInfo() {
+    getQueueInfo(refresh) {
       this.$axios.get(apiPath.queueInfo, {
         headers: {
           'token': userInfo().token,
@@ -89,10 +89,12 @@ export default {
         }
       }).then((res) => {
         this.queueInfo = res.data
+        if (refresh === true) {
+          Notice.message.success(this, '队列信息已刷新')
+        }
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '获取队列信息失败',
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })
@@ -108,8 +110,7 @@ export default {
         this.settings = res.data
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '获取系统设置失败',
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })
@@ -126,15 +127,13 @@ export default {
         },
         data: JSON.stringify(this.settings)
       }).then((res) => {
-        this.$notify.success({
-          offset: 50,
+        Notice.notify.success(this, {
           title: '已保存',
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
         let res = error.response
-        this.$notify.error({
-          offset: 50,
+        Notice.notify.error(this, {
           title: '保存系统设置失败',
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })

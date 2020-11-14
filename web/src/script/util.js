@@ -37,6 +37,54 @@ function copyObject(src) {
     return JSON.parse(JSON.stringify(src))
 }
 
+function callNotify(ctx, data, type) {
+    ctx.$notify[type]({
+        offset: 50,
+        duration: 1500,
+        title: data['title'],
+        message: data['message']
+    })
+}
+
+function callMessage(ctx, msg, type) {
+    ctx.$message[type]({
+        offset: 75,
+        duration: 1500,
+        message: msg,
+    })
+}
+
+const Notice = {
+    notify: {
+        success: (ctx, data) => {
+            callNotify(ctx, data, 'success')
+        },
+        info: (ctx, data) => {
+            callNotify(ctx, data, 'info')
+        },
+        warning: (ctx, data) => {
+            callNotify(ctx, data, 'warning')
+        },
+        error: (ctx, data) => {
+            callNotify(ctx, data, 'error')
+        }
+    },
+    message: {
+        success: (ctx, msg) => {
+            callMessage(ctx, msg, 'success')
+        },
+        info: (ctx, msg) => {
+            callMessage(ctx, msg, 'info')
+        },
+        warning: (ctx, msg) => {
+            callMessage(ctx, msg, 'warning')
+        },
+        error: (ctx, msg) => {
+            callMessage(ctx, msg, 'error')
+        }
+    }
+}
+
 export {
     tagColor,
     userInfo,
@@ -44,5 +92,6 @@ export {
     toLoginPage,
     saveToken,
     clearToken,
-    copyObject
+    copyObject,
+    Notice
 }

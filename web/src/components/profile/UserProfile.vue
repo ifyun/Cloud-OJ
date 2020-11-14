@@ -8,7 +8,8 @@
                  :headers="uploadHeaders"
                  :data="{'userId': userInfo.userId}"
                  :before-upload="beforeUpload"
-                 :on-success="checkAvatar">
+                 :on-success="uploadSuccess"
+                 :on-error="uploadFailed">
         <img v-if="avatarUrl" :src="avatarUrl"
              class="avatar-uploaded" alt="avatar">
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -57,7 +58,7 @@
 </template>
 
 <script>
-import {userInfo} from "@/script/util"
+import {Notice, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -97,8 +98,6 @@ export default {
       const url = `${apiPath.avatar}/${userInfo().userId}.png`
       this.$axios.head(url).then(() => {
         this.avatarUrl = url
-      }).catch(() => {
-
       })
     },
     beforeUpload(file) {
@@ -114,6 +113,16 @@ export default {
       }
 
       return isJPGorPNG && isLt2M;
+    },
+    uploadSuccess() {
+      this.checkAvatar()
+      Notice.message.success(this, '头像已更新')
+    },
+    uploadFailed(res) {
+      Notice.notify.error(this, {
+        title: '上传头像失败',
+        message: `${res.status} ${res.statusText}`
+      })
     },
     onEdit() {
       this.userProfile = {
@@ -140,16 +149,13 @@ export default {
             data: JSON.stringify(this.userProfile)
           }).then((res) => {
             this.editable = false
-            this.$notify({
-              offset: 50,
-              type: 'success',
+            Notice.notify.success(this, {
               title: '已保存',
-              message: `${res.status}`
+              message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
             let res = error.response
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: `保存失败`,
               message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
             })

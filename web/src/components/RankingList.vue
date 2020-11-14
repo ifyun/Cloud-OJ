@@ -14,7 +14,7 @@
             </el-switch>
           </div>
           <el-button icon="el-icon-refresh" size="medium" style="margin-left: 15px"
-                     @click="getRankingList">
+                     @click="getRankingList(true)">
             刷新
           </el-button>
         </div>
@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import {userInfo} from "@/script/util"
+import {Notice, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 import Error from "@/components/Error"
 
@@ -165,13 +165,7 @@ export default {
       }).then((res) => {
         this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
-          console.log('Refresh ranking.')
-          this.$message({
-            offset: 75,
-            message: '排行榜已刷新',
-            type: 'success',
-            duration: 1500
-          })
+          Notice.message.success(this, '排行榜已刷新')
         }
       }).catch((error) => {
         let res = error.response
@@ -181,8 +175,7 @@ export default {
             text: res.data.msg
           }
         } else {
-          this.$notify.error({
-            offset: 50,
+          Notice.notify.error(this, {
             title: '获取排行榜失败',
             message: `${res.status} ${res.statusText}`
           })
@@ -207,7 +200,11 @@ export default {
         }).then((res) => {
           this.detailDialog.details = res.data
         }).catch((error) => {
-          console.log(error.response.status)
+          let res = error.response
+          Notice.notify.error(this, {
+            title: '获取详细得分失败',
+            message: `${res.status} ${res.statusText}`
+          })
         })
       }
     }

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import {toLoginPage, userInfo} from "@/script/util"
+import {Notice, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 const bcrypt = require('bcryptjs')
@@ -122,9 +122,7 @@ export default {
           }).then((res) => {
             this.$emit('refresh')
             this.$emit('update:dialogVisible', false)
-            this.$notify({
-              offset: 50,
-              type: 'success',
+            Notice.notify.success(this, {
               title: type === 'post' ? `用户【${this.user.userId}】已创建` : '已保存',
               message: `${res.status} ${res.statusText}`
             })
@@ -133,8 +131,7 @@ export default {
             if (res.status === 401) {
               toLoginPage()
             } else {
-              this.$notify.error({
-                offset: 50,
+              Notice.notify.error(this, {
                 title: type === 'post' ? `用户【${this.user.userId}】创建失败` : '保存失败',
                 message: `${res.status} ${res.statusText}`
               })

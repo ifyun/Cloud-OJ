@@ -14,7 +14,7 @@
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button icon="el-icon-refresh" @click="getProblems">
+          <el-button icon="el-icon-refresh" @click="getProblems(true)">
             刷新
           </el-button>
         </el-form-item>
@@ -151,7 +151,7 @@
 </template>
 
 <script>
-import {userInfo, tagColor, toLoginPage} from "@/script/util"
+import {userInfo, tagColor, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
@@ -204,7 +204,7 @@ export default {
   },
   methods: {
     getTagColor: tagColor,
-    getProblems() {
+    getProblems(refresh) {
       this.loading = true
       let params = {
         page: this.currentPage,
@@ -222,14 +222,17 @@ export default {
         params: params
       }).then((res) => {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
+        if (refresh === true) {
+          Notice.message.success(this, '题目列表已刷新')
+        }
       }).catch((error) => {
         if (error.response.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
-            offset: 50,
+          let res = error.response
+          Notice.notify.error(this, {
             title: `获取数据失败`,
-            message: `${error.response.status}`
+            message: `${res.status} ${res.statusText}`
           })
         }
       }).finally(() => {
@@ -263,9 +266,7 @@ export default {
           enable: value
         }
       }).then((res) => {
-        this.$notify({
-          offset: 50,
-          type: value === true ? 'success' : 'info',
+        Notice.notify.warning(this, {
           title: `【${row.title}】已${state}`,
           message: `${res.status} ${res.statusText}`
         })
@@ -276,15 +277,13 @@ export default {
             toLoginPage()
             break
           case 400:
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: `【${row.title}】${state}失败`,
               message: `${res.data.msg}`
             })
             break
           default:
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: `【${row.title}】${state}失败`,
               message: `${res.status} ${res.statusText}`
             })
@@ -327,10 +326,8 @@ export default {
             }
           }).then((res) => {
             this.deleteDialogVisible = false
-            this.$notify({
-              offset: 50,
-              title: `${this.selectedTitle}已删除`,
-              type: 'info',
+            Notice.notify.info(this, {
+              title: `${this.selectedTitle} 已删除`,
               message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
@@ -340,15 +337,13 @@ export default {
                 toLoginPage()
                 break
               case 400:
-                this.$notify.error({
-                  offset: 50,
+                Notice.notify.error(this, {
                   title: `【${this.selectedTitle}】删除失败`,
                   message: `${res.data.msg}`
                 })
                 break
               default:
-                this.$notify.error({
-                  offset: 50,
+                Notice.notify.error(this, {
                   title: `【${this.selectedTitle}】删除失败`,
                   message: `${res.status} ${res.statusText}`
                 })

@@ -2,7 +2,7 @@
   <div>
     <TopNavigation/>
     <CommitCode/>
-    <BottomArea style="margin-top: 35px"/>
+    <BottomArea class="bottom"/>
   </div>
 </template>
 

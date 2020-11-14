@@ -2,7 +2,7 @@
   <div>
     <TopNavigation active="3"/>
     <RankingList/>
-    <BottomArea style="margin-top: 35px"/>
+    <BottomArea class="bottom"/>
   </div>
 </template>
 

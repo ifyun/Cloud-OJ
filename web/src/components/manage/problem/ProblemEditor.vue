@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import {userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -191,8 +191,14 @@ export default {
         this.problem = res.data
         this.tags = this.problem.category.split(',')
       }).catch((error) => {
-        if (error.response.status === 401) {
+        let res = error.response
+        if (res.status === 401) {
           toLoginPage()
+        } else {
+          Notice.notify.error(this, {
+            title: '获取题目内容失败',
+            message: `${res.status} ${res.statusText}`
+          })
         }
       })
     },
@@ -230,10 +236,8 @@ export default {
       }).then((res) => {
         this.$emit('update:dialogVisible', false)
         this.$emit('refresh')
-        this.$notify({
-          offset: 50,
+        Notice.notify.success(this, {
           title: `【${this.problem.title}】已${type === 'post' ? '创建' : '保存'}`,
-          type: 'success',
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -243,15 +247,13 @@ export default {
             toLoginPage()
             break
           case 400:
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: `【${this.problem.title}】保存失败`,
               message: `${res.data.msg}`
             })
             break
           default:
-            this.$notify.error({
-              offset: 50,
+            Notice.notify.error(this, {
               title: `【${this.problem.title}】${type === 'post' ? '创建' : '保存'}失败`,
               message: `${res.status} ${res.statusText}`
             })

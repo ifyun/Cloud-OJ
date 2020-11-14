@@ -4,7 +4,7 @@
     <ProblemList
         :contest-id="this.contestId"
         :contest-name="this.contestName"/>
-    <BottomArea style="margin-top: 35px"/>
+    <BottomArea class="bottom"/>
   </div>
 </template>
 

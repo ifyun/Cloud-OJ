@@ -8,7 +8,7 @@
         </el-button>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-refresh" @click="getUsers">
+        <el-button icon="el-icon-refresh" @click="getUsers(true)">
           刷新
         </el-button>
       </el-form-item>
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import {copyObject, toLoginPage, userInfo} from "@/script/util"
+import {copyObject, Notice, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 import UserEditor from "@/components/manage/user/UserEditor"
 
@@ -145,7 +145,7 @@ export default {
     }
   },
   methods: {
-    getUsers() {
+    getUsers(refresh) {
       this.loading = true
       this.$axios({
         url: apiPath.userManage,
@@ -160,12 +160,15 @@ export default {
         }
       }).then((res) => {
         this.users = res.status === 200 ? res.data : {data: [], count: 0}
+        if (refresh === true) {
+          Notice.message.success(this, '用户列表已刷新')
+        }
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
           toLoginPage()
         } else {
-          this.$notify.error({
+          Notice.notify.error(this, {
             title: '获取数据失败',
             message: `${res.status} ${res.statusText}`
           })
@@ -204,9 +207,7 @@ export default {
           }).then((res) => {
             this.getUsers()
             this.deleteDialogVisible = false
-            this.$notify({
-              offset: 50,
-              type: 'info',
+            Notice.notify.info(this, {
               title: `用户【${this.selectedUser.userId}】已删除`,
               message: `${res.status} ${res.statusText}`
             })
@@ -220,9 +221,8 @@ export default {
                 msg = `此用户存在做题记录，无法删除`
               else
                 msg = res.data.msg === undefined ? res.statusText : res.data.msg
-              this.$notify.error({
-                offset: 50,
-                title: `用户【${this.selectedUser.userId}】删除失败`,
+              Notice.notify.warning(this, {
+                title: `无法删除用户【${this.selectedUser.userId}】`,
                 message: `${res.status} ${msg}`
               })
             }
