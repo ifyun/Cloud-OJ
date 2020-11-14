@@ -43,7 +43,7 @@
         style="margin-top: 10px"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :page-sizes="[10, 20, 30]"
+        :page-sizes="[15, 25, 35]"
         :page-size.sync="pageSize"
         :total="problems.count"
         :current-page.sync="currentPage"
@@ -59,7 +59,8 @@
 </template>
 
 <script>
-import {apiPath, userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage} from "@/script/util"
+import {apiPath} from "@/script/env"
 import AddProblems from "@/components/manage/contest/AddProblems"
 
 export default {
@@ -85,7 +86,7 @@ export default {
         data: [],
         count: 0
       },
-      pageSize: 10,
+      pageSize: 15,
       currentPage: 1,
       problemsDialogVisible: false
     }

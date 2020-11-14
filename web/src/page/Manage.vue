@@ -2,13 +2,13 @@
   <div style="height: 100%">
     <TopNavigation active="4"/>
     <div v-if="error.code !== undefined">
-      <Error style="margin-top: 35px" :error="error"/>
+      <Error :error="error"/>
       <BottomArea style="margin-top: 35px"/>
     </div>
     <el-container v-else class="container">
       <el-aside class="aside">
         <el-menu class="side-nav" mode="vertical" :default-active="active"
-                 :collapse="collapse" active-text-color="#73c13b" @select="onSelect">
+                 :collapse="collapse" @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
             <i v-bind:class="collapse? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
@@ -32,9 +32,11 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main style="margin-top: 15px">
-        <component :is="currentView"/>
-        <BottomArea style="margin-top: 50px"/>
+      <el-main>
+        <div class="main">
+          <component :is="currentView"/>
+          <BottomArea style="margin-top: 50px"/>
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -115,6 +117,7 @@ export default {
 <style scoped>
 .side-nav {
   border: none;
+  background-color: inherit;
 }
 
 .side-nav:not(.el-menu--collapse) {
@@ -126,11 +129,26 @@ export default {
   height: 100%;
   width: auto !important;
   border-right: 1px solid #EBEEF5;
+  background-color: #fafafa;
 }
 
 .container {
-  padding: 0 20px;
+  margin-top: 60px;
+  padding: 0;
   min-width: 1150px !important;
-  height: calc(100% - 61px);
+  max-width: 100% !important;
+  height: calc(100% + 59px);
+}
+
+.main {
+  max-width: 1300px;
+  margin: 25px auto 0;
+}
+
+.el-menu-item.is-active {
+  font-weight: bold;
+  color: #67C23A;
+  background-color: #EEEEEE;
+  box-shadow: inset 4px 0 0 #67C23A;
 }
 </style>

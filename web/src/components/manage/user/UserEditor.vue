@@ -60,7 +60,8 @@
 </template>
 
 <script>
-import {apiPath, toLoginPage, userInfo} from "@/script/util"
+import {toLoginPage, userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 const bcrypt = require('bcryptjs')
 

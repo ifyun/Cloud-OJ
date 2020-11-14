@@ -1,7 +1,7 @@
 <template>
   <div>
     <TopNavigation active=""/>
-    <Error style="margin-top: 35px" :error="error"/>
+    <Error :error="error"/>
     <BottomArea style="margin-top: 35px"/>
   </div>
 </template>

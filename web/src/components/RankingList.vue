@@ -1,7 +1,6 @@
 <template>
   <el-container class="container" v-loading="loading">
-    <Error style="margin-top: 35px"
-           v-if="error.code !== undefined"
+    <Error v-if="error.code !== undefined"
            :error="error"/>
     <el-card v-else style="width: 100%">
       <div v-if="contest != null" class="head">
@@ -60,7 +59,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30, 50]"
+                     :page-sizes="[15, 25, 35]"
                      :page-size.sync="pageSize"
                      :total="ranking.count"
                      :current-page.sync="currentPage"
@@ -88,7 +87,8 @@
 </template>
 
 <script>
-import {apiPath, userInfo} from "@/script/util"
+import {userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 import Error from "@/components/Error"
 
 export default {
@@ -111,7 +111,7 @@ export default {
       },
       contest: {},
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 15,
       detailDialog: {
         visible: false,
         title: '',
@@ -217,7 +217,6 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   align-items: center;

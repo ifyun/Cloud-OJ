@@ -1,5 +1,5 @@
 html, body {
-    height: 100%;
+    height: calc(100% - 60px);
     padding: 0;
     margin: 0;
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
@@ -9,12 +9,17 @@ html, body {
     min-width: 1100px;
     margin: 0 auto;
     padding: 0 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
 }
 
 .el-container {
     min-width: 1100px !important;
     max-width: 1300px;
-    margin: 0 auto;
+    margin: 110px auto 0;
 }
 
 .el-card {

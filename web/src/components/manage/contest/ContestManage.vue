@@ -17,7 +17,7 @@
     <el-table :data="contests.data" stripe border v-loading="loading">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
-      <el-table-column label="名称">
+      <el-table-column label="竞赛/作业名称">
         <template slot-scope="scope">
           <b>{{ scope.row.contestName }}</b>
         </template>
@@ -50,7 +50,7 @@
     <el-pagination style="margin-top: 10px"
                    background
                    layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[10, 20, 30, 50]"
+                   :page-sizes="[15, 25, 35]"
                    :page-size.sync="pageSize"
                    :total="contests.count"
                    :current-page.sync="currentPage"
@@ -96,9 +96,10 @@
 </template>
 
 <script>
-import {apiPath, copyObject, userInfo, toLoginPage} from "@/script/util";
-import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems";
-import ContestEditor from "@/components/manage/contest/ContestEditor";
+import {copyObject, userInfo, toLoginPage} from "@/script/util"
+import {apiPath} from "@/script/env"
+import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems"
+import ContestEditor from "@/components/manage/contest/ContestEditor"
 
 export default {
   name: "CompetitionManage",
@@ -132,7 +133,7 @@ export default {
       },
       contestDialogTitle: '',
       saveType: '',
-      pageSize: 10,
+      pageSize: 15,
       currentPage: 1,
       editorDialogVisible: false,
       deleteDialogVisible: false,

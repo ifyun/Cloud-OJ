@@ -37,7 +37,8 @@
 
 <script>
 import moment from "moment"
-import {apiPath, userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 const MAX_LANG_ID = 7
 

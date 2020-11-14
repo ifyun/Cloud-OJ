@@ -89,7 +89,8 @@
 </template>
 
 <script>
-import {apiPath, userInfo, toLoginPage} from "@/script/util"
+import {userInfo, toLoginPage} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 export default {
   name: "ProblemEditor",

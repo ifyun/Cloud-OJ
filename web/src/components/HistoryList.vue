@@ -1,8 +1,8 @@
 <template>
   <el-container class="container">
-    <el-page-header style="align-self: flex-start; margin-top: 5px" content="提交记录" @back="back">
+    <el-page-header style="align-self: flex-start; margin-top: 5px; margin-bottom: 25px" content="提交记录" @back="back">
     </el-page-header>
-    <el-card style="width: 100%; margin-top: 25px">
+    <el-card style="width: 100%">
       <el-table :data="histories.data" v-loading="loading">
         <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
@@ -56,7 +56,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30, 50]"
+                     :page-sizes="[15, 25, 35]"
                      :page-size.sync="pageSize"
                      :total="histories.count"
                      :current-page.sync="currentPage"
@@ -71,7 +71,8 @@
 </template>
 
 <script>
-import {apiPath, toLoginPage, userInfo} from "@/script/util";
+import {toLoginPage, userInfo} from "@/script/util"
+import {apiPath, resultTags} from "@/script/env"
 
 export default {
   name: "HistoryList",
@@ -86,17 +87,8 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 10,
-      resultTags: [
-        {text: '完全正确', type: 'success', icon: 'el-icon-success'},
-        {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
-        {text: '内存超限', type: 'warning', icon: 'el-icon-warning'},
-        {text: '部分通过', type: 'warning', icon: 'el-icon-warning'},
-        {text: '答案错误', type: 'danger', icon: 'el-icon-error'},
-        {text: '编译错误', type: 'info', icon: 'el-icon-info'},
-        {text: '运行错误', type: 'info', icon: 'el-icon-info'},
-        {text: '判题异常', type: 'error', icon: 'el-icon-error'}
-      ],
+      pageSize: 15,
+      resultTags: resultTags,
       languages: {
         0: {name: 'C', icon: './icons/lang/c.svg'},
         1: {name: 'C++', icon: './icons/lang/cpp.svg'},
@@ -168,7 +160,6 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   align-items: center;

@@ -10,7 +10,7 @@
         <el-col :span="16" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
           <el-menu class="top-nav" mode="horizontal" :default-active="active" @select="onSelect"
-                   background-color="#3A3A3A" text-color="#fff" active-text-color="#ffd04b">
+                   background-color="#3A3A3A" text-color="#F0F0F0" active-text-color="#ffd04b">
             <el-menu-item index="1">
               <i class="el-icon-s-order"></i>
               <span>题库</span>
@@ -71,7 +71,8 @@
 </template>
 
 <script>
-import {apiPath, clearToken, userInfo} from "@/script/util";
+import {clearToken, userInfo} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 export default {
   name: "TopNavigation",
@@ -154,6 +155,7 @@ export default {
   height: 32px;
   width: 32px;
   border-radius: 16px;
+  margin-right: 2px;
 }
 
 .el-dropdown-link {
@@ -167,7 +169,7 @@ export default {
 }
 
 .el-menu-item i {
-  color: white;
+  color: #F0F0F0;
 }
 
 .el-menu-item.is-active i {

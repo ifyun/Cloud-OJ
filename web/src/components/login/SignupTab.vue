@@ -53,7 +53,8 @@
 </template>
 
 <script>
-import {apiPath, copyObject} from "@/script/util"
+import {copyObject} from "@/script/util"
+import {apiPath} from "@/script/env"
 
 const bcrypt = require('bcryptjs')
 

@@ -14,17 +14,17 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" width="180px" align="center">
+        <el-table-column label="开始时间" width="190px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" width="180px" align="center">
+        <el-table-column label="结束时间" width="190px" align="center">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120px" align="center">
+        <el-table-column label="操作" width="130px" align="center">
           <template slot-scope="scope">
             <el-button v-if="scope.row['started']" size="mini" plain
                        icon="el-icon-s-data"
@@ -37,7 +37,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30, 50]"
+                     :page-sizes="[15, 25, 35]"
                      :page-size.sync="pageSize"
                      :total="contests.count"
                      :current-page.sync="currentPage"
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {apiPath} from "@/script/util";
+import {apiPath} from "@/script/env";
 
 export default {
   name: "CompetitionList",
@@ -65,7 +65,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 10
+      pageSize: 15
     }
   },
   methods: {
@@ -104,7 +104,6 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 25px;
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
