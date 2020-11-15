@@ -102,11 +102,11 @@
                    @current-change="getProblems">
     </el-pagination>
     <!-- Editor Dialog -->
-    <el-dialog :title="editorTitle" width="800px"
-               :visible.sync="editorDialogVisible">
+    <el-dialog :title="editorDialog.title" width="800px"
+               :visible.sync="editorDialog.visible">
       <ProblemEditor :problem-id="selectedId"
                      :save-type="saveType"
-                     :dialog-visible.sync="editorDialogVisible"
+                     :dialog-visible.sync="editorDialog.visible"
                      @refresh="getProblems"/>
     </el-dialog>
     <!-- Test Data Manage Dialog -->
@@ -186,8 +186,10 @@ export default {
       },
       currentPage: 1,
       pageSize: 15,
-      editorTitle: '',
-      editorDialogVisible: false,
+      editorDialog: {
+        title: '',
+        visible: false
+      },
       testDataDialogVisible: false,
       deleteDialogVisible: false,
       importDialogVisible: false,
@@ -301,8 +303,8 @@ export default {
     onEditClick(row) {
       this.selectedId = row.problemId
       this.saveType = 'put'
-      this.editorTitle = `编辑【${row.title}】`
-      this.editorDialogVisible = true
+      this.editorDialog.title = `编辑【${row.title}】`
+      this.editorDialog.visible = true
     },
     manageTestData(row) {
       this.selectedId = row.problemId

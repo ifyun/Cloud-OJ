@@ -50,7 +50,7 @@ export default {
             name: '语言偏好',
             type: 'pie',
             center: ['55%', '50%'],
-            radius: [35, 120],
+            radius: [60, 120],
             roseType: 'area',
             data: []
           }

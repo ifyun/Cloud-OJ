@@ -7,13 +7,16 @@
         where contest_id = #{contestId};
     </select>
     <select id="getContests" resultMap="Map.Contest, Map.Total">
-        select sql_calc_found_rows *,
+        select sql_calc_found_rows c.*,
         if(start_at &lt;= now(), true, false) as started,
-        if(end_at &lt;= now(), true, false) as ended
-        from contest
+        if(end_at &lt;= now(), true, false) as ended,
+        count(cp.problem_id) as problem_count
+        from contest c left join `contest-problem` cp on c.contest_id = cp.contest_id
         <if test="onlyStarted">
             where start_at &lt;= now()
         </if>
+        group by c.contest_id
+        order by started desc, ended
         limit #{start}, #{limit};
         select found_rows()
     </select>

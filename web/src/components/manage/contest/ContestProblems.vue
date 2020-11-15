@@ -75,7 +75,9 @@ export default {
     contestId: {
       immediate: true,
       handler() {
-        this.getProblems()
+        if (this.contestId !== undefined) {
+          this.getProblems()
+        }
       }
     }
   },

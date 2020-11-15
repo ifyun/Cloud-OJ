@@ -168,7 +168,7 @@ public class Judgement {
             long waitTime = (outputCount + 1) * timeout;
             results = run(cmd, solution.getSolutionId(), waitTime);
         } catch (RuntimeError e) {
-            log.warn("Runtime Error: {}", e.getMessage());
+            log.error("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR);
         } catch (InterruptedException | IOException | TimeoutError | UnsupportedLanguageError e) {
