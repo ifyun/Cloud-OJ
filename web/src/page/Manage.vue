@@ -129,7 +129,7 @@ export default {
   height: 100%;
   width: auto !important;
   border-right: 1px solid #EBEEF5;
-  background-color: #fafafa;
+  background-color: #f6f6f6;
 }
 
 .container {
