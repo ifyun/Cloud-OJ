@@ -1,5 +1,6 @@
 package group._204.oj.fileserver.controller;
 
+import group._204.oj.fileserver.model.TestData;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import group._204.oj.fileserver.model.TestData;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,10 +23,8 @@ public class TestDataController {
     @Value("${project.file-dir}")
     private String fileDir;
 
-
     @ApiOperation(value = "获取测试数据列表", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "problemId", value = "题目 ID", dataTypeClass = Integer.class,
-            required = true, example = "1001")
+    @ApiImplicitParam(name = "problemId", required = true, example = "1001")
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = TestData.class, responseContainer = "List"),
             @ApiResponse(code = 204, message = "无数据")
@@ -63,10 +61,8 @@ public class TestDataController {
 
     @ApiOperation(value = "上传测试数据", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "problemId", value = "题目 ID", dataTypeClass = Integer.class,
-                    required = true, example = "1001"),
-            @ApiImplicitParam(name = "file", value = "测试数据文件(*.in, *.out)",
-                    dataTypeClass = MultipartFile.class)
+            @ApiImplicitParam(name = "problemId", required = true, example = "1001"),
+            @ApiImplicitParam(name = "file", value = "测试数据文件(*.in, *.out)", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "上传成功"),
@@ -108,9 +104,8 @@ public class TestDataController {
 
     @ApiOperation(value = "删除测试数据文件", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "problemId", value = "题目 ID", dataTypeClass = Integer.class,
-                    required = true, example = "1001"),
-            @ApiImplicitParam(name = "name", value = "文件名称", dataTypeClass = String.class, required = true)
+            @ApiImplicitParam(name = "problemId", required = true, example = "1001"),
+            @ApiImplicitParam(name = "name", value = "文件名称", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 204, message = "删除成功"),
@@ -119,14 +114,19 @@ public class TestDataController {
     @DeleteMapping(path = "{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
         String testDataDir = fileDir + "test_data/";
-        File dest = new File(testDataDir + problemId + "/" + name);
+        File file = new File(testDataDir + problemId + "/" + name);
 
-        if (dest.delete()) {
-            log.info("删除文件 {}/{}", problemId, name);
-            return ResponseEntity.noContent().build();
+        if (file.exists()) {
+            if (file.delete()) {
+                log.info("已删除文件 {}", file.getAbsolutePath());
+                return ResponseEntity.noContent().build();
+            } else {
+                log.error("删除文件 {} 失败", file.getAbsolutePath());
+                return ResponseEntity.status(500).build();
+            }
         } else {
-            log.error("删除文件 {}/{} 失败", problemId, name);
-            return ResponseEntity.status(500).build();
+            log.warn("文件 {} 不存在", file.getAbsolutePath());
+            return ResponseEntity.status(HttpStatus.GONE).build();
         }
     }
 }

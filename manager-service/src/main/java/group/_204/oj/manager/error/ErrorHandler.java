@@ -32,4 +32,10 @@ public class ErrorHandler {
 
         return ResponseEntity.status(status).build();
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<?> nullPointerHandler(NullPointerException e) {
+        log.error("{}: {}", e.getStackTrace()[0], e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
 }

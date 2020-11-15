@@ -51,6 +51,13 @@
         </if>
         problem_id = #{problemId}
     </select>
+    <select id="getProblemInContest" resultMap="Map.Problem">
+        select *
+        from contest_problem
+        where contest_id = #{contestId}
+          and start_at &lt;= now()
+          and problem_id = #{problemId}
+    </select>
     <select id="search" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
         <choose>

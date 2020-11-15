@@ -60,7 +60,7 @@ public class DataBackupController {
 
     @SneakyThrows
     @ApiOperation(value = "导入题目", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "file", value = ".json 文件", dataTypeClass = MultipartFile.class, required = true)
+    @ApiImplicitParam(name = "file", value = ".json 文件", required = true)
     @ApiResponses({
             @ApiResponse(code = 201, message = "导入成功"),
             @ApiResponse(code = 400, message = "导入失败")

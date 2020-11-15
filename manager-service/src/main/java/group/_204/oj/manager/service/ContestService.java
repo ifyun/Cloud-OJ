@@ -1,8 +1,10 @@
 package group._204.oj.manager.service;
 
 import group._204.oj.manager.dao.ContestDao;
+import group._204.oj.manager.dao.ProblemDao;
 import group._204.oj.manager.model.Contest;
 import group._204.oj.manager.model.Msg;
+import group._204.oj.manager.model.Problem;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,6 +15,9 @@ public class ContestService {
 
     @Resource
     private ContestDao contestDao;
+
+    @Resource
+    private ProblemDao problemDao;
 
     public List<List<?>> getAllContest(int page, int limit) {
         return contestDao.getContests((page - 1) * limit, limit, false);
@@ -46,6 +51,10 @@ public class ContestService {
 
     public List<List<?>> getProblemsFromContest(String userId, int contestId, boolean onlyStarted, int page, int limit) {
         return contestDao.getProblems(userId, contestId, onlyStarted, (page - 1) * limit, limit);
+    }
+
+    public Problem getProblemInContest(Integer contestId, Integer problemId) {
+        return problemDao.getProblemInContest(contestId, problemId);
     }
 
     public boolean addProblemToContest(int contestId, int problemId) {

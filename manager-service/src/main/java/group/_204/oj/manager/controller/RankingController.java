@@ -30,8 +30,8 @@ public class RankingController implements CRUDController {
 
     @ApiOperation(value = "获取排行榜", notes = "此排行榜不计算竞赛/作业中的提交")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -44,9 +44,9 @@ public class RankingController implements CRUDController {
 
     @ApiOperation(value = "获取竞赛排行榜")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -63,9 +63,9 @@ public class RankingController implements CRUDController {
 
     @ApiOperation(value = "获取竞赛排行榜(管理员专用)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -78,8 +78,8 @@ public class RankingController implements CRUDController {
 
     @ApiOperation(value = "获取用户的详细得分情况", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, required = true, example = "1"),
-            @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class, required = true)
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "userId", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = JudgeResult.class, responseContainer = "List"),
