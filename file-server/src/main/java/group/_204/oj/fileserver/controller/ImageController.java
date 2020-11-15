@@ -22,9 +22,8 @@ public class ImageController {
 
     @ApiOperation(value = "上传头像", notes = "/image/avatar/{userId}.png 可以获取头像文件")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "file", value = "*.jpg, *.png 文件", dataTypeClass = MultipartFile.class,
-                    required = true)
+            @ApiImplicitParam(name = "userId", required = true),
+            @ApiImplicitParam(name = "file", value = "jpg, png", dataTypeClass = MultipartFile.class, required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "上传成功"),

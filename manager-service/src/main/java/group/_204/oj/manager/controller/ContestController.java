@@ -2,6 +2,7 @@ package group._204.oj.manager.controller;
 
 import group._204.oj.manager.model.Msg;
 import group._204.oj.manager.model.PagedResult;
+import group._204.oj.manager.model.Problem;
 import group._204.oj.manager.service.ContestService;
 import group._204.oj.manager.service.SystemSettings;
 import io.swagger.annotations.*;
@@ -26,8 +27,8 @@ public class ContestController implements CRUDController {
 
     @ApiOperation(value = "获取竞赛/作业", notes = "默认设置下，仅返回已开始的竞赛/作业")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -43,8 +44,8 @@ public class ContestController implements CRUDController {
 
     @ApiOperation(value = "获取所有竞赛/作业", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -55,8 +56,8 @@ public class ContestController implements CRUDController {
         return buildGETResponse(contestService.getAllContest(page, limit));
     }
 
-    @ApiOperation(value = "获取竞赛/作业允许使用的语言", notes = "语言使用二进制掩码表示，每一位对应一种语言，为 1 表示允许使用")
-    @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1")
+    @ApiOperation(value = "获取竞赛/作业允许使用的语言")
+    @ApiImplicitParam(name = "contestId", required = true, example = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = Contest.class),
             @ApiResponse(code = 204, message = "无数据")
@@ -68,42 +69,56 @@ public class ContestController implements CRUDController {
 
     @ApiOperation(value = "从已开始的竞赛/作业中获取题目", notes = "若传入 userId，可以同时获取判题结果")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "userId"),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页的数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
             @ApiResponse(code = 204, message = "无数据")
     })
-    @GetMapping(path = "{contestId}/problem", produces = "application/json")
-    public ResponseEntity<?> getProblemsFromStartedContest(@PathVariable Integer contestId, String userId,
+    @GetMapping(path = "problem", produces = "application/json")
+    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, String userId,
                                                            Integer page, Integer limit) {
         return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, true, page, limit));
     }
 
+    @ApiOperation(value = "从已开始的竞赛/作业中获取题目的详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "problemId", required = true, example = "1001")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "成功", response = Problem.class),
+            @ApiResponse(code = 204, message = "无数据")
+    })
+    @GetMapping(path = "problem/{contestId}/{problemId}")
+    public ResponseEntity<?> getProblemInContest(@PathVariable Integer contestId, @PathVariable Integer problemId) {
+        return buildGETResponse(contestService.getProblemInContest(contestId, problemId));
+    }
+
     @ApiOperation(value = "从竞赛/作业中获取题目", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
             @ApiResponse(code = 204, message = "无数据")
     })
-    @GetMapping(path = "pro/{contestId}/problem", produces = "application/json")
-    public ResponseEntity<?> getProblemsFromContest(@PathVariable Integer contestId, Integer page, Integer limit) {
+    @GetMapping(path = "pro/problem", produces = "application/json")
+    public ResponseEntity<?> getProblemsFromContest(Integer contestId, Integer page, Integer limit) {
         return buildGETResponse(contestService.getProblemsFromContest(null, contestId, false,
                 page, limit));
     }
 
     @ApiOperation(value = "获取不在竞赛/作业中的题目", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -115,7 +130,7 @@ public class ContestController implements CRUDController {
     }
 
     @ApiOperation(value = "创建竞赛/作业", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "contest", value = "竞赛/作业", dataTypeClass = Contest.class)
+    @ApiImplicitParam(name = "contest", value = "竞赛/作业", required = true)
     @ApiResponses({
             @ApiResponse(code = 201, message = "创建成功", response = Msg.class),
     })
@@ -125,7 +140,7 @@ public class ContestController implements CRUDController {
     }
 
     @ApiOperation(value = "更新竞赛/作业", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "contest", value = "竞赛/作业", dataTypeClass = Contest.class)
+    @ApiImplicitParam(name = "contest", value = "竞赛/作业", required = true)
     @ApiResponses({
             @ApiResponse(code = 200, message = "更新成功", response = Msg.class),
     })
@@ -136,7 +151,7 @@ public class ContestController implements CRUDController {
     }
 
     @ApiOperation(value = "删除竞赛/作业", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1")
+    @ApiImplicitParam(name = "contestId", required = true, example = "1")
     @ApiResponses({
             @ApiResponse(code = 204, message = "删除成功", response = Msg.class),
             @ApiResponse(code = 409, message = "无法删除，存在约束", response = Msg.class),
@@ -149,8 +164,8 @@ public class ContestController implements CRUDController {
 
     @ApiOperation(value = "向竞赛/作业添加题目", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "problemId", value = "题目 ID", dataTypeClass = Integer.class, example = "1001")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "problemId", required = true, example = "1001")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "添加成功", response = Msg.class)
@@ -162,8 +177,8 @@ public class ContestController implements CRUDController {
 
     @ApiOperation(value = "从竞赛/作业中移除题目", notes = "需要题目管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contestId", value = "竞赛/作业 ID", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "problemId", value = "题目 ID", dataTypeClass = Integer.class, example = "1001")
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+            @ApiImplicitParam(name = "problemId", required = true, example = "1001")
     })
     @ApiResponses({
             @ApiResponse(code = 204, message = "删除成功", response = Msg.class),

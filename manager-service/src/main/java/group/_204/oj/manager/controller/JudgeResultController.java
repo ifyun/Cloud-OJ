@@ -22,9 +22,9 @@ public class JudgeResultController implements CRUDController {
 
     @ApiOperation(value = "获取提交记录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "userId", required = true),
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),

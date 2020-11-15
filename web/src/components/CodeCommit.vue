@@ -233,7 +233,9 @@ export default {
         headers.token = userInfo().token
       }
       if (this.contestId !== undefined) {
-        params.contestId = this.contestId
+        url = `${apiPath.contest}/problem/${this.contestId}`
+        headers.userId = userInfo().userId
+        headers.token = userInfo().token
       }
       this.$axios({
         url: `${url}/${this.problemId}`,

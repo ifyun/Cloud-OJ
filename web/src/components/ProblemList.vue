@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import {Notice, tagColor, userInfo} from '@/script/util'
+import {Notice, tagColor, toLoginPage, userInfo} from '@/script/util'
 import {resultTags} from "@/script/env";
 
 export default {
@@ -100,6 +100,9 @@ export default {
   props: ['contestId', 'contestName'],
   mounted() {
     document.title = `${this.contestId == null ? '题库' : this.contestName} · Cloud OJ`
+    if (this.contestId != null && userInfo() == null) {
+      toLoginPage()
+    }
     this.getProblems()
   },
   data() {
@@ -120,23 +123,36 @@ export default {
     getTagColor: tagColor,
     getProblems() {
       this.loading = true
-      let userId = userInfo() != null ? userInfo().userId : ''
-      let path = this.contestId != null ? `contest/${this.contestId}/problem` : 'problem'
+      let path = this.contestId != null ? `contest/problem` : 'problem'
+      let headers = {}
       let params = {
         page: this.currentPage,
         limit: this.pageSize,
-        userId: userId
+      }
+      if (this.contestId != null) {
+        params.contestId = this.contestId
+        headers = {
+          userId: userInfo().userId,
+          token: userInfo().token
+        }
+      }
+      if (userInfo() != null) {
+        params.userId = userInfo().userId
       }
       if (this.keyword !== '')
         params.keyword = this.keyword
       this.$axios({
         url: `api/manager/${path}`,
         method: 'get',
+        headers: headers,
         params: params
       }).then((res) => {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
       }).catch((error) => {
         let res = error.response
+        if (res.status === 401) {
+          toLoginPage()
+        }
         Notice.notify.error(this, {
           title: '获取题目失败',
           message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`

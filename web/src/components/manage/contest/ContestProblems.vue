@@ -95,13 +95,14 @@ export default {
     getProblems() {
       this.loading = true
       this.$axios({
-        url: `${apiPath.contest}/pro/${this.contestId}/problem`,
+        url: `${apiPath.contestManage}/problem`,
         method: 'get',
         headers: {
           'token': userInfo().token,
           'userId': userInfo().userId
         },
         params: {
+          contestId: this.contestId,
           page: this.currentPage,
           limit: this.pageSize
         }

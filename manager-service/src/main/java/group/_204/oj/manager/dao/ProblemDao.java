@@ -14,15 +14,17 @@ public interface ProblemDao {
 
     List<List<?>> search(String userId, String keyword, int start, int limit, boolean enable);
 
-    Problem getSingle(int problemId, boolean enable);
+    Problem getSingle(Integer problemId, boolean enable);
+
+    Problem getProblemInContest(Integer contestId, Integer problemId);
 
     int add(Problem problem);
 
     int update(Problem problem);
 
-    int delete(int problemId);
+    int delete(Integer problemId);
 
-    int inContest(int problemId);
+    int inContest(Integer problemId);
 
-    int toggleEnable(int problemId, boolean enable);
+    int toggleEnable(Integer problemId, boolean enable);
 }

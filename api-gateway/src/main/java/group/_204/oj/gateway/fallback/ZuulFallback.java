@@ -29,7 +29,7 @@ public class ZuulFallback implements FallbackProvider {
                     "{\"msg\": \"网关超时\"}");
         else
             return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "{\"msg\": \"内部错误\"}");
+                    "{\"msg\": \"网关无法转发请求\"}");
     }
 
     private ClientHttpResponse errorResponse(HttpStatus status, String msg) {

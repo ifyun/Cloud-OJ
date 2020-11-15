@@ -28,12 +28,12 @@ public class AuthController {
     private UserDao userDao;
 
     /**
-     * 此接口不会被调用，登录由 {@link LoginFilter} 实现
+     * 此接口仅用于生成文档，不会被调用，登录由 {@link LoginFilter} 实现
      */
-    @ApiOperation(value = "登录", notes = "登录成功返回用户信息(包括 JWT Token)")
+    @ApiOperation(value = "登录", notes = "登录成功返回用户信息，包括 JWT Token")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "username", value = "ID", required = true),
-            @ApiImplicitParam(name = "password", value = "密码", required = true)
+            @ApiImplicitParam(name = "password", value = "密码 = bcrypt(md5(明文密码))", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "登录成功", response = User.class),
@@ -46,7 +46,7 @@ public class AuthController {
         throw new NotImplementedException();
     }
 
-    @ApiOperation(value = "注销/登出")
+    @ApiOperation(value = "登出")
     @DeleteMapping(path = "logoff")
     public ResponseEntity<?> logoff(@RequestHeader String userId, @RequestHeader String token) {
         String secret = userDao.getSecret(userId);

@@ -25,8 +25,8 @@ public class UserController implements CRUDController {
 
     @ApiOperation(value = "获取统计信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", dataTypeClass = String.class, required = true),
-            @ApiImplicitParam(name = "year", dataTypeClass = Integer.class, required = true, example = "2020")
+            @ApiImplicitParam(name = "userId", required = true),
+            @ApiImplicitParam(name = "year", value = "年份", required = true, example = "2020")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = HashMap.class)
@@ -38,8 +38,8 @@ public class UserController implements CRUDController {
 
     @ApiOperation(value = "获取所有用户", notes = "需要用户管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页数", dataTypeClass = Integer.class, example = "1"),
-            @ApiImplicitParam(name = "limit", value = "每页的数量", dataTypeClass = Integer.class, example = "10")
+            @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
@@ -51,7 +51,7 @@ public class UserController implements CRUDController {
     }
 
     @ApiOperation(value = "添加/注册用户", notes = "密码 = bcrypt(md5(明文密码))")
-    @ApiImplicitParam(name = "user", value = "用户", dataTypeClass = User.class)
+    @ApiImplicitParam(name = "user", required = true)
     @ApiResponses({
             @ApiResponse(code = 201, message = "添加/注册成功")
     })
@@ -61,7 +61,7 @@ public class UserController implements CRUDController {
     }
 
     @ApiOperation(value = "更新用户", notes = "需要用户管理员权限")
-    @ApiImplicitParam(name = "user", value = "用户", dataTypeClass = User.class)
+    @ApiImplicitParam(name = "user", required = true)
     @ApiResponses({
             @ApiResponse(code = 200, message = "更新成功")
     })
@@ -72,8 +72,8 @@ public class UserController implements CRUDController {
 
     @ApiOperation(value = "更新用户(个人)", notes = "需要用户管理员权限")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class, required = true),
-            @ApiImplicitParam(name = "user", value = "用户", dataTypeClass = User.class, required = true)
+            @ApiImplicitParam(name = "userId", required = true),
+            @ApiImplicitParam(name = "user", required = true)
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "更新成功")
@@ -85,7 +85,7 @@ public class UserController implements CRUDController {
     }
 
     @ApiOperation(value = "删除用户", notes = "需要用户管理员权限")
-    @ApiImplicitParam(name = "userId", value = "用户 ID", dataTypeClass = String.class)
+    @ApiImplicitParam(name = "userId", required = true)
     @ApiResponses({
             @ApiResponse(code = 204, message = "删除成功"),
             @ApiResponse(code = 409, message = "无法删除，存在约束", response = Msg.class),
