@@ -183,7 +183,8 @@ export default {
       })
     },
     onEditClick(index) {
-      this.selectedContest = copyObject(this.contests.data[index])
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
       this.saveType = 'put'
       this.contestDialogTitle = '编辑'
       this.editorDialogVisible = true
@@ -201,7 +202,8 @@ export default {
     },
     onDeleteClick(index) {
       this.deleteDialogVisible = true
-      this.selectedContest = copyObject(this.contests.data[index])
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
     },
     onDelete(formName) {
       this.$refs[formName].validate((valid) => {

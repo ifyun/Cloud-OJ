@@ -17,6 +17,9 @@ public class Contest {
     private Integer contestId;
     private String contestName;
 
+    @ApiModelProperty(value = "题目数量")
+    private Integer problemCount;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startAt;
 
@@ -24,7 +27,11 @@ public class Contest {
     private Date endAt;
 
     @ApiModelProperty(value = "语言使用二进制掩码表示，每一位对应一种语言，为 1 表示允许使用")
-    private int languages;
-    private boolean started;
-    private boolean ended;
+    private Integer languages;
+
+    @ApiModelProperty(value = "是否已开始")
+    private Boolean started;
+
+    @ApiModelProperty(value = "是否已结束")
+    private Boolean ended;
 }

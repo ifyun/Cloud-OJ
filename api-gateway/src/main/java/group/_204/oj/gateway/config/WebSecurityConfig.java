@@ -24,7 +24,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static class ROLE {
         static String[] ALL = {"USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT"};
-        static String USER = "USER";
         static String UA = "USER_ADMIN";
         static String PA = "PROBLEM_ADMIN";
         static String SU = "ROOT";
@@ -65,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/manager/problem/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers("/api/manager/result").hasAnyRole(ROLE.ALL)
                 .antMatchers("/api/manager/contest/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
-                .antMatchers("/api/manager/contest/problem/**").hasAnyRole(ROLE.USER)
+                .antMatchers("/api/manager/contest/problem/**").hasAnyRole(ROLE.ALL)
                 .antMatchers("/api/manager/ranking/pro/**").hasAnyRole(ROLE.PA, ROLE.SU)
                 .antMatchers(HttpMethod.GET, "/api/manager/settings/**").hasAnyRole(ROLE.ALL)
                 .antMatchers(HttpMethod.POST, "/api/manager/settings/**").hasAnyRole(ROLE.SU)

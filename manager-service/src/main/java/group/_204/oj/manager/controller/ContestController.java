@@ -146,7 +146,6 @@ public class ContestController implements CRUDController {
     })
     @PutMapping(path = "pro", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
-        log.info(contest.toString());
         return buildPUTResponse(contestService.updateContest(contest));
     }
 

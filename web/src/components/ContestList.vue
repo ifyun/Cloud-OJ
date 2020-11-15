@@ -2,9 +2,10 @@
   <el-container class="container">
     <el-card style="width: 100%">
       <el-table :data="contests.data" v-loading="loading">
-        <el-table-column label="竞赛/作业" prop="contestName">
+        <el-table-column label="竞赛/作业名称" prop="contestName">
           <template slot-scope="scope">
-            <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
+            <el-link style="font-size: 12pt"
+                     :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
                      :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
               <b v-if="scope.row['ended']">[已结束]</b>
@@ -12,21 +13,34 @@
               <b v-else>[未开始]</b>
               <b>&nbsp;{{ scope.row.contestName }}</b>
             </el-link>
+            <div style="margin-top: 10px">题目数量: {{ scope.row['problemCount'] }} 题
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="开始时间" width="190px" align="center">
+        <el-table-column label="语言限制" align="left">
           <template slot-scope="scope">
-            <i class="el-icon-time"> {{ scope.row['startAt'] }}</i>
+            <b class="languages" style="word-break: break-word">{{ calcLanguages(scope.row.languages) }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" width="190px" align="center">
+        <el-table-column label="开始时间" width="180px" align="right">
           <template slot-scope="scope">
-            <i class="el-icon-time"> {{ scope.row['endAt'] }}</i>
+            <b>{{ formatDate(scope.row['startAt']) }}</b>
+            <br>
+            <b>{{ formatTime(scope.row['startAt']) }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="130px" align="center">
+        <el-table-column label="结束时间" width="180px" align="right">
           <template slot-scope="scope">
-            <el-button v-if="scope.row['started']" size="mini" plain
+            <div style="color: #F56C6C">
+              <b>{{ formatDate(scope.row['endAt']) }}</b>
+              <br>
+              <b>{{ formatTime(scope.row['endAt']) }}</b>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="130px" align="center">
+          <template slot-scope="scope">
+            <el-button v-if="scope.row['started']" type="text"
                        icon="el-icon-s-data"
                        @click="seeRanking(scope.row)">
               排行榜
@@ -49,15 +63,19 @@
 </template>
 
 <script>
-import {apiPath} from "@/script/env";
-import {Notice} from "@/script/util";
+import {apiPath} from "@/script/env"
+import {Notice} from "@/script/util"
+import moment from "moment"
+
+const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#', 'JavaScript', 'Kotlin']
 
 export default {
   name: "CompetitionList",
   mounted() {
     document.title = '竞赛/作业 · Cloud OJ'
     this.getContests()
-  },
+  }
+  ,
   data() {
     return {
       loading: true,
@@ -68,7 +86,8 @@ export default {
       currentPage: 1,
       pageSize: 15
     }
-  },
+  }
+  ,
   methods: {
     getContests() {
       this.loading = true
@@ -90,7 +109,26 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    }
+    ,
+    formatDate(time) {
+      return moment(time).format('YYYY年 MM月DD日')
+    }
+    ,
+    formatTime(time) {
+      return moment(time).format('HH:mm:ss')
     },
+    calcLanguages(lang) {
+      let langArr = []
+      languages.forEach((value, index) => {
+        let t = 1 << index
+        if ((lang & t) === t)
+          langArr.push(value)
+      })
+      console.log(langArr)
+      return langArr.join(' / ')
+    }
+    ,
     seeRanking(contest) {
       window.sessionStorage.setItem('contest', JSON.stringify({
         id: contest.contestId,
@@ -107,5 +145,9 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
+}
+
+.languages {
+  color: #606266;
 }
 </style>
