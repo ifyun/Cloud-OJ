@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="角色/权限" width="200px" align="center">
         <template slot-scope="scope">
-          <el-tag effect="dark"
+          <el-tag effect="dark" style="width: 90px" size="medium"
                   :type="roleTypes[scope.row['roleId']]">
             <span>{{ roleNames[scope.row['roleId']] }}</span>
           </el-tag>
@@ -197,6 +197,12 @@ export default {
     onDelete() {
       this.$refs['deleteForm'].validate((valid) => {
         if (valid) {
+          if (this.selectedUser.userId === userInfo().userId) {
+            Notice.notify.warning(this, {
+              title: '无法删除',
+              message: '你当前正在使用该用户'
+            })
+          }
           this.$axios({
             url: `${apiPath.userManage}/${this.selectedUser.userId}`,
             method: 'delete',
