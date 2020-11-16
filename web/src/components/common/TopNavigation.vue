@@ -37,7 +37,7 @@
         <el-col :span="4">
           <div class="account-area">
             <img class="avatar"
-                 :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : ''"
+                 :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : '/icons/user.svg'"
                  onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
             <span class="el-dropdown-link" style="color: lightgray"
                   v-if="userInfo == null"

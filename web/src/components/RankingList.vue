@@ -19,7 +19,7 @@
           </el-button>
         </div>
       </div>
-      <el-table :data="ranking.data" v-loading="loading" @row-dblclick="getDetail">
+      <el-table :data="ranking.data" v-loading="loading" :row-style="{height: '55px'}" @row-dblclick="getDetail">
         <el-table-column label="排名" width="150px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
@@ -35,7 +35,7 @@
           <template slot-scope="scope">
             <img class="avatar" align="center"
                  :src="`./api/file/image/avatar/${scope.row.userId}.png`"
-                 onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
+                 onerror="this.style.display='none'" alt="avatar">
           </template>
         </el-table-column>
         <el-table-column label="用户名">
@@ -220,13 +220,12 @@ export default {
 }
 
 .avatar {
-  height: 30px;
+  height: 32px;
   border-radius: 15px;
-  border: 1px solid #e0e0e0;
 }
 
 .ranking-icon {
-  height: 36px;
+  height: 26px;
 }
 
 .head {
