@@ -18,11 +18,11 @@ public class ErrorHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<String> sqlErrorHandler(SQLIntegrityConstraintViolationException e) {
         int code = e.getErrorCode();
-        log.error(String.valueOf(e.getMessage()));
+        log.error("SQLIntegrityConstraintViolationException: code={}, message={}", code, e.getMessage());
 
         HttpStatus status;
 
-        if (code == 1062) {
+        if (code == 1062 || code == 1451) {
             status = HttpStatus.CONFLICT;
         } else if (code == 1048) {
             status = HttpStatus.BAD_REQUEST;
