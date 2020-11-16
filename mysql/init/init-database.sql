@@ -9,7 +9,7 @@ create table contest
     contest_name varchar(64)   null,
     start_at     timestamp     not null comment '开始时间',
     end_at       timestamp     not null comment '结束时间',
-    languages int default 0 not null comment '支持的语言范围，掩码表示法'
+    languages int default 0 not null comment '支持的语言范围'
 );
 
 create table problem
@@ -35,10 +35,10 @@ create table `contest-problem`
     problem_id int null,
     constraint `contest-problem_contest_contest_id_fk`
         foreign key (contest_id) references contest (contest_id)
-            on update cascade on delete cascade,
+            on update cascade,
     constraint `contest-problem_problem_problem_id_fk`
         foreign key (problem_id) references problem (problem_id)
-            on update cascade on delete cascade
+            on update cascade
 );
 
 create index problem_title_index
@@ -76,9 +76,9 @@ create table solution
     language    int                                                                                                          not null,
     state       enum ('JUDGED', 'IN_JUDGED_QUEUE', 'ACCEPTED') default 'ACCEPTED'                                            not null,
     result      enum ('PASSED', 'TIMEOUT', 'OOM', 'PARTLY_PASSED', 'WRONG', 'COMPILE_ERROR', 'RUNTIME_ERROR', 'JUDGE_ERROR') null,
-    pass_rate   double                                         default 0                                                     not null,
+    pass_rate   double                                         default 0                                                     not null comment '通过率',
     user_id     varchar(32)                                                                                                  null,
-    submit_time datetime                                       default CURRENT_TIMESTAMP                                     not null,
+    submit_time datetime                                       default CURRENT_TIMESTAMP                                     not null comment '提交时间',
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,

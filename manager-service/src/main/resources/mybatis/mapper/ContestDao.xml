@@ -52,7 +52,9 @@
         select found_rows()
     </select>
     <select id="getContestById" resultMap="Map.Contest">
-        select *
+        select *,
+               if(start_at &lt;= now(), true, false) as started,
+               if(end_at &lt;= now(), true, false)   as ended
         from contest
         where contest_id = #{contestId}
     </select>
