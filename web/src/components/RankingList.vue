@@ -59,7 +59,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[15, 25, 35]"
+                     :page-sizes="[10, 20, 30]"
                      :page-size.sync="pageSize"
                      :total="ranking.count"
                      :current-page.sync="currentPage"
@@ -111,7 +111,7 @@ export default {
       },
       contest: {},
       currentPage: 1,
-      pageSize: 15,
+      pageSize: 10,
       detailDialog: {
         visible: false,
         title: '',

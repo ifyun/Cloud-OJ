@@ -2,67 +2,72 @@
   <Error v-if="error.code !== undefined"
          :error="error"/>
   <el-container v-else class="container">
-    <el-page-header v-if="problem.problemId !== undefined" style="margin-top: 5px"
-                    :content="`${problemId}. ${problem.title}`"
-                    @back="back">
-    </el-page-header>
-    <div style="width: 100%; margin-top: 25px" v-if="problem.problemId !== undefined">
+    <div style="width: 100%; margin-top: 25px"
+         v-if="problem.problemId !== undefined">
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-card style="height: 926px;overflow: auto">
-            <h4>题目描述</h4>
-            <pre class="problem-content">{{ problem.description }}</pre>
-            <h4>输入说明</h4>
-            <pre class="problem-content">{{ problem.input }}</pre>
-            <h4>输出说明</h4>
-            <pre class="problem-content">{{ problem.output }}</pre>
-            <el-divider></el-divider>
-            <h4>限时</h4>
-            <pre class="problem-content">{{ problem.timeout }}ms</pre>
-            <h4>输入示例</h4>
-            <pre class="sample">{{ problem.sampleInput }}</pre>
-            <h4>输出示例</h4>
-            <pre class="sample">{{ problem.sampleOutput }}</pre>
+          <el-card style="overflow: auto"
+                   :style="{height: calcContentHeight()}">
+            <el-page-header v-if="problem.problemId !== undefined"
+                            :content="`${problemId}. ${problem.title}`"
+                            @back="back">
+            </el-page-header>
+            <div>
+              <h4>题目描述</h4>
+              <pre class="problem-content">{{ problem.description }}</pre>
+              <h4>输入说明</h4>
+              <pre class="problem-content">{{ problem.input }}</pre>
+              <h4>输出说明</h4>
+              <pre class="problem-content">{{ problem.output }}</pre>
+              <el-alert show-icon type="info" :closable="false"
+                        :title="`时间限制: ${ problem.timeout } ms`">
+              </el-alert>
+              <h4>输入示例</h4>
+              <pre class="sample">{{ problem.sampleInput }}</pre>
+              <h4>输出示例</h4>
+              <pre class="sample">{{ problem.sampleOutput }}</pre>
+            </div>
           </el-card>
         </el-col>
         <el-col :span="12">
-          <el-card>
+          <el-card :style="{height: calcContentHeight()}">
             <el-form :inline="true" size="medium">
-              <el-form-item label="代码高亮">
-                <el-select v-model="cmOptions.theme">
-                  <el-option v-for="theme in codeStyle"
-                             :key="theme.id"
-                             :label="theme.name"
-                             :value="theme.id">
-                  </el-option>
-                </el-select>
-              </el-form-item>
               <el-row>
-                <el-form-item label="编程语言">
-                  <el-select v-model="language" placeholder="请选择语言"
-                             @change="languageChange">
-                    <el-option v-for="lang in enabledLanguages"
-                               :key="lang.name"
-                               :label="lang.name"
-                               :value="lang.id">
-                      <span style="float: left">{{ lang.name }}</span>
-                      <span style="float: right">{{ lang.version }}</span>
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="success" icon="el-icon-s-promotion"
-                             :disabled="disableCommit"
-                             @click="commitCode">提交运行
-                  </el-button>
-                </el-form-item>
+                <el-col :span="12">
+                  <el-form-item label="语言">
+                    <el-select v-model="language" placeholder="请选择语言"
+                               @change="languageChange">
+                      <el-option v-for="lang in enabledLanguages"
+                                 :key="lang.name"
+                                 :label="lang.name"
+                                 :value="lang.id">
+                        <span style="float: left">{{ lang.name }}</span>
+                        <span style="float: right">{{ lang.version }}</span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="主题" style="float: right">
+                    <el-select v-model="cmOptions.theme">
+                      <el-option v-for="theme in codeStyle"
+                                 :key="theme.id"
+                                 :label="theme.name"
+                                 :value="theme.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </el-form>
-            <el-alert style="margin-bottom: 15px" show-icon="true" type="info" :closable="false"
-                      title="将文件拖入可以自动导入代码">
-            </el-alert>
-            <codemirror v-model="code" :options="cmOptions">
-            </codemirror>
+            <div :style="{height: calcCodeHeight()}">
+              <codemirror v-model="code" :options="cmOptions">
+              </codemirror>
+            </div>
+            <el-button style="margin-top: 25px" type="success" icon="el-icon-s-promotion"
+                       :disabled="disableCommit"
+                       @click="commitCode">提交运行
+            </el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -138,6 +143,10 @@ export default {
     Error
   },
   mounted() {
+    const ctx = this
+    window.onresize = () => {
+      ctx.windowHeight = document.body.clientHeight
+    }
     this.getLanguages()
     this.getProblem()
     this.getCachedCode()
@@ -149,6 +158,7 @@ export default {
   },
   data() {
     return {
+      windowHeight: document.body.clientHeight,
       error: {
         code: undefined,
         text: ''
@@ -190,6 +200,22 @@ export default {
   methods: {
     back() {
       window.history.back()
+    },
+    calcContentHeight() {
+      if (this.windowHeight <= 900)
+        return '800px'
+      else if (this.windowHeight >= 1100)
+        return '1000px'
+      else
+        return `${this.windowHeight - 110}px`
+    },
+    calcCodeHeight() {
+      if (this.windowHeight <= 900)
+        return '640px'
+      else if (this.windowHeight >= 1100)
+        return '830px'
+      else
+        return `${this.windowHeight - 270}px`
     },
     getCachedCode() {
       let code = window.sessionStorage.getItem('code');
@@ -450,5 +476,9 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   min-width: 1200px !important;
+}
+
+h4 {
+  font-size: 13pt;
 }
 </style>

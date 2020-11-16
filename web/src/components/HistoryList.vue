@@ -24,12 +24,10 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="编程语言">
+        <el-table-column label="编程语言" align="center">
           <template slot-scope="scope">
-            <div style="display: flex; align-items: center;">
-              <img class="language-icon" :src="languages[scope.row['language']].icon" alt="">
-              {{ languages[scope.row['language']].name }}
-            </div>
+            <img class="language-icon" :src="languages[scope.row['language']].icon"
+                 align="center" alt="language">
           </template>
         </el-table-column>
         <el-table-column label="耗时" width="100px" align="right">
@@ -56,7 +54,7 @@
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
                      layout="total, sizes, prev, pager, next"
-                     :page-sizes="[15, 25, 35]"
+                     :page-sizes="[10, 20, 30]"
                      :page-size.sync="pageSize"
                      :total="histories.count"
                      :current-page.sync="currentPage"
@@ -87,7 +85,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 15,
+      pageSize: 10,
       resultTags: resultTags,
       languages: {
         0: {name: 'C', icon: './icons/lang/c.svg'},
