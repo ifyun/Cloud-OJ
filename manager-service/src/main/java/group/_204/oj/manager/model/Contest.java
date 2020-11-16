@@ -30,8 +30,8 @@ public class Contest {
     private Integer languages;
 
     @ApiModelProperty(value = "是否已开始")
-    private Boolean started;
+    private boolean started;
 
     @ApiModelProperty(value = "是否已结束")
-    private Boolean ended;
+    private boolean ended;
 }

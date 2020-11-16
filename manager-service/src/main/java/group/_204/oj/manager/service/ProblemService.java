@@ -1,5 +1,6 @@
 package group._204.oj.manager.service;
 
+import group._204.oj.manager.dao.ContestDao;
 import group._204.oj.manager.dao.ProblemDao;
 import group._204.oj.manager.model.Msg;
 import group._204.oj.manager.model.Problem;
@@ -27,6 +28,9 @@ public class ProblemService {
     @Resource
     private ProblemDao problemDao;
 
+    @Resource
+    private ContestDao contestDao;
+
     public List<List<?>> getEnableProblems(String userId, int page, int limit) {
         return problemDao.getAll(userId, (page - 1) * limit, limit, true);
     }
@@ -49,8 +53,9 @@ public class ProblemService {
 
     @Transactional
     public Msg updateProblem(Problem problem) {
-        if (problemDao.inContest(problem.getProblemId()) > 0) {
-            return new Msg(400, "无法修改竞赛/作业中的题目");
+        Integer contestId = problemDao.inContest(problem.getProblemId());
+        if (contestId != null && contestDao.getContestById(contestId).isStarted()) {
+            return new Msg(400, "不能修改已开始竞赛/作业中的题目");
         }
         int status = problemDao.update(problem) == 1 ? 200 : 304;
         return new Msg(status, null);
@@ -59,8 +64,9 @@ public class ProblemService {
     @Transactional
     public Msg toggleEnable(int problemId, boolean enable) {
         if (enable) {
-            if (problemDao.inContest(problemId) > 0) {
-                return new Msg(400, "无法开放竞赛/作业中的题目");
+            Integer contestId = problemDao.inContest(problemId);
+            if (contestId != null && !contestDao.getContestById(contestId).isEnded()) {
+                return new Msg(400, "不能开放未结束竞赛/作业中的题目");
             }
         }
         int status = problemDao.toggleEnable(problemId, enable) == 1 ? 200 : 304;
