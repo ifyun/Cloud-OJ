@@ -10,7 +10,6 @@
                :auto-upload="false"
                :data="{'problemId': this.problemId}"
                :headers="uploadHeaders"
-               :on-preview="onPreview"
                :on-success="onUploadSuccess"
                :file-list="fileList"
                accept=".in,.out">
@@ -131,9 +130,6 @@ export default {
       let link = `${apiPath.testDataManage}/download/${this.problemId}`
           + `/${fileName}?userId=${userInfo().userId}&token=${userInfo().token}`
       window.open(link, '_blank')
-    },
-    onPreview(file) {
-      console.log(file)
     },
     onUpload() {
       this.$refs.upload.submit();
