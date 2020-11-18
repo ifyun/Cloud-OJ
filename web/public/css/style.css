@@ -20,7 +20,7 @@ html, body {
 .el-container {
     min-width: 1100px !important;
     max-width: 1300px;
-    margin: 110px auto 0;
+    margin: 90px auto 0;
 }
 
 .el-card {
@@ -106,17 +106,24 @@ html, body {
 }
 
 .problem-content {
+    font-family: inherit;
     font-size: 12pt;
     white-space: pre-wrap;
+    word-break: break-word;
     line-height: 1.5em;
 }
 
 .CodeMirror {
-    height: 720px !important;
+    height: 100% !important;
     word-spacing: 0.2em;
     font-size: 12pt;
     font-family: sans-serif !important;
     border-radius: 5px;
+    padding: 5px 0;
+}
+
+.vue-codemirror {
+    height: 100% !important;
 }
 
 .bottom {
