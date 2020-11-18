@@ -13,6 +13,6 @@ RUN libs="gcc g++ python3 mono-devel nodejs" \
     && apt-get autoremove -y \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
-    && apt-get install -y $libs \
+    && apt-get install -y --no-install-recommends $libs \
     && apt-get clean
 RUN g++ ./runner.cpp ./utils.cpp -o /usr/bin/runner && rm ./*.cpp ./*.h
