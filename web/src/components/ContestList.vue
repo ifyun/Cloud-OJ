@@ -125,7 +125,6 @@ export default {
         if ((lang & t) === t)
           langArr.push(value)
       })
-      console.log(langArr)
       return langArr.join(' / ')
     }
     ,

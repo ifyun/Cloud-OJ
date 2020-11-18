@@ -93,7 +93,7 @@
 
 <script>
 import {Notice, tagColor, toLoginPage, userInfo} from '@/script/util'
-import {resultTags} from "@/script/env";
+import {resultTags} from "@/script/env"
 
 export default {
   name: "ProblemList",

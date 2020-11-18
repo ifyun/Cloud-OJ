@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation";
-import BottomArea from "@/components/common/BottomArea";
-import UserProfile from "@/components/profile/UserProfile";
-import Overview from "@/components/profile/Overview";
-import {toLoginPage, userInfo} from "@/script/util";
+import TopNavigation from "@/components/common/TopNavigation"
+import BottomArea from "@/components/common/BottomArea"
+import UserProfile from "@/components/profile/UserProfile"
+import Overview from "@/components/profile/Overview"
+import {toLoginPage, userInfo} from "@/script/util"
 
 export default {
   name: "Profile",
