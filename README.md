@@ -91,6 +91,7 @@ cd web && npm install && npm run build
 
 ## Acknowledgement
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fb7e4c059c5431799b8863218750095)](https://app.codacy.com/gh/imcloudfloating/Cloud-OJ?utm_source=github.com&utm_medium=referral&utm_content=imcloudfloating/Cloud-OJ&utm_campaign=Badge_Grade)
 [![JetBrains](./.assets/jetbrains.svg)](https://www.jetbrains.com/?from=CloudOJ)
 
 Thanks to JetBrains' Open Source License support.
