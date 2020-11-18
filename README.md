@@ -5,6 +5,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?style=flat-square&logo=github)
 ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?style=flat-square)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fb7e4c059c5431799b8863218750095)](https://app.codacy.com/gh/imcloudfloating/Cloud-OJ?utm_source=github.com&utm_medium=referral&utm_content=imcloudfloating/Cloud-OJ&utm_campaign=Badge_Grade)
 
 微服务架构的 Online Judge，基于 Spring Cloud、Vue.js、Docker。
 
@@ -38,10 +39,7 @@ Kotlin          | 1.4.10
 
 #### 1. 搭建数据库和消息队列
 
-两种方式：
-
-1. 安装 Docker，执行 `mysql` 目录下的 `start.sh`
-2. 手动安装 RabbitMQ 和 MySQL，使用 `./mysql/init/init-database.sql` 建库建表
+安装 RabbitMQ 和 MySQL，使用 `mysql/init/init-database.sql` 文件建库建表。
 
 设置数据目录，修改 `file-server`、`manager-service`、 `judge-service` 的配置文件（application-prod.yml）：
 
