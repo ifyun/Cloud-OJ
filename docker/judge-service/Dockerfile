@@ -8,7 +8,7 @@ RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && echo ${TIME_ZONE} > /etc/timezone \
     && libs="libltdl7" \
     && apt-get update \
-    && apt-get install -y $libs \
+    && apt-get install -y --no-install-recommends $libs \
     && apt-get clean && apt-get autoclean
 WORKDIR /app
 EXPOSE 8002
