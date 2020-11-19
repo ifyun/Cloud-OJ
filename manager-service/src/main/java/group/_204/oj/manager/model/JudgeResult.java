@@ -18,6 +18,7 @@ public class JudgeResult {
     private Long memory;
     private String code;
     private Integer language;
+    private Integer state;
     private Integer result;
     private Date submitTime;
 }

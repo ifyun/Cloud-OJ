@@ -3,11 +3,18 @@
 <mapper namespace="group._204.oj.manager.dao.ProblemDao">
     <select id="getAll" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows
-        p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
+        p.problem_id,
+        p.title,
+        p.enable,
+        if(c.contest_name is not null, concat(p.category, ',', c.contest_name), p.category) as category,
+        p.score,
+        p.create_at
         <choose>
             <when test="userId != null">
                 , result, passed
                 from problem p
+                left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
                 left join (select user_id, problem_id, min(result - 1) result
                 from judge_result
                 where user_id = #{userId}
@@ -20,6 +27,8 @@
             </when>
             <otherwise>
                 from problem p
+                left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
             </otherwise>
         </choose>
         <if test="enable == true">
@@ -59,11 +68,19 @@
           and problem_id = #{problemId}
     </select>
     <select id="search" resultMap="Map.Problem, Map.Total">
-        select sql_calc_found_rows p.problem_id, p.title, p.enable, p.category, p.score, p.create_at
+        select sql_calc_found_rows
+        p.problem_id,
+        p.title,
+        p.enable,
+        if(c.contest_name is not null, concat(p.category, ',', c.contest_name), p.category) as category,
+        p.score,
+        p.create_at
         <choose>
             <when test="userId != null">
                 , result, passed
                 from problem p
+                left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
                 left join (select user_id, problem_id, min(result - 1) result
                 from judge_result
                 where user_id = #{userId}
@@ -76,13 +93,17 @@
             </when>
             <otherwise>
                 from problem p
+                left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
             </otherwise>
         </choose>
         where
         <if test="enable == true">
             enable = true and
         </if>
-        (title like concat(#{keyword}, '%') or find_in_set(#{keyword}, category))
+        title like concat(#{keyword}, '%')
+        or find_in_set(#{keyword}, category)
+        or c.contest_name like concat(#{keyword}, '%')
         limit #{start}, #{limit};
         select found_rows()
     </select>

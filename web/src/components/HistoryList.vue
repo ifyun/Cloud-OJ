@@ -3,25 +3,21 @@
     <el-page-header style="align-self: flex-start; margin-top: 5px; margin-bottom: 25px" content="提交记录" @back="back">
     </el-page-header>
     <el-card style="width: 100%">
-      <el-table :data="histories.data" v-loading="loading">
+      <el-table :data="histories.data" stripe v-loading="loading">
         <el-table-column label="题目" width="300px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
-              <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
+              [{{ scope.row.problemId }}]&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
         <el-table-column label="结果" align="center">
           <template slot-scope="scope">
-            <el-tooltip content="点击查看代码" placement="right">
-              <el-tag style="cursor: pointer" effect="plain"
-                      :type="resultTags[scope.row.result].type"
-                      @click="showCode(scope.row.code)">
-                <i :class="resultTags[scope.row.result].icon">
-                  {{ resultTags[scope.row.result].text }}
-                </i>
-              </el-tag>
-            </el-tooltip>
+            <el-tag effect="plain" :type="getResultTag(scope.row).type">
+              <i :class="getResultTag(scope.row).icon">
+                {{ getResultTag(scope.row).text }}
+              </i>
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="编程语言" align="center">
@@ -62,19 +58,17 @@
                      @current-change="getHistories">
       </el-pagination>
     </el-card>
-    <el-dialog title="代码预览" :visible.sync="codeDialogVisible">
-      <pre class="sample">{{ code }}</pre>
-    </el-dialog>
   </el-container>
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/script/util"
-import {apiPath, resultTags} from "@/script/env"
+import {clearCachedCode, Notice, toLoginPage, userInfo} from "@/script/util"
+import {apiPath, resultTags, stateTags} from "@/script/env"
 
 export default {
   name: "HistoryList",
   mounted() {
+    clearCachedCode()
     this.getHistories()
   },
   data() {
@@ -150,6 +144,13 @@ export default {
         return `${mem} KB`
       else
         return `${(mem / 1024).toFixed(2)} MB`
+    },
+    getResultTag(row) {
+      if (row.state === 0) {
+        return resultTags[row.result]
+      } else {
+        return stateTags[row.state]
+      }
     }
   }
 }

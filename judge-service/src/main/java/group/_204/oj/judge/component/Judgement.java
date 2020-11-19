@@ -56,8 +56,8 @@ public class Judgement {
         }
     }
 
-    private static class TimeoutError extends Exception {
-        TimeoutError(String msg) {
+    private static class JudgeError extends Exception {
+        JudgeError(String msg) {
             super(msg);
         }
     }
@@ -163,15 +163,17 @@ public class Judgement {
 
         try {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
-            ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
             int outputCount = getOutputCount(solution.getProblemId());
-            long waitTime = (outputCount + 1) * timeout;
-            results = run(cmd, solution.getSolutionId(), waitTime);
+            if (outputCount == 0) {
+                throw new JudgeError(String.format("缺少测试数据: problemId=%d", solution.getProblemId()));
+            }
+            ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
+            results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
             log.error("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RUNTIME_ERROR);
-        } catch (InterruptedException | IOException | TimeoutError | UnsupportedLanguageError e) {
+        } catch (JudgeError | InterruptedException | IOException | UnsupportedLanguageError e) {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.JUDGE_ERROR);
             runtime.setInfo(e.getMessage());
@@ -188,13 +190,10 @@ public class Judgement {
      * @param cmd Command to run
      * @return {@link RunResult} Contains status and stdout
      */
-    private List<RunResult> run(ProcessBuilder cmd, String solutionId, long waitTime)
-            throws RuntimeError, TimeoutError, IOException, InterruptedException {
+    private List<RunResult> run(ProcessBuilder cmd, String solutionId)
+            throws RuntimeError, IOException, InterruptedException {
         Process process = cmd.start();
-
-        if (!process.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutError("Wait timeout.");
-        }
+        process.waitFor();
 
         List<RunResult> results;
         String stderr = getOutput(process.getErrorStream());
@@ -246,38 +245,40 @@ public class Judgement {
         ProcessBuilder builder = new ProcessBuilder();
 
         List<String> cmd = new ArrayList<>(Arrays.asList(
-                "docker", "run", "--rm", "--network", "none", "-v", solutionDir + ":" + solutionDir,
-                "-v", fileDir + ":" + fileDir + ":ro", "-w", solutionDir, runnerImage, "runner"
+                "docker", "run", "--rm", "--network", "none", "-v", solutionDir + ":/tmp/code",
+                "-v", testDataDir + ":/test_data:ro", "-w", "/tmp/code", runnerImage, "runner"
         ));
 
         switch (language) {
             case C:
             case CPP:
-                cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("java@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("java@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
                 break;
             case PYTHON:
-                cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case BASH:
-                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case C_SHARP:
-                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case JAVA_SCRIPT:
-                cmd.addAll(Arrays.asList("node@Solution.js", timeout, MEM_LIMIT, MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("node@Solution.js", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case KOTLIN:
-                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MAX_MEM_LIMIT, testDataDir));
+                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
                 break;
             default:
                 throw new UnsupportedLanguageError("Unsupported language.");
         }
 
+        cmd.add("/test_data");
         builder.command(cmd);
+
         return builder;
     }
 
@@ -285,8 +286,6 @@ public class Judgement {
      * 获取输出数据个数
      */
     private int getOutputCount(int problemId) {
-        List<String> data = new ArrayList<>();
-
         String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
 

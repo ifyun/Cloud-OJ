@@ -33,6 +33,10 @@ function clearToken() {
     localStorage.removeItem(TOKEN)
 }
 
+function clearCachedCode() {
+    sessionStorage.removeItem('code')
+}
+
 function copyObject(src) {
     return JSON.parse(JSON.stringify(src))
 }
@@ -92,6 +96,7 @@ export {
     toLoginPage,
     saveToken,
     clearToken,
+    clearCachedCode,
     copyObject,
     Notice
 }
