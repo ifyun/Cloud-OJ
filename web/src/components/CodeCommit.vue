@@ -2,16 +2,16 @@
   <Error v-if="error.code !== undefined"
          :error="error"/>
   <el-container v-else class="container">
-    <div style="width: 100%; margin-top: 25px"
+    <el-page-header v-if="problem.problemId !== undefined"
+                    :content="`${problemId}. ${problem.title}`"
+                    @back="back">
+    </el-page-header>
+    <div style="width: 100%; margin-top: 20px"
          v-if="problem.problemId !== undefined">
-      <el-row :gutter="10">
+      <el-row :gutter="15">
         <el-col :span="12">
           <el-card style="overflow: auto"
                    :style="{height: calcContentHeight()}">
-            <el-page-header v-if="problem.problemId !== undefined"
-                            :content="`${problemId}. ${problem.title}`"
-                            @back="back">
-            </el-page-header>
             <div>
               <h4>题目描述</h4>
               <pre class="problem-content">{{ problem.description }}</pre>
@@ -72,7 +72,7 @@
         </el-col>
       </el-row>
     </div>
-    <el-dialog title="获取判题结果"
+    <el-dialog title="获取判题结果" width="700px"
                :visible.sync="resultDialog.visible"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
@@ -204,18 +204,18 @@ export default {
     calcContentHeight() {
       if (this.windowHeight <= 900)
         return '800px'
-      else if (this.windowHeight >= 1100)
-        return '1000px'
+      else if (this.windowHeight >= 1200)
+        return '1100px'
       else
-        return `${this.windowHeight - 110}px`
+        return `${this.windowHeight - 130}px`
     },
     calcCodeHeight() {
       if (this.windowHeight <= 900)
         return '640px'
-      else if (this.windowHeight >= 1100)
-        return '830px'
+      else if (this.windowHeight >= 1200)
+        return '850px'
       else
-        return `${this.windowHeight - 270}px`
+        return `${this.windowHeight - 290}px`
     },
     getCachedCode() {
       let code = window.sessionStorage.getItem('code');
@@ -225,7 +225,6 @@ export default {
         this.language = code['language']
         this.languageChange(this.language)
         this.$forceUpdate()
-        window.sessionStorage.removeItem('code')
       }
     },
     getLanguages() {
@@ -349,6 +348,7 @@ export default {
      * @param count 重试次数
      */
     getResult(solutionId, count) {
+      this.resultDialog.disableRefresh = true
       this.$axios({
         url: apiPath.commit,
         method: 'get',

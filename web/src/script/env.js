@@ -22,6 +22,11 @@ const apiPath = {
     backup: '/api/manager/backup'
 }
 
+const stateTags = [
+    {text: '等待判题', type: 'primary', icon: 'el-icon-loading'},
+    {text: '等待写入', type: 'primary', icon: 'el-icon-loading'}
+]
+
 const resultTags = [
     {text: '完全正确', type: 'success', icon: 'el-icon-success'},
     {text: '时间超限', type: 'warning', icon: 'el-icon-warning'},
@@ -35,5 +40,6 @@ const resultTags = [
 
 export {
     apiPath,
+    stateTags,
     resultTags
 }

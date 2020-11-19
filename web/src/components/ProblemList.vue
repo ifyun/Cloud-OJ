@@ -26,12 +26,12 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" v-loading="loading">
+      <el-table :data="problems.data" stripe v-loading="loading">
         <el-table-column label="题目名称" width="280px">
           <template slot-scope="scope">
             <el-link
                 :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
-              <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
+              [{{ scope.row.problemId }}]&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import {Notice, tagColor, toLoginPage, userInfo} from '@/script/util'
+import {clearCachedCode, Notice, tagColor, toLoginPage, userInfo} from '@/script/util'
 import {resultTags} from "@/script/env"
 
 export default {
@@ -100,6 +100,7 @@ export default {
   props: ['contestId', 'contestName'],
   mounted() {
     document.title = `${this.contestId == null ? '题库' : this.contestName} · Cloud OJ`
+    clearCachedCode()
     if (this.contestId != null && userInfo() == null) {
       toLoginPage()
     }

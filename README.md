@@ -87,8 +87,6 @@ cd web && npm install && npm run build
 
 若需要扩展服务，请改用 NFS 存储 OJ 文件并在节点挂载(默认目录是：`/var/lib/cloud_oj`)
 
-> **提示：judge-service 仅支持在 Linux 下运行**。
-
 ## Acknowledgement
 
 [![JetBrains](./.assets/jetbrains.svg)](https://www.jetbrains.com/?from=CloudOJ)

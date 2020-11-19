@@ -89,7 +89,7 @@ class Compiler {
 
         String solutionDir = codeDir + solutionId;
         List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "--network", "none",
-                "-v", solutionDir + ":" + solutionDir, "-w", solutionDir, runnerImage));
+                "-v", solutionDir + ":/tmp/code", "-w", "/tmp/code", runnerImage));
 
         // 构造编译命令
         switch (language) {

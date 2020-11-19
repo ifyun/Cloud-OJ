@@ -23,4 +23,4 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka/
 
 project:
-  file-dir: /home/cloud/oj_file/
+  file-dir: E:/cloud_oj/
