@@ -74,11 +74,11 @@ create table solution
     problem_id  int                                                                                                          null,
     contest_id  int                                                                                                          null,
     language    int                                                                                                          not null,
-    state       enum ('JUDGED', 'IN_JUDGED_QUEUE', 'ACCEPTED') default 'ACCEPTED'                                            not null,
+    state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'                                             not null,
     result      enum ('PASSED', 'TIMEOUT', 'OOM', 'PARTLY_PASSED', 'WRONG', 'COMPILE_ERROR', 'RUNTIME_ERROR', 'JUDGE_ERROR') null,
-    pass_rate   double                                         default 0                                                     not null comment '通过率',
+    pass_rate   double                                        default 0                                                      not null comment '通过率',
     user_id     varchar(32)                                                                                                  null,
-    submit_time datetime                                       default CURRENT_TIMESTAMP                                     not null comment '提交时间',
+    submit_time datetime                                      default CURRENT_TIMESTAMP                                      not null comment '提交时间',
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,
