@@ -5,7 +5,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?logo=github)
 ![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ)
 ![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fb7e4c059c5431799b8863218750095)](https://app.codacy.com/gh/imcloudfloating/Cloud-OJ?utm_source=github.com&utm_medium=referral&utm_content=imcloudfloating/Cloud-OJ&utm_campaign=Badge_Grade)
+![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fb7e4c059c5431799b8863218750095)
 
 微服务架构的 Online Judge，基于 Spring Cloud、Vue.js、Docker。
 
@@ -29,11 +29,11 @@ Kotlin          | 1.4.10
 本项目没有直接使用 `ptrace` 和 `seccomp` 来限制系统调用，而是构建一个包含各种语言运行环境的 Docker 镜像，
 将测试数据和用户的代码挂载到容器进行编译和判题，以此达到沙盒的效果。
 
-## 使用指南
+## 使用
 
 ### 自动部署
 
-若没有二次开发的需求，推荐使用部署脚本(仅支持 Docker、Docker Swarm)：[Cloud Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)
+使用部署脚本(仅支持 Docker、Docker Swarm)：[Cloud Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)
 
 ### 手动构建
 
