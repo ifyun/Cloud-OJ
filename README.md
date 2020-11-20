@@ -24,16 +24,11 @@ C#              | Mono
 JavaScript      | Node v14
 Kotlin          | 1.4.10
 
-## 判题方式
-
-本项目没有直接使用 `ptrace` 和 `seccomp` 来限制系统调用，而是构建一个包含各种语言运行环境的 Docker 镜像，
-将测试数据和用户的代码挂载到容器进行编译和判题，以此达到沙盒的效果。
-
 ## 使用
 
 ### 自动部署
 
-使用部署脚本(仅支持 Docker、Docker Swarm)：[Cloud Deploy Script](https://github.com/imcloudfloating/Cloud-OJ-Docker)
+推荐使用 Docker 一键部署，可参考[部署文档](https://github.com/imcloudfloating/Cloud-OJ/wiki/部署)
 
 ### 手动构建
 
@@ -80,15 +75,9 @@ mvn -B package '-Dmaven.test.skip=true' --file pom.xml
 cd web && npm install && npm run build
 ```
 
-### 4. 部署
+#### 4. 部署
 
 - 运行服务，指定 `prod` 配置文件：`java -jar -Dspring.profiles.active=prod xxx.jar`
 - Web 可使用 Nginx 部署
 
 若需要扩展服务，请改用 NFS 存储 OJ 文件并在节点挂载(默认目录是：`/var/lib/cloud_oj`)
-
-## Acknowledgement
-
-[![JetBrains](./.assets/jetbrains.svg)](https://www.jetbrains.com/?from=CloudOJ)
-
-Thanks to JetBrains' Open Source License support.
