@@ -29,6 +29,14 @@ import java.util.stream.Collectors;
 @Component
 public class Judgement {
 
+    private static final String MAX_MEM_LIMIT = "524287";
+    private static final String MEM_LIMIT = "65535";
+
+    private static final int AC = 0;
+    private static final int TLE = 2;
+    private static final int MLE = 3;
+    private static final int RE = 4;
+
     @Value("${project.file-dir}")
     private String fileDir;
 
@@ -37,9 +45,6 @@ public class Judgement {
 
     @Value("${project.runner-image}")
     private String runnerImage;
-
-    private static final String MAX_MEM_LIMIT = "524287";
-    private static final String MEM_LIMIT = "65535";
 
     @Resource
     private ObjectMapper objectMapper;
@@ -61,8 +66,6 @@ public class Judgement {
             super(msg);
         }
     }
-
-    private static final int AC = 0, TLE = 2, MLE = 3, RE = 4;
 
     /**
      * 判题
@@ -91,7 +94,12 @@ public class Judgement {
                 || runtime.getResult() == SolutionResult.RUNTIME_ERROR) {
             solution.setResult(runtime.getResult());
         } else {
-            long time = 0, memory = 0, ac = 0, tle = 0, mle = 0, re = 0;
+            long time = 0;
+            long memory = 0;
+            int ac = 0;
+            int tle = 0;
+            int mle = 0;
+            int re = 0;
 
             for (RunResult result : results) {
                 switch (result.getStatus()) {
