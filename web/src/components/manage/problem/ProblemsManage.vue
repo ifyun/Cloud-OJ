@@ -298,7 +298,7 @@ export default {
       this.selectedId = null
       this.editorTitle = '创建新题目'
       this.saveType = 'post'
-      this.editorDialogVisible = true
+      this.editorDialog.visible = true
     },
     onEditClick(row) {
       this.selectedId = row.problemId
