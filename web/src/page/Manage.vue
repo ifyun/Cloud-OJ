@@ -53,10 +53,10 @@ import BottomArea from "@/components/common/BottomArea"
 import {toLoginPage, userInfo} from "@/script/util"
 
 let page = new Map([
-  ['1', 'ProblemsManage'],
-  ['2', 'ContestManage'],
-  ['3', 'UserManage'],
-  ['4', 'Settings']
+  ["1", "ProblemsManage"],
+  ["2", "ContestManage"],
+  ["3", "UserManage"],
+  ["4", "Settings"]
 ])
 
 export default {
@@ -73,31 +73,30 @@ export default {
   beforeMount() {
     if (this.userInfo == null) {
       toLoginPage()
-    } else if (this.userInfo['roleId'] === 0) {
+    } else if (this.userInfo["roleId"] === 0) {
       this.error = {
         code: 403,
-        text: '你没有权限访问此页面'
+        text: "你没有权限访问此页面"
       }
     }
   },
   mounted() {
-    if (this.userInfo['roleId'] === 1) {
-      this.active = '3'
-      this.onSelect('3')
+    if (this.userInfo["roleId"] === 1) {
+      this.active = "3"
     } else {
-      this.active = '1'
-      this.onSelect('1')
+      this.active = "1"
     }
+    this.onSelect(this.active)
   },
   data() {
     return {
       userInfo: userInfo(),
       collapse: false,
-      active: '',
-      currentView: '',
+      active: "",
+      currentView: "",
       error: {
         code: undefined,
-        text: ''
+        text: ""
       }
     }
   },

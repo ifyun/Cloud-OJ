@@ -80,19 +80,18 @@ export default {
       },
       currentPage: 1,
       pageSize: 10,
-      resultTags: resultTags,
       languages: {
-        0: {name: 'C', icon: './icons/lang/c.svg'},
-        1: {name: 'C++', icon: './icons/lang/cpp.svg'},
-        2: {name: 'Java', icon: './icons/lang/java.svg'},
-        3: {name: 'Python', icon: './icons/lang/python.svg'},
-        4: {name: 'Bash', icon: './icons/lang/bash.svg'},
-        5: {name: 'C#', icon: './icons/lang/csharp.svg'},
-        6: {name: 'JavaScript', icon: './icons/lang/js.svg'},
-        7: {name: 'Kotlin', icon: './icons/lang/kotlin.svg'}
+        0: {name: "C", icon: "./icons/lang/c.svg"},
+        1: {name: "C++", icon: "./icons/lang/cpp.svg"},
+        2: {name: "Java", icon: "./icons/lang/java.svg"},
+        3: {name: "Python", icon: "./icons/lang/python.svg"},
+        4: {name: "Bash", icon: "./icons/lang/bash.svg"},
+        5: {name: "C#", icon: "./icons/lang/csharp.svg"},
+        6: {name: "JavaScript", icon: "./icons/lang/js.svg"},
+        7: {name: "Kotlin", icon: "./icons/lang/kotlin.svg"}
       },
       codeDialogVisible: false,
-      code: ''
+      code: ""
     }
   },
   methods: {
@@ -103,7 +102,7 @@ export default {
       this.loading = true
       this.$axios({
         url: apiPath.history,
-        method: 'get',
+        method: "get",
         headers: {
           token: userInfo().token,
           userId: userInfo().userId
@@ -120,7 +119,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '获取提交记录失败',
+            title: "获取提交记录失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -133,11 +132,11 @@ export default {
       this.codeDialogVisible = true
     },
     titleClick(solution) {
-      window.sessionStorage.setItem('code', JSON.stringify({
-        language: solution['language'],
-        code: solution['code']
+      window.sessionStorage.setItem("code", JSON.stringify({
+        language: solution["language"],
+        code: solution["code"]
       }))
-      window.location.href = `/commit?problemId=${solution['problemId']}`
+      window.location.href = `/commit?problemId=${solution["problemId"]}`
     },
     prettyMemory(mem) {
       if (mem <= 1024)

@@ -15,13 +15,13 @@ import ProblemList from "@/components/ProblemList"
 import {searchParams} from "@/script/util"
 
 export default {
-  name: 'Problems',
+  name: "Problems",
   mounted() {
-    this.active = this.contestId == null ? '1' : '2'
+    this.active = this.contestId == null ? "1" : "2"
   },
   data() {
     return {
-      active: '',
+      active: "",
       contestId: searchParams().contestId,
       contestName: searchParams().contestName
     }

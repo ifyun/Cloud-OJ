@@ -98,40 +98,40 @@
 <script>
 import {toLoginPage, searchParams, userInfo, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
-import {codemirror} from 'vue-codemirror'
-import 'codemirror/mode/clike/clike.js'
-import 'codemirror/mode/python/python.js'
-import 'codemirror/mode/shell/shell.js'
-import 'codemirror/mode/javascript/javascript'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/monokai.css'
-import 'codemirror/theme/material.css'
-import 'codemirror/theme/material-darker.css'
-import 'codemirror/theme/dracula.css'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/edit/closebrackets.js'
+import {codemirror} from "vue-codemirror"
+import "codemirror/mode/clike/clike.js"
+import "codemirror/mode/python/python.js"
+import "codemirror/mode/shell/shell.js"
+import "codemirror/mode/javascript/javascript"
+import "codemirror/lib/codemirror.css"
+import "codemirror/theme/monokai.css"
+import "codemirror/theme/material.css"
+import "codemirror/theme/material-darker.css"
+import "codemirror/theme/dracula.css"
+import "codemirror/addon/edit/matchbrackets.js"
+import "codemirror/addon/edit/closebrackets.js"
 import Error from "@/components/Error"
 
 const languageMode = [
-  'text/x-csrc',
-  'text/x-c++src',
-  'text/x-java',
-  'text/x-python',
-  'text/x-sh',
-  'text/x-csharp',
-  'text/javascript',
-  'text/x-kotlin'
+  "text/x-csrc",
+  "text/x-c++src",
+  "text/x-java",
+  "text/x-python",
+  "text/x-sh",
+  "text/x-csharp",
+  "text/javascript",
+  "text/x-kotlin"
 ]
 
 const languageOptions = [
-  {id: 0, name: 'C', version: 'gcc'},
-  {id: 1, name: 'C++', version: 'g++(std=14)'},
-  {id: 2, name: 'Java', version: '1.8'},
-  {id: 3, name: 'Python', version: '3.5'},
-  {id: 4, name: 'Bash'},
-  {id: 5, name: 'C#', version: 'Mono'},
-  {id: 6, name: 'JavaScript', version: 'Node v14'},
-  {id: 7, name: 'Kotlin', version: '1.4.10'}
+  {id: 0, name: "C", version: "gcc"},
+  {id: 1, name: "C++", version: "g++(std=14)"},
+  {id: 2, name: "Java", version: "1.8"},
+  {id: 3, name: "Python", version: "3.5"},
+  {id: 4, name: "Bash"},
+  {id: 5, name: "C#", version: "Mono"},
+  {id: 6, name: "JavaScript", version: "Node v14"},
+  {id: 7, name: "Kotlin", version: "1.4.10"}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
@@ -161,20 +161,20 @@ export default {
       windowHeight: document.body.clientHeight,
       error: {
         code: undefined,
-        text: ''
+        text: ""
       },
       problemId: searchParams().problemId,
       contestId: searchParams().contestId,
-      code: '',
+      code: "",
       codeStyle: [
-        {id: 'monokai', name: 'Monokai'},
-        {id: 'material', name: 'Material'},
-        {id: 'material-darker', name: 'Material Darker'},
-        {id: 'dracula', name: 'Dracula'},
+        {id: "monokai", name: "Monokai"},
+        {id: "material", name: "Material"},
+        {id: "material-darker", name: "Material Darker"},
+        {id: "dracula", name: "Dracula"},
       ],
       cmOptions: {
-        mode: 'text/x-csrc',
-        theme: 'monokai',
+        mode: "text/x-csrc",
+        theme: "monokai",
         tabSize: 4,
         smartIndent: true,
         indentUnit: 4,
@@ -188,7 +188,7 @@ export default {
       contest: {},
       enabledLanguages: [],
       language: 0,
-      solutionId: '',
+      solutionId: "",
       result: {},
       resultDialog: {
         disableRefresh: true,
@@ -203,26 +203,26 @@ export default {
     },
     calcContentHeight() {
       if (this.windowHeight <= 900)
-        return '800px'
+        return "800px"
       else if (this.windowHeight >= 1200)
-        return '1100px'
+        return "1100px"
       else
         return `${this.windowHeight - 130}px`
     },
     calcCodeHeight() {
       if (this.windowHeight <= 900)
-        return '640px'
+        return "640px"
       else if (this.windowHeight >= 1200)
-        return '850px'
+        return "850px"
       else
         return `${this.windowHeight - 290}px`
     },
     getCachedCode() {
-      let code = window.sessionStorage.getItem('code');
+      let code = window.sessionStorage.getItem("code");
       if (code != null) {
         code = JSON.parse(code)
-        this.code = code['code']
-        this.language = code['language']
+        this.code = code["code"]
+        this.language = code["language"]
         this.languageChange(this.language)
         this.$forceUpdate()
       }
@@ -232,7 +232,7 @@ export default {
       if (this.contestId !== undefined) {
         this.$axios({
           url: `${apiPath.contest}/lang/${this.contestId}`,
-          method: 'get'
+          method: "get"
         }).then((res) => {
           let languages = res.data.languages
           // 计算可用的语言
@@ -252,7 +252,7 @@ export default {
     getProblem() {
       let url = apiPath.problem
       let headers = {}, params = {}
-      if (userInfo() != null && userInfo()['roleId'] >= 2) {
+      if (userInfo() != null && userInfo()["roleId"] >= 2) {
         url = `${apiPath.problem}/pro`
         headers.userId = userInfo().userId
         headers.token = userInfo().token
@@ -264,7 +264,7 @@ export default {
       }
       this.$axios({
         url: `${url}/${this.problemId}`,
-        method: 'get',
+        method: "get",
         headers: headers,
         params: params
       }).then((res) => {
@@ -274,7 +274,7 @@ export default {
         } else if (res.status === 204) {
           this.error = {
             code: 404,
-            text: '题目不存在'
+            text: "题目不存在"
           }
         }
       }).catch((error) => {
@@ -289,7 +289,7 @@ export default {
             text: errorText
           }
           Notice.notify.error(this, {
-            title: '获取题目失败',
+            title: "获取题目失败",
             msg: `${res.status} ${errorText}`
           })
         }
@@ -303,7 +303,7 @@ export default {
      */
     commitCode() {
       if (userInfo() == null) {
-        alert('请先登录！')
+        alert("请先登录！")
         return
       }
       this.resultDialog.active = undefined
@@ -318,11 +318,11 @@ export default {
         data.contestId = this.contestId
       this.$axios({
         url: apiPath.commit,
-        method: 'post',
+        method: "post",
         headers: {
-          'userId': userInfo().userId,
-          'token': userInfo().token,
-          'Content-Type': 'application/json'
+          "userId": userInfo().userId,
+          "token": userInfo().token,
+          "Content-Type": "application/json"
         },
         data: JSON.stringify(data)
       }).then((res) => {
@@ -335,7 +335,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '提交失败',
+            title: "提交失败",
             message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
           })
         }
@@ -351,10 +351,10 @@ export default {
       this.resultDialog.disableRefresh = true
       this.$axios({
         url: apiPath.commit,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           solutionId: this.solutionId,
@@ -367,13 +367,13 @@ export default {
           }, 1000)
         } else if (count > 15) {
           this.result = {
-            type: 'info',
-            title: '未获取到结果',
-            desc: '可能提交人数过多，可手动刷新'
+            type: "info",
+            title: "未获取到结果",
+            desc: "可能提交人数过多，可手动刷新"
           }
           this.resultDialog.disableRefresh = false
         } else {
-          switch (res.data['state']) {
+          switch (res.data["state"]) {
             case ACCEPT:
               this.resultDialog.active = 1
               setTimeout(() => {
@@ -398,7 +398,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '无法获取结果',
+            title: "无法获取结果",
             message: `${res.status} ${res.statusText}`
           })
           this.resultDialog.disableRefresh = false
@@ -413,57 +413,57 @@ export default {
         case 0:
           this.result = {
             type: 'success',
-            title: '完全正确',
-            desc: '已通过全部测试点'
+            title: "完全正确",
+            desc: "已通过全部测试点"
           }
           break
         case 1:
           this.result = {
-            type: 'warning',
+            type: "warning",
             title: `时间超限(${data["passRate"] * 100})`,
-            desc: '时间复杂度有待优化'
+            desc: "时间复杂度有待优化"
           }
           break
         case 2:
           this.result = {
-            type: 'warning',
+            type: "warning",
             title: `内存超限(${data["passRate"] * 100})`,
-            desc: '空间复杂度有待优化'
+            desc: "空间复杂度有待优化"
           }
           break
         case 3:
           this.result = {
-            type: 'warning',
+            type: "warning",
             title: `部分通过(${data["passRate"] * 100})`,
-            desc: '可能漏掉了部分情况'
+            desc: "可能漏掉了部分情况"
           }
           break
         case 4:
           this.result = {
-            type: 'error',
-            title: '答案错误',
-            desc: '继续努力'
+            type: "error",
+            title: "答案错误",
+            desc: "继续努力"
           }
           break
         case 5:
           this.result = {
-            type: 'info',
-            title: '编译错误',
-            desc: '请仔细检查代码'
+            type: "info",
+            title: "编译错误",
+            desc: "请仔细检查代码"
           }
           break
         case 6:
           this.result = {
-            type: 'info',
-            title: '运行错误',
-            desc: '对于解释型语言，请检查是否存在语法错误'
+            type: "info",
+            title: "运行错误",
+            desc: "对于解释型语言，请检查是否存在语法错误"
           }
           break
         case 7:
           this.result = {
-            type: 'error',
-            title: '判题异常',
-            desc: '判题服务器出现了异常或者你提交了恶意代码'
+            type: "error",
+            title: "判题异常",
+            desc: "判题服务器出现了异常或者你提交了恶意代码"
           }
       }
     }

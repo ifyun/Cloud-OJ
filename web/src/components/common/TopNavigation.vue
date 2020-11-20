@@ -81,32 +81,32 @@ export default {
     return {
       userInfo: userInfo(),
       paths: {
-        '1': '/',
-        '2': '/contest',
-        '3': '/ranking',
-        '4': '/manage',
-        '5': '/help'
+        "1": "/",
+        "2": "/contest",
+        "3": "/ranking",
+        "4": "/manage",
+        "5": "/help"
       }
     }
   },
   methods: {
     onSelect(key) {
-      if (key === '3')
-        window.sessionStorage.removeItem('contest')
+      if (key === "3")
+        window.sessionStorage.removeItem("contest")
       window.location.href = this.paths[key]
     },
     login() {
-      window.location.href = '/login'
+      window.location.href = "/login"
     },
     userMenuClick(command) {
       switch (command) {
-        case 'history':
-          window.location.href = '/history'
+        case "history":
+          window.location.href = "/history"
           break
-        case 'profile':
-          window.location.href = '/profile'
+        case "profile":
+          window.location.href = "/profile"
           break
-        case 'exit':
+        case "exit":
           this.logoff()
           break
 
@@ -115,10 +115,10 @@ export default {
     logoff() {
       this.$axios({
         url: apiPath.logoff,
-        method: 'delete',
+        method: "delete",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         }
       }).then(() => {
         toLoginPage()

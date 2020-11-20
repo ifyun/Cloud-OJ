@@ -9,7 +9,7 @@
                :multiple="true"
                :auto-upload="false"
                :data="{'problemId': this.problemId}"
-               :headers="uploadHeaders"
+               :headers="headers"
                :on-success="onUploadSuccess"
                :file-list="fileList"
                accept=".in,.out">
@@ -94,9 +94,9 @@ export default {
       testData: [],
       fileList: [],
       uploadUrl: apiPath.testDataManage,
-      uploadHeaders: {
-        'token': userInfo().token,
-        'userId': userInfo().userId
+      headers: {
+        "token": userInfo().token,
+        "userId": userInfo().userId
       }
     }
   },
@@ -105,11 +105,8 @@ export default {
       this.loading = true
       this.$axios({
         url: `${apiPath.testDataManage}/${this.problemId}`,
-        method: 'get',
-        headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
-        }
+        method: "get",
+        headers: this.headers
       }).then((res) => {
         this.testData = res.data
       }).catch((error) => {
@@ -118,7 +115,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '获取数据失败',
+            title: "获取数据失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -129,7 +126,7 @@ export default {
     download(fileName) {
       let link = `${apiPath.testDataManage}/download/${this.problemId}`
           + `/${fileName}?userId=${userInfo().userId}&token=${userInfo().token}`
-      window.open(link, '_blank')
+      window.open(link, "_blank")
     },
     onUpload() {
       this.$refs.upload.submit();
@@ -138,17 +135,14 @@ export default {
       this.getTestData()
       Notice.notify.success(this, {
         title: `${file.name} 上传成功`,
-        message: ''
+        message: `${res.status} ${res.statusText}`
       })
     },
     deleteFile(fileName) {
       this.$axios({
         url: `${apiPath.testDataManage}/${this.problemId}`,
-        method: 'delete',
-        headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
-        },
+        method: "delete",
+        headers: this.headers,
         params: {
           name: fileName
         }

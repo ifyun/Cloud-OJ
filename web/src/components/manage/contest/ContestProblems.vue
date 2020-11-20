@@ -98,10 +98,10 @@ export default {
       this.loading = true
       this.$axios({
         url: `${apiPath.contestManage}/problem`,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           contestId: this.contestId,
@@ -113,7 +113,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: `获取数据失败`,
+          title: "获取数据失败",
           message: `${res.status} ${res.statusText}`
         })
       }).finally(() => {
@@ -123,10 +123,10 @@ export default {
     deleteProblem(problemId, title) {
       this.$axios({
         url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
-        method: 'delete',
+        method: "delete",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
       }).then((res) => {
         Notice.notify.success(this, {

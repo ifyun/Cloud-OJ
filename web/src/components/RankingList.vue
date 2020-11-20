@@ -97,7 +97,7 @@ export default {
     Error
   },
   mounted() {
-    this.contest = JSON.parse(window.sessionStorage.getItem('contest'))
+    this.contest = JSON.parse(window.sessionStorage.getItem("contest"))
     this.getRankingList()
   },
   data() {
@@ -114,12 +114,12 @@ export default {
       pageSize: 10,
       detailDialog: {
         visible: false,
-        title: '',
+        title: "",
         details: []
       },
       error: {
         code: undefined,
-        text: ''
+        text: ""
       }
     }
   },
@@ -143,7 +143,7 @@ export default {
       if (this.contest == null) {
         url = apiPath.ranking
       } else {
-        if (userInfo() != null && userInfo()['roleId'] >= 2) {
+        if (userInfo() != null && userInfo()["roleId"] >= 2) {
           url = apiPath.adminContestRanking
           headers = {
             token: userInfo() == null ? null : userInfo().token,
@@ -156,7 +156,7 @@ export default {
       }
       this.$axios({
         url: url,
-        method: 'get',
+        method: "get",
         headers: headers,
         params: {
           page: this.currentPage,
@@ -165,7 +165,7 @@ export default {
       }).then((res) => {
         this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
-          Notice.message.success(this, '排行榜已刷新')
+          Notice.message.success(this, "排行榜已刷新")
         }
       }).catch((error) => {
         let res = error.response
@@ -176,7 +176,7 @@ export default {
           }
         } else {
           Notice.notify.error(this, {
-            title: '获取排行榜失败',
+            title: "获取排行榜失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -185,7 +185,7 @@ export default {
       })
     },
     getDetail(row) {
-      if (this.contest != null && userInfo() != null && userInfo()['roleId'] >= 2) {
+      if (this.contest != null && userInfo() != null && userInfo()["roleId"] >= 2) {
         this.detailDialog.visible = true
         this.detailDialog.title = `${row.name} 每题得分`
         this.$axios.get(apiPath.contestDetail, {
@@ -202,7 +202,7 @@ export default {
         }).catch((error) => {
           let res = error.response
           Notice.notify.error(this, {
-            title: '获取详细得分失败',
+            title: "获取详细得分失败",
             message: `${res.status} ${res.statusText}`
           })
         })

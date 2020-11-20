@@ -64,7 +64,7 @@ import {apiPath} from "@/script/env"
 export default {
   name: "Settings",
   beforeMount() {
-    document.title = `系统设置 · Cloud OJ`
+    document.title = "系统设置 · Cloud OJ"
     this.getQueueInfo()
     this.getSettings()
   },
@@ -84,18 +84,18 @@ export default {
     getQueueInfo(refresh) {
       this.$axios.get(apiPath.queueInfo, {
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         }
       }).then((res) => {
         this.queueInfo = res.data
         if (refresh === true) {
-          Notice.message.success(this, '队列信息已刷新')
+          Notice.message.success(this, "队列信息已刷新")
         }
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: '获取队列信息失败',
+          title: "获取队列信息失败",
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })
       })
@@ -103,15 +103,15 @@ export default {
     getSettings() {
       this.$axios.get(apiPath.settings, {
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         }
       }).then((res) => {
         this.settings = res.data
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: '获取系统设置失败',
+          title: "获取系统设置失败",
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })
       })
@@ -119,22 +119,22 @@ export default {
     saveSettings() {
       this.$axios({
         url: apiPath.settings,
-        method: 'put',
+        method: "put",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId,
-          'Content-Type': 'application/json'
+          "token": userInfo().token,
+          "userId": userInfo().userId,
+          "Content-Type": "application/json"
         },
         data: JSON.stringify(this.settings)
       }).then((res) => {
         Notice.notify.success(this, {
-          title: '已保存',
+          title: "已保存",
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: '保存系统设置失败',
+          title: "保存系统设置失败",
           message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
         })
       })

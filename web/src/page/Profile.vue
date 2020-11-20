@@ -30,7 +30,7 @@ export default {
     if (!this.display) {
       toLoginPage()
     }
-    document.title = '个人中心 · Cloud OJ'
+    document.title = "个人中心 · Cloud OJ"
   },
   components: {
     TopNavigation,

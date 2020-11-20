@@ -8,15 +8,14 @@
 </template>
 
 <script>
-import ECharts from 'vue-echarts'
-import 'echarts/lib/chart/pie'
-import 'echarts/theme/macarons'
-import 'echarts/theme/royal'
+import ECharts from "vue-echarts"
+import "echarts/lib/chart/pie"
+import "echarts/theme/macarons"
+import "echarts/theme/royal"
 import {Notice, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {apiPath, languages} from "@/script/env"
 
 const year = new Date().getFullYear()
-const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#', 'JavaScript', 'Kotlin']
 
 export default {
   name: "Overview",
@@ -30,28 +29,28 @@ export default {
     return {
       pieOption: {
         title: {
-          text: '语言偏好',
+          text: "语言偏好",
           textStyle: {
             color: '#333'
           }
         },
         tooltip: {
-          trigger: 'item',
+          trigger: "item",
           formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
         legend: {
-          left: 'left',
-          top: '50',
-          orient: 'vertical',
+          left: "left",
+          top: "50",
+          orient: "vertical",
           data: languages
         },
         series: [
           {
-            name: '语言偏好',
-            type: 'pie',
-            center: ['55%', '50%'],
+            name: "语言偏好",
+            type: "pie",
+            center: ["55%", "50%"],
             radius: [60, 120],
-            roseType: 'area',
+            roseType: "area",
             data: []
           }
         ]
@@ -59,7 +58,7 @@ export default {
       activitiesOption: {
         title: {
           top: 0,
-          text: '年度做题情况',
+          text: "年度做题情况",
           textStyle: {
             color: '#333'
           }
@@ -68,22 +67,22 @@ export default {
         visualMap: {
           min: 0,
           max: 20,
-          type: 'piecewise',
-          orient: 'horizontal',
-          left: 'center',
+          type: "piecewise",
+          orient: "horizontal",
+          left: "center",
           top: 35
         },
         calendar: {
           top: 100,
           right: 10,
-          cellSize: ['auto', 14],
-          range: '2020',
+          cellSize: ["auto", 14],
+          range: "2020",
           dayLabel: {
             firstDay: 1,
-            nameMap: 'cn'
+            nameMap: "cn"
           },
           monthLabel: {
-            nameMap: 'cn'
+            nameMap: "cn"
           },
           itemStyle: {
             borderWidth: 0.2
@@ -97,8 +96,8 @@ export default {
           yearLabel: {show: true}
         },
         series: {
-          type: 'heatmap',
-          coordinateSystem: 'calendar',
+          type: "heatmap",
+          coordinateSystem: "calendar",
           data: []
         }
       }
@@ -117,29 +116,29 @@ export default {
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: '获取数据失败',
+          title: "获取数据失败",
           message: `${res.status} ${res.statusText}`
         })
       })
     },
     setChartsData(overview) {
-      let preference = overview['preference']
-      let activities = overview['activities']
+      let preference = overview["preference"]
+      let activities = overview["activities"]
 
       let preferenceData = []
       let activitiesData = []
 
       for (let i = 0; i < preference.length; i++) {
         preferenceData.push({
-          name: languages[preference[i]['language']],
-          value: preference[i]['count']
+          name: languages[preference[i]["language"]],
+          value: preference[i]["count"]
         })
       }
 
       for (let i = 0; i < activities.length; i++) {
         activitiesData.push([
-          activities[i]['date'],
-          activities[i]['count']
+          activities[i]["date"],
+          activities[i]["count"]
         ])
       }
 

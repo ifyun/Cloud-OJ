@@ -62,41 +62,41 @@ export default {
   name: "SignupTab",
   data() {
     let validatePassword = (rule, value, callback) => {
-      if (value === '')
-        callback(new Error('请再次输入密码'))
+      if (value === "")
+        callback(new Error("请再次输入密码"))
       else if (value !== this.signupForm.password)
-        callback(new Error('两次输入密码不一致'))
+        callback(new Error("两次输入密码不一致"))
       else
         callback()
     }
     return {
       loading: false,
       signupForm: {
-        name: '',
-        userId: '',
-        password: '',
-        checkPassword: '',
-        section: '',
-        email: ''
+        name: "",
+        userId: "",
+        password: "",
+        checkPassword: "",
+        section: "",
+        email: ""
       },
       rules: {
         name: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 2, max: 16, message: '长度在 2 ~ 16 个字符', trigger: 'blur'}
+          {required: true, message: "请输入用户名", trigger: "blur"},
+          {min: 2, max: 16, message: "长度在 2 ~ 16 个字符", trigger: "blur"}
         ],
         userId: [
-          {required: true, message: '请输入ID', trigger: 'blur'},
-          {min: 6, max: 16, message: '长度在 6 ~ 16 个字符', trigger: 'blur'}
+          {required: true, message: "请输入ID", trigger: "blur"},
+          {min: 6, max: 16, message: "长度在 6 ~ 16 个字符", trigger: "blur"}
         ],
         email: [
-          {type: 'email', message: '请输入邮箱', trigger: 'blur'}
+          {type: "email", message: "请输入邮箱", trigger: "blur"}
         ],
         password: [
-          {required: true, message: '请输入密码', trigger: 'blur'},
-          {min: 6, max: 16, message: '长度在 6 ~ 16 位字符', trigger: 'blur'}
+          {required: true, message: "请输入密码", trigger: "blur"},
+          {min: 6, max: 16, message: "长度在 6 ~ 16 位字符", trigger: "blur"}
         ],
         checkPassword: [
-          {validator: validatePassword, trigger: 'blur'}
+          {validator: validatePassword, trigger: "blur"}
         ]
       }
     }
@@ -107,13 +107,13 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let data = copyObject(this.signupForm)
-          data.checkPassword = ''
+          data.checkPassword = ""
           data.password = bcrypt.hashSync(this.$md5(data.password), 10)
           this.$axios({
             url: apiPath.user,
-            method: 'post',
+            method: "post",
             headers: {
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json"
             },
             data: JSON.stringify(data)
           }).then((res) => {
@@ -122,16 +122,16 @@ export default {
               message: `${res.status} ${res.statusText}`
             })
             this.$refs[formName].resetFields()
-            this.$refs['deleteForm'].clearValidate()
+            this.$refs["deleteForm"].clearValidate()
           }).catch((error) => {
             let res = error.response
             let msg
             if (res.status === 409)
-              msg = '用户已存在'
+              msg = "用户已存在"
             else
               msg = res.data.msg === undefined ? res.statusText : res.data.msg
             Notice.notify.error(this, {
-              title: '注册失败',
+              title: "注册失败",
               message: `${res.status} ${msg}`
             })
           }).finally(() => {

@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     gotoIndex() {
-      window.location.href = './'
+      window.location.href = "./"
     },
     back() {
       window.history.back()
