@@ -1,8 +1,8 @@
 FROM openjdk:8-jdk-stretch
 ENV TIME_ZONE Asia/Shanghai
 COPY ./sources.list /etc/apt/sources.list
-COPY ./*.cpp ./*.h /
-RUN wget --no-check-certificate --content-disposition \
+COPY ./src /src
+RUN curl -LJO \
     https://github.com/JetBrains/kotlin/releases/download/v1.4.10/kotlin-compiler-1.4.10.zip \
     && unzip -d /opt kotlin-compiler-1.4.10.zip \
     && ln -s /opt/kotlinc/bin/kotlinc /usr/bin/kotlinc \
@@ -14,5 +14,5 @@ RUN libs="gcc g++ python3 mono-devel nodejs" \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
     && apt-get install -y --no-install-recommends $libs \
-    && apt-get clean
-RUN g++ ./runner.cpp ./utils.cpp -o /usr/bin/runner && rm ./*.cpp ./*.h
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN g++ ./src/runner.cpp ./src/utils.cpp -o /usr/bin/runner && rm -rf /src

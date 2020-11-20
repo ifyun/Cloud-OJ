@@ -9,7 +9,7 @@ RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && libs="libltdl7" \
     && apt-get update \
     && apt-get install -y --no-install-recommends $libs \
-    && apt-get clean && apt-get autoclean
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 EXPOSE 8002
 ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
