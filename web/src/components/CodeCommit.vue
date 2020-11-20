@@ -243,7 +243,11 @@ export default {
           })
           this.language = this.enabledLanguages[0].id
         }).catch((error) => {
-          console.log(error)
+          let res = error.response
+          Notice.notify.error(this, {
+            title: "无法获取语言",
+            message: `${res.status} ${res.statusText}`
+          })
         })
       } else {
         this.enabledLanguages = languageOptions

@@ -97,7 +97,7 @@ export default {
           {min: 6, max: 16, message: "长度在 6 ~ 16 位字符", trigger: "blur"}
         ],
         newPassword: [
-          {min: 6, max: 16, message: '长度在 6 ~ 16 位字符', trigger: "blur"}
+          {min: 6, max: 16, message: "长度在 6 ~ 16 位字符", trigger: "blur"}
         ]
       }
     }
