@@ -37,15 +37,15 @@ export default {
     return {
       loading: false,
       loginForm: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       },
       loginRules: {
         username: [
-          {required: true, message: '请输入用户名', trigger: 'blur'}
+          {required: true, message: "请输入用户名", trigger: "blur"}
         ],
         password: [
-          {required: true, message: '请输入密码', trigger: 'blur'}
+          {required: true, message: "请输入密码", trigger: "blur"}
         ]
       }
     }
@@ -53,30 +53,30 @@ export default {
   methods: {
     onLogin() {
       this.loading = true
-      this.$refs['loginForm'].validate((valid) => {
+      this.$refs["loginForm"].validate((valid) => {
         if (valid) {
           let data = copyObject(this.loginForm)
           data.password = this.$md5(data.password)
           this.$axios({
             url: apiPath.login,
-            method: 'post',
+            method: "post",
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
+              "Content-Type": "application/x-www-form-urlencoded"
             },
             data: this.qs.stringify(data)
           }).then((res) => {
             saveToken(JSON.stringify(res.data))
-            window.location.href = '../'
+            window.location.href = "../"
           }).catch((error) => {
             let res = error.response
             if (res.status === 400) {
               Notice.notify.warning(this, {
-                title: '登录失败',
-                message: '用户名或密码错误!'
+                title: "登录失败",
+                message: "用户名或密码错误!"
               })
             } else {
               Notice.notify.error(this, {
-                title: '登录失败',
+                title: "登录失败",
                 message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
               })
             }

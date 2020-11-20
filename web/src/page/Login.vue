@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      activeTab: 'login'
+      activeTab: "login"
     }
   }
 }

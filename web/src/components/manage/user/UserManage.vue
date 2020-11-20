@@ -99,30 +99,30 @@ export default {
   name: "UserManage",
   components: {UserEditor},
   beforeMount() {
-    document.title = `用户管理 · Cloud OJ`
+    document.title = "用户管理 · Cloud OJ"
     this.getUsers()
   },
   data() {
     let validateDelete = (rule, value, callback) => {
       if (value !== this.selectedUser.userId)
-        return callback(new Error('请确认输入正确'))
+        return callback(new Error("请确认输入正确"))
       callback()
     }
     return {
       loading: Boolean,
       roleNames: [
-        '用户',
-        '用户管理',
-        '题库管理',
-        'ROOT'
+        "用户",
+        "用户管理员",
+        "题库管理员",
+        "ROOT"
       ],
       roleTypes: [
-        'info',
-        'success',
-        'primary',
-        'danger'
+        "info",
+        "success",
+        "primary",
+        "danger"
       ],
-      editorTitle: '',
+      editorTitle: "",
       selectedUser: {},
       users: {
         data: [],
@@ -131,17 +131,17 @@ export default {
       currentPage: 1,
       pageSize: 15,
       deleteForm: {
-        checkUserId: ''
+        checkUserId: ""
       },
       deleteRules: {
         checkUserId: [
-          {required: true, message: '请输入用户ID', trigger: 'blur'},
-          {validator: validateDelete, trigger: 'blur'}
+          {required: true, message: "请输入用户ID", trigger: "blur"},
+          {validator: validateDelete, trigger: "blur"}
         ]
       },
       editorDialogVisible: false,
       deleteDialogVisible: false,
-      saveType: '',
+      saveType: "",
     }
   },
   methods: {
@@ -149,10 +149,10 @@ export default {
       this.loading = true
       this.$axios({
         url: apiPath.userManage,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           page: this.currentPage,
@@ -161,7 +161,7 @@ export default {
       }).then((res) => {
         this.users = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
-          Notice.message.success(this, '用户列表已刷新')
+          Notice.message.success(this, "用户列表已刷新")
         }
       }).catch((error) => {
         let res = error.response
@@ -169,7 +169,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '获取数据失败',
+            title: "获取数据失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -179,36 +179,36 @@ export default {
     },
     onAddClick() {
       this.selectedUser = {}
-      this.saveType = 'post'
-      this.editorTitle = '创建用户'
+      this.saveType = "post"
+      this.editorTitle = "创建用户"
       this.editorDialogVisible = true
     },
     onEditClick(row) {
       this.selectedUser = copyObject(row)
-      this.saveType = 'put'
-      this.editorTitle = `修改用户【${row.userId}】的信息`
+      this.saveType = "put"
+      this.editorTitle = `编辑用户【${row.userId}】`
       this.editorDialogVisible = true
     },
     onDeleteClick(row) {
-      this.deleteForm.checkUserId = ''
+      this.deleteForm.checkUserId = ""
       this.selectedUser = copyObject(row)
       this.deleteDialogVisible = true
     },
     onDelete() {
-      this.$refs['deleteForm'].validate((valid) => {
+      this.$refs["deleteForm"].validate((valid) => {
         if (valid) {
           if (this.selectedUser.userId === userInfo().userId) {
             Notice.notify.warning(this, {
-              title: '无法删除',
-              message: '你当前正在使用该用户'
+              title: "无法删除",
+              message: "你当前正在使用该用户"
             })
           }
           this.$axios({
             url: `${apiPath.userManage}/${this.selectedUser.userId}`,
-            method: 'delete',
+            method: "delete",
             headers: {
-              'token': userInfo().token,
-              'userId': userInfo().userId
+              "token": userInfo().token,
+              "userId": userInfo().userId
             }
           }).then((res) => {
             this.getUsers()
@@ -224,7 +224,7 @@ export default {
             } else {
               let msg
               if (res.status === 409)
-                msg = `此用户存在做题记录，无法删除`
+                msg = "此用户存在做题记录，无法删除"
               else
                 msg = res.data.msg === undefined ? res.statusText : res.data.msg
               Notice.notify.warning(this, {

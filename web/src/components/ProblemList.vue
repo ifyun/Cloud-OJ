@@ -92,14 +92,14 @@
 </template>
 
 <script>
-import {clearCachedCode, Notice, tagColor, toLoginPage, userInfo} from '@/script/util'
+import {clearCachedCode, Notice, tagColor, toLoginPage, userInfo} from "@/script/util"
 import {resultTags} from "@/script/env"
 
 export default {
   name: "ProblemList",
-  props: ['contestId', 'contestName'],
+  props: ["contestId", "contestName"],
   mounted() {
-    document.title = `${this.contestId == null ? '题库' : this.contestName} · Cloud OJ`
+    document.title = `${this.contestId == null ? "题库" : this.contestName} · Cloud OJ`
     clearCachedCode()
     if (this.contestId != null && userInfo() == null) {
       toLoginPage()
@@ -115,7 +115,7 @@ export default {
       },
       pageSize: 10,
       currentPage: 1,
-      keyword: '',
+      keyword: "",
       showKeyword: false,
       resultTags: resultTags
     }
@@ -124,7 +124,7 @@ export default {
     getTagColor: tagColor,
     getProblems() {
       this.loading = true
-      let path = this.contestId != null ? `contest/problem` : 'problem'
+      let path = this.contestId != null ? `contest/problem` : "problem"
       let headers = {}
       let params = {
         page: this.currentPage,
@@ -140,11 +140,11 @@ export default {
       if (userInfo() != null) {
         params.userId = userInfo().userId
       }
-      if (this.keyword !== '')
+      if (this.keyword !== "")
         params.keyword = this.keyword
       this.$axios({
         url: `api/manager/${path}`,
-        method: 'get',
+        method: "get",
         headers: headers,
         params: params
       }).then((res) => {
@@ -155,7 +155,7 @@ export default {
           toLoginPage()
         }
         Notice.notify.error(this, {
-          title: '获取题目失败',
+          title: "获取题目失败",
           message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
         })
       }).finally(() => {
@@ -163,7 +163,7 @@ export default {
       })
     },
     onTagClose() {
-      this.keyword = ''
+      this.keyword = ""
       this.showKeyword = false
       this.getProblems()
     },

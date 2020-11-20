@@ -1,5 +1,6 @@
 package group._204.oj.judge.component;
 
+import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.type.Language;
 import lombok.SneakyThrows;
@@ -62,15 +63,24 @@ class Compiler {
     public Compile compile(String solutionId, int languageId, String source) {
         String src = writeCode(solutionId, languageId, source);
 
-        if (src.isEmpty())
-            return new Compile(solutionId, -1, "无法写入源码");
+        if (src.isEmpty()) {
+            String info = "无法写入源码";
+            log.error("编译异常: {}", info);
+            return new Compile(solutionId, -1, info);
+        }
 
         Language language = Language.get(languageId);
 
-        if (language != null)
-            return compileSource(solutionId, languageId);
-        else
+        if (language != null) {
+            try {
+                return compileSource(solutionId, languageId);
+            } catch (UnsupportedLanguageError e) {
+                log.error("编译异常: {}", e.getMessage());
+                return new Compile(solutionId, -1, "不支持的语言");
+            }
+        } else {
             return new Compile(solutionId, -1, "不支持的语言");
+        }
     }
 
     /**
@@ -80,7 +90,7 @@ class Compiler {
      * @param languageId 语言类型
      * @return {@link Compile} 编译结果
      */
-    public Compile compileSource(String solutionId, int languageId) {
+    public Compile compileSource(String solutionId, int languageId) throws UnsupportedLanguageError {
         Language language = Language.get(languageId);
 
         if (language == null) {
@@ -102,17 +112,20 @@ class Compiler {
             case JAVA:
                 cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
                 break;
+            case C_SHARP:
+                cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
+                break;
+            case KOTLIN:
+                cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
+                break;
             case PYTHON:
                 return new Compile(solutionId, 0, "Python");
             case BASH:
                 return new Compile(solutionId, 0, "Bash");
-            case C_SHARP:
-                cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
-                break;
             case JAVA_SCRIPT:
                 return new Compile(solutionId, 0, "JavaScript");
-            case KOTLIN:
-                cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
+            default:
+                throw new UnsupportedLanguageError("Unsupported language.");
         }
 
         try {

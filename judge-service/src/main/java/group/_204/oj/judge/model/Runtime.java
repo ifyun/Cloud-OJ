@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 public class Runtime {
     private Integer id;
     private String solutionId;
-    private int total;
-    private Long passed;
+    private Integer total;
+    private Integer passed;
     private Long time;
     private Long memory;
     private SolutionResult result;
     private String info;
 
     public Runtime(String solutionId) {
-        this(null, solutionId, 0, 0L, null, null, null, null);
+        this(null, solutionId, 0, 0, null, null, null, null);
     }
 }

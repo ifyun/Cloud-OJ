@@ -78,11 +78,9 @@ public class TestDataController {
         String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
 
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                log.error("无法创建目录 {}", dir.getName());
-                return ResponseEntity.status(500).body("无法创建目录.");
-            }
+        if (!dir.exists() && !dir.mkdirs()) {
+            log.error("无法创建目录 {}", dir.getName());
+            return ResponseEntity.status(500).body("无法创建目录.");
         }
 
         for (MultipartFile file : files) {

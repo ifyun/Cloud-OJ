@@ -1,8 +1,8 @@
-import qs from 'qs'
+import qs from "qs"
 
 let colorIndex = 1,
     colorMap = new Map()
-const TOKEN = 'token'
+const TOKEN = "token"
 
 function tagColor(tag) {
     if (colorMap[tag] === undefined) {
@@ -22,7 +22,7 @@ function searchParams() {
 
 function toLoginPage() {
     clearToken()
-    window.location.href = '/login'
+    window.location.href = "/login"
 }
 
 function saveToken(value) {
@@ -34,7 +34,7 @@ function clearToken() {
 }
 
 function clearCachedCode() {
-    sessionStorage.removeItem('code')
+    sessionStorage.removeItem("code")
 }
 
 function copyObject(src) {
@@ -45,8 +45,8 @@ function callNotify(ctx, data, type) {
     ctx.$notify[type]({
         offset: 50,
         duration: 1500,
-        title: data['title'],
-        message: data['message']
+        title: data["title"],
+        message: data["message"]
     })
 }
 
@@ -61,30 +61,30 @@ function callMessage(ctx, msg, type) {
 const Notice = {
     notify: {
         success: (ctx, data) => {
-            callNotify(ctx, data, 'success')
+            callNotify(ctx, data, "success")
         },
         info: (ctx, data) => {
-            callNotify(ctx, data, 'info')
+            callNotify(ctx, data, "info")
         },
         warning: (ctx, data) => {
-            callNotify(ctx, data, 'warning')
+            callNotify(ctx, data, "warning")
         },
         error: (ctx, data) => {
-            callNotify(ctx, data, 'error')
+            callNotify(ctx, data, "error")
         }
     },
     message: {
         success: (ctx, msg) => {
-            callMessage(ctx, msg, 'success')
+            callMessage(ctx, msg, "success")
         },
         info: (ctx, msg) => {
-            callMessage(ctx, msg, 'info')
+            callMessage(ctx, msg, "info")
         },
         warning: (ctx, msg) => {
-            callMessage(ctx, msg, 'warning')
+            callMessage(ctx, msg, "warning")
         },
         error: (ctx, msg) => {
-            callMessage(ctx, msg, 'error')
+            callMessage(ctx, msg, "error")
         }
     }
 }

@@ -43,14 +43,14 @@ import {apiPath} from "@/script/env"
 const MAX_LANG_ID = 7
 
 const languageOptions = [
-  {id: 0, name: 'C'},
-  {id: 1, name: 'C++'},
-  {id: 2, name: 'Java'},
-  {id: 3, name: 'Python'},
-  {id: 4, name: 'Bash Shell'},
-  {id: 5, name: 'C#'},
-  {id: 6, name: 'JavaScript'},
-  {id: 7, name: 'Kotlin'}
+  {id: 0, name: "C"},
+  {id: 1, name: "C++"},
+  {id: 2, name: "Java"},
+  {id: 3, name: "Python"},
+  {id: 4, name: "Bash Shell"},
+  {id: 5, name: "C#"},
+  {id: 6, name: "JavaScript"},
+  {id: 7, name: "Kotlin"}
 ]
 
 export default {
@@ -71,29 +71,29 @@ export default {
   data() {
     let validateEndTime = (rule, value, callback) => {
       if (new Date(value) <= new Date(this.contest.startAt))
-        return callback(new Error('结束时间必须大于开始时间'))
+        return callback(new Error("结束时间必须大于开始时间"))
       callback()
     }
     let validateLanguages = (rule, value, callback) => {
       if (this.enabledLanguages.length === 0)
-        return callback(new Error('请至少选择一种语言'))
+        return callback(new Error("请至少选择一种语言"))
       callback()
     }
     return {
       contestRules: {
         contestName: [
-          {required: true, message: '请输入竞赛/作业名称', trigger: 'blur'},
-          {min: 4, max: 20, message: '长度在 4 ~ 20 个字符', trigger: 'blur'}
+          {required: true, message: "请输入竞赛/作业名称", trigger: "blur"},
+          {min: 4, max: 20, message: "长度在 4 ~ 20 个字符", trigger: "blur"}
         ],
         startAt: [
-          {required: true, message: '请选择开始时间', trigger: 'blur'}
+          {required: true, message: "请选择开始时间", trigger: "blur"}
         ],
         endAt: [
-          {required: true, message: '请选择结束时间', trigger: 'blur'},
-          {validator: validateEndTime, trigger: 'blur'}
+          {required: true, message: "请选择结束时间", trigger: "blur"},
+          {validator: validateEndTime, trigger: "blur"}
         ],
         languages: [
-          {required: true, validator: validateLanguages, trigger: 'change'}
+          {required: true, validator: validateLanguages, trigger: "change"}
         ]
       },
       enabledLanguages: [],
@@ -103,9 +103,9 @@ export default {
   methods: {
     listLanguages() {
       this.enabledLanguages = []
-      let formLoaded = this.$refs['edit-contest'] !== undefined
+      let formLoaded = this.$refs["edit-contest"] !== undefined
       if (formLoaded)
-        this.$refs['edit-contest'].clearValidate()
+        this.$refs["edit-contest"].clearValidate()
       if (Object.keys(this.contest).length > 0) {
         let lang = this.contest.languages
         // 列出语言
@@ -118,7 +118,7 @@ export default {
       }
     },
     onSave(type) {
-      this.$refs['edit-contest'].validate((valid) => {
+      this.$refs["edit-contest"].validate((valid) => {
         if (valid) {
           let languages = 0
           // 计算允许的语言
@@ -135,9 +135,9 @@ export default {
             url: apiPath.contestManage,
             method: type,
             headers: {
-              'Content-Type': "application/json",
-              'token': userInfo().token,
-              'userId': userInfo().userId
+              "Content-Type": "application/json",
+              "token": userInfo().token,
+              "userId": userInfo().userId
             },
             data: JSON.stringify(contest)
           }).then((res) => {
@@ -145,8 +145,8 @@ export default {
               title: `【${contest.contestName}】已保存`,
               message: `${res.status} ${res.statusText}`
             })
-            this.$emit('update:dialogVisible', false)
-            this.$emit('refresh')
+            this.$emit("update:dialogVisible", false)
+            this.$emit("refresh")
           }).catch((error) => {
             let res = error.response
             if (res.status === 401) {

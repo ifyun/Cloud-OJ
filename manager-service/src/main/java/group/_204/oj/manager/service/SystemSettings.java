@@ -19,6 +19,14 @@ import java.io.IOException;
 @Service
 public class SystemSettings {
 
+    @Value("${project.file-dir}")
+    private String fileDir;
+
+    @Resource
+    private ObjectMapper objectMapper;
+
+    private Config config = new Config();
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -27,14 +35,6 @@ public class SystemSettings {
         private boolean showRankingAfterEnded = false;
         private boolean showNotStartedContest = false;
     }
-
-    @Value("${project.file-dir}")
-    private String fileDir;
-
-    @Resource
-    private ObjectMapper objectMapper;
-
-    private Config config = new Config();
 
     @PostConstruct
     public void init() {

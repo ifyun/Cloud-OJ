@@ -104,17 +104,17 @@ export default {
       immediate: true,
       handler() {
         if (this.dialogVisible) {
-          let formLoaded = this.$refs['problemForm'] !== undefined
+          let formLoaded = this.$refs["problemForm"] !== undefined
           this.firstChange = true
           if (this.problemId != null)
             this.getProblem()
           else {
             if (formLoaded)
-              this.$refs['problemForm'].resetFields()
+              this.$refs["problemForm"].resetFields()
             this.tags = []
           }
           if (formLoaded)
-            this.$refs['problemForm'].clearValidate()
+            this.$refs["problemForm"].clearValidate()
         }
       }
     },
@@ -134,43 +134,43 @@ export default {
       firstChange: true,  // problem 对象是否首次改变
       dataChanged: false, // problem 对象是否已发生改变，无变化则禁用保存按钮
       problem: {
-        title: '',
-        description: '',
-        timeout: '',
-        score: '',
-        input: '',
-        output: '',
-        sampleInput: '',
-        sampleOutput: ''
+        title: "",
+        description: "",
+        timeout: "",
+        score: "",
+        input: "",
+        output: "",
+        sampleInput: "",
+        sampleOutput: ""
       },
       problemRules: {
         title: [
-          {required: true, message: '请输入题目名称', trigger: 'blur'}
+          {required: true, message: "请输入题目名称", trigger: "blur"}
         ],
         score: [
-          {required: true, type: 'number', message: '请填写分值', trigger: 'blur'}
+          {required: true, type: "number", message: "请填写分值", trigger: "blur"}
         ],
         timeout: [
-          {required: true, type: 'number', message: '请填写时限', trigger: 'blur'}
+          {required: true, type: "number", message: "请填写时限", trigger: "blur"}
         ],
         description: [
-          {required: true, message: '请输入题目描述', trigger: 'blur'}
+          {required: true, message: "请输入题目描述", trigger: "blur"}
         ],
         input: [
-          {required: true, message: '请填写输入说明', trigger: 'blur'}
+          {required: true, message: "请填写输入说明", trigger: "blur"}
         ],
         output: [
-          {required: true, message: '请填写输出说明', trigger: 'blur'}
+          {required: true, message: "请填写输出说明", trigger: "blur"}
         ],
         sampleInput: [
-          {required: true, message: '请填写输入样例', trigger: 'blur'}
+          {required: true, message: "请填写输入样例", trigger: "blur"}
         ],
         sampleOutput: [
-          {required: true, message: '请填写输出样例', trigger: 'blur'}
+          {required: true, message: "请填写输出样例", trigger: "blur"}
         ]
       },
       tags: [],
-      newTag: '',
+      newTag: "",
       newTagVisible: false,
       textAreaSize: {
         minRows: 3,
@@ -182,21 +182,21 @@ export default {
     getProblem() {
       this.$axios({
         url: `${apiPath.problemManage}/${this.problemId}`,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         }
       }).then((res) => {
         this.problem = res.data
-        this.tags = this.problem.category.split(',')
+        this.tags = this.problem.category.split(",")
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: '获取题目内容失败',
+            title: "获取题目内容失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -219,25 +219,25 @@ export default {
         this.dataChanged = true
       }
       this.newTagVisible = false
-      this.newTag = ''
+      this.newTag = ""
     },
     onSave(type) {
       this.problem.createAt = null
-      this.problem.category = this.tags.join(',')
+      this.problem.category = this.tags.join(",")
       this.$axios({
         url: apiPath.problemManage,
         method: type,
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId,
-          'Content-Type': 'application/json'
+          "token": userInfo().token,
+          "userId": userInfo().userId,
+          "Content-Type": "application/json"
         },
         data: JSON.stringify(this.problem)
       }).then((res) => {
-        this.$emit('update:dialogVisible', false)
-        this.$emit('refresh')
+        this.$emit("update:dialogVisible", false)
+        this.$emit("refresh")
         Notice.notify.success(this, {
-          title: `【${this.problem.title}】已${type === 'post' ? '创建' : '保存'}`,
+          title: `【${this.problem.title}】已${type === "post" ? "创建" : "保存"}`,
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -254,7 +254,7 @@ export default {
             break
           default:
             Notice.notify.error(this, {
-              title: `【${this.problem.title}】${type === 'post' ? '创建' : '保存'}失败`,
+              title: `【${this.problem.title}】${type === "post" ? "创建" : "保存"}失败`,
               message: `${res.status} ${res.statusText}`
             })
         }

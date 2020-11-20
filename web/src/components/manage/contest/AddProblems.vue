@@ -74,10 +74,10 @@ export default {
     getProblems() {
       this.$axios({
         url: `${apiPath.contestManage}/${this.contestId}`,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           page: this.currentPage,
@@ -91,7 +91,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: `获取数据失败`,
+            title: "获取数据失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -102,10 +102,10 @@ export default {
     addProblemToContest(problemId, title) {
       this.$axios({
         url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
-        method: 'post',
+        method: "post",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         }
       }).then((res) => {
         Notice.notify.success(this, {

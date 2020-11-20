@@ -19,13 +19,13 @@ export default {
     BottomArea
   },
   mounted() {
-    document.title = '404 · Cloud OJ'
+    document.title = "404 · Cloud OJ"
   },
   data() {
     return {
       error: {
         code: 404,
-        text: '页面不存在'
+        text: "页面不存在"
       }
     }
   }

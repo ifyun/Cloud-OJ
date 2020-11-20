@@ -108,13 +108,13 @@ export default {
     CompetitionProblemsManage
   },
   beforeMount() {
-    document.title = `竞赛/作业管理 · Cloud OJ`
+    document.title = "竞赛/作业管理 · Cloud OJ"
     this.getContests()
   },
   data() {
     let validateDelete = (rule, value, callback) => {
       if (value !== this.selectedContest.contestName)
-        return callback(new Error('请确认输入正确'))
+        return callback(new Error("请确认输入正确"))
       callback()
     }
     return {
@@ -126,25 +126,25 @@ export default {
       selectedIndex: null,
       selectedContest: {
         contestId: null,
-        contestName: '',
-        startAt: '',
-        endAt: '',
-        languages: ''
+        contestName: "",
+        startAt: "",
+        endAt: "",
+        languages: ""
       },
-      contestDialogTitle: '',
-      saveType: '',
+      contestDialogTitle: "",
+      saveType: "",
       pageSize: 15,
       currentPage: 1,
       editorDialogVisible: false,
       deleteDialogVisible: false,
       problemsDialogVisible: false,
       deleteForm: {
-        checkName: ''
+        checkName: ""
       },
       deleteRules: {
         checkName: [
-          {required: true, message: '请输入名称', trigger: 'blur'},
-          {validator: validateDelete, trigger: 'blur'}
+          {required: true, message: "请输入名称", trigger: "blur"},
+          {validator: validateDelete, trigger: "blur"}
         ]
       }
     }
@@ -154,10 +154,10 @@ export default {
       this.loading = true
       this.$axios({
         url: apiPath.contestManage,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           page: this.currentPage,
@@ -166,7 +166,7 @@ export default {
       }).then((res) => {
         this.contests = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
-          Notice.message.success(this, '竞赛/作业列表已刷新')
+          Notice.message.success(this, "竞赛/作业列表已刷新")
         }
       }).catch((error) => {
         let res = error.response
@@ -174,7 +174,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: `获取数据失败`,
+            title: "获取数据失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -185,8 +185,8 @@ export default {
     onEditClick(index) {
       let i = this.pageSize * (this.currentPage - 1) + index
       this.selectedContest = copyObject(this.contests.data[i])
-      this.saveType = 'put'
-      this.contestDialogTitle = '编辑'
+      this.saveType = "put"
+      this.contestDialogTitle = "编辑"
       this.editorDialogVisible = true
     },
     manageProblems(index) {
@@ -195,8 +195,8 @@ export default {
       this.problemsDialogVisible = true
     },
     onAddContestClick() {
-      this.saveType = 'post'
-      this.contestDialogTitle = '创建竞赛/作业'
+      this.saveType = "post"
+      this.contestDialogTitle = "创建竞赛/作业"
       this.selectedContest = {}
       this.editorDialogVisible = true
     },
@@ -210,10 +210,10 @@ export default {
         if (valid) {
           this.$axios({
             url: `${apiPath.contestManage}/${this.selectedContest.contestId}`,
-            method: 'delete',
+            method: "delete",
             headers: {
-              'token': userInfo().token,
-              'userId': userInfo().userId
+              "token": userInfo().token,
+              "userId": userInfo().userId
             },
           }).then((res) => {
             this.deleteDialogVisible = false
@@ -235,7 +235,7 @@ export default {
           })
         }
       })
-      this.deleteForm.checkName = ''
+      this.deleteForm.checkName = ""
     }
   }
 }

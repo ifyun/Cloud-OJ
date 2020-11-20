@@ -70,23 +70,23 @@ export default {
     return {
       uploadPath: apiPath.avatar,
       uploadHeaders: {
-        'token': userInfo().token,
-        'userId': userInfo().userId
+        "token": userInfo().token,
+        "userId": userInfo().userId
       },
-      avatarUrl: '',
+      avatarUrl: "",
       userInfo: userInfo(),
       userProfile: {
-        name: '',
-        email: '',
-        section: ''
+        name: "",
+        email: "",
+        section: ""
       },
       rules: {
         name: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 2, max: 16, message: '长度在 2 ~ 16 个字符', trigger: 'blur'}
+          {required: true, message: "请输入用户名", trigger: "blur"},
+          {min: 2, max: 16, message: "长度在 2 ~ 16 个字符", trigger: "blur"}
         ],
         email: [
-          {type: 'email', message: '请输入邮箱', trigger: 'blur'}
+          {type: "email", message: "请输入邮箱", trigger: "blur"}
         ]
       },
       editable: false
@@ -94,33 +94,33 @@ export default {
   },
   methods: {
     checkAvatar() {
-      this.avatarUrl = ''
+      this.avatarUrl = ""
       const url = `${apiPath.avatar}/${userInfo().userId}.png`
       this.$axios.head(url).then(() => {
         this.avatarUrl = url
       })
     },
     beforeUpload(file) {
-      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isJPGorPNG = file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPGorPNG) {
-        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');
+        this.$message.error("上传头像图片只能是 JPG 或 PNG 格式!");
       }
 
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+        this.$message.error("上传头像图片大小不能超过 2MB!");
       }
 
       return isJPGorPNG && isLt2M;
     },
     uploadSuccess() {
       this.checkAvatar()
-      Notice.message.success(this, '头像已更新')
+      Notice.message.success(this, "头像已更新")
     },
     uploadFailed(res) {
       Notice.notify.error(this, {
-        title: '上传头像失败',
+        title: "上传头像失败",
         message: `${res.status} ${res.statusText}`
       })
     },
@@ -133,30 +133,30 @@ export default {
       this.editable = true
     },
     save() {
-      this.$refs['profileForm'].validate((valid) => {
+      this.$refs["profileForm"].validate((valid) => {
         if (valid) {
           this.$axios({
             url: apiPath.profile,
-            method: 'put',
+            method: "put",
             headers: {
-              'Content-Type': 'application/json',
-              'token': userInfo().token,
-              'userId': userInfo().userId
+              "Content-Type": "application/json",
+              "token": userInfo().token,
+              "userId": userInfo().userId
             },
             params: {
-              'userId': userInfo().userId
+              "userId": userInfo().userId
             },
             data: JSON.stringify(this.userProfile)
           }).then((res) => {
             this.editable = false
             Notice.notify.success(this, {
-              title: '已保存',
+              title: "已保存",
               message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
             let res = error.response
             Notice.notify.error(this, {
-              title: `保存失败`,
+              title: "保存失败",
               message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
             })
           })

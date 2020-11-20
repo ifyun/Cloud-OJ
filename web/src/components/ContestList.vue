@@ -63,16 +63,14 @@
 </template>
 
 <script>
-import {apiPath} from "@/script/env"
+import {apiPath, languages} from "@/script/env"
 import {Notice} from "@/script/util"
 import moment from "moment"
-
-const languages = ['C', 'C++', 'Java', 'Python', 'Bash', 'C#', 'JavaScript', 'Kotlin']
 
 export default {
   name: "CompetitionList",
   mounted() {
-    document.title = '竞赛/作业 · Cloud OJ'
+    document.title = "竞赛/作业 · Cloud OJ"
     this.getContests()
   }
   ,
@@ -93,7 +91,7 @@ export default {
       this.loading = true
       this.$axios({
         url: apiPath.contest,
-        method: 'get',
+        method: "get",
         params: {
           page: this.currentPage,
           limit: this.pageSize
@@ -103,7 +101,7 @@ export default {
       }).catch((error) => {
         let res = error.response
         Notice.notify.error(this, {
-          title: '获取竞赛/作业失败',
+          title: "获取竞赛/作业失败",
           message: `${res.status} ${res.statusText}`
         })
       }).finally(() => {
@@ -112,11 +110,11 @@ export default {
     }
     ,
     formatDate(time) {
-      return moment(time).format('YYYY年 MM月DD日')
+      return moment(time).format("YYYY年 MM月DD日")
     }
     ,
     formatTime(time) {
-      return moment(time).format('HH:mm:ss')
+      return moment(time).format("HH:mm:ss")
     },
     calcLanguages(lang) {
       let langArr = []
@@ -125,15 +123,15 @@ export default {
         if ((lang & t) === t)
           langArr.push(value)
       })
-      return langArr.join(' / ')
+      return langArr.join(" / ")
     }
     ,
     seeRanking(contest) {
-      window.sessionStorage.setItem('contest', JSON.stringify({
+      window.sessionStorage.setItem("contest", JSON.stringify({
         id: contest.contestId,
         name: contest.contestName
       }))
-      window.location.href = `./ranking`
+      window.location.href = "./ranking"
     }
   }
 }

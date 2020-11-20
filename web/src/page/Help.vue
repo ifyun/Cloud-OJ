@@ -15,7 +15,7 @@
 import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import MarkdownItVue from "markdown-it-vue"
-import 'markdown-it-vue/dist/markdown-it-vue.css'
+import "markdown-it-vue/dist/markdown-it-vue.css"
 
 export default {
   name: "Help",
@@ -29,12 +29,12 @@ export default {
   },
   data() {
     return {
-      helpDoc: ''
+      helpDoc: ""
     }
   },
   methods: {
     loadHelpDoc() {
-      this.$axios.get('./doc/help.md')
+      this.$axios.get("./doc/help.md")
           .then((res) => {
             this.helpDoc = res.data
           })

@@ -163,23 +163,23 @@ export default {
     ProblemEditor
   },
   beforeMount() {
-    document.title = `题库管理 · Cloud OJ`
+    document.title = "题库管理 · Cloud OJ"
     this.getProblems()
   },
   data() {
     let validateDelete = (rule, value, callback) => {
       if (value !== this.selectedTitle)
-        return callback(new Error('请确认输入正确'))
+        return callback(new Error("请确认输入正确"))
       callback()
     }
     return {
       userInfo: userInfo(),
-      keyword: '',
+      keyword: "",
       showKeyword: false,
       selectedId: null,
-      selectedTitle: '',
+      selectedTitle: "",
       loading: true,
-      saveType: '',
+      saveType: "",
       problems: {
         data: [],
         count: 0
@@ -187,19 +187,19 @@ export default {
       currentPage: 1,
       pageSize: 15,
       editorDialog: {
-        title: '',
+        title: "",
         visible: false
       },
       testDataDialogVisible: false,
       deleteDialogVisible: false,
       importDialogVisible: false,
       deleteForm: {
-        checkTitle: ''
+        checkTitle: ""
       },
       deleteRules: {
         checkTitle: [
-          {required: true, message: '请输入题目名称', trigger: 'blur'},
-          {validator: validateDelete, trigger: 'blur'}
+          {required: true, message: "请输入题目名称", trigger: "blur"},
+          {validator: validateDelete, trigger: "blur"}
         ]
       }
     }
@@ -212,20 +212,20 @@ export default {
         page: this.currentPage,
         limit: this.pageSize
       }
-      if (this.keyword !== '')
+      if (this.keyword !== "")
         params.keyword = this.keyword
       this.$axios({
         url: apiPath.problemManage,
-        method: 'get',
+        method: "get",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: params
       }).then((res) => {
         this.problems = res.status === 200 ? res.data : {data: [], count: 0}
         if (refresh === true) {
-          Notice.message.success(this, '题目列表已刷新')
+          Notice.message.success(this, "题目列表已刷新")
         }
       }).catch((error) => {
         if (error.response.status === 401) {
@@ -233,7 +233,7 @@ export default {
         } else {
           let res = error.response
           Notice.notify.error(this, {
-            title: `获取数据失败`,
+            title: "获取数据失败",
             message: `${res.status} ${res.statusText}`
           })
         }
@@ -247,7 +247,7 @@ export default {
       this.showKeyword = true
     },
     onTagClose() {
-      this.keyword = ''
+      this.keyword = ""
       this.showKeyword = false
       this.getProblems()
     },
@@ -256,13 +256,13 @@ export default {
       this.search()
     },
     toggleOpen(value, row) {
-      let state = value === true ? '开放' : '关闭'
+      let state = value === true ? "开放" : "关闭"
       this.$axios({
         url: `${apiPath.problemManage}/${row.problemId}`,
-        method: 'put',
+        method: "put",
         headers: {
-          'token': userInfo().token,
-          'userId': userInfo().userId
+          "token": userInfo().token,
+          "userId": userInfo().userId
         },
         params: {
           enable: value
@@ -296,13 +296,13 @@ export default {
     },
     onAddProblemClick() {
       this.selectedId = null
-      this.editorTitle = '创建新题目'
-      this.saveType = 'post'
+      this.editorTitle = "创建新题目"
+      this.saveType = "post"
       this.editorDialog.visible = true
     },
     onEditClick(row) {
       this.selectedId = row.problemId
-      this.saveType = 'put'
+      this.saveType = "put"
       this.editorDialog.title = `编辑【${row.title}】`
       this.editorDialog.visible = true
     },
@@ -317,14 +317,14 @@ export default {
       this.deleteDialogVisible = true
     },
     onDelete() {
-      this.$refs['deleteForm'].validate((valid) => {
+      this.$refs["deleteForm"].validate((valid) => {
         if (valid) {
           this.$axios({
             url: `${apiPath.problemManage}/${this.selectedId}`,
-            method: 'delete',
+            method: "delete",
             headers: {
-              'token': userInfo().token,
-              'userId': userInfo().userId
+              "token": userInfo().token,
+              "userId": userInfo().userId
             }
           }).then((res) => {
             this.deleteDialogVisible = false
@@ -357,10 +357,10 @@ export default {
           return false
         }
       })
-      this.deleteForm.checkTitle = ''
+      this.deleteForm.checkTitle = ""
     },
     backupProblems() {
-      let newWindow = window.open('_blank')
+      let newWindow = window.open("_blank")
       newWindow.location.href =
           `${apiPath.backup}?userId=${userInfo().userId}&token=${userInfo().token}`
     },
