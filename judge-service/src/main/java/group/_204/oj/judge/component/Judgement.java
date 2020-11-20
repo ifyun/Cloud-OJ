@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
+import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.*;
 import group._204.oj.judge.model.Runtime;
 import group._204.oj.judge.type.Language;
@@ -19,7 +20,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -58,12 +58,6 @@ public class Judgement {
 
     private static class JudgeError extends Exception {
         JudgeError(String msg) {
-            super(msg);
-        }
-    }
-
-    private static class UnsupportedLanguageError extends Exception {
-        UnsupportedLanguageError(String msg) {
             super(msg);
         }
     }

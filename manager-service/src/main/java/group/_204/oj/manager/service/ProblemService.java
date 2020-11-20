@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -162,7 +163,7 @@ public class ProblemService {
                 if (!writeTestData(p.getProblemId(), p.getTestData()))
                     throw new IOException("Cannot write test data.");
             } else {
-                throw new Exception("Cannot add problem.");
+                throw new SQLException("Cannot add problem.");
             }
         }
     }

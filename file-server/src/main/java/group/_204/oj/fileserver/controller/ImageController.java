@@ -35,11 +35,9 @@ public class ImageController {
         String avatarDir = fileDir + "image/avatar/";
         File dir = new File(avatarDir);
 
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                log.error("无法创建目录 {}", dir.getName());
-                return ResponseEntity.status(500).body("无法创建目录.");
-            }
+        if (!dir.exists() && !dir.mkdirs()) {
+            log.error("无法创建目录 {}", dir.getName());
+            return ResponseEntity.status(500).body("无法创建目录.");
         }
 
         File avatar = new File(avatarDir + userId + ".png");
