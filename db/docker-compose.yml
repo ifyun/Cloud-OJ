@@ -1,9 +1,9 @@
-version: '3.4'
+version: '3.7'
 
 services:
-  oj-mysql:
-    container_name: oj-mysql
-    image: mysql:8.0.18
+  mysql:
+    container_name: cloud_oj_mysql
+    image: mysql:8.0
     ports:
       - "3306:3306"
     environment:
@@ -11,13 +11,13 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_ROOT_HOST: "%"
     volumes:
-      - "oj-mysql-data:/var/lib/mysql"
+      - "mysql-data:/var/lib/mysql"
       - "./config:/etc/mysql/conf.d"
       - "./init:/docker-entrypoint-initdb.d"
 
-  oj-rabbitmq:
+  rabbitmq:
     image: rabbitmq:3.8.2-management
-    container_name: oj-rabbitmq
+    container_name: cloud_oj_rabbitmq
     hostname: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=cloud@oj
@@ -26,8 +26,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - "oj-rabbitmq:/var/lib/rabbitmq/mnesia"
+      - "rabbitmq:/var/lib/rabbitmq/mnesia"
 
 volumes:
-  oj-mysql-data:
-  oj-rabbitmq:
+  mysql-data:
+  rabbitmq:
