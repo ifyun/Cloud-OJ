@@ -11,7 +11,7 @@
     <artifactId>manager-service</artifactId>
     <version>1.0-RELEASE</version>
     <name>Manager Service</name>
-    <description>管理服务</description>
+    <description>Cloud OJ Data Management Service</description>
 
     <dependencies>
         <dependency>
