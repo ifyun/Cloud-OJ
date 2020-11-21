@@ -6,7 +6,7 @@
         p.problem_id,
         p.title,
         p.enable,
-        if(c.contest_name is not null, concat(p.category, ',', c.contest_name), p.category) as category,
+        if(c.contest_name is not null, concat_ws(',', c.contest_name, p.category), p.category) as category,
         p.score,
         p.create_at
         <choose>
@@ -72,7 +72,7 @@
         p.problem_id,
         p.title,
         p.enable,
-        if(c.contest_name is not null, concat(p.category, ',', c.contest_name), p.category) as category,
+        if(c.contest_name is not null, concat_ws(',', c.contest_name, p.category), p.category) as category,
         p.score,
         p.create_at
         <choose>
