@@ -3,10 +3,10 @@ variables:
   DOCKER_HOST: tcp://172.16.15.212:2375
   # Image tag
   WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
-  API_GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/api-gateway
-  REGISTER_CENTER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/register-center
-  MONITOR_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor-service
-  FILE_SERVER: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-server
+  GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/gateway
+  REGISTRY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/registry
+  MONITOR: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor
+  FILE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-service
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
 cache:
@@ -39,10 +39,10 @@ mvn-package:
   stage: mvn-package
   script:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
-    - cp -r api-gateway/target/*.jar docker/api-gateway/
-    - cp -r register-center/target/*.jar docker/register-center/
-    - cp -r monitor-service/target/*.jar docker/monitor-service/
-    - cp -r file-server/target/*.jar docker/file-server/
+    - cp -r gateway/target/*.jar docker/gateway/
+    - cp -r registry/target/*.jar docker/registry/
+    - cp -r monitor/target/*.jar docker/monitor/
+    - cp -r file-service/target/*.jar docker/file-service/
     - cp -r manager-service/target/*.jar docker/manager-service/
     - cp -r judge-service/target/*.jar docker/judge-service/
     - du -h docker
@@ -57,10 +57,10 @@ docker-build:
   script:
     - docker -v
     - docker build -t $WEB ./docker/web/
-    - docker build -t $API_GATEWAY ./docker/api-gateway/
-    - docker build -t $REGISTER_CENTER ./docker/register-center/
-    - docker build -t $MONITOR_SERVICE ./docker/monitor-service/
-    - docker build -t $FILE_SERVER ./docker/file-server/
+    - docker build -t $GATEWAY ./docker/gateway/
+    - docker build -t $REGISTRY ./docker/registry/
+    - docker build -t $MONITOR ./docker/monitor/
+    - docker build -t $FILE_SERVICE ./docker/file-service/
     - docker build -t $MANAGER_SERVICE ./docker/manager-service/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
     - docker rmi $(docker images -q -f dangling=true) || true

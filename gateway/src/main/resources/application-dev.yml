@@ -1,0 +1,69 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloud_oj?serverTimezone=Asia/Shanghai
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      maximum-pool-size: 16
+      max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+zuul:
+  routes:
+    manager-service:
+      path: /api/manager/**
+      serviceId: manager-service
+    judge-service:
+      path: /api/judgement/**
+      serviceId: judge-service
+    file-server:
+      path: /api/file/**
+      serviceId: file-server
+    auth:
+      path: /api/auth/**
+      serviceId: api-gateway
+  host:
+    max-per-route-connections: 1000
+    max-total-connections: 1000
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 10000
+  semaphore:
+    max-semaphores: 2000
+
+ribbon:
+  ReadTimeout: 8000
+  ConnectTimeout: 8000
+
+project:
+  token-valid-time: 4
