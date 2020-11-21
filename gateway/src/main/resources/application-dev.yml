@@ -49,10 +49,10 @@ zuul:
       serviceId: judge-service
     file-server:
       path: /api/file/**
-      serviceId: file-server
+      serviceId: file-service
     auth:
       path: /api/auth/**
-      serviceId: api-gateway
+      serviceId: gateway
   host:
     max-per-route-connections: 1000
     max-total-connections: 1000

@@ -34,9 +34,9 @@ Kotlin          | 1.4.10
 
 #### 1. 搭建数据库和消息队列
 
-安装 RabbitMQ 和 MySQL，使用 `mysql/init/init-database.sql` 文件建库建表。
+安装 RabbitMQ 和 MySQL，使用 `./db/init/init-database.sql` 文件建库建表。
 
-设置数据目录，修改 `file-server`、`manager-service`、 `judge-service` 的配置文件（application-prod.yml）：
+设置数据目录，修改 `file-service`、`manager-service`、 `judge-service` 的配置文件（application-prod.yml）：
 
 ```yaml
 project:
