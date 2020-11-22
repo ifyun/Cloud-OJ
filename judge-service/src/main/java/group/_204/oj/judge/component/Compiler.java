@@ -2,6 +2,7 @@ package group._204.oj.judge.component;
 
 import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.Compile;
+import group._204.oj.judge.model.Solution;
 import group._204.oj.judge.type.Language;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +46,9 @@ class Compiler {
         File dir = new File(codeDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
-                log.info("目录 {} 不存在, 已创建", codeDir);
+                log.info("目录 {} 不存在, 已创建.", codeDir);
             } else {
-                log.info("无法创建目录 {}", codeDir);
+                log.info("无法创建目录 {}.", codeDir);
             }
         }
     }
@@ -55,13 +56,15 @@ class Compiler {
     /**
      * 编译入口
      *
-     * @param solutionId 答案 Id
-     * @param languageId 语言 Id
-     * @param source     源代码
+     * @param solution {@link Solution}
      * @return {@link Compile} 编译结果
      */
-    public Compile compile(String solutionId, int languageId, String source) {
-        String src = writeCode(solutionId, languageId, source);
+    public Compile compile(Solution solution) {
+        String solutionId = solution.getSolutionId();
+        Integer languageId = solution.getLanguage();
+        String sourceCode = solution.getSourceCode();
+
+        String src = writeCode(solutionId, languageId, sourceCode);
 
         if (src.isEmpty()) {
             String info = "无法写入源码";
@@ -69,17 +72,12 @@ class Compiler {
             return new Compile(solutionId, -1, info);
         }
 
-        Language language = Language.get(languageId);
-
-        if (language != null) {
-            try {
-                return compileSource(solutionId, languageId);
-            } catch (UnsupportedLanguageError e) {
-                log.error("编译异常: {}", e.getMessage());
-                return new Compile(solutionId, -1, "不支持的语言");
-            }
-        } else {
-            return new Compile(solutionId, -1, "不支持的语言");
+        try {
+            Language language = Language.get(languageId);
+            return compileSource(solutionId, language);
+        } catch (UnsupportedLanguageError e) {
+            log.error("编译异常: {}", e.getMessage());
+            return new Compile(solutionId, -1, e.getMessage());
         }
     }
 
@@ -87,14 +85,13 @@ class Compiler {
      * 根据语言类型编译源码
      *
      * @param solutionId 答案 Id
-     * @param languageId 语言类型
+     * @param language   {@link Language}
      * @return {@link Compile} 编译结果
      */
-    public Compile compileSource(String solutionId, int languageId) throws UnsupportedLanguageError {
-        Language language = Language.get(languageId);
+    public Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
 
         if (language == null) {
-            return new Compile(solutionId, -1, "不支持的语言.");
+            throw new UnsupportedLanguageError("不支持的语言: null.");
         }
 
         String solutionDir = codeDir + solutionId;
@@ -125,13 +122,13 @@ class Compiler {
             case JAVA_SCRIPT:
                 return new Compile(solutionId, 0, "JavaScript");
             default:
-                throw new UnsupportedLanguageError("Unsupported language.");
+                throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
         }
 
         try {
             processBuilder.command(cmd);
             Process process = processBuilder.start();
-            process.waitFor(3000, TimeUnit.MILLISECONDS);
+            process.waitFor(6000, TimeUnit.SECONDS);
             // 获取错误流，为空说明编译成功
             String error = getOutput(process.getErrorStream());
 

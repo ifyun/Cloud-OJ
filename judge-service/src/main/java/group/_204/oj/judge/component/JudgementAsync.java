@@ -34,7 +34,7 @@ public class JudgementAsync {
      *
      * @param solution {@link Solution} 答案对象
      */
-    @Async("ojExecutor")
+    @Async("judgeExecutor")
     public void judge(Solution solution) {
         CompletableFuture<Compile> future = compilerAsync.compile(solution);
         try {
