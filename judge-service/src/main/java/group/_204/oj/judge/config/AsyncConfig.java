@@ -20,10 +20,10 @@ public class AsyncConfig implements SchedulingConfigurer {
     @Value("${project.core-pool-size:8}")
     private int corePoolSize;
 
-    @Value("${project.max-pool-size:16}")
+    @Value("${project.max-pool-size:8}")
     private int maxPoolSize;
 
-    @Value("${project.queue-capacity:500}")
+    @Value("${project.queue-capacity:200}")
     private int queueCapacity;
 
     @Override
@@ -32,9 +32,9 @@ public class AsyncConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    public Executor ojExecutor() {
+    public Executor judgeExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix("OJ-");
+        executor.setThreadNamePrefix("JUDGE-");
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);

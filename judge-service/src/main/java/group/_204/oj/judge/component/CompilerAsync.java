@@ -23,15 +23,12 @@ public class CompilerAsync {
     /**
      * 异步编译
      *
-     * @param solution 答案对象
+     * @param solution {@link Solution}
      * @return {@link Compile} 编译结果
      */
-    @Async("ojExecutor")
+    @Async("judgeExecutor")
     public CompletableFuture<Compile> compile(Solution solution) {
-        Compile compile = compiler.compile(
-                solution.getSolutionId(),
-                solution.getLanguage(),
-                solution.getSourceCode());
+        Compile compile = compiler.compile(solution);
         compileDao.add(compile);
 
         return CompletableFuture.completedFuture(compile);
