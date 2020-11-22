@@ -19,9 +19,14 @@
               <pre class="problem-content">{{ problem.input }}</pre>
               <h4>输出说明</h4>
               <pre class="problem-content">{{ problem.output }}</pre>
-              <el-alert show-icon type="info" :closable="false"
-                        :title="`时间限制: ${ problem.timeout } ms`">
-              </el-alert>
+              <h4>限制</h4>
+              <div>
+                <i class="el-icon-stopwatch"/>
+                <span style="margin-left: 5px">{{ problem.timeout }} ms</span>
+                <br><br>
+                <i class="el-icon-cpu"/>
+                <span style="margin-left: 5px">64 MB</span>
+              </div>
               <h4>输入示例</h4>
               <pre class="sample">{{ problem.sampleInput }}</pre>
               <h4>输出示例</h4>
