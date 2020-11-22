@@ -29,7 +29,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Manager Service")
-                .description("Cloud OJ 数据管理服务接口文档")
+                .description("数据管理服务")
                 .build();
     }
 }
