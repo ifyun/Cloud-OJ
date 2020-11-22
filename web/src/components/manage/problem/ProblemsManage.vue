@@ -133,7 +133,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" @click="onDelete">删除题目</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="onDelete">删除题目</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
