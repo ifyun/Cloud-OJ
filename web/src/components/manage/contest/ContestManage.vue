@@ -58,7 +58,7 @@
                    @current-change="getContests">
     </el-pagination>
     <!-- Edit Contest Dialog -->
-    <el-dialog :title="contestDialogTitle"
+    <el-dialog :title="contestDialogTitle" width="650px"
                :visible.sync="editorDialogVisible">
       <ContestEditor :contest="selectedContest"
                      :save-type="saveType"
@@ -66,7 +66,8 @@
                      @refresh="getContests"/>
     </el-dialog>
     <!-- Delete Confirm Dialog -->
-    <el-dialog title="删除提示" :visible.sync="deleteDialogVisible">
+    <el-dialog title="删除提示" width="650px"
+               :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除：${this.selectedContest.contestName}`"
                 description="相关提交记录会消失（该竞赛/作业包含的题目不会被删除）"
@@ -81,7 +82,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger"
+          <el-button type="danger" icon="el-icon-delete"
                      @click="onDelete('deleteForm')">删除
           </el-button>
         </el-form-item>

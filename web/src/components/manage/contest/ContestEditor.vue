@@ -27,7 +27,7 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary"
+        <el-button type="primary" icon="el-icon-check"
                    @click="onSave(saveType)">保 存
         </el-button>
       </el-form-item>
