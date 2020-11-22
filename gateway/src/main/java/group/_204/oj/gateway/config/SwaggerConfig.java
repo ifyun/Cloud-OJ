@@ -28,8 +28,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Api Gateway")
-                .description("Cloud OJ 路由网关接口文档")
+                .title("Gateway")
+                .description("路由网关")
                 .build();
     }
 }

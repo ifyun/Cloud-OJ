@@ -28,8 +28,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("File Server")
-                .description("Cloud OJ 文件服务接口文档")
+                .title("File Service")
+                .description("文件服务")
                 .build();
     }
 }

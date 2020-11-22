@@ -15,9 +15,9 @@ import java.util.List;
 public class ApiDocConfig implements SwaggerResourcesProvider {
 
     private static final String[][] SERVICES = {
-            {"API-GATEWAY", "/api/auth"},
+            {"GATEWAY", "/api/auth"},
             {"MANAGER-SERVICE", "/api/manager"},
-            {"FILE-SERVER", "/api/file"},
+            {"FILE-SERVICE", "/api/file"},
             {"JUDGE-SERVICE", "/api/judgement"}
     };
 
