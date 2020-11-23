@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -39,5 +40,19 @@ public class UserService {
     public Msg deleteUser(String userId) {
         int status = userDao.delete(userId) == 1 ? 204 : 410;
         return new Msg(status);
+    }
+
+    public HashMap<String, Object> getOverview(String userId, Integer year) {
+        List<HashMap<Integer, Integer>> preference = userDao.getLanguagePreference(userId);
+        List<HashMap<String, Integer>> activities = userDao.getActivities(userId, year);
+        HashMap<String, String> statistics = userDao.getResultStatistics(userId);
+
+        HashMap<String, Object> overview = new HashMap<>();
+
+        overview.put("preference", preference);
+        overview.put("statistics", statistics);
+        overview.put("activities", activities);
+
+        return overview;
     }
 }

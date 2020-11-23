@@ -3,7 +3,6 @@ package group._204.oj.manager.controller;
 import group._204.oj.manager.model.Msg;
 import group._204.oj.manager.model.PagedResult;
 import group._204.oj.manager.model.User;
-import group._204.oj.manager.service.OverviewService;
 import group._204.oj.manager.service.UserService;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +19,6 @@ public class UserController implements CRUDController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private OverviewService overviewService;
-
     @ApiOperation(value = "获取统计信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", required = true),
@@ -33,7 +29,7 @@ public class UserController implements CRUDController {
     })
     @GetMapping(path = "overview", produces = "application/json")
     public ResponseEntity<?> getOverview(String userId, Integer year) {
-        return buildGETResponse(overviewService.getOverview(userId, year));
+        return buildGETResponse(userService.getOverview(userId, year));
     }
 
     @ApiOperation(value = "获取所有用户", notes = "需要用户管理员权限")
