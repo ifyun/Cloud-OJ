@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.UserDao">
     <select id="getAll" resultMap="Map.User, Map.Total">
         select sql_calc_found_rows user_id, name, email, section, role_id, create_at
@@ -34,4 +34,30 @@
         from user
         where user_id = #{userId}
     </delete>
+    <select id="getLanguagePreference" resultType="java.util.Map">
+        select language, count(solution_id) as count
+        from solution
+        where contest_id is null
+          and user_id = #{userId}
+        group by language;
+    </select>
+    <select id="getActivities" resultType="java.util.Map">
+        select DATE_FORMAT(submit_time, '%Y-%m-%d') as date,
+               count(solution_id)                   as count
+        from solution
+        where contest_id is null
+          and user_id = #{userId}
+          and year(submit_time) = #{year}
+        group by date
+    </select>
+    <select id="getResultStatistics" resultType="java.util.Map">
+        select count(result = 'PASSED' or null)        as AC,
+               count(result = 'WRONG' or null)         as WA,
+               count(result = 'TIMEOUT' or null)       as TLE,
+               count(result = 'OOM' or null)           as MLE,
+               count(result = 'RUNTIME_ERROR' or null) as RE,
+               count(result = 'COMPILE_ERROR' or null) as CE
+        from solution
+        where user_id = #{userId};
+    </select>
 </mapper>

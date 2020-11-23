@@ -1,7 +1,28 @@
 <template>
   <div style="position:relative">
-    <ECharts theme="macarons" :options="pieOption"/>
-    <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
+    <el-row>
+      <el-col :span="16">
+        <ECharts theme="macarons" :options="pieOption"/>
+        <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
+      </el-col>
+      <el-col :span="8">
+        <span style="font-size: 13pt">结果统计({{ resultStatistics.total }}次提交)</span>
+        <div style="margin-top: 75px">
+          <div class="result-bar" v-for="(key, index) in resultKeys" :key="index">
+            <el-row>
+              <el-col :span="4">
+                <b>{{ key }}</b>
+              </el-col>
+              <el-col :span="20">
+                <el-progress :stroke-width="18" :text-inside="true" :status="getStatus(key)"
+                             :percentage="calcPercentage(key)">
+                </el-progress>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
     <el-divider></el-divider>
     <ECharts theme="royal" :options="activitiesOption" style="width: 100%;height: 200px"/>
   </div>
@@ -27,11 +48,28 @@ export default {
   },
   data() {
     return {
+      resultKeys: [
+        "AC",
+        "WA",
+        "TLE",
+        "MLE",
+        "RE",
+        "CE"
+      ],
+      resultStatistics: {
+        AC: 0,
+        WA: 0,
+        TLE: 0,
+        MLE: 0,
+        RE: 0,
+        CE: 0,
+        total: 0,
+      },
       pieOption: {
         title: {
           text: "语言偏好",
           textStyle: {
-            color: '#333'
+            color: "#303133"
           }
         },
         tooltip: {
@@ -48,8 +86,8 @@ export default {
           {
             name: "语言偏好",
             type: "pie",
-            center: ["55%", "50%"],
-            radius: [60, 120],
+            center: ["50%", "50%"],
+            radius: [50, 120],
             roseType: "area",
             data: []
           }
@@ -60,7 +98,7 @@ export default {
           top: 0,
           text: "年度做题情况",
           textStyle: {
-            color: '#333'
+            color: "#303133"
           }
         },
         tooltip: {},
@@ -122,6 +160,16 @@ export default {
       })
     },
     setChartsData(overview) {
+      let statistics = overview["statistics"]
+      let total = 0
+
+      this.resultKeys.forEach((key) => {
+        total += statistics[key]
+      })
+
+      this.resultStatistics = statistics
+      this.resultStatistics.total = total
+
       let preference = overview["preference"]
       let activities = overview["activities"]
 
@@ -144,6 +192,25 @@ export default {
 
       this.pieOption.series[0].data = preferenceData
       this.activitiesOption.series.data = activitiesData
+    },
+    calcPercentage(key) {
+      if (this.resultStatistics.total === 0)
+        return 0
+      return Math.round((this.resultStatistics[key] / this.resultStatistics.total) * 100)
+    },
+    getStatus(key) {
+      switch (key) {
+        case "AC":
+          return "success"
+        case "WA":
+          return "exception"
+        case "TLE":
+        case "MLE":
+        case "RE":
+          return "warning"
+        case "CE":
+          return null
+      }
     }
   }
 }
@@ -155,5 +222,9 @@ export default {
   top: 20%;
   left: 22%;
   font-size: 22pt;
+}
+
+.result-bar {
+  margin-top: 20px;
 }
 </style>
