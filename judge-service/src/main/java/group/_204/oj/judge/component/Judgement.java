@@ -257,7 +257,7 @@ public class Judgement {
                 cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("java@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
+                cmd.addAll(Arrays.asList("java@-Xmx64m@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
                 break;
             case PYTHON:
                 cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT));
