@@ -26,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     private static class Role {
-        private static final String[] ALL = {"USER", "USER_ADMIN", "PROBLEM_ADMIN", "ROOT"};
+        private static final String USER = "USER";
         private static final String UA = "USER_ADMIN";
         private static final String PA = "PROBLEM_ADMIN";
         private static final String SU = "ROOT";
@@ -58,21 +58,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/manager-service/**").denyAll()
                 .antMatchers("/judge-service/**").denyAll()
                 .antMatchers("/file-server/**").denyAll()
-                .antMatchers("/api/manager/backup").hasAnyRole(Role.SU, Role.PA)
-                .antMatchers("/api/manager/user/profile").hasAnyRole(Role.ALL)
-                .antMatchers("/api/manager/user/pro/**").hasAnyRole(Role.UA, Role.SU)
-                .antMatchers("/api/manager/problem/pro/**").hasAnyRole(Role.PA, Role.SU)
-                .antMatchers("/api/manager/result").hasAnyRole(Role.ALL)
-                .antMatchers("/api/manager/contest/pro/**").hasAnyRole(Role.PA, Role.SU)
-                .antMatchers("/api/manager/contest/problem/**").hasAnyRole(Role.ALL)
-                .antMatchers("/api/manager/ranking/pro/**").hasAnyRole(Role.PA, Role.SU)
-                .antMatchers(HttpMethod.GET, "/api/manager/settings/**").hasAnyRole(Role.ALL)
-                .antMatchers(HttpMethod.POST, "/api/manager/settings/**").hasAnyRole(Role.SU)
-                .antMatchers("/api/judge/commit").hasAnyRole(Role.ALL)
-                .antMatchers("/api/judge/pro/**").hasAnyRole(Role.SU)
-                .antMatchers("/api/file/test_data/**").hasAnyRole(Role.PA, Role.SU)
+                .antMatchers("/api/manager/backup").hasRole(Role.PA)
+                .antMatchers("/api/manager/user/profile").hasRole(Role.USER)
+                .antMatchers("/api/manager/user/pro/**").hasRole(Role.UA)
+                .antMatchers("/api/manager/problem/pro/**").hasRole(Role.PA)
+                .antMatchers("/api/manager/result").hasRole(Role.USER)
+                .antMatchers("/api/manager/contest/pro/**").hasRole(Role.PA)
+                .antMatchers("/api/manager/contest/problem/**").hasRole(Role.USER)
+                .antMatchers("/api/manager/ranking/pro/**").hasRole(Role.PA)
+                .antMatchers(HttpMethod.GET, "/api/manager/settings/**").hasRole(Role.USER)
+                .antMatchers(HttpMethod.POST, "/api/manager/settings/**").hasRole(Role.SU)
+                .antMatchers("/api/judge/commit").hasRole(Role.USER)
+                .antMatchers("/api/judge/pro/**").hasRole(Role.PA)
+                .antMatchers("/api/file/test_data/**").hasRole(Role.PA)
                 .antMatchers(HttpMethod.GET, "/api/file/image/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/file/image/**").hasAnyRole(Role.ALL);
+                .antMatchers(HttpMethod.POST, "/api/file/image/**").hasRole(Role.USER);
     }
 
     @Override
