@@ -2,7 +2,7 @@
   <el-container class="container">
     <el-page-header v-if="contestId != null" style="align-self: flex-start; margin-top: 5px; margin-bottom: 25px"
                     @back="back"
-                    :content="contestName">
+                    :content="contest.name">
     </el-page-header>
     <el-card style="width: 100%">
       <div style="align-self: flex-start" v-if="contestId == null">
@@ -65,7 +65,7 @@
               </div>
             </div>
             <span v-else class="contest-tag tag-color-5">
-              {{ contestName }}
+              {{ contest.name }}
             </span>
           </template>
         </el-table-column>
@@ -97,18 +97,23 @@ import {resultTags} from "@/script/env"
 
 export default {
   name: "ProblemList",
-  props: ["contestId", "contestName"],
+  props: ["contestId"],
   mounted() {
-    document.title = `${this.contestId == null ? "题库" : this.contestName} · Cloud OJ`
-    clearCachedCode()
-    if (this.contestId != null && userInfo() == null) {
+    if (this.contestId != null)
+      this.getContest()
+    if (this.contest.id != null && userInfo() == null)
       toLoginPage()
-    }
+    document.title = `${this.contest.id == null ? "题库" : this.contest.name} · Cloud OJ`
+    clearCachedCode()
     this.getProblems()
   },
   data() {
     return {
       loading: true,
+      contest: {
+        id: null,
+        name: null
+      },
       problems: {
         data: [],
         count: 0
@@ -122,16 +127,21 @@ export default {
   },
   methods: {
     getTagColor: tagColor,
+    getContest() {
+      let contest = sessionStorage.getItem("contest")
+      if (contest != null)
+        this.contest = JSON.parse(contest)
+    },
     getProblems() {
       this.loading = true
-      let path = this.contestId != null ? `contest/problem` : "problem"
+      let path = this.contest.id != null ? `contest/problem` : "problem"
       let headers = {}
       let params = {
         page: this.currentPage,
         limit: this.pageSize,
       }
       if (this.contestId != null) {
-        params.contestId = this.contestId
+        params.contestId = this.contest.id
         headers = {
           userId: userInfo().userId,
           token: userInfo().token

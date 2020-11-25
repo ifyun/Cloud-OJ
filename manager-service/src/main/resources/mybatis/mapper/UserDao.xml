@@ -8,6 +8,11 @@
         limit #{start},#{limit};
         select found_rows()
     </select>
+    <select id="getById" resultMap="Map.User">
+        select user_id, name, email, section
+        from user
+        where user_id = #{userId};
+    </select>
     <insert id="add" parameterType="group._204.oj.manager.model.User">
         insert into `user`(user_id, name, password, secret, email, section, role_id)
             value (#{userId}, #{name}, #{password}, LEFT(UUID(), 8), #{email}, #{section}, #{roleId})
@@ -56,8 +61,11 @@
                count(result = 'TIMEOUT' or null)       as TLE,
                count(result = 'OOM' or null)           as MLE,
                count(result = 'RUNTIME_ERROR' or null) as RE,
-               count(result = 'COMPILE_ERROR' or null) as CE
+               count(result = 'COMPILE_ERROR' or null) as CE,
+               count(solution_id)                      as total
         from solution
-        where user_id = #{userId};
+        where user_id = #{userId}
+          and contest_id is null
+          and result &lt;&gt; 'JUDGE_ERROR';
     </select>
 </mapper>

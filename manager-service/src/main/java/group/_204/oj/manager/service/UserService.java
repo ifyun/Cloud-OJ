@@ -21,6 +21,10 @@ public class UserService {
         return userDao.getAll((page - 1) * limit, limit);
     }
 
+    public User getUserInfo(String userId) {
+        return userDao.getById(userId);
+    }
+
     public boolean addUser(User user) {
         user.setRoleId(0);
         return userDao.add(user) == 1;

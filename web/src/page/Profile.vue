@@ -1,14 +1,14 @@
 <template>
-  <div v-if="display">
+  <div v-if="display || userId != null">
     <TopNavigation active=""/>
     <el-container class="container">
       <el-card style="width: 100%">
         <el-row :gutter="10">
           <el-col :span="6">
-            <UserProfile/>
+            <UserProfile :user-id="userId"/>
           </el-col>
           <el-col :span="18">
-            <Overview/>
+            <Overview :user-id="userId"/>
           </el-col>
         </el-row>
       </el-card>
@@ -22,7 +22,7 @@ import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import UserProfile from "@/components/profile/UserProfile"
 import Overview from "@/components/profile/Overview"
-import {toLoginPage, userInfo} from "@/script/util"
+import {searchParams, toLoginPage, userInfo} from "@/script/util"
 
 export default {
   name: "Profile",
@@ -40,7 +40,8 @@ export default {
   },
   data() {
     return {
-      display: userInfo() != null
+      display: userInfo() != null,
+      userId: searchParams()["userId"]
     }
   }
 }
