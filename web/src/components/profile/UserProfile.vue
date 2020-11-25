@@ -15,10 +15,6 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
       <el-divider></el-divider>
-      <el-alert style="margin-bottom: 15px"
-                :closable="false" show-icon type="info"
-                title="保存成功后重新登录生效">
-      </el-alert>
       <el-form ref="profileForm" :model="userProfile" :rules="rules">
         <el-form-item prop="name">
           <el-input prefix-icon="el-icon-user" v-model="userProfile.name"></el-input>
@@ -58,7 +54,7 @@
 </template>
 
 <script>
-import {Notice, userInfo} from "@/script/util"
+import {Notice, saveToken, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 export default {
@@ -81,6 +77,7 @@ export default {
         "userId": userInfo().userId
       },
       avatarUrl: "",
+      userInfo: userInfo(),
       userProfile: {
         userId: "",
         name: "",
@@ -135,7 +132,7 @@ export default {
       return isJPGorPNG && isLt2M;
     },
     uploadSuccess() {
-      this.checkAvatar()
+      this.checkAvatar(this.userProfile.userId)
       Notice.message.success(this, "头像已更新")
     },
     uploadFailed(res) {
@@ -155,15 +152,16 @@ export default {
             method: "put",
             headers: {
               "Content-Type": "application/json",
-              "token": userInfo().token,
-              "userId": userInfo().userId
+              "token": this.userInfo.token,
+              "userId": this.userInfo.userId
             },
             params: {
-              "userId": userInfo().userId
+              "userId": this.userInfo.userId
             },
             data: JSON.stringify(this.userProfile)
           }).then((res) => {
             this.editable = false
+            this.updateLocalUserInfo()
             Notice.notify.success(this, {
               title: "已保存",
               message: `${res.status} ${res.statusText}`
@@ -191,6 +189,12 @@ export default {
         email: userInfo().email,
         section: userInfo().section
       }
+    },
+    updateLocalUserInfo() {
+      this.userInfo.name = this.userProfile.name
+      this.userInfo.email = this.userProfile.email
+      this.userInfo.section = this.userProfile.section
+      saveToken(JSON.stringify(this.userInfo))
     }
   }
 }
