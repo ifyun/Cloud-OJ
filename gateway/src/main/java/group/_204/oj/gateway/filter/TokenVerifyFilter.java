@@ -39,6 +39,14 @@ public class TokenVerifyFilter extends GenericFilterBean {
         String jwtToken = ((HttpServletRequest) request).getHeader("token");
         String userId = ((HttpServletRequest) request).getHeader("userId");
 
+        if (jwtToken == null) {
+            jwtToken = request.getParameter("token");
+        }
+
+        if (userId == null) {
+            userId = request.getParameter("userId");
+        }
+
         if (userId == null || jwtToken == null) {
             // 没有 token 时交给 Spring Security 去处理
             filterChain.doFilter(request, response);
