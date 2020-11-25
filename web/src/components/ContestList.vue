@@ -7,7 +7,7 @@
             <el-link style="font-size: 12pt"
                      :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
-                     :href="`.?contestId=${scope.row.contestId}&contestName=${scope.row.contestName}`">
+                     @click="onContestClick(scope.row)">
               <b v-if="scope.row['ended']">[已结束]</b>
               <b v-else-if="scope.row['started']">[进行中]</b>
               <b v-else>[未开始]</b>
@@ -107,12 +107,19 @@ export default {
       }).finally(() => {
         this.loading = false
       })
-    }
-    ,
+    },
+    onContestClick(row) {
+      let contest = {
+        id: row.contestId,
+        name: row.contestName
+      }
+      console.log(contest)
+      sessionStorage.setItem("contest", JSON.stringify(contest))
+      window.location.href = `.?contestId=${row.contestId}`
+    },
     formatDate(time) {
       return moment(time).format("YYYY年 MM月DD日")
-    }
-    ,
+    },
     formatTime(time) {
       return moment(time).format("HH:mm:ss")
     },
@@ -124,8 +131,7 @@ export default {
           langArr.push(value)
       })
       return langArr.join(" / ")
-    }
-    ,
+    },
     seeRanking(contest) {
       window.sessionStorage.setItem("contest", JSON.stringify({
         id: contest.contestId,

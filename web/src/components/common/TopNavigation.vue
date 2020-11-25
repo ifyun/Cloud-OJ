@@ -38,7 +38,7 @@
           <div class="account-area">
             <img class="avatar"
                  :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : '/icons/user.svg'"
-                 onerror="this.src='/icons/no_avatar.svg'" alt="avatar">
+                 onerror="this.src='/icons/no_avatar.png'" alt="avatar">
             <span class="el-dropdown-link" style="color: lightgray"
                   v-if="userInfo == null"
                   @click="login">登录
@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     onSelect(key) {
-      if (key === "3")
+      if (key === "2" || key === "3")
         window.sessionStorage.removeItem("contest")
       window.location.href = this.paths[key]
     },

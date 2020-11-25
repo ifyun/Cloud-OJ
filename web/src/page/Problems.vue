@@ -2,8 +2,7 @@
   <div>
     <TopNavigation :active="active"/>
     <ProblemList
-        :contest-id="this.contestId"
-        :contest-name="this.contestName"/>
+        :contest-id="this.contestId"/>
     <BottomArea class="bottom"/>
   </div>
 </template>
@@ -22,8 +21,7 @@ export default {
   data() {
     return {
       active: "",
-      contestId: searchParams().contestId,
-      contestName: searchParams().contestName
+      contestId: searchParams().contestId
     }
   },
   components: {

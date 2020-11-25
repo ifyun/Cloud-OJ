@@ -46,6 +46,16 @@ public class UserController implements CRUDController {
         return buildGETResponse(userService.getUsers(page, limit));
     }
 
+    @ApiOperation(value = "获取用户的个人信息")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "成功", response = User.class),
+            @ApiResponse(code = 204, message = "无数据")
+    })
+    @GetMapping(path = "info", produces = "application/json")
+    public ResponseEntity<?> getUserInfo(String userId) {
+        return buildGETResponse(userService.getUserInfo(userId));
+    }
+
     @ApiOperation(value = "添加/注册用户", notes = "密码 = bcrypt(md5(明文密码))")
     @ApiImplicitParam(name = "user", required = true)
     @ApiResponses({

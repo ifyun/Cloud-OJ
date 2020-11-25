@@ -6,7 +6,7 @@
                  :show-file-list="false"
                  :action="uploadPath"
                  :headers="uploadHeaders"
-                 :data="{'userId': userInfo.userId}"
+                 :data="{'userId': userProfile.userId}"
                  :before-upload="beforeUpload"
                  :on-success="uploadSuccess"
                  :on-error="uploadFailed">
@@ -31,25 +31,25 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="success" @click="save">保存</el-button>
-          <el-button size="small" @click="editable = false">取消</el-button>
+          <el-button size="small" @click="cancelEdit">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="profile-div" v-else>
-      <img class="avatar" :src="avatarUrl" onerror="this.src='/icons/no_avatar.svg'"
-           alt="avatar">
-      <span class="name">{{ userInfo.name }}</span>
-      <span class="user-id">{{ userInfo.userId }}</span>
-      <span v-if="userInfo.email !== undefined"
+      <img class="avatar" :src="avatarUrl" onerror="this.src='/icons/no_avatar.png'" alt="avatar">
+      <span class="name">{{ userProfile.name }}</span>
+      <span class="user-id">{{ userProfile.userId }}</span>
+      <span v-if="userProfile.email !== undefined && userProfile.email !== ''"
             style="margin-top: 15px;">
         <i class="el-icon-message"></i>
-        <span>&nbsp;{{ userInfo.email }}</span>
+        <span>&nbsp;{{ userProfile.email }}</span>
       </span>
-      <span v-if="userInfo.section !== undefined" style="margin-top: 5px;">
+      <span v-if="userProfile.section !== undefined && userProfile.section !== ''"
+            style="margin-top: 5px;">
         <i class="el-icon-office-building"></i>
-        <span>&nbsp;{{ userInfo.section }}</span>
+        <span>&nbsp;{{ userProfile.section }}</span>
       </span>
-      <el-button size="small" style="margin-top: 15px"
+      <el-button v-if="userId == null" size="small" style="margin-top: 15px"
                  @click="onEdit">
         <span>修改个人信息</span>
       </el-button>
@@ -64,8 +64,15 @@ import {apiPath} from "@/script/env"
 export default {
   name: "UserProfile",
   mounted() {
-    this.checkAvatar()
+    if (this.userId != null) {
+      this.getUserInfo()
+      this.checkAvatar(this.userId)
+    } else {
+      this.resetProfileData()
+      this.checkAvatar(userInfo().userId)
+    }
   },
+  props: ["userId"],
   data() {
     return {
       uploadPath: apiPath.avatar,
@@ -74,8 +81,8 @@ export default {
         "userId": userInfo().userId
       },
       avatarUrl: "",
-      userInfo: userInfo(),
       userProfile: {
+        userId: "",
         name: "",
         email: "",
         section: ""
@@ -93,11 +100,24 @@ export default {
     }
   },
   methods: {
-    checkAvatar() {
+    checkAvatar(userId) {
       this.avatarUrl = ""
-      const url = `${apiPath.avatar}/${userInfo().userId}.png`
+      const url = `${apiPath.avatar}/${userId}.png`
       this.$axios.head(url).then(() => {
         this.avatarUrl = url
+      })
+    },
+    getUserInfo() {
+      this.$axios({
+        url: `${apiPath.user}/info`,
+        params: {
+          userId: this.userId
+        }
+      }).then((res) => {
+        if (res.status === 200) {
+          document.title = `${res.data["name"]}`
+          this.userProfile = res.data
+        }
       })
     },
     beforeUpload(file) {
@@ -125,11 +145,6 @@ export default {
       })
     },
     onEdit() {
-      this.userProfile = {
-        name: userInfo().name,
-        email: userInfo().email,
-        section: userInfo().section
-      }
       this.editable = true
     },
     save() {
@@ -164,6 +179,18 @@ export default {
           return false
         }
       })
+    },
+    cancelEdit() {
+      this.editable = false
+      this.resetProfileData()
+    },
+    resetProfileData() {
+      this.userProfile = {
+        userId: userInfo().userId,
+        name: userInfo().name,
+        email: userInfo().email,
+        section: userInfo().section
+      }
     }
   }
 }
@@ -184,7 +211,7 @@ export default {
   height: auto;
   display: block;
   border-radius: 200px;
-  border: 3px solid #e0e0e0;
+  border: 3px solid #EBEEF5;
   margin: 0 auto 15px;
 }
 
@@ -197,6 +224,7 @@ export default {
 .user-id {
   font-weight: lighter;
   color: #606266;
+  margin-top: 5px;
 }
 </style>
 

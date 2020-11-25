@@ -33,14 +33,15 @@
         </el-table-column>
         <el-table-column width="55px" align="right">
           <template slot-scope="scope">
-            <img class="avatar" align="center"
+            <img class="avatar" align="center" alt="avatar" style="visibility: hidden"
                  :src="`./api/file/image/avatar/${scope.row.userId}.png`"
-                 onerror="this.style.display='none'" alt="avatar">
+                 onload="this.style.visibility='visible'"
+                 onerror="this.src='/icons/no_avatar.png'">
           </template>
         </el-table-column>
         <el-table-column label="用户名">
           <template slot-scope="scope">
-            <b>{{ scope.row.name }}</b>
+            <el-link :href="`/profile?userId=${scope.row.userId}`"><b>{{ scope.row.name }}</b></el-link>
           </template>
         </el-table-column>
         <el-table-column label="总提交次数" width="150px" align="right">
