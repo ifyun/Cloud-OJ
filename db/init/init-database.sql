@@ -220,8 +220,7 @@ select `s`.`solution_id`                            AS `solution_id`,
        `r`.`time`                                   AS `time`,
        `r`.`memory`                                 AS `memory`
 from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
-         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
-order by `s`.`submit_time`;
+         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)));
 
 -- 初始化角色/权限表
 INSERT INTO cloud_oj.role (role_id, role_name)
