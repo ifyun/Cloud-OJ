@@ -182,6 +182,9 @@ public class ProblemService {
     }
 
     private void write(File dir, List<String> dataList, String ext) throws IOException {
+        if (dataList == null || dataList.size() == 0) {
+            return;
+        }
         for (int i = 0; i < dataList.size(); i++) {
             FileWriter writer = new FileWriter(new File(dir + "/" + i + ext));
             writer.write(dataList.get(i));
