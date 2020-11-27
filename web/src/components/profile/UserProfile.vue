@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="profile-div" v-if="editable">
+    <div class="profile-div" v-if="profileEditor.display">
       <span>上传新头像:</span>
       <el-upload class="avatar-uploader"
                  :show-file-list="false"
@@ -25,9 +25,23 @@
         <el-form-item>
           <el-input prefix-icon="el-icon-school" v-model="userProfile.section"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="success" @click="save">保存</el-button>
-          <el-button size="small" @click="cancelEdit">取消</el-button>
+        <el-collapse>
+          <el-collapse-item title="修改密码">
+            <el-form-item prop="password">
+              <el-input type="password" prefix-icon="el-icon-lock" v-model="userProfile.password"
+                        auto-complete="new-password" onkeyup="this.value=this.value.replace(/\s+/g,'')"
+                        placeholder="输入新密码">
+              </el-input>
+            </el-form-item>
+          </el-collapse-item>
+        </el-collapse>
+        <el-form-item style="margin-top: 15px">
+          <el-button size="small" type="success" icon="el-icon-check"
+                     :loading="profileEditor.loading" @click="saveProfile">保存
+          </el-button>
+          <el-button size="small" icon="el-icon-close" :disabled="profileEditor.loading"
+                     @click="cancelEdit">取消
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -57,6 +71,8 @@
 import {Notice, saveToken, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
+const bcrypt = require('bcryptjs')
+
 export default {
   name: "UserProfile",
   mounted() {
@@ -82,7 +98,8 @@ export default {
         userId: "",
         name: "",
         email: "",
-        section: ""
+        section: "",
+        password: ""
       },
       rules: {
         name: [
@@ -91,9 +108,15 @@ export default {
         ],
         email: [
           {type: "email", message: "请输入邮箱", trigger: "blur"}
-        ]
+        ],
+        password: [
+          {min: 6, max: 16, message: "长度在 6 ~ 16 个字符", trigger: "blur"}
+        ],
       },
-      editable: false
+      profileEditor: {
+        display: false,
+        loading: false
+      }
     }
   },
   methods: {
@@ -142,11 +165,19 @@ export default {
       })
     },
     onEdit() {
-      this.editable = true
+      this.profileEditor.display = true
     },
-    save() {
+    saveProfile() {
       this.$refs["profileForm"].validate((valid) => {
         if (valid) {
+          this.profileEditor.loading = true
+          let password = this.userProfile.password
+          if (password === undefined || password === "") {
+            delete this.userProfile.password
+          } else {
+            this.userProfile.password =
+                bcrypt.hashSync(this.$md5(password), 10)
+          }
           this.$axios({
             url: apiPath.profile,
             method: "put",
@@ -155,12 +186,9 @@ export default {
               "token": this.userInfo.token,
               "userId": this.userInfo.userId
             },
-            params: {
-              "userId": this.userInfo.userId
-            },
             data: JSON.stringify(this.userProfile)
           }).then((res) => {
-            this.editable = false
+            this.profileEditor.display = false
             this.updateLocalUserInfo()
             Notice.notify.success(this, {
               title: "已保存",
@@ -172,6 +200,9 @@ export default {
               title: "保存失败",
               message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
             })
+          }).finally(() => {
+            this.userProfile.password = ""
+            this.profileEditor.loading = false
           })
         } else {
           return false
@@ -179,7 +210,7 @@ export default {
       })
     },
     cancelEdit() {
-      this.editable = false
+      this.profileEditor.display = false
       this.resetProfileData()
     },
     resetProfileData() {
