@@ -48,7 +48,7 @@
         <el-table-column v-if="contestId == null" label="通过人数" width="90px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined">
-            {{ scope.row['passed'] }} 人通过
+            {{ scope.row['passed'] }}
           </span>
           </template>
         </el-table-column>
@@ -69,7 +69,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="分数" prop="score" width="90px" align="right">
+        <el-table-column label="分数" width="90px" align="right">
+          <template slot-scope="scope">
+            <b>{{ scope.row.score }}</b>
+          </template>
         </el-table-column>
         <el-table-column label="创建时间" width="160px" align="center">
           <template slot-scope="scope">

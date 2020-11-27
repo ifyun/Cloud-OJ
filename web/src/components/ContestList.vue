@@ -4,8 +4,7 @@
       <el-table :data="contests.data" v-loading="loading">
         <el-table-column label="竞赛/作业名称" prop="contestName">
           <template slot-scope="scope">
-            <el-link style="font-size: 12pt"
-                     :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
+            <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
                      @click="onContestClick(scope.row)">
               <b v-if="scope.row['ended']">[已结束]</b>
@@ -19,7 +18,9 @@
         </el-table-column>
         <el-table-column label="语言限制" align="left">
           <template slot-scope="scope">
-            <b class="languages" style="word-break: break-word">{{ calcLanguages(scope.row.languages) }}</b>
+            <b class="languages" style="word-break: break-word">
+              {{ calcLanguages(scope.row.languages) }}
+            </b>
           </template>
         </el-table-column>
         <el-table-column label="开始时间" width="180px" align="right">
