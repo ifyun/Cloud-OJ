@@ -43,7 +43,7 @@ function copyObject(src) {
 
 function callNotify(ctx, data, type) {
     ctx.$notify[type]({
-        offset: 50,
+        offset: data["offset"] === undefined ? 50 : data["offset"],
         duration: 1500,
         title: data["title"],
         message: data["message"]

@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 25px 45px">
+  <div>
     <el-form ref="signupForm" status-icon
              :model="signupForm"
              :rules="rules">
@@ -44,8 +44,7 @@
       <el-form-item>
         <el-button class="login-button" type="success" round
                    :loading="loading"
-                   @click="signup('signupForm')">
-          注册
+                   @click="signup('signupForm')">注 册
         </el-button>
       </el-form-item>
     </el-form>
@@ -60,6 +59,9 @@ const bcrypt = require('bcryptjs')
 
 export default {
   name: "SignupTab",
+  mounted() {
+    document.title = "Signup · Cloud OJ"
+  },
   data() {
     let validatePassword = (rule, value, callback) => {
       if (value === "")
@@ -118,6 +120,7 @@ export default {
             data: JSON.stringify(data)
           }).then((res) => {
             Notice.notify.success(this, {
+              offset: 0,
               title: `用户 ${this.signupForm.name} 注册成功`,
               message: `${res.status} ${res.statusText}`
             })
@@ -131,6 +134,7 @@ export default {
             else
               msg = res.data.msg === undefined ? res.statusText : res.data.msg
             Notice.notify.error(this, {
+              offset: 0,
               title: "注册失败",
               message: `${res.status} ${msg}`
             })
@@ -149,10 +153,10 @@ export default {
 
 <style scoped>
 .login-input {
-  width: 320px;
+  width: 350px;
 }
 
 .login-button {
-  width: 100%;
+  width: 350px;
 }
 </style>

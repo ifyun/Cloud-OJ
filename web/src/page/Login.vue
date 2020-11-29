@@ -1,21 +1,32 @@
 <template>
-  <div style="height: 100%">
-    <el-header class="header">
-      <div class="header-wrapper">
-        <el-link class="app-name" type="success" href="/">Cloud OJ</el-link>
+  <div class="container">
+    <div class="left">
+      <div id="words">
+        <h1>
+          <span style="color: #DB6D63">Errors</span>
+          = (<span style="color: #5EAAE8">More Code</span>)<sup>2</sup></h1>
       </div>
-    </el-header>
-    <el-container class="container">
-      <el-tabs class="login-tabs" v-model="activeTab" type="border-card">
-        <el-tab-pane label="登录" name="login">
-          <LoginTab/>
-        </el-tab-pane>
-        <el-tab-pane label="注册" name="sign-up">
-          <SignupTab/>
-        </el-tab-pane>
-      </el-tabs>
-      <BottomArea style="margin-top: 120px"/>
-    </el-container>
+    </div>
+    <div class=right>
+      <div id="login-content">
+        <div class="logo-div">
+          <a href="/"><img class="logo" :src="'/favicon.svg'" alt="logo"></a>
+        </div>
+        <div v-if="currentView === 'LoginTab'" class="title">
+          <h2>登录</h2>
+          <span>没有账号？</span>
+          <el-link type="primary" @click="signup">注册</el-link>
+        </div>
+        <div v-else class="title">
+          <h2>注册</h2>
+          <span>已有账号？</span>
+          <el-link type="primary" @click="login">登录</el-link>
+        </div>
+        <component class="login-tab" :is="currentView"/>
+        <el-divider/>
+        <BottomArea/>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -33,38 +44,85 @@ export default {
   },
   data() {
     return {
-      activeTab: "login"
+      currentView: "LoginTab"
+    }
+  },
+  methods: {
+    login() {
+      this.currentView = "LoginTab"
+    },
+    signup() {
+      this.currentView = "SignupTab"
     }
   }
 }
 </script>
 
 <style scoped>
-.header {
-  position: fixed;
-  margin: 0 auto;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background-color: #545c64;
+.container {
+  height: calc(100% + 60px);
+  min-width: 1100px;
 }
 
-.header-wrapper {
+.left {
+  width: 60%;
+  height: calc(100% + 60px);
+  min-height: 700px;
+  display: inline-block;
+  vertical-align: top;
+  background-color: #21252B;
+}
+
+.right {
+  width: 40%;
+  height: calc(100% + 60px);
+  display: inline-block;
+  vertical-align: top;
+}
+
+#words {
+  color: white;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  z-index: 10;
-  background-color: inherit;
 }
 
-.container {
+#login-content {
+  margin: 125px auto 0;
+  width: 350px;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100% - 150px) !important;
 }
 
-.login-tabs {
-  margin-top: 160px;
+.title {
+  width: 350px;
+  margin-top: 25px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.logo-div {
+  width: 350px;
+}
+
+.logo {
+  height: 50px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+h1 {
+  font-size: 28pt;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+  font-weight: normal;
+  margin: 0 10px 0 0;
+}
+
+.login-tab {
+  margin: 25px 0 25px;
 }
 </style>

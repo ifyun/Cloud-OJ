@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import {Notice, saveToken, userInfo} from "@/script/util"
+import {Notice, saveToken, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 
 const bcrypt = require('bcryptjs')
@@ -172,11 +172,13 @@ export default {
         if (valid) {
           this.profileEditor.loading = true
           let password = this.userProfile.password
+          let passwordChanged = false
           if (password === undefined || password === "") {
             delete this.userProfile.password
           } else {
             this.userProfile.password =
                 bcrypt.hashSync(this.$md5(password), 10)
+            passwordChanged = true
           }
           this.$axios({
             url: apiPath.profile,
@@ -194,6 +196,9 @@ export default {
               title: "已保存",
               message: `${res.status} ${res.statusText}`
             })
+            if (passwordChanged) {
+              toLoginPage()
+            }
           }).catch((error) => {
             let res = error.response
             Notice.notify.error(this, {
