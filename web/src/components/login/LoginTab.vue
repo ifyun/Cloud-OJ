@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 25px 45px">
+  <div>
     <el-form ref="loginForm"
              :rules="loginRules"
              :model="loginForm">
@@ -20,7 +20,7 @@
       <el-form-item>
         <el-button class="login-button" type="primary" round
                    :loading="loading"
-                   @click="onLogin">登录
+                   @click="onLogin">登 录
         </el-button>
       </el-form-item>
     </el-form>
@@ -33,6 +33,9 @@ import {apiPath} from "@/script/env"
 
 export default {
   name: "LoginTab",
+  mounted() {
+    document.title = "Login · Cloud OJ"
+  },
   data() {
     return {
       loading: false,
@@ -66,16 +69,18 @@ export default {
             data: this.qs.stringify(data)
           }).then((res) => {
             saveToken(JSON.stringify(res.data))
-            window.location.href = "../"
+            window.location.href = "/"
           }).catch((error) => {
             let res = error.response
             if (res.status === 400) {
               Notice.notify.warning(this, {
+                offset: 0,
                 title: "登录失败",
                 message: "用户名或密码错误!"
               })
             } else {
               Notice.notify.error(this, {
+                offset: 0,
                 title: "登录失败",
                 message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
               })
@@ -95,10 +100,10 @@ export default {
 
 <style scoped>
 .login-input {
-  width: 320px;
+  width: 350px;
 }
 
 .login-button {
-  width: 100%;
+  width: 350px;
 }
 </style>
