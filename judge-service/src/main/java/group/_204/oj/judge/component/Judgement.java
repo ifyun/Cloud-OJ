@@ -28,9 +28,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class Judgement {
-
-    private static final String MAX_MEM_LIMIT = "524287";
     private static final String MEM_LIMIT = "65535";
+    private static final String MEM_LIMIT_JVM = "131071";       // For Java/Kotlin
 
     private static final int AC = 0;
     private static final int TLE = 2;
@@ -70,7 +69,7 @@ public class Judgement {
     /**
      * 判题
      *
-     * @param solution {@link Solution} 答案对象
+     * @param solution {@link Solution}
      */
     public void judge(Solution solution) {
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
@@ -87,7 +86,7 @@ public class Judgement {
     /**
      * Calculate results
      *
-     * @param results List of run result
+     * @param results List of {@link RunResult}
      */
     private void calcResult(Solution solution, Runtime runtime, List<RunResult> results) {
         if (runtime.getResult() == SolutionResult.JUDGE_ERROR
@@ -122,31 +121,32 @@ public class Judgement {
             }
 
             int total = results.size();
+            double passRate = 0;
+            SolutionResult result;
 
             runtime.setTotal(total);
             runtime.setPassed(ac);
             runtime.setTime(time);
             runtime.setMemory(memory);
 
-            double passRate = 0;
-
             if (ac == 0) {
-                solution.setResult(SolutionResult.WRONG);
+                result = SolutionResult.WRONG;
             } else if (ac < total) {
                 passRate = (double) ac / total;
-                solution.setResult(SolutionResult.PARTLY_PASSED);
+                result = SolutionResult.PARTLY_PASSED;
             } else {
                 passRate = 1;
-                solution.setResult(SolutionResult.PASSED);
+                result = SolutionResult.PASSED;
             }
 
             if (tle != 0)
-                solution.setResult(SolutionResult.TIMEOUT);
+                result = SolutionResult.TIMEOUT;
             if (mle != 0)
-                solution.setResult(SolutionResult.OOM);
+                result = SolutionResult.OOM;
             if (re != 0)
-                solution.setResult(SolutionResult.RUNTIME_ERROR);
+                result = SolutionResult.RUNTIME_ERROR;
 
+            solution.setResult(result);
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
 
@@ -158,7 +158,7 @@ public class Judgement {
     /**
      * Execute the compiled code
      *
-     * @return List of run result
+     * @return List of {@link RunResult}
      */
     private List<RunResult> execute(Solution solution, Runtime runtime, long timeout) {
         List<RunResult> results = null;
@@ -238,17 +238,25 @@ public class Judgement {
      * @param solution {@link Solution} Solution object
      * @return {@link ProcessBuilder} Command to run
      */
-    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir) throws UnsupportedLanguageError {
+    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir)
+            throws UnsupportedLanguageError {
         Language language = Language.get(solution.getLanguage());
-        assert language != null;
+
+        if (language == null) {
+            throw new UnsupportedLanguageError("不支持的语言: null.");
+        }
 
         String solutionDir = codeDir + solution.getSolutionId();
+        String dataDirInContainer = UUID.randomUUID().toString();   // Use UUID for test data directory in container.
 
         ProcessBuilder builder = new ProcessBuilder();
 
         List<String> cmd = new ArrayList<>(Arrays.asList(
-                "docker", "run", "--rm", "--network", "none", "-v", solutionDir + ":/tmp/code",
-                "-v", testDataDir + ":/test_data:ro", "-w", "/tmp/code", runnerImage, "runner"
+                "docker", "run", "--rm", "--network", "none",
+                "-v", String.format("%s:/tmp/code", solutionDir),
+                "-v", String.format("%s:/%s:ro", testDataDir, dataDirInContainer),
+                "-w", "/tmp/code",
+                runnerImage, "runner"
         ));
 
         switch (language) {
@@ -257,7 +265,7 @@ public class Judgement {
                 cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("java@-Xmx64m@Solution", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
+                cmd.addAll(Arrays.asList("java@-Xms8m@-Xmx64m@Solution", timeout, MEM_LIMIT, MEM_LIMIT_JVM));
                 break;
             case PYTHON:
                 cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT));
@@ -272,13 +280,13 @@ public class Judgement {
                 cmd.addAll(Arrays.asList("node@Solution.js", timeout, MEM_LIMIT, MEM_LIMIT));
                 break;
             case KOTLIN:
-                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MAX_MEM_LIMIT));
+                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MEM_LIMIT_JVM));
                 break;
             default:
-                throw new UnsupportedLanguageError("Unsupported language.");
+                throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
         }
 
-        cmd.add("/test_data");
+        cmd.add(String.format("/%s", dataDirInContainer));
         builder.command(cmd);
 
         return builder;
@@ -298,5 +306,4 @@ public class Judgement {
 
         return files == null ? 0 : files.length;
     }
-
 }
