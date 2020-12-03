@@ -69,10 +69,16 @@
               <codemirror v-model="code" :options="cmOptions">
               </codemirror>
             </div>
-            <el-button style="margin-top: 25px" type="success" icon="el-icon-s-promotion"
-                       :disabled="disableCommit"
-                       @click="commitCode">提交运行
-            </el-button>
+            <el-row style="margin-top: 25px">
+              <el-col :span="14">
+                <el-button type="success" icon="el-icon-s-promotion"
+                           :disabled="disableCommit" @click="commitCode">提交运行
+                </el-button>
+              </el-col>
+              <el-col :span="10">
+                <el-alert type="info" :closable="false" show-icon title="将文件拖入编辑框可导入代码"/>
+              </el-col>
+            </el-row>
           </el-card>
         </el-col>
       </el-row>
@@ -130,7 +136,7 @@ const languageMode = [
 
 const languageOptions = [
   {id: 0, name: "C", version: "gcc"},
-  {id: 1, name: "C++", version: "g++(std=14)"},
+  {id: 1, name: "C++", version: "g++"},
   {id: 2, name: "Java", version: "1.8"},
   {id: 3, name: "Python", version: "3.5"},
   {id: 4, name: "Bash"},
