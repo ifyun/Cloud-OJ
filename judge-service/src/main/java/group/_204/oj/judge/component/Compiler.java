@@ -67,9 +67,9 @@ class Compiler {
         String src = writeCode(solutionId, languageId, sourceCode);
 
         if (src.isEmpty()) {
-            String info = "无法写入源码";
-            log.error("编译异常: {}", info);
-            return new Compile(solutionId, -1, info);
+            String err = "编译异常: 无法写入源码";
+            log.error(err);
+            return new Compile(solutionId, -1, err);
         }
 
         try {
@@ -133,7 +133,7 @@ class Compiler {
             String error = getOutput(process.getErrorStream());
 
             if (error.isEmpty()) {
-                log.info("编译成功: solutionId={}", solutionId);
+                log.debug("编译成功: solutionId={}", solutionId);
                 return new Compile(solutionId, 0, null);
             } else {
                 throw new CompileError(error);

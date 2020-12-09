@@ -74,7 +74,7 @@ public class Judgement {
     public void judge(Solution solution) {
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
 
-        log.info("正在判题: solutionId={}.", solution.getSolutionId());
+        log.debug("正在判题: solutionId={}.", solution.getSolutionId());
 
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
