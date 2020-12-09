@@ -8,7 +8,7 @@ import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.model.Solution;
 
 import javax.annotation.Resource;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @Slf4j
 @Component
@@ -24,13 +24,12 @@ public class CompilerAsync {
      * 异步编译
      *
      * @param solution {@link Solution}
-     * @return {@link Compile} 编译结果
+     * @param callback 回调
      */
     @Async("judgeExecutor")
-    public CompletableFuture<Compile> compile(Solution solution) {
+    public void compile(Solution solution, Consumer<Compile> callback) {
         Compile compile = compiler.compile(solution);
         compileDao.add(compile);
-
-        return CompletableFuture.completedFuture(compile);
+        callback.accept(compile);
     }
 }

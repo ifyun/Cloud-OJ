@@ -78,7 +78,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         user.setSecret(userDao.getSecret(userId));
 
         // 生成 jwt token
-        Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000);
+        Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
         String jwt = Jwts.builder()
                 .claim("authorities", authoritiesString)
                 .setSubject(authResult.getName())
