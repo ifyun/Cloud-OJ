@@ -141,11 +141,11 @@ export default {
       })
     },
     beforeUpload(file) {
-      const isTypeOk = ["image/jpeg", "image/png", "image/svg+xml"].indexOf(file.type) !== -1
+      const isTypeOk = ["image/jpeg", "image/png"].indexOf(file.type) !== -1
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isTypeOk) {
-        this.$message.error("上传头像图片只能是 JPG/PNG/SVG 格式!");
+        this.$message.error("上传头像图片只能是 JPG/PNG 格式!");
       }
 
       if (!isLt2M) {

@@ -54,7 +54,7 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "上传题目图片", notes = "/image/problem/{图片名称} 可以获取头像文件")
+    @ApiOperation(value = "上传题目图片", notes = "/image/problem/{图片名称} 可以获取题目图片")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "file", value = "jpg, png, svg", dataTypeClass = MultipartFile.class, required = true)
     })
