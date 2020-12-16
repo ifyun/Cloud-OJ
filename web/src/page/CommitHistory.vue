@@ -19,7 +19,7 @@ export default {
     BottomArea
   },
   mounted() {
-    document.title = "提交记录 · Cloud OJ"
+    document.title = "提交记录 - Cloud OJ"
   }
 }
 </script>

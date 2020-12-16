@@ -36,18 +36,6 @@ public class Problem {
     @ApiModelProperty(value = "题目描述")
     private String description;
 
-    @ApiModelProperty(value = "输入说明")
-    private String input;
-
-    @ApiModelProperty(value = "输出说明")
-    private String output;
-
-    @ApiModelProperty(value = "样例输入")
-    private String sampleInput;
-
-    @ApiModelProperty(value = "样例输出")
-    private String sampleOutput;
-
     @ApiModelProperty(value = "分类，多个用逗号分隔")
     private String category;
 
@@ -56,8 +44,6 @@ public class Problem {
 
     private Integer score;
     private Boolean enable;
-
-    @ApiModelProperty(hidden = true)
     private Date createAt;
 
     @ApiModelProperty(hidden = true)

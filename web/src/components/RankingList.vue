@@ -13,8 +13,8 @@
             <el-switch v-model="autoRefresh" @change="toggleAutoRefresh">
             </el-switch>
           </div>
-          <el-button icon="el-icon-refresh" size="medium" style="margin-left: 15px"
-                     @click="getRankingList(true)">
+          <el-button style="margin-left: 15px" icon="el-icon-refresh"
+                     size="small" round @click="getRankingList(true)">
             刷新
           </el-button>
         </div>
@@ -59,8 +59,7 @@
       </el-table>
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
-                     layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30]"
+                     layout="total, prev, pager, next"
                      :page-size.sync="pageSize"
                      :total="ranking.count"
                      :current-page.sync="currentPage"
@@ -97,8 +96,13 @@ export default {
   components: {
     Error
   },
-  mounted() {
+  beforeMount() {
     this.contest = JSON.parse(window.sessionStorage.getItem("contest"))
+    if (this.contest != null) {
+      document.title = `${this.contest.name} - 排行榜 - Cloud OJ`
+    } else {
+      document.title = "排行榜 - Cloud OJ"
+    }
     this.getRankingList()
   },
   data() {
@@ -112,7 +116,7 @@ export default {
       },
       contest: {},
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 15,
       detailDialog: {
         visible: false,
         title: "",
@@ -188,7 +192,7 @@ export default {
     getDetail(row) {
       if (this.contest != null && userInfo() != null && userInfo()["roleId"] >= 2) {
         this.detailDialog.visible = true
-        this.detailDialog.title = `${row.name} 每题得分`
+        this.detailDialog.title = `${row.name} - 每题得分`
         this.$axios.get(apiPath.contestDetail, {
           headers: {
             token: userInfo().token,

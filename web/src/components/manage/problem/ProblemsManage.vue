@@ -3,18 +3,18 @@
     <div style="align-self: flex-start">
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item>
-          <el-input placeholder="输入关键字" prefix-icon="el-icon-search"
+          <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
                     v-model="keyword">
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" icon="el-icon-search"
+          <el-button size="medium" type="success" icon="el-icon-search"
                      @click="search(keyword)">
             搜索
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button icon="el-icon-refresh" @click="getProblems(true)">
+          <el-button size="medium" icon="el-icon-refresh" @click="getProblems(true)">
             刷新
           </el-button>
         </el-form-item>
@@ -60,7 +60,9 @@
             <span v-for="tag in scope.row.category.split(',')"
                   v-bind:key="tag.index"
                   @click="onTagClick(tag)"
-                  class="tag" :class="getTagColor(tag)">{{ tag }}</span>
+                  class="tag" :class="getTagColor(tag)">
+              {{ tag }}
+            </span>
           </div>
         </template>
       </el-table-column>
@@ -93,8 +95,7 @@
     </el-table>
     <el-pagination style="margin-top: 10px"
                    background
-                   layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[15, 25, 35]"
+                   layout="total, prev, pager, next"
                    :page-size.sync="pageSize"
                    :total="problems.count"
                    :current-page.sync="currentPage"
@@ -102,7 +103,8 @@
                    @current-change="getProblems">
     </el-pagination>
     <!-- Editor Dialog -->
-    <el-dialog :title="editorDialog.title" width="800px"
+    <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen
+               :close-on-press-escape="false" :close-on-click-modal="false"
                :visible.sync="editorDialog.visible">
       <ProblemEditor :problem-id="selectedId"
                      :save-type="saveType"
@@ -110,7 +112,7 @@
                      @refresh="getProblems"/>
     </el-dialog>
     <!-- Test Data Manage Dialog -->
-    <el-dialog :title="`【${selectedTitle}】的测试数据`"
+    <el-dialog :title="`${selectedTitle}的测试数据`"
                :visible.sync="testDataDialogVisible"
                width="850px">
       <TestDataManage :problem-id="selectedId"
@@ -151,7 +153,7 @@
 </template>
 
 <script>
-import {userInfo, tagColor, toLoginPage, Notice} from "@/script/util"
+import {userInfo, tagColor, toLoginPage, Notice, searchParams} from "@/script/util"
 import {apiPath} from "@/script/env"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
@@ -163,7 +165,8 @@ export default {
     ProblemEditor
   },
   beforeMount() {
-    document.title = "题库管理 · Cloud OJ"
+    document.title = "题库管理 - Cloud OJ"
+    this.loadPage()
     this.getProblems()
   },
   data() {
@@ -206,6 +209,12 @@ export default {
   },
   methods: {
     getTagColor: tagColor,
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getProblems(refresh) {
       this.loading = true
       let params = {
@@ -239,6 +248,7 @@ export default {
         }
       }).finally(() => {
         this.loading = false
+        history.pushState(null, "", `?page=${this.currentPage}`)
       })
     },
     search() {
@@ -269,7 +279,7 @@ export default {
         }
       }).then((res) => {
         Notice.notify.warning(this, {
-          title: `【${row.title}】已${state}`,
+          title: `${row.title} 已${state}`,
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -280,13 +290,13 @@ export default {
             break
           case 400:
             Notice.notify.error(this, {
-              title: `【${row.title}】${state}失败`,
+              title: `${row.title} ${state}失败`,
               message: `${res.data.msg}`
             })
             break
           default:
             Notice.notify.error(this, {
-              title: `【${row.title}】${state}失败`,
+              title: `${row.title} ${state}失败`,
               message: `${res.status} ${res.statusText}`
             })
         }
@@ -296,14 +306,14 @@ export default {
     },
     onAddProblemClick() {
       this.selectedId = null
-      this.editorTitle = "创建新题目"
+      this.editorDialog.title = "创建新题目"
       this.saveType = "post"
       this.editorDialog.visible = true
     },
     onEditClick(row) {
       this.selectedId = row.problemId
       this.saveType = "put"
-      this.editorDialog.title = `编辑【${row.title}】`
+      this.editorDialog.title = `${row.problemId}. ${row.title}`
       this.editorDialog.visible = true
     },
     manageTestData(row) {
@@ -340,13 +350,13 @@ export default {
                 break
               case 400:
                 Notice.notify.error(this, {
-                  title: `【${this.selectedTitle}】删除失败`,
+                  title: `${this.selectedTitle} 删除失败`,
                   message: `${res.data.msg}`
                 })
                 break
               default:
                 Notice.notify.error(this, {
-                  title: `【${this.selectedTitle}】删除失败`,
+                  title: `${this.selectedTitle} 删除失败`,
                   message: `${res.status} ${res.statusText}`
                 })
             }
@@ -373,5 +383,7 @@ export default {
 </script>
 
 <style scoped>
-
+.editor-dialog {
+  min-width: 1100px;
+}
 </style>

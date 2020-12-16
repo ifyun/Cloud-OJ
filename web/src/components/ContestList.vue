@@ -51,8 +51,7 @@
       </el-table>
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
-                     layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30]"
+                     layout="total, prev, pager, next"
                      :page-size.sync="pageSize"
                      :total="contests.count"
                      :current-page.sync="currentPage"
@@ -71,7 +70,7 @@ import moment from "moment"
 export default {
   name: "CompetitionList",
   mounted() {
-    document.title = "竞赛/作业 · Cloud OJ"
+    document.title = "竞赛/作业 - Cloud OJ"
     this.getContests()
   }
   ,

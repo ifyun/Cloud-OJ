@@ -13,7 +13,7 @@
         </el-table-column>
         <el-table-column label="结果" align="center">
           <template slot-scope="scope">
-            <el-tag effect="plain" :type="getResultTag(scope.row).type">
+            <el-tag size="small" effect="plain" :type="getResultTag(scope.row).type">
               <i :class="getResultTag(scope.row).icon">
                 {{ getResultTag(scope.row).text }}
               </i>

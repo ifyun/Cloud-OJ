@@ -60,7 +60,7 @@ const bcrypt = require('bcryptjs')
 export default {
   name: "SignupTab",
   mounted() {
-    document.title = "Signup · Cloud OJ"
+    document.title = "注册 - Cloud OJ"
   },
   data() {
     let validatePassword = (rule, value, callback) => {

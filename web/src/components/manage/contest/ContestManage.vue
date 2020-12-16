@@ -2,13 +2,13 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item>
-        <el-button type="primary" icon="el-icon-circle-plus"
+        <el-button size="medium" type="primary" icon="el-icon-circle-plus"
                    @click="onAddContestClick">
           创建新竞赛/作业
         </el-button>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-refresh" @click="getContests(true)">
+        <el-button size="medium" icon="el-icon-refresh" @click="getContests(true)">
           刷新
         </el-button>
       </el-form-item>
@@ -109,7 +109,7 @@ export default {
     CompetitionProblemsManage
   },
   beforeMount() {
-    document.title = "竞赛/作业管理 · Cloud OJ"
+    document.title = "竞赛/作业管理 - Cloud OJ"
     this.getContests()
   },
   data() {

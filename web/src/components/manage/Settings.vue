@@ -49,7 +49,8 @@
             </el-switch>
           </el-col>
         </el-row>
-        <el-button style="margin-top: 45px" type="primary" icon="el-icon-check" @click="saveSettings">
+        <el-button style="margin-top: 35px" type="primary" size="medium" icon="el-icon-check"
+                   @click="saveSettings">
           保存设置
         </el-button>
       </el-card>
@@ -64,7 +65,7 @@ import {apiPath} from "@/script/env"
 export default {
   name: "Settings",
   beforeMount() {
-    document.title = "系统设置 · Cloud OJ"
+    document.title = "系统设置 - Cloud OJ"
     this.getQueueInfo()
     this.getSettings()
   },

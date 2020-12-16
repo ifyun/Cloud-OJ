@@ -4,13 +4,14 @@
       <el-row type="flex" align="middle">
         <el-col :span="4">
           <div class="logo-div">
-            <el-link class="app-name" type="success" href="/">Cloud OJ</el-link>
+            <img class="logo" :src="'/favicon.svg'">
+            <a class="app-name" type="success" href="/">Cloud OJ</a>
           </div>
         </el-col>
         <el-col :span="16" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
           <el-menu class="top-nav" mode="horizontal" :default-active="active" @select="onSelect"
-                   background-color="#3A3A3A" text-color="#F0F0F0" active-text-color="#ffd04b">
+                   background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#409EFF">
             <el-menu-item index="1">
               <i class="el-icon-s-order"></i>
               <span>题库</span>
@@ -39,12 +40,12 @@
             <img class="avatar"
                  :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : '/icons/user.svg'"
                  onerror="this.src='/icons/no_avatar.png'" alt="avatar">
-            <span class="el-dropdown-link" style="color: lightgray"
+            <span class="el-dropdown-link" style="color: #E0E0E0"
                   v-if="userInfo == null"
                   @click="login">登录
             </span>
             <el-dropdown v-else @command="userMenuClick">
-              <span class="el-dropdown-link" style="color: #909399">
+              <span class="el-dropdown-link" style="color: #E0E0E0">
                 <span><b>{{ userInfo != null ? userInfo.name : '' }}</b></span>
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -138,7 +139,7 @@ export default {
 .header-wrapper {
   border-bottom: solid 1px #e6e6e6;
   padding: 0 20px;
-  background-color: #3A3A3A;
+  background-color: #3B3B3B;
 }
 
 .account-area {

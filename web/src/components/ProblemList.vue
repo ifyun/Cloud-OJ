@@ -8,20 +8,19 @@
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-input placeholder="输入关键字" prefix-icon="el-icon-search"
+            <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
                       v-model="keyword">
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="success" icon="el-icon-search"
+            <el-button size="medium" type="success" icon="el-icon-search"
                        @click="search(keyword)">搜索
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-tag type="success"
-                    v-if="showKeyword"
-                    closable
-                    @close="onTagClose()">{{ keyword }}
+            <el-tag type="success" size="medium"
+                    v-if="showKeyword" closable @close="onTagClose()">
+              {{ keyword }}
             </el-tag>
           </el-form-item>
         </el-form>
@@ -37,7 +36,7 @@
         </el-table-column>
         <el-table-column align="left" width="110px">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.result !== undefined" effect="plain"
+            <el-tag v-if="scope.row.result !== undefined" size="small" effect="plain"
                     :type="resultTags[scope.row.result].type">
               <i :class="resultTags[scope.row.result].icon">
                 {{ resultTags[scope.row.result].text }}
@@ -45,7 +44,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null" label="通过人数" width="90px" align="right">
+        <el-table-column v-if="contestId == null && userInfo != null" label="通过人数" width="90px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined">
             {{ scope.row['passed'] }}
@@ -74,7 +73,7 @@
             <b>{{ scope.row.score }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="160px" align="center">
+        <el-table-column label="创建时间" width="160px" align="right">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row.createAt }}</i>
           </template>
@@ -82,8 +81,7 @@
       </el-table>
       <el-pagination style="margin-top: 10px"
                      background :hide-on-single-page="true"
-                     layout="total, sizes, prev, pager, next"
-                     :page-sizes="[10, 20, 30]"
+                     layout="total, prev, pager, next"
                      :page-size.sync="pageSize"
                      :total="problems.count"
                      :current-page.sync="currentPage"
@@ -95,18 +93,21 @@
 </template>
 
 <script>
-import {clearCachedCode, Notice, tagColor, toLoginPage, userInfo} from "@/script/util"
+import {clearCachedCode, Notice, searchParams, tagColor, toLoginPage, userInfo} from "@/script/util"
 import {resultTags} from "@/script/env"
 
 export default {
   name: "ProblemList",
   props: ["contestId"],
-  mounted() {
-    if (this.contestId != null)
+  beforeMount() {
+    this.loadPage()
+    if (this.contestId != null) {
       this.getContest()
-    if (this.contest.id != null && userInfo() == null)
+    }
+    if (this.contest.id != null && userInfo() == null) {
       toLoginPage()
-    document.title = `${this.contest.id == null ? "题库" : this.contest.name} · Cloud OJ`
+    }
+    document.title = `${this.contest.id == null ? "题库" : this.contest.name} - Cloud OJ`
     clearCachedCode()
     this.getProblems()
   },
@@ -121,7 +122,8 @@ export default {
         data: [],
         count: 0
       },
-      pageSize: 10,
+      userInfo: userInfo(),
+      pageSize: 15,
       currentPage: 1,
       keyword: "",
       showKeyword: false,
@@ -130,6 +132,12 @@ export default {
   },
   methods: {
     getTagColor: tagColor,
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getContest() {
       let contest = sessionStorage.getItem("contest")
       if (contest != null)
@@ -173,6 +181,7 @@ export default {
         })
       }).finally(() => {
         this.loading = false
+        history.pushState(null, "", `?page=${this.currentPage}`)
       })
     },
     onTagClose() {
