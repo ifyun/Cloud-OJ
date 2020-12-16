@@ -41,10 +41,6 @@
         select problem_id,
                title,
                description,
-               input,
-               output,
-               sample_input,
-               sample_output,
                timeout,
                score,
                category
@@ -117,10 +113,6 @@
         update problem
         set title         = #{title},
             description   = #{description},
-            input         = #{input},
-            output        = #{output},
-            sample_input  = #{sampleInput},
-            sample_output = #{sampleOutput},
             score         = #{score},
             category      = #{category}
         where problem_id = #{problemId}

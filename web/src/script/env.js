@@ -3,6 +3,7 @@ const apiPath = {
     logoff: "/api/auth/logoff",
     testDataManage: "/api/file/test_data",
     avatar: "/api/file/image/avatar",
+    problemImage: "/api/file/image/problem",
     problemManage: "/api/manager/problem/pro",
     contestManage: "/api/manager/contest/pro",
     userManage: "/api/manager/user/pro",

@@ -20,7 +20,7 @@
           </el-menu-item>
           <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-flag"></i>
-            <span slot="title">竞赛/作业</span>
+            <span slot="title">竞赛/作业管理</span>
           </el-menu-item>
           <el-menu-item index="3" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-user-solid"></i>
@@ -145,9 +145,8 @@ export default {
 }
 
 .el-menu-item.is-active {
-  font-weight: bold;
-  color: #67C23A;
+  color: #409EFF;
   background-color: #EEEEEE;
-  box-shadow: inset 4px 0 0 #67C23A;
+  box-shadow: inset -2px 0 0 #409EFF;
 }
 </style>

@@ -1,5 +1,8 @@
 module.exports = {
     productionSourceMap: false,
+    transpileDependencies: [
+        /\bvue-awesome\b/
+    ],
     devServer: {
         port: 8081,
         proxy: {

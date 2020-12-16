@@ -2,13 +2,13 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item>
-        <el-button icon="el-icon-circle-plus" type="primary"
+        <el-button size="medium" icon="el-icon-circle-plus" type="primary"
                    @click="onAddClick">
           创建新用户
         </el-button>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-refresh" @click="getUsers(true)">
+        <el-button size="medium" icon="el-icon-refresh" @click="getUsers(true)">
           刷新
         </el-button>
       </el-form-item>
@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="角色/权限" width="200px" align="center">
         <template slot-scope="scope">
-          <el-tag effect="dark" style="width: 90px" size="medium"
+          <el-tag effect="plain" style="width: 90px" size="small"
                   :type="roleTypes[scope.row['roleId']]">
             <span>{{ roleNames[scope.row['roleId']] }}</span>
           </el-tag>
@@ -50,8 +50,7 @@
     </el-table>
     <el-pagination style="margin-top: 10px"
                    background
-                   layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[15, 25, 35]"
+                   layout="total, prev, pager, next"
                    :page-size.sync="pageSize"
                    :total="users.count"
                    :current-page.sync="currentPage"
@@ -83,7 +82,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" @click="onDelete">删除用户</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="onDelete">删除用户</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -99,7 +98,7 @@ export default {
   name: "UserManage",
   components: {UserEditor},
   beforeMount() {
-    document.title = "用户管理 · Cloud OJ"
+    document.title = "用户管理 - Cloud OJ"
     this.getUsers()
   },
   data() {

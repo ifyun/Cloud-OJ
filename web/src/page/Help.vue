@@ -1,13 +1,14 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <TopNavigation active="5"/>
-    <el-container class="container">
-      <el-card style="padding: 20px">
-        <markdown-it-vue :content="helpDoc">
-        </markdown-it-vue>
-      </el-card>
-      <BottomArea class="bottom"/>
-    </el-container>
+    <div class="wrapper">
+      <el-container class="container">
+        <el-card>
+          <markdown-it-vue :content="helpDoc"/>
+        </el-card>
+        <BottomArea class="bottom"/>
+      </el-container>
+    </div>
   </div>
 </template>
 
@@ -24,7 +25,8 @@ export default {
     BottomArea,
     MarkdownItVue
   },
-  mounted() {
+  beforeMount() {
+    document.title = "帮助 - Cloud OJ"
     this.loadHelpDoc()
   },
   data() {
@@ -44,7 +46,14 @@ export default {
 </script>
 
 <style scoped>
+.wrapper {
+  margin-top: 60px;
+  height: calc(100% + 60px);
+  overflow-y: auto;
+}
+
 .container {
+  margin-top: 35px;
   padding: 0 20px;
   flex-direction: column;
   max-width: 1100px;

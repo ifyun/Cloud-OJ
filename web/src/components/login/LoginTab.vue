@@ -34,7 +34,7 @@ import {apiPath} from "@/script/env"
 export default {
   name: "LoginTab",
   mounted() {
-    document.title = "Login · Cloud OJ"
+    document.title = "登录 - Cloud OJ"
   },
   data() {
     return {

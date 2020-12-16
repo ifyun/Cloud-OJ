@@ -12,25 +12,16 @@
         <el-col :span="12">
           <el-card style="overflow: auto"
                    :style="{height: calcContentHeight()}">
-            <div>
-              <h4>题目描述</h4>
-              <pre class="problem-content">{{ problem.description }}</pre>
-              <h4>输入说明</h4>
-              <pre class="problem-content">{{ problem.input }}</pre>
-              <h4>输出说明</h4>
-              <pre class="problem-content">{{ problem.output }}</pre>
-              <h4>限制</h4>
-              <div>
-                <i class="el-icon-stopwatch"/>
-                <span style="margin-left: 5px">{{ problem.timeout }} ms</span>
-                <br><br>
-                <i class="el-icon-cpu"/>
-                <span style="margin-left: 5px">64 MB</span>
-              </div>
-              <h4>输入示例</h4>
-              <pre class="sample">{{ problem.sampleInput }}</pre>
-              <h4>输出示例</h4>
-              <pre class="sample">{{ problem.sampleOutput }}</pre>
+            <div style="margin: 10px">
+              <el-button-group style="margin-bottom: 25px">
+                <el-button size="small" icon="el-icon-stopwatch">
+                  {{ problem.timeout }} ms
+                </el-button>
+                <el-button size="small" icon="el-icon-cpu">
+                  64 MB
+                </el-button>
+              </el-button-group>
+              <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
             </div>
           </el-card>
         </el-col>
@@ -71,8 +62,10 @@
             </div>
             <el-row style="margin-top: 25px">
               <el-col :span="14">
-                <el-button type="success" icon="el-icon-s-promotion"
-                           :disabled="disableCommit" @click="commitCode">提交运行
+                <el-button size="medium" type="success" round
+                           :disabled="disableCommit" @click="commitCode">
+                  <Icon name="play"/>
+                  <span style="margin-left: 10px">提交运行</span>
                 </el-button>
               </el-col>
               <el-col :span="10">
@@ -107,6 +100,7 @@
 </template>
 
 <script>
+import Error from "@/components/Error"
 import {toLoginPage, searchParams, userInfo, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
 import {codemirror} from "vue-codemirror"
@@ -121,7 +115,10 @@ import "codemirror/theme/material-darker.css"
 import "codemirror/theme/dracula.css"
 import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/addon/edit/closebrackets.js"
-import Error from "@/components/Error"
+import MarkdownItVue from "markdown-it-vue"
+import "markdown-it-vue/dist/markdown-it-vue.css"
+import Icon from "vue-awesome/components/Icon"
+import "vue-awesome/icons/play"
 
 const languageMode = [
   "text/x-csrc",
@@ -151,7 +148,14 @@ export default {
   name: "CodeCommit",
   components: {
     codemirror,
-    Error
+    MarkdownItVue,
+    Error,
+    Icon
+  },
+  computed: {
+    disableCommit: vm => {
+      return vm.code.trim().length === 0
+    }
   },
   mounted() {
     const ctx = this
@@ -162,14 +166,14 @@ export default {
     this.getProblem()
     this.getCachedCode()
   },
-  computed: {
-    disableCommit: vm => {
-      return vm.code.trim().length === 0
-    }
-  },
   data() {
     return {
       windowHeight: document.body.clientHeight,
+      mdOptions: {
+        markdownIt: {
+          html: true
+        }
+      },
       error: {
         code: undefined,
         text: ""
@@ -285,7 +289,7 @@ export default {
       }).then((res) => {
         if (res.status === 200) {
           this.problem = res.data
-          document.title = `${this.problem.title} · Cloud OJ`
+          document.title = `${this.problem.title} - Cloud OJ`
         } else if (res.status === 204) {
           this.error = {
             code: 404,
@@ -303,10 +307,6 @@ export default {
             code: res.status,
             text: errorText
           }
-          Notice.notify.error(this, {
-            title: "获取题目失败",
-            msg: `${res.status} ${errorText}`
-          })
         }
       })
     },
@@ -491,9 +491,5 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   min-width: 1200px !important;
-}
-
-h4 {
-  font-size: 13pt;
 }
 </style>

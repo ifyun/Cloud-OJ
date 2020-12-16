@@ -1,33 +1,31 @@
 <template>
   <div>
     <el-form label-width="80px" ref="problemForm"
-             :model="problem"
+             :model="problem" v-loading="loading"
              :rules="problemRules"
              :status-icon="true">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="8">
           <el-form-item label="题目名称" prop="title">
-            <el-input v-model="problem.title"></el-input>
+            <el-input size="medium" v-model="problem.title"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="5">
           <el-form-item label="分值" prop="score">
-            <el-input v-model.number="problem.score">
+            <el-input size="medium" v-model.number="problem.score">
             </el-input>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="时间限制" prop="timeout">
-            <el-input v-model.number="problem.timeout">
+        <el-col :span="5">
+          <el-form-item label="限时" prop="timeout">
+            <el-input size="medium" v-model.number="problem.timeout">
               <template slot="append">ms</template>
             </el-input>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="分类">
-        <el-tag :key="tag" effect="dark" type="success" closable
+      <el-form-item label="分类/标签">
+        <el-tag :key="tag" effect="plain" type="primary" closable
                 @close="tagClose(tag)"
                 v-for="tag in tags">{{ tag }}
         </el-tag>
@@ -41,48 +39,27 @@
                    @click="showTagInput">+ 新分类
         </el-button>
       </el-form-item>
-      <el-form-item label="题目描述" prop="description">
-        <el-input type="textarea"
-                  :autosize="textAreaSize"
+      <el-divider>题目内容</el-divider>
+      <MarkdownEditor :height="700" :data="problem.description"
+                      :on-change="onEditorChange"/>
+      <el-form-item label-width="0" prop="description">
+        <el-input style="display: none" type="textarea"
                   v-model="problem.description">
         </el-input>
       </el-form-item>
-      <el-divider content-position="center">格式说明</el-divider>
-      <el-form-item label="输入说明" prop="input">
-        <el-input type="textarea" placeholder="输入包含哪些内容"
-                  :autosize="textAreaSize"
-                  v-model="problem.input">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="输出说明" prop="output">
-        <el-input type="textarea" placeholder="输出包含哪些内容"
-                  :autosize="textAreaSize"
-                  v-model="problem.output">
-        </el-input>
-      </el-form-item>
-      <el-divider content-position="center">样例</el-divider>
-      <el-alert type="info" style="margin-bottom: 15px"
-                :closable="false" :show-icon="true"
-                title="样例不参与判题">
-      </el-alert>
-      <el-form-item label="样例输入" prop="sampleInput">
-        <el-input type="textarea" placeholder="若没有输入样例，可给出说明"
-                  :autosize="textAreaSize"
-                  v-model="problem.sampleInput">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="样例输出" prop="sampleOutput">
-        <el-input type="textarea"
-                  :autosize="textAreaSize"
-                  v-model="problem.sampleOutput">
-        </el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="success" :disabled="!dataChanged"
+      <el-form-item label-width="0">
+        <el-button type="primary" :disabled="!dataChanged"
                    :icon="problemId === null ? 'el-icon-plus': 'el-icon-check'"
                    @click="onSave(saveType)">
           {{ problemId === null ? '提交' : '保存修改' }}
         </el-button>
+        <el-popconfirm style="margin-left: 10px" title="确定要重置吗，所有更改都会丢失？"
+                       placement="right-end" @onConfirm="resetForm">
+          <el-button slot="reference" type="danger" icon="el-icon-refresh-left"
+                     :disabled="!dataChanged" :loading="loading">
+            重置
+          </el-button>
+        </el-popconfirm>
       </el-form-item>
     </el-form>
   </div>
@@ -91,6 +68,7 @@
 <script>
 import {userInfo, toLoginPage, Notice} from "@/script/util"
 import {apiPath} from "@/script/env"
+import MarkdownEditor from "@/components/manage/problem/MarkdownEditor"
 
 export default {
   name: "ProblemEditor",
@@ -98,6 +76,9 @@ export default {
     problemId: Number,
     saveType: String,
     dialogVisible: Boolean
+  },
+  components: {
+    MarkdownEditor
   },
   watch: {
     problemId: {
@@ -123,7 +104,8 @@ export default {
         if (this.firstChange) {
           this.firstChange = false
         } else {
-          this.dataChanged = true
+          !this.reset && (this.dataChanged = true)
+          this.reset = false
         }
       },
       deep: true
@@ -131,17 +113,17 @@ export default {
   },
   data() {
     return {
-      firstChange: true,  // problem 对象是否首次改变
-      dataChanged: false, // problem 对象是否已发生改变，无变化则禁用保存按钮
+      // problem 对象是否首次改变
+      firstChange: true,
+      // problem 对象是否已发生改变
+      dataChanged: false,
+      loading: false,
+      reset: false,
       problem: {
         title: "",
         description: "",
         timeout: "",
-        score: "",
-        input: "",
-        output: "",
-        sampleInput: "",
-        sampleOutput: ""
+        score: ""
       },
       problemRules: {
         title: [
@@ -155,18 +137,6 @@ export default {
         ],
         description: [
           {required: true, message: "请输入题目描述", trigger: "blur"}
-        ],
-        input: [
-          {required: true, message: "请填写输入说明", trigger: "blur"}
-        ],
-        output: [
-          {required: true, message: "请填写输出说明", trigger: "blur"}
-        ],
-        sampleInput: [
-          {required: true, message: "请填写输入样例", trigger: "blur"}
-        ],
-        sampleOutput: [
-          {required: true, message: "请填写输出样例", trigger: "blur"}
         ]
       },
       tags: [],
@@ -179,7 +149,19 @@ export default {
     }
   },
   methods: {
+    onEditorChange(val) {
+      this.problem.description = val
+    },
+    resetForm() {
+      this.reset = true
+      if (this.problemId == null) {
+        this.$refs["problemForm"].resetFields()
+      } else {
+        this.getProblem()
+      }
+    },
     getProblem() {
+      this.loading = true
       this.$axios({
         url: `${apiPath.problemManage}/${this.problemId}`,
         method: "get",
@@ -190,6 +172,8 @@ export default {
       }).then((res) => {
         this.problem = res.data
         this.tags = this.problem.category.split(",")
+        if (this.reset)
+          this.dataChanged = false
       }).catch((error) => {
         let res = error.response
         if (res.status === 401) {
@@ -200,6 +184,8 @@ export default {
             message: `${res.status} ${res.statusText}`
           })
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     tagClose(tag) {
@@ -222,42 +208,47 @@ export default {
       this.newTag = ""
     },
     onSave(type) {
-      this.problem.createAt = null
-      this.problem.category = this.tags.join(",")
-      this.$axios({
-        url: apiPath.problemManage,
-        method: type,
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId,
-          "Content-Type": "application/json"
-        },
-        data: JSON.stringify(this.problem)
-      }).then((res) => {
-        this.$emit("update:dialogVisible", false)
-        this.$emit("refresh")
-        Notice.notify.success(this, {
-          title: `【${this.problem.title}】已${type === "post" ? "创建" : "保存"}`,
-          message: `${res.status} ${res.statusText}`
-        })
-      }).catch((error) => {
-        let res = error.response
-        switch (res.status) {
-          case 401:
-            toLoginPage()
-            break
-          case 400:
-            Notice.notify.error(this, {
-              title: `【${this.problem.title}】保存失败`,
-              message: `${res.data.msg}`
-            })
-            break
-          default:
-            Notice.notify.error(this, {
-              title: `【${this.problem.title}】${type === "post" ? "创建" : "保存"}失败`,
-              message: `${res.status} ${res.statusText}`
-            })
+      this.$refs["problemForm"].validate((valid) => {
+        if (!valid) {
+          return false
         }
+        this.problem.createAt = null
+        this.problem.category = this.tags.join(",")
+        this.$axios({
+          url: apiPath.problemManage,
+          method: type,
+          headers: {
+            "token": userInfo().token,
+            "userId": userInfo().userId,
+            "Content-Type": "application/json"
+          },
+          data: JSON.stringify(this.problem)
+        }).then((res) => {
+          this.$emit("update:dialogVisible", false)
+          this.$emit("refresh")
+          Notice.notify.success(this, {
+            title: `${this.problem.title} 已保存`,
+            message: `${res.status} ${res.statusText}`
+          })
+        }).catch((error) => {
+          let res = error.response
+          switch (res.status) {
+            case 401:
+              toLoginPage()
+              break
+            case 400:
+              Notice.notify.error(this, {
+                title: `${this.problem.title} 保存失败`,
+                message: `${res.data.msg}`
+              })
+              break
+            default:
+              Notice.notify.error(this, {
+                title: `${this.problem.title} 保存失败`,
+                message: `${res.status} ${res.statusText}`
+              })
+          }
+        })
       })
     }
   }

@@ -33,7 +33,7 @@ html, body {
 
 .logo {
     height: 32px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 .logo-div {
@@ -42,9 +42,11 @@ html, body {
 }
 
 .app-name {
-    margin-left: 6px;
+    margin-left: 10px;
     font-weight: bold !important;
-    font-size: 18pt !important;
+    font-size: 16pt !important;
+    text-decoration: none;
+    color: white;
 }
 
 .tag {
@@ -65,7 +67,7 @@ html, body {
 }
 
 .tag:hover {
-    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
 }
 
 .tag-color-1 {
@@ -96,29 +98,11 @@ html, body {
     background: #73c13b;
 }
 
-.sample {
-    border-radius: 5px;
-    border: 1px solid rgb(231, 234, 237);
-    padding: 10px 8px;
-    background-color: rgb(248, 248, 248);
-    font-size: 12pt;
-    line-height: 1.2em;
-}
-
-.problem-content {
-    font-family: inherit;
-    font-size: 12pt;
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.5em;
-}
-
 .CodeMirror {
     height: 100% !important;
     word-spacing: 0.2em;
     font-size: 12pt;
     font-family: sans-serif !important;
-    border-radius: 5px;
     padding: 5px 0;
 }
 
@@ -129,4 +113,17 @@ html, body {
 .bottom {
     margin-top: 45px;
     margin-bottom: 15px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D4D5DA;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background: transparent;
 }
