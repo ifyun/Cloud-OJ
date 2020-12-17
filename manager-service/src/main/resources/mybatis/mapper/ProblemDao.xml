@@ -105,16 +105,15 @@
     </select>
     <insert id="add" parameterType="group._204.oj.manager.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
             keyProperty="problemId">
-        insert into problem(title, description, input, output, sample_input, sample_output, category, score)
-            value (#{title}, #{description}, #{input}, #{output}, #{sampleInput}, #{sampleOutput}, #{category},
-                   #{score})
+        insert into problem(title, description, category, score)
+            value (#{title}, #{description}, #{category}, #{score})
     </insert>
     <update id="update" parameterType="group._204.oj.manager.model.Problem">
         update problem
-        set title         = #{title},
-            description   = #{description},
-            score         = #{score},
-            category      = #{category}
+        set title       = #{title},
+            description = #{description},
+            score       = #{score},
+            category    = #{category}
         where problem_id = #{problemId}
     </update>
     <select id="inContest" resultType="java.lang.Integer">

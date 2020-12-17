@@ -97,8 +97,8 @@ public class ProblemService {
         return problems;
     }
 
-    public Msg deleteProblem(int problemId) {
-        if (problemDao.inContest(problemId) > 0) {
+    public Msg deleteProblem(Integer problemId) {
+        if (problemDao.inContest(problemId) != null) {
             return new Msg(400, "无法删除竞赛/作业中的题目");
         }
 

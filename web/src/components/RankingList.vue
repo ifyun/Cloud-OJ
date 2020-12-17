@@ -20,7 +20,11 @@
         </div>
       </div>
       <el-table :data="ranking.data" v-loading="loading" :row-style="{height: '55px'}" @row-dblclick="getDetail">
-        <el-table-column label="排名" width="150px" align="center">
+        <el-table-column width="150px" align="center">
+          <template slot="header">
+            <i class="el-icon-s-data el-icon--left"/>
+            <span>排名</span>
+          </template>
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.1.svg" alt="1">
@@ -39,7 +43,11 @@
                  onerror="this.src='/icons/no_avatar.png'">
           </template>
         </el-table-column>
-        <el-table-column label="用户名">
+        <el-table-column>
+          <template slot="header">
+            <i class="el-icon-user-solid el-icon--left"/>
+            <span>用户名</span>
+          </template>
           <template slot-scope="scope">
             <el-link :href="`/profile?userId=${scope.row.userId}`"><b>{{ scope.row.name }}</b></el-link>
           </template>
@@ -49,7 +57,11 @@
             <span>{{ scope.row['committed'] }} 次提交</span>
           </template>
         </el-table-column>
-        <el-table-column label="通过题目" width="150px" align="right">
+        <el-table-column width="150px" align="right">
+          <template slot="header">
+            <i class="el-icon-success el-icon--left"></i>
+            <span>通过题目</span>
+          </template>
           <template slot-scope="scope">
             <span>{{ scope.row['passed'] }} 题通过</span>
           </template>
@@ -57,14 +69,10 @@
         <el-table-column label="分数" prop="totalScore" width="150px" align="right">
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px"
-                     background :hide-on-single-page="true"
-                     layout="total, prev, pager, next"
-                     :page-size.sync="pageSize"
-                     :total="ranking.count"
+      <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+                     :page-size.sync="pageSize" :total="ranking.count"
                      :current-page.sync="currentPage"
-                     @size-change="getRankingList"
-                     @current-change="getRankingList">
+                     @size-change="getRankingList" @current-change="getRankingList">
       </el-pagination>
     </el-card>
     <el-dialog :title="detailDialog.title" :visible.sync="detailDialog.visible" width="700px">
@@ -87,7 +95,7 @@
 </template>
 
 <script>
-import {Notice, userInfo} from "@/script/util"
+import {Notice, searchParams, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 import Error from "@/components/Error"
 
@@ -98,6 +106,7 @@ export default {
   },
   beforeMount() {
     this.contest = JSON.parse(window.sessionStorage.getItem("contest"))
+    this.loadPage()
     if (this.contest != null) {
       document.title = `${this.contest.name} - 排行榜 - Cloud OJ`
     } else {
@@ -142,9 +151,17 @@ export default {
         self.getRankingList(true)
       }
     },
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getRankingList(refresh) {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       let url, headers = {}
+
       if (this.contest == null) {
         url = apiPath.ranking
       } else {
@@ -159,6 +176,7 @@ export default {
         }
         url += `/${this.contest.id}`
       }
+
       this.$axios({
         url: url,
         method: "get",

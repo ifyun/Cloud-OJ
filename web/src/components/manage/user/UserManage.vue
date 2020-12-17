@@ -13,27 +13,48 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="users.data" border stripe v-loading="loading">
-      <el-table-column label="ID" prop="userId" width="150px">
-      </el-table-column>
-      <el-table-column label="用户名" prop="name">
-        <template slot-scope="scope">
-          <b>{{ scope.row.name }}</b>
+    <el-table :data="users.data" stripe v-loading="loading">
+      <el-table-column prop="userId" width="150px">
+        <template slot="header">
+          <Icon name="id-card"/>
+          <span style="margin-left: 5px">ID</span>
         </template>
       </el-table-column>
-      <el-table-column label="角色/权限" width="200px" align="center">
+      <el-table-column prop="name">
+        <template slot="header">
+          <i class="el-icon-user-solid el-icon--left"/>
+          <span>用户名</span>
+        </template>
         <template slot-scope="scope">
-          <el-tag effect="plain" style="width: 90px" size="small"
+          <el-link :href="`/profile?userId=${scope.row.userId}`"><b>{{ scope.row.name }}</b></el-link>
+        </template>
+      </el-table-column>
+      <el-table-column width="200px" align="center">
+        <template slot="header">
+          <Icon name="user-shield"/>
+          <span style="margin-left: 5px">角色/权限</span>
+        </template>
+        <template slot-scope="scope">
+          <el-tag effect="light" style="width: 90px" size="small"
                   :type="roleTypes[scope.row['roleId']]">
             <span>{{ roleNames[scope.row['roleId']] }}</span>
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200px" align="center">
+      <el-table-column label="注册时间" width="220px" align="center">
+        <template slot-scope="scope">
+          <i class="el-icon-time"> {{ scope.row.createAt }}</i>
+        </template>
+      </el-table-column>
+      <el-table-column width="120px" align="center">
+        <template slot="header">
+          <i class="el-icon-menu el-icon--left"></i>
+          <span>操作</span>
+        </template>
         <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit"
-                       @click="onEditClick(scope.row)">编辑
+                       @click="onEditClick(scope.row)">
             </el-button>
             <el-button size="mini" icon="el-icon-delete" type="danger"
                        :disabled="scope.row.userId === 'root'"
@@ -42,20 +63,12 @@
           </el-button-group>
         </template>
       </el-table-column>
-      <el-table-column label="注册时间" width="220px" align="center">
-        <template slot-scope="scope">
-          <i class="el-icon-time"> {{ scope.row.createAt }}</i>
-        </template>
-      </el-table-column>
     </el-table>
     <el-pagination style="margin-top: 10px"
-                   background
-                   layout="total, prev, pager, next"
-                   :page-size.sync="pageSize"
-                   :total="users.count"
+                   background layout="total, prev, pager, next"
+                   :page-size.sync="pageSize" :total="users.count"
                    :current-page.sync="currentPage"
-                   @size-change="getUsers"
-                   @current-change="getUsers">
+                   @size-change="getUsers" @current-change="getUsers">
     </el-pagination>
     <!-- Editor Dialog -->
     <el-dialog :title="editorTitle"
@@ -66,7 +79,7 @@
                   @refresh="getUsers"/>
     </el-dialog>
     <!-- Delete Dialog -->
-    <el-dialog title="删除提示"
+    <el-dialog title="提示"
                :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除用户：${selectedUser.userId}`"
@@ -90,15 +103,22 @@
 </template>
 
 <script>
-import {copyObject, Notice, toLoginPage, userInfo} from "@/script/util"
+import {copyObject, Notice, searchParams, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 import UserEditor from "@/components/manage/user/UserEditor"
+import Icon from "vue-awesome/components/Icon"
+import "vue-awesome/icons/id-card"
+import "vue-awesome/icons/user-shield"
 
 export default {
   name: "UserManage",
-  components: {UserEditor},
+  components: {
+    UserEditor,
+    Icon
+  },
   beforeMount() {
     document.title = "用户管理 - Cloud OJ"
+    this.loadPage()
     this.getUsers()
   },
   data() {
@@ -144,7 +164,14 @@ export default {
     }
   },
   methods: {
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getUsers(refresh) {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       this.$axios({
         url: apiPath.userManage,
@@ -185,7 +212,7 @@ export default {
     onEditClick(row) {
       this.selectedUser = copyObject(row)
       this.saveType = "put"
-      this.editorTitle = `编辑用户【${row.userId}】`
+      this.editorTitle = `编辑用户 ${row.userId}`
       this.editorDialogVisible = true
     },
     onDeleteClick(row) {
@@ -213,7 +240,7 @@ export default {
             this.getUsers()
             this.deleteDialogVisible = false
             Notice.notify.info(this, {
-              title: `用户【${this.selectedUser.userId}】已删除`,
+              title: `用户 ${this.selectedUser.userId} 已删除`,
               message: `${res.status} ${res.statusText}`
             })
           }).catch((error) => {
@@ -227,7 +254,7 @@ export default {
               else
                 msg = res.data.msg === undefined ? res.statusText : res.data.msg
               Notice.notify.warning(this, {
-                title: `无法删除用户【${this.selectedUser.userId}】`,
+                title: `无法删除用户 ${this.selectedUser.userId}`,
                 message: `${res.status} ${msg}`
               })
             }

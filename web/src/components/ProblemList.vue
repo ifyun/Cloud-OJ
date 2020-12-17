@@ -44,14 +44,22 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null && userInfo != null" label="通过人数" width="90px" align="right">
+        <el-table-column v-if="contestId == null && userInfo != null" width="100px" align="right">
+          <template slot="header">
+            <i class="el-icon-success el-icon--left"/>
+            <span>通过人数</span>
+          </template>
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined">
             {{ scope.row['passed'] }}
           </span>
           </template>
         </el-table-column>
-        <el-table-column label="分类" align="center">
+        <el-table-column align="center">
+          <template slot="header">
+            <i class="el-icon-collection-tag el-icon--left"/>
+            <span>分类</span>
+          </template>
           <template slot-scope="scope">
             <div v-if="contestId == null">
               <div v-if="scope.row.category !== ''">
@@ -79,14 +87,10 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px"
-                     background :hide-on-single-page="true"
-                     layout="total, prev, pager, next"
-                     :page-size.sync="pageSize"
-                     :total="problems.count"
+      <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+                     :page-size.sync="pageSize" :total="problems.count"
                      :current-page.sync="currentPage"
-                     @size-change="getProblems"
-                     @current-change="getProblems">
+                     @size-change="getProblems" @current-change="getProblems">
       </el-pagination>
     </el-card>
   </el-container>
@@ -144,6 +148,7 @@ export default {
         this.contest = JSON.parse(contest)
     },
     getProblems() {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       let path = this.contest.id != null ? `contest/problem` : "problem"
       let headers = {}
@@ -151,6 +156,7 @@ export default {
         page: this.currentPage,
         limit: this.pageSize,
       }
+
       if (this.contestId != null) {
         params.contestId = this.contest.id
         headers = {
@@ -158,11 +164,15 @@ export default {
           token: userInfo().token
         }
       }
+
       if (userInfo() != null) {
         params.userId = userInfo().userId
       }
-      if (this.keyword !== "")
+
+      if (this.keyword !== "") {
         params.keyword = this.keyword
+      }
+
       this.$axios({
         url: `api/manager/${path}`,
         method: "get",
@@ -181,7 +191,6 @@ export default {
         })
       }).finally(() => {
         this.loading = false
-        history.pushState(null, "", `?page=${this.currentPage}`)
       })
     },
     onTagClose() {

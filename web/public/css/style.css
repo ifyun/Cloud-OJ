@@ -25,6 +25,7 @@ html, body {
 
 .el-card {
     box-shadow: none !important;
+    border: none !important;
 }
 
 .header-wrapper {
@@ -126,4 +127,8 @@ html, body {
 
 ::-webkit-scrollbar-track-piece {
     background: transparent;
+}
+
+.katex-html > .bottom {
+    height: 0 !important;
 }

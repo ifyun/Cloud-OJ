@@ -28,7 +28,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-check"
-                   @click="onSave(saveType)">保 存
+                   @click="onSave(saveType)">
+          保存
         </el-button>
       </el-form-item>
     </el-form>

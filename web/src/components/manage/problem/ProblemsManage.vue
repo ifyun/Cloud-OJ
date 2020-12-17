@@ -44,7 +44,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="problems.data" stripe border v-loading="loading">
+    <el-table :data="problems.data" stripe v-loading="loading">
       <el-table-column label="ID" prop="problemId" width="80px" align="center">
       </el-table-column>
       <el-table-column label="题目名称" width="220px">
@@ -54,7 +54,11 @@
           </el-link>
         </template>
       </el-table-column>
-      <el-table-column label="分类" align="center">
+      <el-table-column align="center">
+        <template slot="header">
+          <i class="el-icon-collection-tag el-icon--left"></i>
+          <span>分类</span>
+        </template>
         <template slot-scope="scope">
           <div v-if="scope.row.category !== ''" style="">
             <span v-for="tag in scope.row.category.split(',')"
@@ -66,7 +70,9 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否开放" width="80px" align="center">
+      <el-table-column label="分值" prop="score" width="50px" align="right">
+      </el-table-column>
+      <el-table-column label="开放" width="70px" align="center">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.enable"
                      active-color="#67C23A"
@@ -74,22 +80,32 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="190px" align="center">
-        <template slot-scope="scope">
-          <el-button-group>
-            <el-button size="mini" icon="el-icon-edit-outline"
-                       @click="onEditClick(scope.row)">
-            </el-button>
-            <el-button size="mini" @click="manageTestData(scope.row)">管理数据</el-button>
-            <el-button size="mini" type="danger" icon="el-icon-delete"
-                       @click="onDeleteClick(scope.row)">
-            </el-button>
-          </el-button-group>
-        </template>
-      </el-table-column>
       <el-table-column label="创建时间" width="130px" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"> {{ scope.row.createAt }}</i>
+        </template>
+      </el-table-column>
+      <el-table-column width="70px" align="center">
+        <template slot="header">
+          <i class="el-icon-menu"></i>
+        </template>
+        <template slot-scope="scope">
+          <el-dropdown trigger="click" @command="operation($event, scope.row)">
+            <span class="el-dropdown-link">
+              <i class="el-icon-more"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-edit" command="edit">
+                编辑
+              </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-s-grid" command="manage-data">
+                管理测试数据
+              </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-delete" command="delete" style="color: #F56C6C">
+                删除
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -119,7 +135,7 @@
                       :dialog-visible.sync="testDataDialogVisible"/>
     </el-dialog>
     <!-- Delete Dialog -->
-    <el-dialog title="删除提示"
+    <el-dialog title="提示"
                :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除题目：${selectedTitle}`"
@@ -135,15 +151,15 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" icon="el-icon-delete" @click="onDelete">删除题目</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="onDelete">
+            删除题目
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
     <el-dialog title="导入题目" :visible.sync="importDialogVisible">
-      <el-upload drag action="./api/manager/backup"
-                 :headers="{token: userInfo.token}"
-                 :data="{userId: userInfo.userId}"
-                 :on-success="importSuccess">
+      <el-upload drag action="./api/manager/backup" :headers="{token: userInfo.token}"
+                 :data="{userId: userInfo.userId}" :on-success="importSuccess">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传json文件，导入的题目会自动生成新的ID</div>
@@ -216,6 +232,7 @@ export default {
       }
     },
     getProblems(refresh) {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       let params = {
         page: this.currentPage,
@@ -248,7 +265,6 @@ export default {
         }
       }).finally(() => {
         this.loading = false
-        history.pushState(null, "", `?page=${this.currentPage}`)
       })
     },
     search() {
@@ -304,27 +320,28 @@ export default {
         this.getProblems()
       })
     },
+    operation(cmd, problem) {
+      this.selectedId = problem.problemId
+      this.selectedTitle = problem.title
+
+      switch (cmd) {
+        case "edit":
+          this.saveType = "put"
+          this.editorDialog.title = `${problem.problemId}. ${problem.title}`
+          this.editorDialog.visible = true
+          break
+        case "manage-data":
+          this.testDataDialogVisible = true
+          break
+        case "delete":
+          this.deleteDialogVisible = true
+      }
+    },
     onAddProblemClick() {
       this.selectedId = null
       this.editorDialog.title = "创建新题目"
       this.saveType = "post"
       this.editorDialog.visible = true
-    },
-    onEditClick(row) {
-      this.selectedId = row.problemId
-      this.saveType = "put"
-      this.editorDialog.title = `${row.problemId}. ${row.title}`
-      this.editorDialog.visible = true
-    },
-    manageTestData(row) {
-      this.selectedId = row.problemId
-      this.selectedTitle = row.title
-      this.testDataDialogVisible = true
-    },
-    onDeleteClick(row) {
-      this.selectedId = row.problemId
-      this.selectedTitle = row.title
-      this.deleteDialogVisible = true
     },
     onDelete() {
       this.$refs["deleteForm"].validate((valid) => {
@@ -385,5 +402,10 @@ export default {
 <style scoped>
 .editor-dialog {
   min-width: 1100px;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #303133;
 }
 </style>

@@ -52,7 +52,7 @@ import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
 import {toLoginPage, userInfo} from "@/script/util"
 
-let page = new Map([
+let pages = new Map([
   ["1", "ProblemsManage"],
   ["2", "ContestManage"],
   ["3", "UserManage"],
@@ -106,7 +106,8 @@ export default {
     },
     onSelect(key) {
       if (key != null) {
-        this.currentView = page.get(key)
+        history.pushState(null, "", "?page=1")
+        this.currentView = pages.get(key)
       }
     }
   }

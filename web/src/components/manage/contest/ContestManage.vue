@@ -13,8 +13,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <!-- Contest Table -->
-    <el-table :data="contests.data" stripe border v-loading="loading">
+    <el-table :data="contests.data" stripe v-loading="loading">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="竞赛/作业名称">
@@ -32,14 +31,19 @@
           <i class="el-icon-time"> {{ scope.row.endAt }}</i>
         </template>
       </el-table-column>
-      <!-- Operation -->
-      <el-table-column label="操作" width="200px" align="center">
+      <el-table-column width="220px" align="center">
+        <template slot="header">
+          <i class="el-icon-menu el-icon--left"></i>
+          <span>操作</span>
+        </template>
         <template slot-scope="scope">
           <el-button-group>
-            <el-button size="mini" icon="el-icon-edit-outline"
+            <el-button size="mini" icon="el-icon-edit"
                        @click="onEditClick(scope.$index)">
             </el-button>
-            <el-button size="mini" @click="manageProblems(scope.$index)">题目管理</el-button>
+            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblems(scope.$index)">
+              管理题目
+            </el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete"
                        @click="onDeleteClick(scope.$index)">
             </el-button>
@@ -66,7 +70,7 @@
                      @refresh="getContests"/>
     </el-dialog>
     <!-- Delete Confirm Dialog -->
-    <el-dialog title="删除提示" width="650px"
+    <el-dialog title="提示" width="650px"
                :visible.sync="deleteDialogVisible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除：${this.selectedContest.contestName}`"
@@ -97,7 +101,7 @@
 </template>
 
 <script>
-import {copyObject, userInfo, toLoginPage, Notice} from "@/script/util"
+import {copyObject, userInfo, toLoginPage, Notice, searchParams} from "@/script/util"
 import {apiPath} from "@/script/env"
 import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems"
 import ContestEditor from "@/components/manage/contest/ContestEditor"
@@ -110,6 +114,7 @@ export default {
   },
   beforeMount() {
     document.title = "竞赛/作业管理 - Cloud OJ"
+    this.loadPage()
     this.getContests()
   },
   data() {
@@ -151,7 +156,14 @@ export default {
     }
   },
   methods: {
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getContests(refresh) {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       this.$axios({
         url: apiPath.contestManage,
