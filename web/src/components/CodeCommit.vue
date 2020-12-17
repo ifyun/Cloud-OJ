@@ -14,7 +14,10 @@
                    :style="{height: calcContentHeight()}">
             <div style="margin: 10px">
               <el-button-group style="margin-bottom: 25px">
-                <el-button size="small" icon="el-icon-stopwatch">
+                <el-button size="small" icon="el-icon-warning">
+                  {{ problem.score }} 分
+                </el-button>
+                <el-button size="small" icon="el-icon-time">
                   {{ problem.timeout }} ms
                 </el-button>
                 <el-button size="small" icon="el-icon-cpu">

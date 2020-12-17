@@ -55,7 +55,7 @@
         <el-col :span="6">
           <div class="upload-wrapper">
             <el-upload :action="imageDialog.uploadUrl"
-                       :header="imageDialog.header"
+                       :headers="imageDialog.headers"
                        list-type="picture-card"
                        :before-upload="checkImageType"
                        :on-success="imageUploadSuccess"
@@ -166,7 +166,7 @@ export default {
       imageDialog: {
         visible: false,
         uploadUrl: apiPath.problemImage,
-        header: {
+        headers: {
           userId: userInfo().userId,
           token: userInfo().token
         },

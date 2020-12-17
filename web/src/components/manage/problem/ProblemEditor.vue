@@ -31,8 +31,8 @@
         </el-tag>
         <el-input class="input-new-tag" ref="tagInput" v-if="newTagVisible"
                   v-model="newTag" size="small"
-                  @keyup.enter.native="tagInputConfirm"
-                  @blur="tagInputConfirm">
+                  @keyup.enter.native="newTagConfirm"
+                  @blur="newTagConfirm">
         </el-input>
         <el-button class="button-new-tag"
                    v-else size="small"
@@ -198,7 +198,7 @@ export default {
         this.$refs.tagInput.$refs.input.focus();
       });
     },
-    tagInputConfirm() {
+    newTagConfirm() {
       let tag = this.newTag
       if (tag && this.tags.indexOf(tag) === -1) {
         this.tags.push(tag)

@@ -38,7 +38,7 @@ const resultTags = [
     {text: "答案错误", type: "danger", icon: "el-icon-error"},
     {text: "编译错误", type: "info", icon: "el-icon-info"},
     {text: "运行错误", type: "info", icon: "el-icon-info"},
-    {text: "判题异常", type: "danger", icon: "el-icon-error"}
+    {text: "判题异常", type: "primary", icon: "el-icon-error"}
 ]
 
 export {

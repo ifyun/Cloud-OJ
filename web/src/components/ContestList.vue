@@ -39,7 +39,10 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column width="130px" align="center">
+        <el-table-column width="120px" align="center">
+          <template slot="header">
+            <i class="el-icon-menu"></i>
+          </template>
           <template slot-scope="scope">
             <el-button v-if="scope.row['started']" type="text"
                        icon="el-icon-s-data"
@@ -49,14 +52,10 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px"
-                     background :hide-on-single-page="true"
-                     layout="total, prev, pager, next"
-                     :page-size.sync="pageSize"
-                     :total="contests.count"
-                     :current-page.sync="currentPage"
-                     @size-change="getContests"
-                     @current-change="getContests">
+      <el-pagination style="margin-top: 10px" background
+                     layout="total, prev, pager, next" :page-size.sync="pageSize"
+                     :total="contests.count" :current-page.sync="currentPage"
+                     @size-change="getContests" @current-change="getContests">
       </el-pagination>
     </el-card>
   </el-container>
@@ -64,13 +63,14 @@
 
 <script>
 import {apiPath, languages} from "@/script/env"
-import {Notice} from "@/script/util"
+import {Notice, searchParams} from "@/script/util"
 import moment from "moment"
 
 export default {
   name: "CompetitionList",
-  mounted() {
+  beforeMount() {
     document.title = "竞赛/作业 - Cloud OJ"
+    this.loadPage()
     this.getContests()
   }
   ,
@@ -87,7 +87,14 @@ export default {
   }
   ,
   methods: {
+    loadPage() {
+      const page = searchParams()["page"]
+      if (page != null) {
+        this.currentPage = parseInt(page)
+      }
+    },
     getContests() {
+      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       this.$axios({
         url: apiPath.contest,
