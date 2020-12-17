@@ -14,7 +14,7 @@
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button size="medium" icon="el-icon-refresh" @click="getProblems(true)">
+          <el-button size="medium" icon="el-icon-refresh" @click="refresh">
             刷新
           </el-button>
         </el-form-item>
@@ -230,6 +230,9 @@ export default {
       if (page != null) {
         this.currentPage = parseInt(page)
       }
+    },
+    refresh() {
+      this.getProblems(true)
     },
     getProblems(refresh) {
       history.pushState(null, "", `?page=${this.currentPage}`)
