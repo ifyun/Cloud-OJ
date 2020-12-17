@@ -156,6 +156,7 @@ export default {
       this.reset = true
       if (this.problemId == null) {
         this.$refs["problemForm"].resetFields()
+        this.tags = []
       } else {
         this.getProblem()
       }
@@ -226,6 +227,7 @@ export default {
         }).then((res) => {
           this.$emit("update:dialogVisible", false)
           this.$emit("refresh")
+          type === "post" && this.resetForm()
           Notice.notify.success(this, {
             title: `${this.problem.title} 已保存`,
             message: `${res.status} ${res.statusText}`
