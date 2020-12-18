@@ -116,11 +116,10 @@ export default {
       })
     },
     onContestClick(row) {
-      let contest = {
+      const contest = {
         id: row.contestId,
         name: row.contestName
       }
-      console.log(contest)
       sessionStorage.setItem("contest", JSON.stringify(contest))
       window.location.href = `.?contestId=${row.contestId}`
     },
