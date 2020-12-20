@@ -87,15 +87,17 @@ export default {
         if (this.dialogVisible) {
           let formLoaded = this.$refs["problemForm"] !== undefined
           this.firstChange = true
-          if (this.problemId != null)
+          if (this.problemId != null) {
             this.getProblem()
-          else {
-            if (formLoaded)
+          } else {
+            if (formLoaded) {
               this.$refs["problemForm"].resetFields()
+            }
             this.tags = []
           }
-          if (formLoaded)
+          if (formLoaded) {
             this.$refs["problemForm"].clearValidate()
+          }
         }
       }
     },

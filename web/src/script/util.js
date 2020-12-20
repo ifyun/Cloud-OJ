@@ -16,8 +16,12 @@ function userInfo() {
     return JSON.parse(localStorage.getItem(TOKEN))
 }
 
+function clearToken() {
+    localStorage.removeItem(TOKEN)
+}
+
 function searchParams() {
-    return qs.parse(location.search.replace('?', ''))
+    return qs.parse(location.search.replace("?", ""))
 }
 
 function toLoginPage() {
@@ -27,10 +31,6 @@ function toLoginPage() {
 
 function saveToken(value) {
     localStorage.setItem(TOKEN, value)
-}
-
-function clearToken() {
-    localStorage.removeItem(TOKEN)
 }
 
 function clearCachedCode() {
@@ -60,30 +60,30 @@ function callMessage(ctx, msg, type) {
 
 const Notice = {
     notify: {
-        success: (ctx, data) => {
+        success(ctx, data) {
             callNotify(ctx, data, "success")
         },
-        info: (ctx, data) => {
+        info(ctx, data) {
             callNotify(ctx, data, "info")
         },
-        warning: (ctx, data) => {
+        warning(ctx, data) {
             callNotify(ctx, data, "warning")
         },
-        error: (ctx, data) => {
+        error(ctx, data) {
             callNotify(ctx, data, "error")
         }
     },
     message: {
-        success: (ctx, msg) => {
+        success(ctx, msg) {
             callMessage(ctx, msg, "success")
         },
-        info: (ctx, msg) => {
+        info(ctx, msg) {
             callMessage(ctx, msg, "info")
         },
-        warning: (ctx, msg) => {
+        warning(ctx, msg) {
             callMessage(ctx, msg, "warning")
         },
-        error: (ctx, msg) => {
+        error(ctx, msg) {
             callMessage(ctx, msg, "error")
         }
     }

@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <TopNavigation active="4"/>
-    <div v-if="error.code !== undefined">
+    <div v-if="error.code != null">
       <Error :error="error"/>
       <BottomArea class="bottom"/>
     </div>
@@ -95,7 +95,7 @@ export default {
       active: "",
       currentView: "",
       error: {
-        code: undefined,
+        code: null,
         text: ""
       }
     }

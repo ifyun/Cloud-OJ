@@ -18,10 +18,6 @@ create table problem
         primary key,
     title         varchar(64)                          not null,
     description   text                                 not null comment '题目描述',
-    input         text                                 not null comment '输入说明',
-    output        text                                 not null comment '输出说明',
-    sample_input  text                                 null comment '示例输入',
-    sample_output text                                 null comment '示例输出',
     timeout       bigint     default 1000              null comment '时间限制',
     score         int        default 0                 not null comment '分数',
     enable        tinyint(1) default 0                 null comment '是否可用',
@@ -135,7 +131,15 @@ create index user_section_index
     on user (section);
 
 DELIMITER //
-create definer = root@`%` trigger tr_user_update
+create trigger tr_user_insert
+    before insert
+    on user
+    for each row
+begin
+    set NEW.secret = LEFT(UUID(), 8);
+end //
+
+create trigger tr_user_update
     before update
     on user
     for each row
@@ -147,7 +151,7 @@ begin
 end //
 DELIMITER ;
 
-create definer = root@`%` view contest_problem as
+create view contest_problem as
 select `c`.`contest_id`    AS `contest_id`,
        `c`.`contest_name`  AS `contest_name`,
        `c`.`start_at`      AS `start_at`,
@@ -155,10 +159,6 @@ select `c`.`contest_id`    AS `contest_id`,
        `p`.`problem_id`    AS `problem_id`,
        `p`.`title`         AS `title`,
        `p`.`description`   AS `description`,
-       `p`.`input`         AS `input`,
-       `p`.`output`        AS `output`,
-       `p`.`sample_input`  AS `sample_input`,
-       `p`.`sample_output` AS `sample_output`,
        `p`.`timeout`       AS `timeout`,
        `p`.`score`         AS `score`,
        `p`.`enable`        AS `enable`,
@@ -167,7 +167,7 @@ select `c`.`contest_id`    AS `contest_id`,
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`.`problem_id` = `p`.`problem_id`)))
          join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
-create definer = root@`%` view contest_ranking_list as
+create view contest_ranking_list as
 select `problem_score`.`user_id`                                    AS `user_id`,
        `problem_score`.`name`                                       AS `name`,
        sum(`problem_score`.`committed`)                             AS `committed`,
@@ -187,7 +187,7 @@ from (select `s`.`user_id`                        AS `user_id`,
       group by `s`.`user_id`, `p`.`problem_id`, `s`.`contest_id`) `problem_score`
 group by `problem_score`.`user_id`, `problem_score`.`contest_id`;
 
-create definer = root@`%` view ranking_list as
+create view ranking_list as
 select `problem_score`.`user_id`                                    AS `user_id`,
        `problem_score`.`name`                                       AS `name`,
        sum(`problem_score`.`committed`)                             AS `committed`,
@@ -204,7 +204,7 @@ from (select `s`.`user_id`                        AS `user_id`,
       group by `s`.`user_id`, `p`.`problem_id`) `problem_score`
 group by `problem_score`.`user_id`;
 
-create definer = root@`%` view judge_result as
+create view judge_result as
 select `s`.`solution_id`                            AS `solution_id`,
        `s`.`problem_id`                             AS `problem_id`,
        `s`.`contest_id`                             AS `contest_id`,

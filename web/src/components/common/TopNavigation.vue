@@ -4,7 +4,7 @@
       <el-row type="flex" align="middle">
         <el-col :span="4">
           <div class="logo-div">
-            <img class="logo" :src="'/favicon.svg'">
+            <img class="logo" :src="'/favicon.svg'" alt="logo">
             <a class="app-name" type="success" href="/">Cloud OJ</a>
           </div>
         </el-col>

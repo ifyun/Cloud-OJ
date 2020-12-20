@@ -1,11 +1,9 @@
-## 帮助文档
-
-### 支持的语言
+## 支持的语言
 
 Language        | Compiler/Interpreter/Version
 ----------------|-------------------------------
 C               | gcc
-C++             | g++ std=14
+C++             | g++
 Java            | OpenJDK 1.8
 Python          | 3.5
 Bash            |
@@ -13,9 +11,9 @@ C#              | Mono
 JavaScript      | Node v14
 Kotlin          | 1.4.10
 
-### 注意事项
+## 注意事项
 
-Java 语言的类名必须为 `Solution`，示例：
+Java 语言的类名必须为 `Solution` 且不能使用 `package`，示例：
 
 ```java
 public class Solution {
@@ -25,11 +23,16 @@ public class Solution {
 }
 ```
 
-::: info
+::: warning
 类名为其他名称将无法运行。
 :::
 
-### 答题示例
+## 输入输出
+
+- 你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容
+- 你的程序必须从标准输入流(stdin)读取输入，并将结果输出到标准输出流(stdout)
+
+### 示例
 
 题目：输入两个数，输出他们的和。
 
@@ -45,16 +48,16 @@ public class Solution {
 5
 ```
 
-示例代码如下：
+#### 示例代码
 
-#### Python
+##### Python
 
 ```python
 a, b = map(int, input().split())
 print(a + b)
 ```
 
-#### C++
+##### C++
 
 ```c++
 #include <iostream>
@@ -69,7 +72,7 @@ int main()
 }
 ```
 
-#### Java
+##### Java
 
 ```java
 import java.util.*;
@@ -84,7 +87,7 @@ public class Solution {
 }
 ```
 
-### 判题结果
+## 判题结果
 
 用户提交的代码，按测试点通过数量计分：得分 = (通过数量 / 总测试点数量) * 题目分值。
 
@@ -99,14 +102,22 @@ public class Solution {
 - 运行错误
 - 判题异常
 
+### 运行异常出现的原因
+
+1. 对于解释型语言，存在语法错误
+2. 栈溢出(例如数组分配过大)
+
+
+### 判题异常出现的原因
+
+1. 提交了恶意代码
+2. 判题服务器异常
+3. 题目没有测试数据
+
 ::: info
 对于内存和时间超限，仅超限的那一组测试点为 0 分。
 :::
 
 ::: info
 所有题目的内存限制均为 64MB。
-:::
-
-::: warning
-判题异常出现的原因有：1.提交了恶意代码、2.判题服务器异常、3.题目没有测试数据。
 :::

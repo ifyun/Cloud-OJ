@@ -1,6 +1,6 @@
 <template>
   <el-container class="container" v-loading="loading">
-    <Error v-if="error.code !== undefined"
+    <Error v-if="error.code != null"
            :error="error"/>
     <el-card v-else style="width: 100%">
       <div v-if="contest != null" class="head">
@@ -13,14 +13,14 @@
             <el-switch v-model="autoRefresh" @change="toggleAutoRefresh">
             </el-switch>
           </div>
-          <el-button style="margin-left: 15px" icon="el-icon-refresh"
-                     size="small" round @click="getRankingList(true)">
+          <el-button style="margin-left: 20px" icon="el-icon-refresh"
+                     size="mini" round @click="getRankingList(true)">
             刷新
           </el-button>
         </div>
       </div>
       <el-table :data="ranking.data" v-loading="loading" :row-style="{height: '55px'}" @row-dblclick="getDetail">
-        <el-table-column width="150px" align="center">
+        <el-table-column width="100px" align="center">
           <template slot="header">
             <i class="el-icon-s-data el-icon--left"/>
             <span>排名</span>
@@ -63,7 +63,7 @@
             <span>通过题目</span>
           </template>
           <template slot-scope="scope">
-            <span>{{ scope.row['passed'] }} 题通过</span>
+            <span style="cursor: pointer" @click="getDetail(scope.row)">{{ scope.row['passed'] }} 题通过</span>
           </template>
         </el-table-column>
         <el-table-column label="分数" prop="totalScore" width="150px" align="right">
@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import {Notice, searchParams, userInfo} from "@/script/util"
+import {Notice, searchParams, toLoginPage, userInfo} from "@/script/util"
 import {apiPath} from "@/script/env"
 import Error from "@/components/Error"
 
@@ -132,7 +132,7 @@ export default {
         details: []
       },
       error: {
-        code: undefined,
+        code: null,
         text: ""
       }
     }
@@ -191,17 +191,22 @@ export default {
           Notice.message.success(this, "排行榜已刷新")
         }
       }).catch((error) => {
-        let res = error.response
-        if (res.status === 403) {
-          this.error = {
-            code: res.status,
-            text: res.data.msg
-          }
-        } else {
-          Notice.notify.error(this, {
-            title: "获取排行榜失败",
-            message: `${res.status} ${res.statusText}`
-          })
+        const res = error.response
+        switch (res.status) {
+          case 401:
+            toLoginPage()
+            break
+          case 403:
+            this.error = {
+              code: res.status,
+              text: res.data.msg
+            }
+            break
+          default:
+            Notice.notify.error(this, {
+              title: "获取排行榜失败",
+              message: `${res.status} ${res.statusText}`
+            })
         }
       }).finally(() => {
         this.loading = false
@@ -221,6 +226,9 @@ export default {
             userId: row.userId
           }
         }).then((res) => {
+          if (res.status === 401) {
+            toLoginPage()
+          }
           this.detailDialog.details = res.data
         }).catch((error) => {
           let res = error.response

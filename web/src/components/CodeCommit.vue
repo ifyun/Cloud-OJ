@@ -1,5 +1,5 @@
 <template>
-  <Error v-if="error.code !== undefined"
+  <Error v-if="error.code != null"
          :error="error"/>
   <el-container v-else class="container">
     <el-page-header v-if="problem.problemId !== undefined"
@@ -79,22 +79,21 @@
         </el-col>
       </el-row>
     </div>
-    <el-dialog title="获取判题结果" width="700px"
+    <el-dialog title="获取判题结果" width="600px"
                :visible.sync="resultDialog.visible"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
-      <el-steps simple :active="resultDialog.active" finish-status="success">
-        <el-step title="写入代码"></el-step>
-        <el-step title="等待判题"></el-step>
-        <el-step title="获取结果"></el-step>
+      <el-steps class="steps" simple :active="resultDialog.active"
+                process-status="process" finish-status="success">
+        <el-step :icon="resultDialog.active == null ? 'el-icon-loading': null"
+                 :title="resultDialog.steps[resultDialog.step]"/>
       </el-steps>
-      <el-alert v-if="result.title !== undefined" style="margin-top: 15px"
+      <el-alert v-if="result.title !== undefined" style="margin-top: 15px" effect="dark"
                 show-icon :closable="false" :type="result.type"
-                :title="result.title"
-                :description="result.desc">
+                :title="result.title" :description="result.desc">
       </el-alert>
       <el-button style="margin-top: 25px" icon="el-icon-refresh"
-                 :disabled="resultDialog.disableRefresh"
+                 size="medium" round :disabled="resultDialog.disableRefresh"
                  @click="getResult(solutionId, 1)">
         <span>重试</span>
       </el-button>
@@ -178,7 +177,7 @@ export default {
         }
       },
       error: {
-        code: undefined,
+        code: null,
         text: ""
       },
       problemId: searchParams().problemId,
@@ -211,7 +210,13 @@ export default {
       resultDialog: {
         disableRefresh: true,
         visible: false,
-        active: undefined
+        active: null,
+        step: 0,
+        steps: [
+          "已提交，等待写入...",
+          "在判题队列中，正在等待结果...",
+          "判题完成"
+        ]
       }
     }
   },
@@ -256,12 +261,13 @@ export default {
           // 计算可用的语言
           languageOptions.forEach((value, index) => {
             let t = 1 << index
-            if ((languages & t) === t)
+            if ((languages & t) === t) {
               this.enabledLanguages.push(value)
+            }
           })
           this.language = this.enabledLanguages[0].id
         }).catch((error) => {
-          let res = error.response
+          const res = error.response
           Notice.notify.error(this, {
             title: "无法获取语言",
             message: `${res.status} ${res.statusText}`
@@ -324,7 +330,8 @@ export default {
         alert("请先登录！")
         return
       }
-      this.resultDialog.active = undefined
+      this.resultDialog.active = null
+      this.resultDialog.step = 0
       this.result = {}
       let data = {
         userId: userInfo().userId,
@@ -393,19 +400,20 @@ export default {
         } else {
           switch (res.data["state"]) {
             case ACCEPT:
-              this.resultDialog.active = 1
+              this.resultDialog.step = 0
               setTimeout(() => {
                 this.getResult(solutionId, count + 1)
               }, 1000)
               break
             case IN_QUEUE:
-              this.resultDialog.active = 2
+              this.resultDialog.step = 1
               setTimeout(() => {
                 this.getResult(solutionId, count + 1)
               }, 1000)
               break
             case JUDGED:
-              this.resultDialog.active = 3
+              this.resultDialog.step = 2
+              this.resultDialog.active = 1
               this.getResultText(res.data)
               this.resultDialog.disableRefresh = true
           }
@@ -494,5 +502,9 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   min-width: 1200px !important;
+}
+
+.steps {
+  padding: 12px 20px;
 }
 </style>

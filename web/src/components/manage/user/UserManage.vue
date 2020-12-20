@@ -248,11 +248,8 @@ export default {
             if (res.status === 401) {
               toLoginPage()
             } else {
-              let msg
-              if (res.status === 409)
-                msg = "此用户存在做题记录，无法删除"
-              else
-                msg = res.data.msg === undefined ? res.statusText : res.data.msg
+              const msg = res.status === 409 ? "此用户存在做题记录，无法删除"
+                  : res.data.msg === undefined ? res.statusText : res.data.msg
               Notice.notify.warning(this, {
                 title: `无法删除用户 ${this.selectedUser.userId}`,
                 message: `${res.status} ${msg}`

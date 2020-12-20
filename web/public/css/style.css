@@ -122,7 +122,11 @@ html, body {
 
 ::-webkit-scrollbar-thumb {
     background: #D4D5DA;
-    border-radius: 2px;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #C4C5CA;
 }
 
 ::-webkit-scrollbar-track-piece {

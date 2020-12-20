@@ -59,17 +59,25 @@ const bcrypt = require('bcryptjs')
 
 export default {
   name: "SignupTab",
-  mounted() {
+  beforeMount() {
     document.title = "注册 - Cloud OJ"
   },
   data() {
-    let validatePassword = (rule, value, callback) => {
+    const validatePassword = (rule, value, callback) => {
       if (value === "")
-        callback(new Error("请再次输入密码"))
+        callback(new Error("请再次填写密码"))
       else if (value !== this.signupForm.password)
-        callback(new Error("两次输入密码不一致"))
+        callback(new Error("两次密码不一致"))
       else
         callback()
+    }
+    const validateUserId = (rule, value, callback) => {
+      const regx = /^[A-Za-z0-9]+$/
+      if (!regx.test(value)) {
+        callback(new Error("只能是字母和数字"))
+      } else {
+        callback()
+      }
     }
     return {
       loading: false,
@@ -83,18 +91,19 @@ export default {
       },
       rules: {
         name: [
-          {required: true, message: "请输入用户名", trigger: "blur"},
+          {required: true, message: "请填写用户名", trigger: "blur"},
           {min: 2, max: 16, message: "长度在 2 ~ 16 个字符", trigger: "blur"}
         ],
         userId: [
-          {required: true, message: "请输入ID", trigger: "blur"},
+          {required: true, message: "请填写ID", trigger: "blur"},
+          {validator: validateUserId, trigger: "blur"},
           {min: 6, max: 16, message: "长度在 6 ~ 16 个字符", trigger: "blur"}
         ],
         email: [
-          {type: "email", message: "请输入邮箱", trigger: "blur"}
+          {type: "email", message: "请填写正确的邮箱地址", trigger: "blur"}
         ],
         password: [
-          {required: true, message: "请输入密码", trigger: "blur"},
+          {required: true, message: "请填写密码", trigger: "blur"},
           {min: 6, max: 16, message: "长度在 6 ~ 16 位字符", trigger: "blur"}
         ],
         checkPassword: [
