@@ -3,38 +3,58 @@
     <div class="editor-wrapper">
       <el-row>
         <el-col :span="12">
-          <el-button-group class="toolbar">
-            <el-button size="mini" @click="heading">
-              <Icon name="heading" inverse/>
-            </el-button>
-            <el-button size="mini" @click="bold">
-              <Icon name="bold" inverse/>
-            </el-button>
-            <el-button size="mini" @click="italic">
-              <Icon name="italic" inverse/>
-            </el-button>
-            <el-button size="mini" @click="quote">
-              <Icon name="quote-left" inverse/>
-            </el-button>
-            <el-button size="mini" @click="sample">
-              <Icon name="vial" inverse/>
-            </el-button>
-            <el-button size="mini" @click="code">
-              <Icon name="code" inverse/>
-            </el-button>
-            <el-button size="mini" @click="link">
-              <Icon name="link" inverse/>
-            </el-button>
-            <el-button size="mini" @click="image">
-              <Icon name="image" inverse/>
-            </el-button>
-            <el-button size="mini" @click="info('info')">
-              <Icon style="color: #3D90FE" name="info-circle"/>
-            </el-button>
-            <el-button size="mini" @click="info('warning')">
-              <Icon style="color: #F3AD25" name="info-circle"/>
-            </el-button>
-          </el-button-group>
+          <div class="toolbar">
+            <el-tooltip placement="top" content="标题">
+              <el-button size="mini" @click="heading">
+                <Icon name="heading" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="加粗">
+              <el-button size="mini" @click="bold">
+                <Icon name="bold" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="斜体">
+              <el-button size="mini" @click="italic">
+                <Icon name="italic" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="引用">
+              <el-button size="mini" @click="quote">
+                <Icon name="quote-left" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="样例">
+              <el-button size="mini" @click="sample">
+                <Icon name="vial" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="代码块(支持KaTeX公式)">
+              <el-button size="mini" @click="code">
+                <Icon name="file-code" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="链接">
+              <el-button size="mini" @click="link">
+                <Icon name="link" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="插入图片">
+              <el-button size="mini" @click="image">
+                <Icon name="image" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="提示">
+              <el-button size="mini" @click="info('info')">
+                <Icon style="color: #3D90FE" name="info-circle"/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="警告">
+              <el-button size="mini" @click="info('warning')">
+                <Icon style="color: #F3AD25" name="info-circle"/>
+              </el-button>
+            </el-tooltip>
+          </div>
           <div :style="{ height: `${height}px` }">
             <codemirror style="line-height: 1.5" :options="cmOptions"
                         ref="editor" v-model="content">
@@ -113,7 +133,7 @@ import "vue-awesome/icons/quote-left"
 import "vue-awesome/icons/link"
 import "vue-awesome/icons/info-circle"
 import "vue-awesome/icons/vial"
-import "vue-awesome/icons/code"
+import "vue-awesome/icons/file-code"
 import {apiPath} from "@/script/env"
 import {Notice, userInfo} from "@/script/util"
 
@@ -312,7 +332,9 @@ export default {
       let {anchor, head} = this.listSelections()[0]
       head.line >= anchor.line && head.sticky === "before" && ([head, anchor] = [anchor, head])
       let content = this.getRange(head, anchor)
-      if (content.length === 0) content = "链接"
+      if (content.length === 0) {
+        content = "链接"
+      }
       this.replaceSelection(`[${content}](URL)`)
       let cursor = this.getCursor()
       this.setSelection(
@@ -395,6 +417,7 @@ export default {
 }
 
 .toolbar button {
+  margin-left: 0;
   border-color: transparent;
   background-color: #272822;
   height: 33px;

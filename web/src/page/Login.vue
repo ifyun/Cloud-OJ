@@ -4,7 +4,8 @@
       <div id="words">
         <h1>
           <span style="color: #DB6D63">Errors</span>
-          = (<span style="color: #5EAAE8">More Code</span>)<sup>2</sup></h1>
+          = (<span style="color: #5EAAE8">More Code</span>)<sup>2</sup>
+        </h1>
       </div>
     </div>
     <div class=right>
@@ -31,8 +32,8 @@
 </template>
 
 <script>
-import LoginTab from "@/components/login/LoginTab"
-import SignupTab from "@/components/login/SignupTab"
+import LoginTab from "@/components/auth/LoginTab"
+import SignupTab from "@/components/auth/SignupTab"
 import BottomArea from "@/components/common/BottomArea"
 
 export default {
@@ -76,6 +77,7 @@ export default {
 .right {
   width: 40%;
   height: calc(100% + 60px);
+  min-height: 700px;
   display: inline-block;
   vertical-align: top;
 }
@@ -89,11 +91,13 @@ export default {
 }
 
 #login-content {
-  margin: 125px auto 0;
+  margin: 0 auto;
   width: 350px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .title {

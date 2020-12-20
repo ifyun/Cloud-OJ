@@ -71,13 +71,15 @@ export default {
   },
   data() {
     let validateEndTime = (rule, value, callback) => {
-      if (new Date(value) <= new Date(this.contest.startAt))
+      if (new Date(value) <= new Date(this.contest.startAt)) {
         return callback(new Error("结束时间必须大于开始时间"))
+      }
       callback()
     }
     let validateLanguages = (rule, value, callback) => {
-      if (this.enabledLanguages.length === 0)
+      if (this.enabledLanguages.length === 0) {
         return callback(new Error("请至少选择一种语言"))
+      }
       callback()
     }
     return {

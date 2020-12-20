@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-alert type="info" show-icon style="margin-bottom: 20px"
+    <el-alert type="info" show-icon style="margin-bottom: 10px"
               title="只能添加未开放的题目"
               description="从竞赛/作业中移除题目并不会删除题目"
               :closable="false">
     </el-alert>
-    <el-button type="success" size="medium" icon="el-icon-circle-plus"
+    <el-button type="primary" size="medium" icon="el-icon-circle-plus"
                @click="problemsDialogVisible = true">添加题目
     </el-button>
     <el-table style="margin-top: 10px" :data="problems.data" border v-loading="loading">
@@ -30,7 +30,7 @@
               confirm-button-type="danger"
               confirm-button-text="移除"
               cancel-button-text="取消"
-              @onConfirm="deleteProblem(scope.row.problemId, scope.row.title)">
+              @confirm="deleteProblem(scope.row.problemId, scope.row.title)">
             <el-button type="danger" size="mini"
                        icon="el-icon-delete"
                        slot="reference">
@@ -40,15 +40,10 @@
       </el-table-column>
     </el-table>
     <el-pagination
-        style="margin-top: 10px"
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        :page-sizes="[15, 25, 35]"
-        :page-size.sync="pageSize"
-        :total="problems.count"
+        style="margin-top: 10px" background layout="total, prev, pager, next"
+        :page-size.sync="pageSize" :total="problems.count"
         :current-page.sync="currentPage"
-        @size-change="getProblems"
-        @current-change="getProblems">
+        @size-change="getProblems" @current-change="getProblems">
     </el-pagination>
     <el-dialog title="添加题目" append-to-body width="800px"
                :visible.sync="problemsDialogVisible"
@@ -129,8 +124,8 @@ export default {
           "userId": userInfo().userId
         },
       }).then((res) => {
-        Notice.notify.success(this, {
-          title: `【${title}】移除成功`,
+        Notice.notify.info(this, {
+          title: `${title} 移除成功`,
           message: `${res.status} ${res.statusText}`
         })
       }).catch((error) => {
@@ -139,7 +134,7 @@ export default {
           toLoginPage()
         } else {
           Notice.notify.error(this, {
-            title: `【${title}】移除失败`,
+            title: `${title} 移除失败`,
             message: `${res.status} ${res.statusText}`
           })
         }
