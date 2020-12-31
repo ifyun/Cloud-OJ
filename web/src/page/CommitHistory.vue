@@ -1,8 +1,10 @@
 <template>
   <div>
     <TopNavigation active=""/>
-    <HistoryList/>
-    <BottomArea class="bottom"/>
+    <el-container class="container">
+      <HistoryList/>
+      <BottomArea class="bottom"/>
+    </el-container>
   </div>
 </template>
 
@@ -25,5 +27,9 @@ export default {
 </script>
 
 <style scoped>
-
+.container {
+  padding: 0 20px;
+  flex-direction: column;
+  align-items: center;
+}
 </style>

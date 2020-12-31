@@ -1,10 +1,10 @@
 <template>
-  <div class="error-404">
+  <div class="error">
     <span class="error-code">{{ error.code }}</span>
-    <span class="error-text">{{ error.text }}</span>
+    <span class="error-text">{{ error.msg }}</span>
     <el-button-group style="margin-top: 25px">
-      <el-button size="mini" @click="back">返回上页</el-button>
-      <el-button size="mini" @click="gotoIndex">返回主页</el-button>
+      <el-button icon="el-icon-back" size="small" @click="back">返回上页</el-button>
+      <el-button icon="el-icon-s-home" size="small" @click="gotoIndex">返回主页</el-button>
     </el-button-group>
   </div>
 </template>
@@ -15,7 +15,7 @@ export default {
   props: {
     error: {
       code: Number,
-      text: String
+      msg: String
     }
   },
   methods: {
@@ -30,8 +30,8 @@ export default {
 </script>
 
 <style scoped>
-.error-404 {
-  margin-top: 110px;
+.error {
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;

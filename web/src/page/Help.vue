@@ -1,14 +1,12 @@
 <template>
   <div style="height: 100%">
     <TopNavigation active="5"/>
-    <div class="wrapper">
-      <el-container class="container">
-        <el-card>
-          <markdown-it-vue :content="helpDoc"/>
-        </el-card>
-        <BottomArea class="bottom"/>
-      </el-container>
-    </div>
+    <el-container class="container">
+      <el-card>
+        <markdown-it-vue :content="helpDoc"/>
+      </el-card>
+      <BottomArea class="bottom"/>
+    </el-container>
   </div>
 </template>
 
@@ -46,14 +44,7 @@ export default {
 </script>
 
 <style scoped>
-.wrapper {
-  margin-top: 60px;
-  height: calc(100% + 60px);
-  overflow-y: auto;
-}
-
 .container {
-  margin-top: 35px;
   padding: 0 20px;
   flex-direction: column;
   max-width: 1100px;

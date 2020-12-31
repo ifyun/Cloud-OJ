@@ -51,7 +51,7 @@ public class UserController implements CRUDController {
             @ApiResponse(code = 200, message = "成功", response = User.class),
             @ApiResponse(code = 204, message = "无数据")
     })
-    @GetMapping(path = "info", produces = "application/json")
+    @GetMapping(path = "profile", produces = "application/json")
     public ResponseEntity<?> getUserInfo(String userId) {
         return buildGETResponse(userService.getUserInfo(userId));
     }

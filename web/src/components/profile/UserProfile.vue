@@ -4,7 +4,7 @@
       <span>上传新头像:</span>
       <el-upload class="avatar-uploader"
                  :show-file-list="false"
-                 :action="uploadPath"
+                 :action="uploadUrl"
                  :headers="uploadHeaders"
                  :data="{'userId': userProfile.userId}"
                  :before-upload="beforeUpload"
@@ -59,8 +59,8 @@
         <i class="el-icon-office-building"></i>
         <span>&nbsp;{{ userProfile.section }}</span>
       </span>
-      <el-button v-if="userId == null" size="small" style="margin-top: 15px"
-                 @click="onEdit">
+      <el-button v-if="userInfo != null" size="small" style="margin-top: 15px"
+                 @click="editClick">
         <span>修改个人信息</span>
       </el-button>
     </div>
@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import {Notice, saveToken, toLoginPage, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {Notice, saveToken, toLoginPage, userInfo} from "@/util"
+import {ApiPath, UserApi} from "@/service"
 
 const bcrypt = require('bcryptjs')
 
@@ -77,7 +77,7 @@ export default {
   name: "UserProfile",
   mounted() {
     if (this.userId != null) {
-      this.getUserInfo()
+      this.getProfile()
       this.checkAvatar(this.userId)
     } else {
       this.resetProfileData()
@@ -87,7 +87,7 @@ export default {
   props: ["userId"],
   data() {
     return {
-      uploadPath: apiPath.avatar,
+      uploadUrl: ApiPath.AVATAR,
       uploadHeaders: {
         "token": userInfo().token,
         "userId": userInfo().userId
@@ -122,23 +122,20 @@ export default {
   methods: {
     checkAvatar(userId) {
       this.avatarUrl = ""
-      const url = `${apiPath.avatar}/${userId}.png`
+      const url = `${ApiPath.AVATAR}/${userId}.png`
       this.$axios.head(url).then(() => {
         this.avatarUrl = url
       })
     },
-    getUserInfo() {
-      this.$axios({
-        url: `${apiPath.user}/info`,
-        params: {
-          userId: this.userId
-        }
-      }).then((res) => {
-        if (res.status === 200) {
-          document.title = `${res.data["name"]}`
-          this.userProfile = res.data
-        }
-      })
+    getProfile() {
+      UserApi.getProfile(this.userId)
+          .then((data) => {
+            document.title = `${data["name"]} - Cloud OJ`
+            this.userProfile = data
+          })
+          .catch((error) => {
+            this.$emit("error", error)
+          })
     },
     beforeUpload(file) {
       const isTypeOk = ["image/jpeg", "image/png"].indexOf(file.type) !== -1
@@ -164,54 +161,45 @@ export default {
         message: `${res.status} ${res.statusText}`
       })
     },
-    onEdit() {
+    editClick() {
       this.profileEditor.display = true
     },
     saveProfile() {
       this.$refs["profileForm"].validate((valid) => {
-        if (valid) {
-          this.profileEditor.loading = true
-          let password = this.userProfile.password
-          let passwordChanged = false
-          if (password === undefined || password === "") {
-            delete this.userProfile.password
-          } else {
-            this.userProfile.password =
-                bcrypt.hashSync(this.$md5(password), 10)
-            passwordChanged = true
-          }
-          this.$axios({
-            url: apiPath.profile,
-            method: "put",
-            headers: {
-              "Content-Type": "application/json",
-              "token": this.userInfo.token,
-              "userId": this.userInfo.userId
-            },
-            data: JSON.stringify(this.userProfile)
-          }).then((res) => {
-            this.profileEditor.display = false
-            this.updateLocalUserInfo()
-            Notice.notify.success(this, {
-              title: "已保存",
-              message: `${res.status} ${res.statusText}`
-            })
-            if (passwordChanged) {
-              toLoginPage()
-            }
-          }).catch((error) => {
-            let res = error.response
-            Notice.notify.error(this, {
-              title: "保存失败",
-              message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
-            })
-          }).finally(() => {
-            this.userProfile.password = ""
-            this.profileEditor.loading = false
-          })
-        } else {
+        if (!valid) {
           return false
         }
+        this.profileEditor.loading = true
+        let password = this.userProfile.password
+        let passwordChanged = false
+
+        if (password === undefined || password === "") {
+          delete this.userProfile.password
+        } else {
+          this.userProfile.password = bcrypt.hashSync(this.$md5(password), 10)
+          passwordChanged = true
+        }
+
+        UserApi.updateProfile(this.userProfile, userInfo())
+            .then((res) => {
+              this.profileEditor.display = false
+              Notice.notify.success(this, {
+                title: "已保存",
+                message: `${res.status} ${res.statusText}`
+              })
+              passwordChanged && toLoginPage()
+              this.updateLocalUserInfo()
+            })
+            .catch((error) => {
+              Notice.notify.error(this, {
+                title: "保存失败",
+                message: `${error.code} ${error.msg}`
+              })
+            })
+            .finally(() => {
+              this.userProfile.password = ""
+              this.profileEditor.loading = false
+            })
       })
     },
     cancelEdit() {

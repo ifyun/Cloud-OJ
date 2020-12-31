@@ -1,14 +1,15 @@
 <template>
-  <div v-if="display || userId != null">
+  <div v-if="userInfo != null || userId != null">
     <TopNavigation active=""/>
-    <el-container class="container">
+    <Error v-if="error.code != null" :error="error"/>
+    <el-container v-else class="container">
       <el-card style="width: 100%">
         <el-row :gutter="10">
           <el-col :span="6">
-            <UserProfile :user-id="userId"/>
+            <UserProfile :user-id="userId" @error="onError"/>
           </el-col>
           <el-col :span="18">
-            <Overview :user-id="userId"/>
+            <Overview :user-id="userId" @error="onError"/>
           </el-col>
         </el-row>
       </el-card>
@@ -22,26 +23,36 @@ import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import UserProfile from "@/components/profile/UserProfile"
 import Overview from "@/components/profile/Overview"
-import {searchParams, toLoginPage, userInfo} from "@/script/util"
+import Error from "@/components/Error"
+import {searchParams, toLoginPage, userInfo} from "@/util"
 
 export default {
   name: "Profile",
   beforeMount() {
-    if (!this.display) {
+    if (this.userInfo == null) {
       toLoginPage()
     }
-    document.title = "个人中心 - Cloud OJ"
   },
   components: {
     TopNavigation,
     BottomArea,
     UserProfile,
-    Overview
+    Overview,
+    Error
   },
   data() {
     return {
-      display: userInfo() != null,
+      error: {
+        code: null,
+        msg: ""
+      },
+      userInfo: userInfo(),
       userId: searchParams()["userId"]
+    }
+  },
+  methods: {
+    onError(data) {
+      this.error = data
     }
   }
 }

@@ -1,9 +1,10 @@
 <template>
   <div>
     <TopNavigation :active="active"/>
-    <ProblemList
-        :contest-id="this.contestId"/>
-    <BottomArea class="bottom"/>
+    <el-container class="container">
+      <ProblemList/>
+      <BottomArea class="bottom"/>
+    </el-container>
   </div>
 </template>
 
@@ -11,7 +12,6 @@
 import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import ProblemList from "@/components/ProblemList"
-import {searchParams} from "@/script/util"
 
 export default {
   name: "Problems",
@@ -20,8 +20,7 @@ export default {
   },
   data() {
     return {
-      active: "",
-      contestId: searchParams().contestId
+      active: ""
     }
   },
   components: {
@@ -33,4 +32,9 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  padding: 0 20px;
+  flex-direction: column;
+  align-items: center;
+}
 </style>

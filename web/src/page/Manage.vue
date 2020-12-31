@@ -32,11 +32,9 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main>
-        <div class="main">
-          <component :is="currentView"/>
-          <BottomArea style="margin-top: 50px"/>
-        </div>
+      <el-main class="main">
+        <component :is="currentView"/>
+        <BottomArea style="margin-top: 50px"/>
       </el-main>
     </el-container>
   </div>
@@ -50,7 +48,7 @@ import UserManage from "@/components/manage/user/UserManage"
 import Settings from "@/components/manage/Settings"
 import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
-import {toLoginPage, userInfo} from "@/script/util"
+import {toLoginPage, userInfo} from "@/util"
 
 let pages = new Map([
   ["1", "ProblemsManage"],
@@ -76,7 +74,7 @@ export default {
     } else if (this.userInfo["roleId"] === 0) {
       this.error = {
         code: 403,
-        text: "你没有权限访问此页面"
+        msg: "你没有权限访问此页面"
       }
     }
   },
@@ -96,7 +94,7 @@ export default {
       currentView: "",
       error: {
         code: null,
-        text: ""
+        msg: ""
       }
     }
   },
@@ -133,7 +131,7 @@ export default {
 }
 
 .container {
-  margin-top: 60px;
+  margin-top: 0;
   padding: 0;
   min-width: 1150px !important;
   max-width: 100% !important;
@@ -141,8 +139,8 @@ export default {
 }
 
 .main {
-  max-width: 1300px;
-  margin: 25px auto 0;
+  max-width: 1500px;
+  margin: 0 auto;
 }
 
 .el-menu-item.is-active {

@@ -25,8 +25,8 @@
         </el-col>
       </el-row>
       <el-form-item label="分类/标签">
-        <el-tag :key="tag" effect="plain" type="primary" closable
-                @close="tagClose(tag)"
+        <el-tag :key="tag" effect="plain" type="primary"
+                closable @close="tagClose(tag)"
                 v-for="tag in tags">{{ tag }}
         </el-tag>
         <el-input class="input-new-tag" ref="tagInput" v-if="newTagVisible"
@@ -41,7 +41,7 @@
       </el-form-item>
       <el-divider>题目内容</el-divider>
       <MarkdownEditor :height="700" :data="problem.description"
-                      :on-change="onEditorChange"/>
+                      @change="editorChange"/>
       <el-form-item label-width="0" prop="description">
         <el-input style="display: none" type="textarea"
                   v-model="problem.description">
@@ -50,7 +50,7 @@
       <el-form-item label-width="0">
         <el-button type="primary" :disabled="!dataChanged"
                    :icon="problemId === null ? 'el-icon-plus': 'el-icon-check'"
-                   @click="onSave(saveType)">
+                   @click="save">
           {{ problemId === null ? '提交' : '保存修改' }}
         </el-button>
         <el-popconfirm style="margin-left: 10px" title="确定要重置吗，所有更改都会丢失？"
@@ -66,15 +66,15 @@
 </template>
 
 <script>
-import {userInfo, toLoginPage, Notice} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {userInfo, toLoginPage, Notice} from "@/util"
 import MarkdownEditor from "@/components/manage/problem/MarkdownEditor"
+import {ProblemApi} from "@/service"
 
 export default {
   name: "ProblemEditor",
   props: {
     problemId: Number,
-    saveType: String,
+    create: Boolean,
     dialogVisible: Boolean
   },
   components: {
@@ -151,7 +151,7 @@ export default {
     }
   },
   methods: {
-    onEditorChange(val) {
+    editorChange(val) {
       this.problem.description = val
     },
     resetForm() {
@@ -165,31 +165,26 @@ export default {
     },
     getProblem() {
       this.loading = true
-      this.$axios({
-        url: `${apiPath.problemManage}/${this.problemId}`,
-        method: "get",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        }
-      }).then((res) => {
-        this.problem = res.data
-        this.tags = this.problem.category.split(",")
-        if (this.reset)
-          this.dataChanged = false
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "获取题目内容失败",
-            message: `${res.status} ${res.statusText}`
+      ProblemApi.get(this.problemId, userInfo())
+          .then((data) => {
+            this.problem = data
+            this.tags = data.category.split(",")
+            if (this.reset)
+              this.dataChanged = false
           })
-        }
-      }).finally(() => {
-        this.loading = false
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: "获取题目内容失败",
+                message: `${error.code} ${error.msg}`
+              })
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
     },
     tagClose(tag) {
       this.tags.splice(this.tags.indexOf(tag), 1)
@@ -210,49 +205,32 @@ export default {
       this.newTagVisible = false
       this.newTag = ""
     },
-    onSave(type) {
+    save() {
       this.$refs["problemForm"].validate((valid) => {
         if (!valid) {
           return false
         }
-        this.problem.createAt = null
-        this.problem.category = this.tags.join(",")
-        this.$axios({
-          url: apiPath.problemManage,
-          method: type,
-          headers: {
-            "token": userInfo().token,
-            "userId": userInfo().userId,
-            "Content-Type": "application/json"
-          },
-          data: JSON.stringify(this.problem)
-        }).then((res) => {
-          this.$emit("update:dialogVisible", false)
-          this.$emit("refresh")
-          type === "post" && this.resetForm()
-          Notice.notify.success(this, {
-            title: `${this.problem.title} 已保存`,
-            message: `${res.status} ${res.statusText}`
-          })
-        }).catch((error) => {
-          let res = error.response
-          switch (res.status) {
-            case 401:
-              toLoginPage()
-              break
-            case 400:
-              Notice.notify.error(this, {
-                title: `${this.problem.title} 保存失败`,
-                message: `${res.data.msg}`
+        ProblemApi.save(this.problem, userInfo(), this.create)
+            .then(() => {
+              this.$emit("update:dialogVisible", false)
+              this.$emit("refresh")
+              this.create && this.resetForm()
+              Notice.notify.success(this, {
+                title: `${this.problem.title} 已保存`
               })
-              break
-            default:
-              Notice.notify.error(this, {
-                title: `${this.problem.title} 保存失败`,
-                message: `${res.status} ${res.statusText}`
-              })
-          }
-        })
+            })
+            .catch((error) => {
+              switch (error.code) {
+                case 401:
+                  toLoginPage()
+                  break
+                default:
+                  Notice.notify.error(this, {
+                    title: `${this.problem.title} 保存失败`,
+                    message: `${error.code} ${error.msg}`
+                  })
+              }
+            })
       })
     }
   }

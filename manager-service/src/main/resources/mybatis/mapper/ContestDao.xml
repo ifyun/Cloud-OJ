@@ -36,10 +36,10 @@
                 from contest_problem cp
             </otherwise>
         </choose>
-        <if test="onlyStarted">
-            join contest c on cp.contest_id = c.contest_id and c.start_at &lt;= now()
-        </if>
         where cp.contest_id = #{contestId}
+        <if test="onlyStarted">
+            and cp.start_at &lt;= now()
+        </if>
         limit #{start}, #{limit};
         select found_rows()
     </select>
@@ -55,13 +55,6 @@
         select *,
                if(start_at &lt;= now(), true, false) as started,
                if(end_at &lt;= now(), true, false)   as ended
-        from contest
-        where contest_id = #{contestId}
-    </select>
-    <select id="getLanguages" resultMap="Map.Contest">
-        select contest_id,
-               contest_name,
-               languages
         from contest
         where contest_id = #{contestId}
     </select>

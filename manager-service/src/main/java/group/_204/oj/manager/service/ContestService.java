@@ -23,8 +23,8 @@ public class ContestService {
         return contestDao.getContests((page - 1) * limit, limit, false);
     }
 
-    public Contest getLanguages(int contestId) {
-        return contestDao.getLanguages(contestId);
+    public Contest getContestByID(int contestId) {
+        return contestDao.getContestById(contestId);
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {

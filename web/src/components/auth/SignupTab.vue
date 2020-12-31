@@ -52,8 +52,8 @@
 </template>
 
 <script>
-import {copyObject, Notice} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {copyObject, Notice} from "@/util"
+import {UserApi} from "@/service"
 
 const bcrypt = require('bcryptjs')
 
@@ -114,46 +114,32 @@ export default {
   },
   methods: {
     signup(formName) {
-      this.loading = true
       this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let data = copyObject(this.signupForm)
-          data.checkPassword = ""
-          data.password = bcrypt.hashSync(this.$md5(data.password), 10)
-          this.$axios({
-            url: apiPath.user,
-            method: "post",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            data: JSON.stringify(data)
-          }).then((res) => {
-            Notice.notify.success(this, {
-              offset: 0,
-              title: `用户 ${this.signupForm.name} 注册成功`,
-              message: `${res.status} ${res.statusText}`
-            })
-            this.$refs[formName].resetFields()
-            this.$refs["deleteForm"].clearValidate()
-          }).catch((error) => {
-            let res = error.response
-            let msg
-            if (res.status === 409)
-              msg = "用户已存在"
-            else
-              msg = res.data.msg === undefined ? res.statusText : res.data.msg
-            Notice.notify.error(this, {
-              offset: 0,
-              title: "注册失败",
-              message: `${res.status} ${msg}`
-            })
-          }).finally(() => {
-            this.loading = false
-          })
-        } else {
-          this.loading = false
+        if (!valid) {
           return false
         }
+        this.loading = true
+        let user = copyObject(this.signupForm)
+        user.checkPassword = ""
+        user.password = bcrypt.hashSync(this.$md5(user.password), 10)
+        UserApi.save(user).then((res) => {
+          Notice.notify.success(this, {
+            offset: 0,
+            title: "注册成功",
+            message: `${res.status} ${res.statusText}`
+          })
+          this.$refs[formName].resetFields()
+          this.$refs["deleteForm"].clearValidate()
+        }).catch((error) => {
+          const msg = error.code === 409 ? "ID 已被使用" : `${error.msg}`
+          Notice.notify.error(this, {
+            offset: 0,
+            title: "注册失败",
+            message: `${error.code} ${msg}`
+          })
+        }).finally(() => {
+          this.loading = false
+        })
       })
     }
   }
@@ -162,10 +148,11 @@ export default {
 
 <style scoped>
 .login-input {
-  width: 350px;
+  min-width: 350px;
 }
 
 .login-button {
-  width: 350px;
+  min-width: 350px;
+  width: 100%;
 }
 </style>

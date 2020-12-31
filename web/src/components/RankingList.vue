@@ -1,12 +1,9 @@
 <template>
-  <el-container class="container" v-loading="loading">
-    <Error v-if="error.code != null"
-           :error="error"/>
+  <div class="content">
+    <Error v-if="error.code != null" :error="error"/>
     <el-card v-else style="width: 100%">
-      <div v-if="contest != null" class="head">
-        <span style="font-size: 14pt;font-weight: bold;">
-          {{ contest.name }}
-        </span>
+      <div v-if="contest.contestId != null" class="head">
+        <span style="font-size: 14pt;font-weight: bold;">{{ contest.contestName }}</span>
         <div class="refresh-div">
           <div>
             <span>自动刷新：</span>
@@ -63,7 +60,9 @@
             <span>通过题目</span>
           </template>
           <template slot-scope="scope">
-            <span style="cursor: pointer" @click="getDetail(scope.row)">{{ scope.row['passed'] }} 题通过</span>
+            <span style="cursor: pointer" @click="getDetail(scope.row)">
+              {{ scope.row['passed'] }} 题通过
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="分数" prop="totalScore" width="150px" align="right">
@@ -76,7 +75,7 @@
       </el-pagination>
     </el-card>
     <el-dialog :title="detailDialog.title" :visible.sync="detailDialog.visible" width="700px">
-      <el-table :data="detailDialog.details">
+      <el-table :data="detailDialog.details" v-loading="detailDialog.loading">
         <el-table-column label="题目">
           <template slot-scope="scope">
             <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
@@ -91,13 +90,13 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-  </el-container>
+  </div>
 </template>
 
 <script>
-import {Notice, searchParams, toLoginPage, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {Notice, searchParams, toLoginPage, userInfo} from "@/util"
 import Error from "@/components/Error"
+import {ContestApi, RankingApi} from "@/service"
 
 export default {
   name: "RankingList",
@@ -105,10 +104,9 @@ export default {
     Error
   },
   beforeMount() {
-    this.contest = JSON.parse(window.sessionStorage.getItem("contest"))
     this.loadPage()
-    if (this.contest != null) {
-      document.title = `${this.contest.name} - 排行榜 - Cloud OJ`
+    if (this.contestId != null) {
+      this.getContest()
     } else {
       document.title = "排行榜 - Cloud OJ"
     }
@@ -123,17 +121,22 @@ export default {
         data: [],
         count: 0
       },
-      contest: {},
+      contestId: searchParams()["contestId"],
+      contest: {
+        contestId: null,
+        contestName: ""
+      },
       currentPage: 1,
       pageSize: 15,
       detailDialog: {
         visible: false,
         title: "",
+        loading: true,
         details: []
       },
       error: {
         code: null,
-        text: ""
+        msg: ""
       }
     }
   },
@@ -146,9 +149,9 @@ export default {
       }
     },
     autoGetRankingList() {
-      let self = this
+      let ctx = this
       return function () {
-        self.getRankingList(true)
+        ctx.getRankingList(true)
       }
     },
     loadPage() {
@@ -157,86 +160,68 @@ export default {
         this.currentPage = parseInt(page)
       }
     },
-    getRankingList(refresh) {
-      history.pushState(null, "", `?page=${this.currentPage}`)
+    getContest() {
+      if (this.contestId == null) {
+        return
+      }
+      ContestApi.get(this.contestId).then((data) => {
+        document.title = `${data.contestName} - 排行榜 - Cloud OJ`
+        this.contest = data
+        this.getRankingList()
+      }).catch((error) => {
+        this.error = error
+      })
+    },
+    getRankingList(refresh = false) {
       this.loading = true
-      let url, headers = {}
-
-      if (this.contest == null) {
-        url = apiPath.ranking
-      } else {
-        if (userInfo() != null && userInfo()["roleId"] >= 2) {
-          url = apiPath.adminContestRanking
-          headers = {
-            token: userInfo() == null ? null : userInfo().token,
-            userId: userInfo() == null ? null : userInfo().userId
-          }
-        } else {
-          url = apiPath.contestRanking
-        }
-        url += `/${this.contest.id}`
+      let params = `?page=${this.currentPage}`
+      if (this.contestId != null) {
+        params += `&contestId=${this.contestId}`
       }
 
-      this.$axios({
-        url: url,
-        method: "get",
-        headers: headers,
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize,
-        }
-      }).then((res) => {
-        this.ranking = res.status === 200 ? res.data : {data: [], count: 0}
-        if (refresh === true) {
-          Notice.message.success(this, "排行榜已刷新")
-        }
+      history.pushState(null, "", params)
+
+      const promise = this.contest.contestId == null ?
+          RankingApi.getRanking(this.currentPage, this.pageSize) :
+          RankingApi.getContestRanking(this.contest.contestId, this.currentPage, this.pageSize, userInfo())
+
+      promise.then((data) => {
+        this.ranking = data
+        refresh === true && Notice.message.success(this, "排行榜已刷新")
       }).catch((error) => {
-        const res = error.response
-        switch (res.status) {
+        switch (error.code) {
           case 401:
             toLoginPage()
             break
-          case 403:
-            this.error = {
-              code: res.status,
-              text: res.data.msg
-            }
-            break
           default:
-            Notice.notify.error(this, {
-              title: "获取排行榜失败",
-              message: `${res.status} ${res.statusText}`
-            })
+            this.error = error
         }
       }).finally(() => {
         this.loading = false
       })
     },
     getDetail(row) {
-      if (this.contest != null && userInfo() != null && userInfo()["roleId"] >= 2) {
+      if (this.contest.contestId != null && userInfo() != null && userInfo()["roleId"] >= 2) {
+        this.detailDialog.loading = true
         this.detailDialog.visible = true
         this.detailDialog.title = `${row.name} - 每题得分`
-        this.$axios.get(apiPath.contestDetail, {
-          headers: {
-            token: userInfo().token,
-            userId: userInfo().userId
-          },
-          params: {
-            contestId: row.contestId,
-            userId: row.userId
-          }
-        }).then((res) => {
-          if (res.status === 401) {
-            toLoginPage()
-          }
-          this.detailDialog.details = res.data
-        }).catch((error) => {
-          let res = error.response
-          Notice.notify.error(this, {
-            title: "获取详细得分失败",
-            message: `${res.status} ${res.statusText}`
-          })
-        })
+
+        RankingApi.getDetail(row.contestId, row.userId, userInfo())
+            .then((data) => {
+              this.detailDialog.details = data
+            })
+            .catch((error) => {
+              if (error.code === 401) {
+                toLoginPage()
+              }
+              Notice.notify.error(this, {
+                title: "获取详细得分失败",
+                message: `${error.code} ${error.msg}`
+              })
+            })
+            .finally(() => {
+              this.detailDialog.loading = false
+            })
       }
     }
   }
@@ -244,10 +229,8 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 0 20px;
-  flex-direction: column;
-  align-items: center;
+.content {
+  width: 100%;
 }
 
 .avatar {

@@ -17,8 +17,6 @@ public interface ContestDao {
 
     Contest getContestById(int contestId);
 
-    Contest getLanguages(int contestId);
-
     int addContest(Contest contest);
 
     int updateContest(Contest contest);

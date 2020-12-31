@@ -1,8 +1,10 @@
 <template>
   <div>
     <TopNavigation active="3"/>
-    <RankingList/>
-    <BottomArea class="bottom"/>
+    <el-container class="container">
+      <RankingList/>
+      <BottomArea class="bottom"/>
+    </el-container>
   </div>
 </template>
 
@@ -22,5 +24,9 @@ export default {
 </script>
 
 <style scoped>
-
+.container {
+  padding: 0 20px;
+  flex-direction: column;
+  align-items: center;
+}
 </style>

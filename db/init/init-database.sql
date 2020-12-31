@@ -9,20 +9,20 @@ create table contest
     contest_name varchar(64)   null,
     start_at     timestamp     not null comment '开始时间',
     end_at       timestamp     not null comment '结束时间',
-    languages int default 0 not null comment '支持的语言范围'
+    languages    int default 0 not null comment '支持的语言范围'
 );
 
 create table problem
 (
-    problem_id    int auto_increment
+    problem_id  int auto_increment
         primary key,
-    title         varchar(64)                          not null,
-    description   text                                 not null comment '题目描述',
-    timeout       bigint     default 1000              null comment '时间限制',
-    score         int        default 0                 not null comment '分数',
-    enable        tinyint(1) default 0                 null comment '是否可用',
-    category      varchar(32)                          null comment '分类',
-    create_at     datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
+    title       varchar(64)                          not null,
+    description text                                 not null comment '题目描述',
+    timeout     bigint     default 1000              null comment '时间限制',
+    score       int        default 0                 not null comment '分数',
+    enable      tinyint(1) default 0                 null comment '是否开放',
+    category    varchar(32)                          null comment '分类，多个用逗号分隔',
+    create_at   datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
 );
 
 create table `contest-problem`
@@ -152,18 +152,18 @@ end //
 DELIMITER ;
 
 create view contest_problem as
-select `c`.`contest_id`    AS `contest_id`,
-       `c`.`contest_name`  AS `contest_name`,
-       `c`.`start_at`      AS `start_at`,
-       `c`.`end_at`        AS `end_at`,
-       `p`.`problem_id`    AS `problem_id`,
-       `p`.`title`         AS `title`,
-       `p`.`description`   AS `description`,
-       `p`.`timeout`       AS `timeout`,
-       `p`.`score`         AS `score`,
-       `p`.`enable`        AS `enable`,
-       `p`.`category`      AS `category`,
-       `p`.`create_at`     AS `create_at`
+select `c`.`contest_id`   AS `contest_id`,
+       `c`.`contest_name` AS `contest_name`,
+       `c`.`start_at`     AS `start_at`,
+       `c`.`end_at`       AS `end_at`,
+       `c`.`languages`    AS `languages`,
+       `p`.`problem_id`   AS `problem_id`,
+       `p`.`title`        AS `title`,
+       `p`.`description`  AS `description`,
+       `p`.`timeout`      AS `timeout`,
+       `p`.`score`        AS `score`,
+       `p`.`category`     AS `category`,
+       `p`.`create_at`    AS `create_at`
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`.`problem_id` = `p`.`problem_id`)))
          join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
@@ -233,7 +233,6 @@ INSERT INTO cloud_oj.role (role_id, role_name)
 VALUES (3, 'ROLE_ROOT');
 
 -- 初始 ROOT 用户
-set character set utf8;
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
 VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3ZXqbuxLaHVhp05LTi', LEFT(UUID(), 8), 3);
 

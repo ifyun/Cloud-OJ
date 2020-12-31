@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 @ApiModel(description = "题目")
@@ -41,6 +41,8 @@ public class Problem {
 
     @ApiModelProperty(value = "超时时间，单位：ms", example = "1000")
     private Long timeout;
+
+    private Integer languages;
 
     private Integer score;
     private Boolean enable;

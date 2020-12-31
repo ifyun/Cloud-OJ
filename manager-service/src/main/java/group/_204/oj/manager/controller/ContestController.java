@@ -42,6 +42,18 @@ public class ContestController implements CRUDController {
             return buildGETResponse(contestService.getStartedContest(page, limit));
     }
 
+    @ApiOperation(value = "获取竞赛/作业的详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contestId", required = true, example = "1"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "成功", response = Problem.class),
+    })
+    @GetMapping(path = "detail", produces = "application/json")
+    public ResponseEntity<?> Contest(Integer contestId) {
+        return buildGETResponse(contestService.getContestByID(contestId));
+    }
+
     @ApiOperation(value = "获取所有竞赛/作业", notes = "需要题目管理员权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页数", required = true, example = "1"),
@@ -54,17 +66,6 @@ public class ContestController implements CRUDController {
     @GetMapping(path = "pro", produces = "application/json")
     public ResponseEntity<?> allContests(Integer page, Integer limit) {
         return buildGETResponse(contestService.getAllContest(page, limit));
-    }
-
-    @ApiOperation(value = "获取竞赛/作业允许使用的语言")
-    @ApiImplicitParam(name = "contestId", required = true, example = "1")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "成功", response = Contest.class),
-            @ApiResponse(code = 204, message = "无数据")
-    })
-    @GetMapping(path = "lang/{contestId}", produces = "application/json")
-    public ResponseEntity<?> getLanguages(@PathVariable Integer contestId) {
-        return buildGETResponse(contestService.getLanguages(contestId));
     }
 
     @ApiOperation(value = "从已开始的竞赛/作业中获取题目", notes = "若传入 userId，可以同时获取判题结果")
@@ -91,7 +92,6 @@ public class ContestController implements CRUDController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "成功", response = Problem.class),
-            @ApiResponse(code = 204, message = "无数据")
     })
     @GetMapping(path = "problem/{contestId}/{problemId}")
     public ResponseEntity<?> getProblemInContest(@PathVariable Integer contestId, @PathVariable Integer problemId) {
@@ -124,7 +124,7 @@ public class ContestController implements CRUDController {
             @ApiResponse(code = 200, message = "成功", response = PagedResult.class),
             @ApiResponse(code = 204, message = "无数据")
     })
-    @GetMapping("pro/{contestId}")
+    @GetMapping("pro/problems_not_in_contest/{contestId}")
     public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId, Integer page, Integer limit) {
         return buildGETResponse(contestService.getProblemsNotInContest(contestId, page, limit));
     }

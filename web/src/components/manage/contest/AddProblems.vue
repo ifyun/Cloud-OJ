@@ -1,52 +1,50 @@
 <template>
   <div>
-    <el-alert type="info" show-icon style="margin-bottom: 10px"
-              title="点击名称可预览题目内容"
+    <el-alert type="info" show-icon style="margin-bottom: 15px"
+              title="只能添加未开放的题目，点击名称可预览题目内容"
               :closable="false">
     </el-alert>
     <el-table :data="problems.data" border v-loading="loading">
-      <el-table-column label="ID" prop="problemId" width="100px" align="center">
-      </el-table-column>
       <el-table-column label="题目名称">
         <template slot-scope="scope">
-          <el-popover trigger="click" placement="right-end">
-            <pre class="desc">{{ scope.row.description }}</pre>
-            <el-button slot="reference" size="medium">{{ scope.row.title }}
-            </el-button>
-          </el-popover>
+          <el-button slot="reference" size="small" @click="preview(scope.row)">
+            {{ scope.row.problemId }} - {{ scope.row.title }}
+          </el-button>
         </template>
       </el-table-column>
       <el-table-column label="分值" prop="score" width="70px" align="right-end">
       </el-table-column>
       <el-table-column label="操作" width="100px" align="center">
         <template slot-scope="scope">
-          <el-button type="success" size="mini"
-                     icon="el-icon-circle-plus"
+          <el-button type="success" size="mini" icon="el-icon-circle-plus"
                      @click="addProblemToContest(scope.row.problemId, scope.row.title)">添加
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-        style="margin-top: 10px"
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        :page-sizes="[15, 25, 35]"
-        :page-size.sync="pageSize"
-        :total="problems.count"
-        :current-page.sync="currentPage"
-        @size-change="getProblems"
-        @current-change="getProblems">
+    <el-pagination style="margin-top: 15px" small layout="total, prev, pager, next"
+                   :page-size.sync="pageSize" :total="problems.count"
+                   :current-page.sync="currentPage"
+                   @size-change="getProblems" @current-change="getProblems">
     </el-pagination>
+    <el-dialog :title="previewDialog.title" :visible.sync="previewDialog.visible"
+               append-to-body width="750px">
+      <markdown-it-vue :options="mdOptions" :content="previewDialog.content"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {userInfo, toLoginPage, Notice} from "@/script/util"
-import {apiPath} from "@/script/env"
+import MarkdownItVue from "markdown-it-vue"
+import "markdown-it-vue/dist/markdown-it-vue.css"
+import {userInfo, toLoginPage, Notice} from "@/util"
+import {ContestApi} from "@/service"
 
 export default {
   name: "AddProblems",
+  components: {
+    MarkdownItVue
+  },
   props: {
     contestId: Number,
     visibility: Boolean
@@ -67,64 +65,66 @@ export default {
         count: 0
       },
       pageSize: 15,
-      currentPage: 1
+      currentPage: 1,
+      previewDialog: {
+        title: "",
+        content: "",
+        visible: false
+      },
+      mdOptions: {
+        markdownIt: {
+          html: true
+        }
+      }
     }
   },
   methods: {
     getProblems() {
-      this.$axios({
-        url: `${apiPath.contestManage}/${this.contestId}`,
-        method: "get",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        },
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize
-        }
-      }).then((res) => {
-        this.problems = res.status === 200 ? res.data : {data: [], count: 0}
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "获取数据失败",
-            message: `${res.status} ${res.statusText}`
+      ContestApi.getProblemsNotInContest(this.contestId, this.currentPage, this.pageSize, userInfo())
+          .then((data) => {
+            this.problems = data
           })
-        }
-      }).finally(() => {
-        this.loading = false
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: "获取数据失败",
+                message: `${error.code} ${error.msg}`
+              })
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
+    },
+    preview(row) {
+      this.previewDialog = {
+        title: `${row.problemId} - ${row.title}`,
+        content: row.description,
+        visible: true
+      }
     },
     addProblemToContest(problemId, title) {
-      this.$axios({
-        url: `${apiPath.contestManage}/problem/${this.contestId}/${problemId}`,
-        method: "post",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        }
-      }).then((res) => {
-        Notice.notify.success(this, {
-          title: `【${title}】已添加`,
-          message: `${res.status} ${res.statusText}`
-        })
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: `【${title}】添加失败`,
-            message: `${res.status} ${res.statusText}`
+      ContestApi.addProblem(this.contestId, problemId, userInfo())
+          .then(() => {
+            Notice.notify.success(this, {
+              title: `${title} 已添加`
+            })
           })
-        }
-      }).finally(() => {
-        this.getProblems()
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: `${title} 添加失败`,
+                message: `${error.code} ${error.msg}`
+              })
+            }
+          })
+          .finally(() => {
+            this.getProblems()
+          })
     }
   }
 }
