@@ -1,12 +1,12 @@
 <template>
-  <el-container class="container">
+  <div class="content">
     <el-card style="width: 100%">
       <el-table :data="contests.data" v-loading="loading">
         <el-table-column label="竞赛/作业名称" prop="contestName">
           <template slot-scope="scope">
             <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
-                     @click="onContestClick(scope.row)">
+                     @click="contestClick(scope.row)">
               <b v-if="scope.row['ended']">[已结束]</b>
               <b v-else-if="scope.row['started']">[进行中]</b>
               <b v-else>[未开始]</b>
@@ -18,24 +18,28 @@
         </el-table-column>
         <el-table-column label="语言限制" align="left">
           <template slot-scope="scope">
-            <b class="languages" style="word-break: break-word">
+            <span class="languages" style="word-break: break-word">
               {{ calcLanguages(scope.row.languages) }}
-            </b>
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="开始时间" width="180px" align="right">
           <template slot-scope="scope">
-            <b>{{ formatDate(scope.row['startAt']) }}</b>
+            <i class="el-icon-date el-icon--left"></i>
+            <span>{{ formatDate(scope.row['startAt']) }}</span>
             <br>
-            <b>{{ formatTime(scope.row['startAt']) }}</b>
+            <i class="el-icon-time el-icon--left"></i>
+            <span>{{ formatTime(scope.row['startAt']) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="结束时间" width="180px" align="right">
           <template slot-scope="scope">
             <div style="color: #F56C6C">
-              <b>{{ formatDate(scope.row['endAt']) }}</b>
+              <i class="el-icon-date el-icon--left"></i>
+              <span>{{ formatDate(scope.row['endAt']) }}</span>
               <br>
-              <b>{{ formatTime(scope.row['endAt']) }}</b>
+              <i class="el-icon-time el-icon--left"></i>
+              <span>{{ formatTime(scope.row['endAt']) }}</span>
             </div>
           </template>
         </el-table-column>
@@ -58,13 +62,14 @@
                      @size-change="getContests" @current-change="getContests">
       </el-pagination>
     </el-card>
-  </el-container>
+  </div>
 </template>
 
 <script>
-import {apiPath, languages} from "@/script/env"
-import {Notice, searchParams} from "@/script/util"
+import {languages} from "@/util/data"
+import {Notice, searchParams} from "@/util"
 import moment from "moment"
+import {ContestApi} from "@/service"
 
 export default {
   name: "CompetitionList",
@@ -72,8 +77,7 @@ export default {
     document.title = "竞赛/作业 - Cloud OJ"
     this.loadPage()
     this.getContests()
-  }
-  ,
+  },
   data() {
     return {
       loading: true,
@@ -84,8 +88,7 @@ export default {
       currentPage: 1,
       pageSize: 10
     }
-  }
-  ,
+  },
   methods: {
     loadPage() {
       const page = searchParams()["page"]
@@ -96,31 +99,21 @@ export default {
     getContests() {
       history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      this.$axios({
-        url: apiPath.contest,
-        method: "get",
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize
-        }
-      }).then((res) => {
-        this.contests = res.status === 200 ? res.data : {data: [], count: 0}
-      }).catch((error) => {
-        let res = error.response
-        Notice.notify.error(this, {
-          title: "获取竞赛/作业失败",
-          message: `${res.status} ${res.statusText}`
-        })
-      }).finally(() => {
-        this.loading = false
-      })
+      ContestApi.getAll(this.currentPage, this.pageSize)
+          .then((data) => {
+            this.contests = data
+          })
+          .catch((error) => {
+            Notice.notify.error(this, {
+              title: "获取竞赛/作业失败",
+              message: `${error.code} ${error.msg}`
+            })
+          })
+          .finally(() => {
+            this.loading = false
+          })
     },
-    onContestClick(row) {
-      const contest = {
-        id: row.contestId,
-        name: row.contestName
-      }
-      sessionStorage.setItem("contest", JSON.stringify(contest))
+    contestClick(row) {
       window.location.href = `.?contestId=${row.contestId}`
     },
     formatDate(time) {
@@ -130,30 +123,29 @@ export default {
       return moment(time).format("HH:mm:ss")
     },
     calcLanguages(lang) {
-      let langArr = []
-      languages.forEach((value, index) => {
-        let t = 1 << index
-        if ((lang & t) === t)
-          langArr.push(value)
-      })
-      return langArr.join(" / ")
+      const max = (1 << languages.length) - 1
+      if ((lang & max) === max) {
+        return "无限制"
+      } else {
+        let langArr = []
+        languages.forEach((value, index) => {
+          let t = 1 << index
+          if ((lang & t) === t)
+            langArr.push(value)
+        })
+        return langArr.join(" / ")
+      }
     },
     seeRanking(contest) {
-      window.sessionStorage.setItem("contest", JSON.stringify({
-        id: contest.contestId,
-        name: contest.contestName
-      }))
-      window.location.href = "./ranking"
+      window.location.href = `/ranking?contestId=${contest.contestId}`
     }
   }
 }
 </script>
 
 <style scoped>
-.container {
-  padding: 0 20px;
-  flex-direction: column;
-  align-items: center;
+.content {
+  width: 100%;
 }
 
 .languages {

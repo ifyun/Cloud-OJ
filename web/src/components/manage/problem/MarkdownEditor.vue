@@ -79,6 +79,7 @@
                        list-type="picture-card"
                        :before-upload="checkImageType"
                        :on-success="imageUploadSuccess"
+                       :on-error="imageUploadError"
                        :on-preview="imagePreview"
                        :on-remove="removeImage">
               <i class="el-icon-plus"></i>
@@ -134,8 +135,8 @@ import "vue-awesome/icons/link"
 import "vue-awesome/icons/info-circle"
 import "vue-awesome/icons/vial"
 import "vue-awesome/icons/file-code"
-import {apiPath} from "@/script/env"
-import {Notice, userInfo} from "@/script/util"
+import {Notice, userInfo} from "@/util"
+import {ApiPath} from "@/service"
 
 export default {
   name: "MarkdownEditor",
@@ -146,15 +147,14 @@ export default {
   },
   props: {
     data: String,
-    height: Number,
-    onChange: Function
+    height: Number
   },
   watch: {
     data(val) {
       this.content = val
     },
     content(val) {
-      this.onChange(val)
+      this.$emit("change", val)
     }
   },
   computed: {
@@ -185,7 +185,7 @@ export default {
       },
       imageDialog: {
         visible: false,
-        uploadUrl: apiPath.problemImage,
+        uploadUrl: ApiPath.PROBLEM_IMAGE,
         headers: {
           userId: userInfo().userId,
           token: userInfo().token
@@ -261,7 +261,14 @@ export default {
       return isTypeOk && isLt2M
     },
     imageUploadSuccess(res) {
-      this.imageDialog.imageUrl = `${apiPath.problemImage}/${res}`
+      this.imageDialog.imageUrl = `${ApiPath.PROBLEM_IMAGE}/${res}`
+    },
+    imageUploadError(err) {
+      Notice.notify.error(this, {
+        offset: 0,
+        title: "上传图片失败",
+        message: `${err.status} ${err.error}`
+      })
     },
     imagePreview() {
       this.imageDialog.previewDialogVisible = true

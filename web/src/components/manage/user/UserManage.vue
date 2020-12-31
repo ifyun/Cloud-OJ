@@ -3,12 +3,12 @@
     <el-form :inline="true">
       <el-form-item>
         <el-button size="medium" icon="el-icon-circle-plus" type="primary"
-                   @click="onAddClick">
+                   @click="addClick">
           创建新用户
         </el-button>
       </el-form-item>
       <el-form-item>
-        <el-button size="medium" icon="el-icon-refresh" @click="getUsers(true)">
+        <el-button size="medium" icon="el-icon-refresh" @click="refresh">
           刷新
         </el-button>
       </el-form-item>
@@ -37,13 +37,13 @@
         <template slot-scope="scope">
           <el-tag effect="light" style="width: 90px" size="small"
                   :type="roleTypes[scope.row['roleId']]">
-            <span>{{ roleNames[scope.row['roleId']] }}</span>
+            <span>{{ roleNames[scope.row["roleId"]] }}</span>
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="注册时间" width="220px" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"> {{ scope.row.createAt }}</i>
+          <i class="el-icon-time"> {{ scope.row["createAt"] }}</i>
         </template>
       </el-table-column>
       <el-table-column width="120px" align="center">
@@ -54,11 +54,11 @@
         <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit"
-                       @click="onEditClick(scope.row)">
+                       @click="editClick(scope.row)">
             </el-button>
             <el-button size="mini" icon="el-icon-delete" type="danger"
                        :disabled="scope.row.userId === 'root'"
-                       @click="onDeleteClick(scope.row)">
+                       @click="deleteClick(scope.row)">
             </el-button>
           </el-button-group>
         </template>
@@ -71,31 +71,31 @@
                    @size-change="getUsers" @current-change="getUsers">
     </el-pagination>
     <!-- Editor Dialog -->
-    <el-dialog :title="editorTitle"
-               :visible.sync="editorDialogVisible">
+    <el-dialog :title="editorDialog.title"
+               :visible.sync="editorDialog.visible">
       <UserEditor :user="selectedUser"
-                  :save-type="saveType"
-                  :dialog-visible.sync="editorDialogVisible"
+                  :create="editorDialog.create"
+                  :dialog-visible.sync="editorDialog.visible"
                   @refresh="getUsers"/>
     </el-dialog>
     <!-- Delete Dialog -->
     <el-dialog title="提示"
-               :visible.sync="deleteDialogVisible">
+               :visible.sync="deleteDialog.visible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除用户：${selectedUser.userId}`"
                 description="如果该用户已有做题记录，只能通过操作数据库删除"
                 :closable="false">
       </el-alert>
       <el-form ref="deleteForm"
-               :model="deleteForm"
-               :rules="deleteRules"
+               :model="deleteDialog.form"
+               :rules="deleteDialog.rules"
                @submit.native.prevent>
         <el-form-item label="输入用户名确认删除" prop="checkUserId">
-          <el-input v-model="deleteForm.checkUserId" :placeholder="selectedUser.userId">
+          <el-input v-model="deleteDialog.form.checkUserId" :placeholder="selectedUser.userId">
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" icon="el-icon-delete" @click="onDelete">删除用户</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="confirmDelete">删除用户</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -103,12 +103,12 @@
 </template>
 
 <script>
-import {copyObject, Notice, searchParams, toLoginPage, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {copyObject, Notice, searchParams, toLoginPage, userInfo} from "@/util"
 import UserEditor from "@/components/manage/user/UserEditor"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/id-card"
 import "vue-awesome/icons/user-shield"
+import {UserApi} from "@/service"
 
 export default {
   name: "UserManage",
@@ -141,26 +141,30 @@ export default {
         "primary",
         "danger"
       ],
-      editorTitle: "",
       selectedUser: {},
       users: {
         data: [],
         count: 0
       },
+      deleteDialog: {
+        visible: false,
+        form: {
+          checkUserId: ""
+        },
+        rules: {
+          checkUserId: [
+            {required: true, message: "请输入用户ID", trigger: "blur"},
+            {validator: validateDelete, trigger: "blur"}
+          ]
+        }
+      },
+      editorDialog: {
+        visible: false,
+        title: "",
+        create: false
+      },
       currentPage: 1,
-      pageSize: 15,
-      deleteForm: {
-        checkUserId: ""
-      },
-      deleteRules: {
-        checkUserId: [
-          {required: true, message: "请输入用户ID", trigger: "blur"},
-          {validator: validateDelete, trigger: "blur"}
-        ]
-      },
-      editorDialogVisible: false,
-      deleteDialogVisible: false,
-      saveType: "",
+      pageSize: 15
     }
   },
   methods: {
@@ -170,95 +174,85 @@ export default {
         this.currentPage = parseInt(page)
       }
     },
-    getUsers(refresh) {
+    refresh() {
+      this.getUsers(true)
+    },
+    getUsers(refresh = false) {
       history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      this.$axios({
-        url: apiPath.userManage,
-        method: "get",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        },
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize,
-        }
-      }).then((res) => {
-        this.users = res.status === 200 ? res.data : {data: [], count: 0}
-        if (refresh === true) {
-          Notice.message.success(this, "用户列表已刷新")
-        }
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "获取数据失败",
-            message: `${res.status} ${res.statusText}`
+      UserApi.getAll(this.currentPage, this.pageSize, userInfo())
+          .then((data) => {
+            this.users = data
+            refresh === true && Notice.message.success(this, "用户列表已刷新")
           })
-        }
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    onAddClick() {
-      this.selectedUser = {}
-      this.saveType = "post"
-      this.editorTitle = "创建用户"
-      this.editorDialogVisible = true
-    },
-    onEditClick(row) {
-      this.selectedUser = copyObject(row)
-      this.saveType = "put"
-      this.editorTitle = `编辑用户 ${row.userId}`
-      this.editorDialogVisible = true
-    },
-    onDeleteClick(row) {
-      this.deleteForm.checkUserId = ""
-      this.selectedUser = copyObject(row)
-      this.deleteDialogVisible = true
-    },
-    onDelete() {
-      this.$refs["deleteForm"].validate((valid) => {
-        if (valid) {
-          if (this.selectedUser.userId === userInfo().userId) {
-            Notice.notify.warning(this, {
-              title: "无法删除",
-              message: "你当前正在使用该用户"
-            })
-          }
-          this.$axios({
-            url: `${apiPath.userManage}/${this.selectedUser.userId}`,
-            method: "delete",
-            headers: {
-              "token": userInfo().token,
-              "userId": userInfo().userId
-            }
-          }).then((res) => {
-            this.getUsers()
-            this.deleteDialogVisible = false
-            Notice.notify.info(this, {
-              title: `用户 ${this.selectedUser.userId} 已删除`,
-              message: `${res.status} ${res.statusText}`
-            })
-          }).catch((error) => {
-            let res = error.response
-            if (res.status === 401) {
+          .catch((error) => {
+            if (error.code === 401) {
               toLoginPage()
             } else {
-              const msg = res.status === 409 ? "此用户存在做题记录，无法删除"
-                  : res.data.msg === undefined ? res.statusText : res.data.msg
-              Notice.notify.warning(this, {
-                title: `无法删除用户 ${this.selectedUser.userId}`,
-                message: `${res.status} ${msg}`
+              Notice.notify.error(this, {
+                title: "获取数据失败",
+                message: `${error.code} ${error.msg}`
               })
             }
           })
-        } else {
+          .finally(() => {
+            this.loading = false
+          })
+    },
+    addClick() {
+      this.selectedUser = {}
+      this.editorDialog = {
+        title: "创建新用户",
+        visible: true,
+        create: true
+      }
+    },
+    editClick(row) {
+      this.selectedUser = copyObject(row)
+      this.editorDialog = {
+        title: `${row.userId} - ${row.name}`,
+        visible: true,
+        create: false
+      }
+    },
+    deleteClick(row) {
+      this.deleteDialog.form.checkUserId = ""
+      this.selectedUser = copyObject(row)
+      this.deleteDialog.visible = true
+    },
+    confirmDelete() {
+      this.$refs["deleteForm"].validate((valid) => {
+        if (!valid) {
           return false
         }
+        if (this.selectedUser.userId === userInfo().userId) {
+          Notice.notify.warning(this, {
+            title: "无法删除",
+            message: "你当前正在使用该用户"
+          })
+        }
+        UserApi.delete(this.selectedUser.userId, userInfo())
+            .then((res) => {
+              this.deleteDialogVisible = false
+              Notice.notify.info(this, {
+                title: `用户 ${this.selectedUser.userId} 已删除`,
+                message: `${res.status} ${res.statusText}`
+              })
+            })
+            .catch((error) => {
+              if (error.code === 401) {
+                toLoginPage()
+              } else {
+                const msg = error.code === 409 ? "此用户存在做题记录，无法删除" : error.msg
+                Notice.notify.warning(this, {
+                  title: `无法删除用户 ${this.selectedUser.userId}`,
+                  message: `${error.code} ${msg}`
+                })
+              }
+            })
+            .finally(() => {
+              this.getUsers()
+            })
       })
     }
   }

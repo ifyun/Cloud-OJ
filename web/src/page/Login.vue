@@ -26,6 +26,19 @@
         <component class="login-tab" :is="currentView"/>
         <el-divider/>
         <BottomArea/>
+        <div class="recommend">
+          <span style="margin-right: 5px">推荐使用</span>
+          <el-link href="https://www.microsoft.com/zh-cn/edge">
+            <Icon class="icon" name="brands/edge"/>
+            Edge
+          </el-link>
+          、
+          <el-link href="https://www.google.cn/chrome/">
+            <Icon class="icon" name="brands/chrome"/>
+            Chrome
+          </el-link>
+          <span style="margin-left: 5px">访问本站</span>
+        </div>
       </div>
     </div>
   </div>
@@ -35,13 +48,17 @@
 import LoginTab from "@/components/auth/LoginTab"
 import SignupTab from "@/components/auth/SignupTab"
 import BottomArea from "@/components/common/BottomArea"
+import Icon from "vue-awesome/components/Icon"
+import "vue-awesome/icons/brands/chrome"
+import "vue-awesome/icons/brands/edge"
 
 export default {
   name: "Login",
   components: {
     LoginTab,
     SignupTab,
-    BottomArea
+    BottomArea,
+    Icon
   },
   data() {
     return {
@@ -92,7 +109,7 @@ export default {
 
 #login-content {
   margin: 0 auto;
-  width: 350px;
+  width: 70%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -100,15 +117,20 @@ export default {
   justify-content: center;
 }
 
+.login-tab {
+  margin: 25px 0 25px;
+  width: 100%;
+}
+
 .title {
-  width: 350px;
+  width: 100%;
   margin-top: 25px;
   display: flex;
   align-items: flex-end;
 }
 
 .logo-div {
-  width: 350px;
+  width: 100%;
 }
 
 .logo {
@@ -126,7 +148,9 @@ h2 {
   margin: 0 10px 0 0;
 }
 
-.login-tab {
-  margin: 25px 0 25px;
+.recommend {
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
 }
 </style>

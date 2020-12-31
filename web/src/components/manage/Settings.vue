@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import {Notice, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {Notice, userInfo} from "@/util"
+import {SettingsApi} from "@/service"
 
 export default {
   name: "Settings",
@@ -83,62 +83,44 @@ export default {
   },
   methods: {
     getQueueInfo(refresh) {
-      this.$axios.get(apiPath.queueInfo, {
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        }
-      }).then((res) => {
-        this.queueInfo = res.data
-        if (refresh === true) {
-          Notice.message.success(this, "队列信息已刷新")
-        }
-      }).catch((error) => {
-        let res = error.response
-        Notice.notify.error(this, {
-          title: "获取队列信息失败",
-          message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
-        })
-      })
+      SettingsApi.getQueueInfo(userInfo())
+          .then((data) => {
+            this.queueInfo = data
+            refresh === true && Notice.message.success(this, "队列信息已刷新")
+          })
+          .catch((error) => {
+            Notice.notify.error(this, {
+              title: "获取队列信息失败",
+              message: `${error.code} ${error.msg}`
+            })
+          })
     },
     getSettings() {
-      this.$axios.get(apiPath.settings, {
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        }
-      }).then((res) => {
-        this.settings = res.data
-      }).catch((error) => {
-        let res = error.response
-        Notice.notify.error(this, {
-          title: "获取系统设置失败",
-          message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
-        })
-      })
+      SettingsApi.get(userInfo())
+          .then((data) => {
+            this.settings = data
+          })
+          .catch((error) => {
+            Notice.notify.error(this, {
+              title: "获取系统设置失败",
+              message: `${error.code} ${error.msg}`
+            })
+          })
     },
     saveSettings() {
-      this.$axios({
-        url: apiPath.settings,
-        method: "put",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId,
-          "Content-Type": "application/json"
-        },
-        data: JSON.stringify(this.settings)
-      }).then((res) => {
-        Notice.notify.success(this, {
-          title: "已保存",
-          message: `${res.status} ${res.statusText}`
-        })
-      }).catch((error) => {
-        let res = error.response
-        Notice.notify.error(this, {
-          title: "保存系统设置失败",
-          message: `${res.status} ${res.data.msg === undefined ? res.statusText : res.data.msg}`
-        })
-      })
+      SettingsApi.update(this.settings, userInfo())
+          .then((res) => {
+            Notice.notify.success(this, {
+              title: "已保存",
+              message: `${res.status} ${res.statusText}`
+            })
+          })
+          .catch((error) => {
+            Notice.notify.error(this, {
+              title: "保存系统设置失败",
+              message: `${error.code} ${error.msg}`
+            })
+          })
     }
   }
 }

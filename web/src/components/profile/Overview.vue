@@ -11,7 +11,7 @@
           <div class="result-bar" v-for="(key, index) in resultKeys" :key="index">
             <el-row>
               <el-col :span="4">
-                <b>{{ key }}</b>
+                <b :style="{color: getColor(key)}">{{ key }}</b>
               </el-col>
               <el-col :span="20">
                 <el-progress :stroke-width="18" :text-inside="true" :color="getColor(key)"
@@ -24,7 +24,7 @@
       </el-col>
     </el-row>
     <el-divider></el-divider>
-    <ECharts theme="green" :options="activitiesOption" style="width: 100%;height: 250px"/>
+    <ECharts class="activities" theme="green" :options="activitiesOption"/>
   </div>
 </template>
 
@@ -32,9 +32,10 @@
 import ECharts from "vue-echarts"
 import "echarts/lib/chart/pie"
 import "echarts/theme/macarons"
-import green from "@/theme/echarts-theme";
-import {Notice, userInfo} from "@/script/util"
-import {apiPath, languages} from "@/script/env"
+import green from "@/assets/theme/echarts-theme"
+import {userInfo} from "@/util"
+import {languages} from "@/util/data"
+import {UserApi} from "@/service"
 
 const year = new Date().getFullYear()
 
@@ -101,7 +102,7 @@ export default {
       activitiesOption: {
         title: {
           top: 0,
-          text: "年度做题情况",
+          text: "年度做题记录",
           textStyle: {
             color: "#303133"
           }
@@ -147,23 +148,15 @@ export default {
   },
   methods: {
     getOverview() {
-      this.$axios({
-        url: apiPath.overview,
-        params: {
-          userId: this.userId == null ? userInfo().userId : this.userId,
-          year: year
-        }
-      }).then((res) => {
-        this.setChartsData(res.data)
-      }).catch((error) => {
-        let res = error.response
-        Notice.notify.error(this, {
-          title: "获取数据失败",
-          message: `${res.status} ${res.statusText}`
-        })
-      })
+      UserApi.getStatistics(this.userId == null ? userInfo().userId : this.userId, year)
+          .then((data) => {
+            this.setCharts(data)
+          })
+          .catch((error) => {
+            this.$emit("error", error)
+          })
     },
-    setChartsData(overview) {
+    setCharts(overview) {
       this.resultStatistics = overview["statistics"]
       let preference = overview["preference"]
       let activities = overview["activities"]
@@ -221,5 +214,10 @@ export default {
 
 .result-bar {
   margin-top: 20px;
+}
+
+.activities {
+  width: 100%;
+  height: 250px;
 }
 </style>

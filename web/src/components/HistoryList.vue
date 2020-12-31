@@ -1,6 +1,6 @@
 <template>
-  <el-container class="container">
-    <el-page-header style="align-self: flex-start; margin-top: 5px; margin-bottom: 25px" content="提交记录" @back="back">
+  <div class="content">
+    <el-page-header style="align-self: flex-start; margin-top: 5px; margin-bottom: 20px" content="提交记录" @back="back">
     </el-page-header>
     <el-card style="width: 100%">
       <el-table :data="histories.data" stripe v-loading="loading">
@@ -13,9 +13,9 @@
         </el-table-column>
         <el-table-column label="结果" align="center">
           <template slot-scope="scope">
-            <el-tag size="small" effect="plain" :type="getResultTag(scope.row).type">
-              <i :class="getResultTag(scope.row).icon">
-                {{ getResultTag(scope.row).text }}
+            <el-tag size="small" effect="plain" :type="resultTag(scope.row).type">
+              <i :class="resultTag(scope.row).icon">
+                {{ resultTag(scope.row).text }}
               </i>
             </el-tag>
           </template>
@@ -63,17 +63,18 @@
                      @size-change="getHistories" @current-change="getHistories">
       </el-pagination>
     </el-card>
-  </el-container>
+  </div>
 </template>
 
 <script>
-import {clearCachedCode, Notice, searchParams, toLoginPage, userInfo} from "@/script/util"
-import {apiPath, resultTags, stateTags} from "@/script/env"
+import {Notice, prettyMemory, searchParams, toLoginPage, userInfo} from "@/util"
+import {resultTags, stateTags} from "@/util/data"
+import {UserApi} from "@/service"
 
 export default {
   name: "HistoryList",
   beforeMount() {
-    clearCachedCode()
+    sessionStorage.removeItem("code")
     this.loadPage()
     this.getHistories()
   },
@@ -85,7 +86,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 15,
       languages: {
         0: {name: "C", icon: "./icons/lang/c.svg"},
         1: {name: "C++", icon: "./icons/lang/cpp.svg"},
@@ -97,7 +98,8 @@ export default {
         7: {name: "Kotlin", icon: "./icons/lang/kotlin.svg"}
       },
       codeDialogVisible: false,
-      code: ""
+      code: "",
+      prettyMemory: prettyMemory
     }
   },
   methods: {
@@ -113,32 +115,23 @@ export default {
     getHistories() {
       history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      this.$axios({
-        url: apiPath.history,
-        method: "get",
-        headers: {
-          token: userInfo().token,
-          userId: userInfo().userId
-        },
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize
-        }
-      }).then((res) => {
-        this.histories = res.status === 200 ? res.data : {data: [], count: 0}
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "获取提交记录失败",
-            message: `${res.status} ${res.statusText}`
+      UserApi.getCommitHistory(this.currentPage, this.pageSize, userInfo())
+          .then((data) => {
+            this.histories = data
           })
-        }
-      }).finally(() => {
-        this.loading = false
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: "获取提交记录失败",
+                message: `${error.code} ${error.msg}`
+              })
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
     },
     titleClick(solution) {
       window.sessionStorage.setItem("code", JSON.stringify({
@@ -147,13 +140,7 @@ export default {
       }))
       window.location.href = `/commit?problemId=${solution["problemId"]}`
     },
-    prettyMemory(mem) {
-      if (mem <= 1024)
-        return `${mem} KB`
-      else
-        return `${(mem / 1024).toFixed(2)} MB`
-    },
-    getResultTag(row) {
+    resultTag(row) {
       if (row.state === 0) {
         return resultTags[row.result]
       } else {
@@ -165,10 +152,8 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 0 20px;
-  flex-direction: column;
-  align-items: center;
+.content {
+  width: 100%;
 }
 
 .language-icon {

@@ -21,7 +21,7 @@ public interface CRUDController {
     default ResponseEntity<?> buildGETResponse(Object object) {
         return object != null ?
                 ResponseEntity.ok(object) :
-                ResponseEntity.noContent().build();
+                ResponseEntity.notFound().build();
     }
 
     /**

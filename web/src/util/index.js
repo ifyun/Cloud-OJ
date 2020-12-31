@@ -33,12 +33,15 @@ function saveToken(value) {
     localStorage.setItem(TOKEN, value)
 }
 
-function clearCachedCode() {
-    sessionStorage.removeItem("code")
-}
-
 function copyObject(src) {
     return JSON.parse(JSON.stringify(src))
+}
+
+function prettyMemory(mem) {
+    if (mem <= 1024)
+        return `${mem} KB`
+    else
+        return `${(mem / 1024).toFixed(2)} MB`
 }
 
 function callNotify(ctx, data, type) {
@@ -53,7 +56,7 @@ function callNotify(ctx, data, type) {
 function callMessage(ctx, msg, type) {
     ctx.$message[type]({
         offset: 75,
-        duration: 1500,
+        duration: 2000,
         message: msg,
     })
 }
@@ -96,7 +99,7 @@ export {
     toLoginPage,
     saveToken,
     clearToken,
-    clearCachedCode,
     copyObject,
+    prettyMemory,
     Notice
 }

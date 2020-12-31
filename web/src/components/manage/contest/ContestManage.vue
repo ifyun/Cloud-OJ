@@ -3,7 +3,7 @@
     <el-form :inline="true">
       <el-form-item>
         <el-button size="medium" type="primary" icon="el-icon-circle-plus"
-                   @click="onAddContestClick">
+                   @click="addContestClick">
           创建新竞赛/作业
         </el-button>
       </el-form-item>
@@ -39,78 +39,71 @@
         <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit"
-                       @click="onEditClick(scope.$index)">
+                       @click="editClick(scope.$index)">
             </el-button>
-            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblems(scope.$index)">
+            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblemsClick(scope.$index)">
               管理题目
             </el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete"
-                       @click="onDeleteClick(scope.$index)">
+                       @click="deleteClick(scope.$index)">
             </el-button>
           </el-button-group>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 10px"
-                   background
-                   layout="total, sizes, prev, pager, next, jumper"
-                   :page-sizes="[15, 25, 35]"
-                   :page-size.sync="pageSize"
-                   :total="contests.count"
+    <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+                   :page-size="pageSize" :total="contests.count"
                    :current-page.sync="currentPage"
-                   @size-change="getContests"
-                   @current-change="getContests">
+                   @size-change="getContests" @current-change="getContests">
     </el-pagination>
     <!-- Edit Contest Dialog -->
-    <el-dialog :title="contestDialogTitle" width="650px"
-               :visible.sync="editorDialogVisible">
+    <el-dialog :title="editorDialog.title" width="650px"
+               :visible.sync="editorDialog.visible">
       <ContestEditor :contest="selectedContest"
-                     :save-type="saveType"
-                     :dialog-visible.sync="editorDialogVisible"
+                     :create="editorDialog.create"
+                     :dialog-visible.sync="editorDialog.visible"
                      @refresh="getContests"/>
     </el-dialog>
     <!-- Delete Confirm Dialog -->
-    <el-dialog title="提示" width="650px"
-               :visible.sync="deleteDialogVisible">
+    <el-dialog title="删除提示" width="650px"
+               :visible.sync="deleteDialog.visible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除：${this.selectedContest.contestName}`"
                 description="相关提交记录会消失（该竞赛/作业包含的题目不会被删除）"
                 :closable="false">
       </el-alert>
-      <el-form :model="deleteForm" ref="deleteForm"
-               :rules="deleteRules"
+      <el-form :model="deleteDialog.form" ref="deleteForm"
+               :rules="deleteDialog.rules"
                @submit.native.prevent>
         <el-form-item label="输入名称确认删除" prop="checkName">
-          <el-input v-model="deleteForm.checkName"
+          <el-input v-model="deleteDialog.form.checkName"
                     :placeholder="selectedContest.contestName">
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" icon="el-icon-delete"
-                     @click="onDelete('deleteForm')">删除
-          </el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="confirmDelete">删除</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
     <!-- Problems Manage Dialog -->
     <el-dialog :title="selectedContest.contestName" width="1000px"
-               :visible.sync="problemsDialogVisible">
-      <CompetitionProblemsManage :contest-id="selectedContest.contestId"/>
+               :visible.sync="problemsDialog.visible">
+      <ContestProblemsManage :contest-id="selectedContest.contestId"/>
     </el-dialog>
   </el-card>
 </template>
 
 <script>
-import {copyObject, userInfo, toLoginPage, Notice, searchParams} from "@/script/util"
-import {apiPath} from "@/script/env"
-import CompetitionProblemsManage from "@/components/manage/contest/ContestProblems"
+import {copyObject, userInfo, toLoginPage, Notice, searchParams} from "@/util"
+import ContestProblemsManage from "@/components/manage/contest/ContestProblems"
 import ContestEditor from "@/components/manage/contest/ContestEditor"
+import {ContestApi} from "@/service"
 
 export default {
   name: "CompetitionManage",
   components: {
     ContestEditor,
-    CompetitionProblemsManage
+    ContestProblemsManage
   },
   beforeMount() {
     document.title = "竞赛/作业管理 - Cloud OJ"
@@ -137,21 +130,27 @@ export default {
         endAt: "",
         languages: ""
       },
-      contestDialogTitle: "",
-      saveType: "",
       pageSize: 15,
       currentPage: 1,
-      editorDialogVisible: false,
-      deleteDialogVisible: false,
-      problemsDialogVisible: false,
-      deleteForm: {
-        checkName: ""
+      editorDialog: {
+        title: "",
+        visible: false,
+        create: false
       },
-      deleteRules: {
-        checkName: [
-          {required: true, message: "请输入名称", trigger: "blur"},
-          {validator: validateDelete, trigger: "blur"}
-        ]
+      problemsDialog: {
+        visible: false
+      },
+      deleteDialog: {
+        visible: false,
+        form: {
+          checkName: ""
+        },
+        rules: {
+          checkName: [
+            {required: true, message: "请填写竞赛/作业名称", trigger: "blur"},
+            {validator: validateDelete, trigger: "blur"}
+          ]
+        }
       }
     }
   },
@@ -162,93 +161,85 @@ export default {
         this.currentPage = parseInt(page)
       }
     },
-    getContests(refresh) {
+    refresh() {
+      this.getContests(true)
+    },
+    getContests(refresh = false) {
       history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      this.$axios({
-        url: apiPath.contestManage,
-        method: "get",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        },
-        params: {
-          page: this.currentPage,
-          limit: this.pageSize
-        }
-      }).then((res) => {
-        this.contests = res.status === 200 ? res.data : {data: [], count: 0}
-        if (refresh === true) {
-          Notice.message.success(this, "竞赛/作业列表已刷新")
-        }
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "获取数据失败",
-            message: `${res.status} ${res.statusText}`
+      ContestApi.getAll(this.currentPage, this.pageSize, userInfo())
+          .then((data) => {
+            this.contests = data
+            refresh === true && Notice.message.success(this, "竞赛/作业列表已刷新")
           })
-        }
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    onEditClick(index) {
-      let i = this.pageSize * (this.currentPage - 1) + index
-      this.selectedContest = copyObject(this.contests.data[i])
-      this.saveType = "put"
-      this.contestDialogTitle = "编辑"
-      this.editorDialogVisible = true
-    },
-    manageProblems(index) {
-      let i = this.pageSize * (this.currentPage - 1) + index
-      this.selectedContest = copyObject(this.contests.data[i])
-      this.problemsDialogVisible = true
-    },
-    onAddContestClick() {
-      this.saveType = "post"
-      this.contestDialogTitle = "创建竞赛/作业"
-      this.selectedContest = {}
-      this.editorDialogVisible = true
-    },
-    onDeleteClick(index) {
-      this.deleteDialogVisible = true
-      let i = this.pageSize * (this.currentPage - 1) + index
-      this.selectedContest = copyObject(this.contests.data[i])
-    },
-    onDelete(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.$axios({
-            url: `${apiPath.contestManage}/${this.selectedContest.contestId}`,
-            method: "delete",
-            headers: {
-              "token": userInfo().token,
-              "userId": userInfo().userId
-            },
-          }).then((res) => {
-            this.deleteDialogVisible = false
-            this.getContests()
-            Notice.notify.info(this, {
-              title: `【${this.selectedContest.contestName}】已删除`,
-              message: `${res.status} ${res.statusText}`
-            })
-          }).catch((error) => {
-            let res = error.response
-            if (res.status === 401) {
+          .catch((error) => {
+            if (error.code === 401) {
               toLoginPage()
             } else {
               Notice.notify.error(this, {
-                title: `【${this.selectedContest.contestName}】删除失败`,
-                message: `${res.status} ${res.statusText}`
+                title: "获取竞赛/作业失败",
+                message: `${error.code} ${error.msg}`
               })
             }
           })
+          .finally(() => {
+            this.loading = false
+          })
+    },
+    editClick(index) {
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
+      this.editorDialog = {
+        create: false,
+        title: this.selectedContest.contestName,
+        visible: true
+      }
+    },
+    manageProblemsClick(index) {
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
+      this.problemsDialog.visible = true
+    },
+    addContestClick() {
+      this.selectedContest = {}
+      this.editorDialog = {
+        title: "创建竞赛/作业",
+        create: true,
+        visible: true
+      }
+    },
+    deleteClick(index) {
+      this.deleteDialog.visible = true
+      let i = this.pageSize * (this.currentPage - 1) + index
+      this.selectedContest = copyObject(this.contests.data[i])
+    },
+    confirmDelete() {
+      this.$refs["deleteForm"].validate((valid) => {
+        if (!valid) {
+          return false
         }
+        this.deleteDialog.form.checkName = ""
+        ContestApi.delete(this.selectedContest.contestId, userInfo())
+            .then(() => {
+              this.deleteDialog.visible = false
+              Notice.notify.warning(this, {
+                title: `${this.selectedContest.contestName} 已删除`
+              })
+            })
+            .catch((error) => {
+              if (error.code === 401) {
+                toLoginPage()
+              } else {
+                Notice.notify.error(this, {
+                  title: `${this.selectedContest.contestName} 删除失败`,
+                  message: `${error.code} ${error.msg}`
+                })
+              }
+            })
+            .finally(() => {
+              this.getContests()
+            })
       })
-      this.deleteForm.checkName = ""
     }
   }
 }

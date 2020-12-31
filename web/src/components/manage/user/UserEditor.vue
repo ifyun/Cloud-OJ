@@ -4,7 +4,7 @@
              label-width="120px">
       <el-form-item label="ID" prop="userId">
         <el-input prefix-icon="el-icon-postcard"
-                  :disabled="saveType === 'put'"
+                  :disabled="!create"
                   v-model="user.userId">
         </el-input>
       </el-form-item>
@@ -13,7 +13,7 @@
                   v-model="user.name">
         </el-input>
       </el-form-item>
-      <el-form-item v-if="saveType === 'put'"
+      <el-form-item v-if="!create"
                     label="角色/权限">
         <el-select v-model="user['roleId']">
           <el-option v-for="role in roles"
@@ -29,7 +29,7 @@
                   v-model="user.email">
         </el-input>
       </el-form-item>
-      <el-form-item v-if="saveType === 'post'" label="密码" prop="password">
+      <el-form-item v-if="create" label="密码" prop="password">
         <el-input type="password" prefix-icon="el-icon-lock"
                   auto-complete="new-password"
                   v-model="user.password"
@@ -50,9 +50,9 @@
       </el-form-item>
       <el-form-item>
         <el-button type="success"
-                   :icon="saveType === 'post' ? 'el-icon-plus' : 'el-icon-check'"
-                   @click="onSave(saveType)">
-          <span>{{ saveType === 'post' ? '创建' : '保存' }}</span>
+                   :icon="create ? 'el-icon-plus' : 'el-icon-check'"
+                   @click="onSave">
+          <span>{{ create ? "创建" : "保存" }}</span>
         </el-button>
       </el-form-item>
     </el-form>
@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {Notice, toLoginPage, userInfo} from "@/util"
+import {UserApi} from "@/service"
 
 const bcrypt = require("bcryptjs")
 
@@ -69,8 +69,15 @@ export default {
   name: "UserEditor",
   props: {
     user: Object,
-    saveType: String,
+    create: Boolean,
     dialogVisible: Boolean
+  },
+  watch: {
+    user: {
+      handler() {
+        this.$refs["userForm"].clearValidate()
+      }
+    }
   },
   data() {
     return {
@@ -103,43 +110,36 @@ export default {
     }
   },
   methods: {
-    onSave(type) {
+    onSave() {
       this.$refs["userForm"].validate((valid) => {
-        if (valid) {
-          if (type === "put" && this.user.newPassword !== undefined) {
-            this.user.password = bcrypt.hashSync(this.$md5(this.user.newPassword), 10)
-          }
-          let url = type === "post" ? apiPath.user : apiPath.userManage
-          this.$axios({
-            url: url,
-            method: type,
-            headers: {
-              "token": userInfo().token,
-              "userId": userInfo().userId,
-              "Content-Type": "application/json"
-            },
-            data: JSON.stringify(this.user)
-          }).then((res) => {
-            this.$emit("refresh")
-            this.$emit("update:dialogVisible", false)
-            Notice.notify.success(this, {
-              title: type === "post" ? `用户【${this.user.userId}】已创建` : "已保存",
-              message: `${res.status} ${res.statusText}`
-            })
-          }).catch((error) => {
-            let res = error.response
-            if (res.status === 401) {
-              toLoginPage()
-            } else {
-              Notice.notify.error(this, {
-                title: type === "post" ? `用户【${this.user.userId}】创建失败` : "保存失败",
-                message: `${res.status} ${res.statusText}`
-              })
-            }
-          })
-        } else {
+        if (!valid) {
           return false
         }
+
+        if (this.create) {
+          this.user.password = bcrypt.hashSync(this.$md5(this.user.password), 10)
+        } else if (this.user.newPassword !== undefined) {
+          this.user.password = bcrypt.hashSync(this.$md5(this.user.newPassword), 10)
+        }
+
+        UserApi.save(this.user, userInfo(), this.create)
+            .then(() => {
+              this.$emit("refresh")
+              this.$emit("update:dialogVisible", false)
+              Notice.notify.success(this, {
+                title: this.create ? "已创建" : "已保存",
+              })
+            })
+            .catch((error) => {
+              if (error.code === 401) {
+                toLoginPage()
+              } else {
+                Notice.notify.error(this, {
+                  title: this.create ? "创建失败" : "保存失败",
+                  message: `${error.code} ${error.msg}`
+                })
+              }
+            })
       })
     }
   }

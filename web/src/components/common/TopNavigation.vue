@@ -11,7 +11,7 @@
         <el-col :span="16" style="display: flex; justify-content: center">
           <!-- Nav Menu -->
           <el-menu class="top-nav" mode="horizontal" :default-active="active" @select="onSelect"
-                   background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#409EFF">
+                   background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#FFFFFF">
             <el-menu-item index="1">
               <i class="el-icon-s-order"></i>
               <span>题库</span>
@@ -72,8 +72,8 @@
 </template>
 
 <script>
-import {toLoginPage, userInfo} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {toLoginPage, userInfo} from "@/util"
+import {AuthApi} from "@/service"
 
 export default {
   name: "TopNavigation",
@@ -114,18 +114,13 @@ export default {
       }
     },
     logoff() {
-      this.$axios({
-        url: apiPath.logoff,
-        method: "delete",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        }
-      }).then(() => {
-        toLoginPage()
-      }).catch(() => {
-        toLoginPage()
-      })
+      AuthApi.logoff(this.userInfo)
+          .then(() => {
+            toLoginPage()
+          })
+          .catch(() => {
+            toLoginPage()
+          })
     }
   }
 }
@@ -134,6 +129,10 @@ export default {
 <style scoped>
 .top-nav {
   border: none !important;
+}
+
+.el-menu-item.is-active {
+  border-bottom-width: 3px !important;
 }
 
 .header-wrapper {

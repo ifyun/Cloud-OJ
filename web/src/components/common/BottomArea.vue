@@ -41,17 +41,4 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
-.framework-logo {
-  height: 20px;
-}
-
-.framework-link {
-  margin-left: 5px;
-  text-decoration: none;
-}
-
-.framework-link:hover {
-  text-decoration: underline;
-}
 </style>

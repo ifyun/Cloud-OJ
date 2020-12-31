@@ -32,9 +32,9 @@
           <el-card :style="{height: calcContentHeight()}">
             <el-form :inline="true" size="medium">
               <el-row>
-                <el-col :span="12">
+                <el-col :span="14">
                   <el-form-item label="语言">
-                    <el-select v-model="language" placeholder="请选择语言"
+                    <el-select v-model="language" placeholder="请选择语言" size="medium"
                                @change="languageChange">
                       <el-option v-for="lang in enabledLanguages"
                                  :key="lang.name"
@@ -46,13 +46,11 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="10">
                   <el-form-item label="主题" style="float: right">
-                    <el-select v-model="cmOptions.theme">
+                    <el-select style="width: 160px" v-model="cmOptions.theme" size="medium">
                       <el-option v-for="theme in codeStyle"
-                                 :key="theme.id"
-                                 :label="theme.name"
-                                 :value="theme.id">
+                                 :key="theme.id" :label="theme.name" :value="theme.id">
                       </el-option>
                     </el-select>
                   </el-form-item>
@@ -64,14 +62,14 @@
               </codemirror>
             </div>
             <el-row style="margin-top: 25px">
-              <el-col :span="14">
+              <el-col :span="13">
                 <el-button size="medium" type="success" round
                            :disabled="disableCommit" @click="commitCode">
                   <Icon name="play"/>
                   <span style="margin-left: 10px">提交运行</span>
                 </el-button>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="11">
                 <el-alert type="info" :closable="false" show-icon title="将文件拖入编辑框可导入代码"/>
               </el-col>
             </el-row>
@@ -103,8 +101,8 @@
 
 <script>
 import Error from "@/components/Error"
-import {toLoginPage, searchParams, userInfo, Notice} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {Notice, toLoginPage, searchParams, userInfo, prettyMemory} from "@/util"
+import {ContestApi, JudgeApi, ProblemApi} from "@/service"
 import {codemirror} from "vue-codemirror"
 import "codemirror/mode/clike/clike.js"
 import "codemirror/mode/python/python.js"
@@ -164,7 +162,6 @@ export default {
     window.onresize = () => {
       ctx.windowHeight = document.body.clientHeight
     }
-    this.getLanguages()
     this.getProblem()
     this.getCachedCode()
   },
@@ -178,7 +175,7 @@ export default {
       },
       error: {
         code: null,
-        text: ""
+        msg: ""
       },
       problemId: searchParams().problemId,
       contestId: searchParams().contestId,
@@ -250,72 +247,39 @@ export default {
         this.$forceUpdate()
       }
     },
-    getLanguages() {
-      // 如果是竞赛/作业的题目，先获取允许的语言
+    calcLanguages() {
       if (this.contestId !== undefined) {
-        this.$axios({
-          url: `${apiPath.contest}/lang/${this.contestId}`,
-          method: "get"
-        }).then((res) => {
-          let languages = res.data.languages
-          // 计算可用的语言
-          languageOptions.forEach((value, index) => {
-            let t = 1 << index
-            if ((languages & t) === t) {
-              this.enabledLanguages.push(value)
-            }
-          })
-          this.language = this.enabledLanguages[0].id
-        }).catch((error) => {
-          const res = error.response
-          Notice.notify.error(this, {
-            title: "无法获取语言",
-            message: `${res.status} ${res.statusText}`
-          })
+        let languages = this.problem.languages
+        // 计算可用的语言
+        languageOptions.forEach((value, index) => {
+          let t = 1 << index
+          if ((languages & t) === t) {
+            this.enabledLanguages.push(value)
+          }
         })
+        this.language = this.enabledLanguages[0].id
       } else {
         this.enabledLanguages = languageOptions
       }
     },
     getProblem() {
-      let url = apiPath.problem
-      let headers = {}, params = {}
-      if (userInfo() != null && userInfo()["roleId"] >= 2) {
-        url = `${apiPath.problem}/pro`
-        headers.userId = userInfo().userId
-        headers.token = userInfo().token
+      let promise
+
+      if (this.contestId === undefined && userInfo() != null && userInfo()["roleId"] >= 2) {
+        promise = ProblemApi.get(this.problemId, userInfo())
+      } else {
+        promise = ContestApi.getProblem(this.contestId, this.problemId, userInfo())
       }
-      if (this.contestId !== undefined) {
-        url = `${apiPath.contest}/problem/${this.contestId}`
-        headers.userId = userInfo().userId
-        headers.token = userInfo().token
-      }
-      this.$axios({
-        url: `${url}/${this.problemId}`,
-        method: "get",
-        headers: headers,
-        params: params
-      }).then((res) => {
-        if (res.status === 200) {
-          this.problem = res.data
-          document.title = `${this.problem.title} - Cloud OJ`
-        } else if (res.status === 204) {
-          this.error = {
-            code: 404,
-            text: "题目不存在"
-          }
-        }
+
+      promise.then((data) => {
+        document.title = `${data.title} - Cloud OJ`
+        this.problem = data
+        this.calcLanguages()
       }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
+        if (error.code === 401) {
           toLoginPage()
         } else {
-          let data = res.data;
-          let errorText = data === undefined ? res.statusText : data.msg
-          this.error = {
-            code: res.status,
-            text: errorText
-          }
+          this.error = error
         }
       })
     },
@@ -339,32 +303,25 @@ export default {
         language: this.language,
         sourceCode: this.code
       }
-      if (this.contestId !== undefined)
+      if (this.contestId !== undefined) {
         data.contestId = this.contestId
-      this.$axios({
-        url: apiPath.commit,
-        method: "post",
-        headers: {
-          "userId": userInfo().userId,
-          "token": userInfo().token,
-          "Content-Type": "application/json"
-        },
-        data: JSON.stringify(data)
-      }).then((res) => {
-        this.resultDialog.visible = true
-        this.solutionId = res.data
-        this.getResult(res.data, 1)
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "提交失败",
-            message: `${res.status} ${res.data === undefined ? res.statusText : res.data.msg}`
+      }
+      JudgeApi.commit(data, userInfo())
+          .then((data) => {
+            this.resultDialog.visible = true
+            this.solutionId = data
+            this.getResult(data, 1)
           })
-        }
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: "提交失败",
+                message: `${error.code} ${error.msg}`
+              })
+            }
+          })
     },
     /**
      * 获取结果
@@ -374,62 +331,52 @@ export default {
      */
     getResult(solutionId, count) {
       this.resultDialog.disableRefresh = true
-      this.$axios({
-        url: apiPath.commit,
-        method: "get",
-        headers: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
-        },
-        params: {
-          solutionId: this.solutionId,
-          userId: userInfo().userId
-        }
-      }).then((res) => {
-        if (res.status === 204 && count <= 15) {
-          setTimeout(() => {
-            this.getResult(solutionId, count + 1)
-          }, 1000)
-        } else if (count > 15) {
-          this.result = {
-            type: "info",
-            title: "未获取到结果",
-            desc: "可能提交人数过多，可手动刷新"
-          }
-          this.resultDialog.disableRefresh = false
-        } else {
-          switch (res.data["state"]) {
-            case ACCEPT:
-              this.resultDialog.step = 0
+      JudgeApi.getResult(solutionId, userInfo())
+          .then((data) => {
+            if (data == null && count <= 15) {
               setTimeout(() => {
                 this.getResult(solutionId, count + 1)
               }, 1000)
-              break
-            case IN_QUEUE:
-              this.resultDialog.step = 1
-              setTimeout(() => {
-                this.getResult(solutionId, count + 1)
-              }, 1000)
-              break
-            case JUDGED:
-              this.resultDialog.step = 2
-              this.resultDialog.active = 1
-              this.getResultText(res.data)
-              this.resultDialog.disableRefresh = true
-          }
-        }
-      }).catch((error) => {
-        let res = error.response
-        if (res.status === 401) {
-          toLoginPage()
-        } else {
-          Notice.notify.error(this, {
-            title: "无法获取结果",
-            message: `${res.status} ${res.statusText}`
+            } else if (count > 15) {
+              this.result = {
+                type: "info",
+                title: "未获取到结果",
+                desc: "可能提交人数过多，可手动刷新"
+              }
+              this.resultDialog.disableRefresh = false
+            } else {
+              switch (data["state"]) {
+                case ACCEPT:
+                  this.resultDialog.step = 0
+                  setTimeout(() => {
+                    this.getResult(solutionId, count + 1)
+                  }, 1000)
+                  break
+                case IN_QUEUE:
+                  this.resultDialog.step = 1
+                  setTimeout(() => {
+                    this.getResult(solutionId, count + 1)
+                  }, 1000)
+                  break
+                case JUDGED:
+                  this.resultDialog.step = 2
+                  this.resultDialog.active = 1
+                  this.getResultText(data)
+                  this.resultDialog.disableRefresh = true
+              }
+            }
           })
-          this.resultDialog.disableRefresh = false
-        }
-      })
+          .catch((error) => {
+            if (error.code === 401) {
+              toLoginPage()
+            } else {
+              Notice.notify.error(this, {
+                title: "无法获取结果",
+                message: `${error.code} ${error.msg}`
+              })
+              this.resultDialog.disableRefresh = false
+            }
+          })
     },
     /**
      * 根据结果显示提示信息
@@ -440,42 +387,42 @@ export default {
           this.result = {
             type: 'success',
             title: "完全正确",
-            desc: "已通过全部测试点"
+            desc: `耗时: ${data.time}ms, 内存占用: ${prettyMemory(data.memory)}`
           }
           break
         case 1:
           this.result = {
             type: "warning",
             title: `时间超限(${data["passRate"] * 100})`,
-            desc: "时间复杂度有待优化"
+            desc: `耗时: ${data.time}ms, 内存占用: ${prettyMemory(data.memory)}`
           }
           break
         case 2:
           this.result = {
             type: "warning",
             title: `内存超限(${data["passRate"] * 100})`,
-            desc: "空间复杂度有待优化"
+            desc: `耗时: ${data.time}ms, 内存占用: ${prettyMemory(data.memory)}`
           }
           break
         case 3:
           this.result = {
             type: "warning",
             title: `部分通过(${data["passRate"] * 100})`,
-            desc: "可能漏掉了部分情况"
+            desc: "你可能漏掉了部分情况"
           }
           break
         case 4:
           this.result = {
             type: "error",
             title: "答案错误",
-            desc: "继续努力"
+            desc: `耗时: ${data.time}ms, 内存占用: ${prettyMemory(data.memory)}`
           }
           break
         case 5:
           this.result = {
             type: "info",
             title: "编译错误",
-            desc: "请仔细检查代码"
+            desc: "请在本地调试成功再提交"
           }
           break
         case 6:
@@ -489,7 +436,7 @@ export default {
           this.result = {
             type: "error",
             title: "判题异常",
-            desc: "判题服务器出现了异常或者你提交了恶意代码"
+            desc: "判题服务器异常或者你提交了恶意代码"
           }
       }
     }
@@ -502,6 +449,7 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   min-width: 1200px !important;
+  max-width: 1450px !important;
 }
 
 .steps {

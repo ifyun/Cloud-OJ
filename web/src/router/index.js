@@ -15,6 +15,7 @@ const Help = () => import("@/page/Help")
 
 const routes = [
     {path: "*", component: Page404},
+    {path: "/page_not_found", component: Page404},
     {path: "/login", component: Login},
     {path: "/", redirect: 'problems'},
     {path: "/problems", component: Problems},

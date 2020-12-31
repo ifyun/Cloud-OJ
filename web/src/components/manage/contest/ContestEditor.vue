@@ -28,7 +28,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-check"
-                   @click="onSave(saveType)">
+                   @click="save">
           保存
         </el-button>
       </el-form-item>
@@ -38,8 +38,8 @@
 
 <script>
 import moment from "moment"
-import {userInfo, toLoginPage, Notice} from "@/script/util"
-import {apiPath} from "@/script/env"
+import {userInfo, toLoginPage, Notice} from "@/util"
+import {ContestApi} from "@/service"
 
 const MAX_LANG_ID = 7
 
@@ -59,7 +59,7 @@ export default {
   props: {
     dialogVisible: Boolean,
     contest: Object,
-    saveType: String
+    create: Boolean
   },
   watch: {
     contest: {
@@ -70,13 +70,13 @@ export default {
     }
   },
   data() {
-    let validateEndTime = (rule, value, callback) => {
+    const validateEndTime = (rule, value, callback) => {
       if (new Date(value) <= new Date(this.contest.startAt)) {
         return callback(new Error("结束时间必须大于开始时间"))
       }
       callback()
     }
-    let validateLanguages = (rule, value, callback) => {
+    const validateLanguages = (rule, value, callback) => {
       if (this.enabledLanguages.length === 0) {
         return callback(new Error("请至少选择一种语言"))
       }
@@ -120,50 +120,41 @@ export default {
         }
       }
     },
-    onSave(type) {
+    save() {
       this.$refs["edit-contest"].validate((valid) => {
-        if (valid) {
-          let languages = 0
-          // 计算允许的语言
-          this.enabledLanguages.forEach((v) => {
-            languages = languages | 1 << v
-          })
-
-          let contest = this.contest
-          contest.languages = languages
-          contest.startAt = moment(contest.startAt).format("YYYY-MM-DD HH:mm:ss")
-          contest.endAt = moment(contest.endAt).format("YYYY-MM-DD HH:mm:ss")
-
-          this.$axios({
-            url: apiPath.contestManage,
-            method: type,
-            headers: {
-              "Content-Type": "application/json",
-              "token": userInfo().token,
-              "userId": userInfo().userId
-            },
-            data: JSON.stringify(contest)
-          }).then((res) => {
-            Notice.notify.success(this, {
-              title: `【${contest.contestName}】已保存`,
-              message: `${res.status} ${res.statusText}`
-            })
-            this.$emit("update:dialogVisible", false)
-            this.$emit("refresh")
-          }).catch((error) => {
-            let res = error.response
-            if (res.status === 401) {
-              toLoginPage()
-            } else {
-              Notice.notify.error(this, {
-                title: `【${contest.contestName}】保存失败`,
-                message: `${res.status} ${res.statusText}`
-              })
-            }
-          })
-        } else {
+        if (!valid) {
           return false
         }
+        let languages = 0
+        // 计算允许的语言
+        // langCode = langCode | 1 << langId
+        this.enabledLanguages.forEach((v) => {
+          languages = languages | 1 << v
+        })
+
+        let contest = this.contest
+        contest.languages = languages
+        contest.startAt = moment(contest.startAt).format("YYYY-MM-DD HH:mm:ss")
+        contest.endAt = moment(contest.endAt).format("YYYY-MM-DD HH:mm:ss")
+
+        ContestApi.save(contest, userInfo(), this.create)
+            .then(() => {
+              Notice.notify.success(this, {
+                title: "已保存"
+              })
+              this.$emit("update:dialogVisible", false)
+              this.$emit("refresh")
+            })
+            .catch((error) => {
+              if (error.code === 401) {
+                toLoginPage()
+              } else {
+                Notice.notify.error(this, {
+                  title: "保存失败",
+                  message: `${error.code} ${error.msg}`
+                })
+              }
+            })
       })
     }
   }
