@@ -3,7 +3,7 @@
     <TopNavigation active="5"/>
     <el-container class="container">
       <el-card>
-        <markdown-it-vue :content="helpDoc"/>
+        <markdown-it-vue :options="mdOptions" :content="helpDoc"/>
       </el-card>
       <BottomArea class="bottom"/>
     </el-container>
@@ -29,7 +29,12 @@ export default {
   },
   data() {
     return {
-      helpDoc: ""
+      helpDoc: "",
+      mdOptions: {
+        markdownIt: {
+          html: true
+        }
+      }
     }
   },
   methods: {

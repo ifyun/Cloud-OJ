@@ -1,19 +1,18 @@
 <template>
   <div class="content">
-    <el-page-header style="align-self: flex-start; margin-top: 5px; margin-bottom: 20px" content="提交记录" @back="back">
-    </el-page-header>
     <el-card style="width: 100%">
       <el-table :data="histories.data" stripe v-loading="loading">
         <el-table-column label="题目名称" width="300px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
-              [{{ scope.row.problemId }}]&nbsp;<b>{{ scope.row.title }}</b>
+              {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
         <el-table-column label="结果" align="center">
           <template slot-scope="scope">
-            <el-tag size="small" effect="plain" :type="resultTag(scope.row).type">
+            <el-tag class="result-tag" size="small" effect="plain"
+                    :type="resultTag(scope.row).type" @click="resultClick(scope.row)">
               <i :class="resultTag(scope.row).icon">
                 {{ resultTag(scope.row).text }}
               </i>
@@ -103,9 +102,6 @@ export default {
     }
   },
   methods: {
-    back() {
-      window.history.back()
-    },
     loadPage() {
       const page = searchParams()["page"]
       if (page != null) {
@@ -139,6 +135,16 @@ export default {
         code: solution["code"]
       }))
       window.location.href = `/commit?problemId=${solution["problemId"]}`
+    },
+    resultClick(row) {
+      const error = row["errorInfo"]
+      if (error !== "") {
+        const h = this.$createElement
+        this.$msgbox({
+          title: "错误信息",
+          message: h("pre", {class: "result-error"}, error)
+        })
+      }
     },
     resultTag(row) {
       if (row.state === 0) {

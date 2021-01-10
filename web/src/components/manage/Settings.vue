@@ -30,7 +30,7 @@
             </el-alert>
           </el-col>
           <el-col :span="8">
-            <el-switch class="switch" active-color="#67C23A"
+            <el-switch class="switch" active-color="#67C23A" :disabled="loading"
                        v-model="settings.showRankingAfterEnded">
             </el-switch>
           </el-col>
@@ -44,13 +44,13 @@
             </el-alert>
           </el-col>
           <el-col :span="8">
-            <el-switch class="switch" active-color="#67C23A"
+            <el-switch class="switch" active-color="#67C23A" :disabled="loading"
                        v-model="settings.showNotStartedContest">
             </el-switch>
           </el-col>
         </el-row>
         <el-button style="margin-top: 35px" type="primary" size="medium" icon="el-icon-check"
-                   @click="saveSettings">
+                   :disabled="loading" @click="saveSettings">
           保存设置
         </el-button>
       </el-card>
@@ -71,6 +71,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       queueInfo: {
         inCommitQueue: 0,
         inJudgeQueue: 0
@@ -105,6 +106,9 @@ export default {
               title: "获取系统设置失败",
               message: `${error.code} ${error.msg}`
             })
+          })
+          .finally(() => {
+            this.loading = false
           })
     },
     saveSettings() {

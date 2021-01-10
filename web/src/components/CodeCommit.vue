@@ -32,7 +32,7 @@
           <el-card :style="{height: calcContentHeight()}">
             <el-form :inline="true" size="medium">
               <el-row>
-                <el-col :span="14">
+                <el-col :span="12">
                   <el-form-item label="语言">
                     <el-select v-model="language" placeholder="请选择语言" size="medium"
                                @change="languageChange">
@@ -46,7 +46,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="10">
+                <el-col :span="12">
                   <el-form-item label="主题" style="float: right">
                     <el-select style="width: 160px" v-model="cmOptions.theme" size="medium">
                       <el-option v-for="theme in codeStyle"
@@ -61,18 +61,17 @@
               <codemirror v-model="code" :options="cmOptions">
               </codemirror>
             </div>
-            <el-row style="margin-top: 25px">
-              <el-col :span="13">
-                <el-button size="medium" type="success" round
-                           :disabled="disableCommit" @click="commitCode">
-                  <Icon name="play"/>
-                  <span style="margin-left: 10px">提交运行</span>
-                </el-button>
-              </el-col>
-              <el-col :span="11">
-                <el-alert type="info" :closable="false" show-icon title="将文件拖入编辑框可导入代码"/>
-              </el-col>
-            </el-row>
+            <el-button-group style="margin-top: 25px">
+              <el-button size="medium" type="success" round :disabled="disableCommit" @click="commitCode">
+                <Icon name="play" class="el-icon--left"/>
+                <span>提交运行</span>
+              </el-button>
+              <el-button size="medium" type="success" round :disabled="result.title === undefined"
+                         @click="resultDialog.visible = true">
+                <Icon name="box" class="el-icon--left"/>
+                <span>上次结果</span>
+              </el-button>
+            </el-button-group>
           </el-card>
         </el-col>
       </el-row>
@@ -86,11 +85,14 @@
         <el-step :icon="resultDialog.active == null ? 'el-icon-loading': null"
                  :title="resultDialog.steps[resultDialog.step]"/>
       </el-steps>
-      <el-alert v-if="result.title !== undefined" style="margin-top: 15px" effect="dark"
+      <el-alert v-if="result.title !== undefined" style="margin-top: 15px"
                 show-icon :closable="false" :type="result.type"
                 :title="result.title" :description="result.desc">
       </el-alert>
-      <el-button style="margin-top: 25px" icon="el-icon-refresh"
+      <div v-if="result.errorInfo !== undefined">
+        <pre class="result-error">{{ result.errorInfo }}</pre>
+      </div>
+      <el-button style="margin-top: 10px" icon="el-icon-refresh"
                  size="medium" round :disabled="resultDialog.disableRefresh"
                  @click="getResult(solutionId, 1)">
         <span>重试</span>
@@ -119,6 +121,7 @@ import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/play"
+import "vue-awesome/icons/box"
 
 const languageMode = [
   "text/x-csrc",
@@ -132,8 +135,8 @@ const languageMode = [
 ]
 
 const languageOptions = [
-  {id: 0, name: "C", version: "gcc"},
-  {id: 1, name: "C++", version: "g++"},
+  {id: 0, name: "C", version: "gcc(std=c11)"},
+  {id: 1, name: "C++", version: "g++(std=c++17)"},
   {id: 2, name: "Java", version: "1.8"},
   {id: 3, name: "Python", version: "3.5"},
   {id: 4, name: "Bash"},
@@ -155,6 +158,14 @@ export default {
   computed: {
     disableCommit: vm => {
       return vm.code.trim().length === 0
+    }
+  },
+  watch: {
+    code(val) {
+      window.sessionStorage.setItem("code", JSON.stringify({
+        language: this.language,
+        code: val
+      }))
     }
   },
   mounted() {
@@ -211,7 +222,7 @@ export default {
         step: 0,
         steps: [
           "已提交，等待写入...",
-          "在判题队列中，正在等待结果...",
+          "在队列中，等待判题...",
           "判题完成"
         ]
       }
@@ -362,6 +373,7 @@ export default {
                   this.resultDialog.step = 2
                   this.resultDialog.active = 1
                   this.getResultText(data)
+                  this.result.errorInfo = data.errorInfo
                   this.resultDialog.disableRefresh = true
               }
             }
@@ -370,10 +382,11 @@ export default {
             if (error.code === 401) {
               toLoginPage()
             } else {
-              Notice.notify.error(this, {
-                title: "无法获取结果",
-                message: `${error.code} ${error.msg}`
-              })
+              this.result = {
+                type: "warning",
+                title: "获取判题结果失败",
+                desc: `${error.code} ${error.msg}，可稍候重试`
+              }
               this.resultDialog.disableRefresh = false
             }
           })
@@ -421,22 +434,26 @@ export default {
         case 5:
           this.result = {
             type: "info",
-            title: "编译错误",
-            desc: "请在本地调试成功再提交"
+            title: "编译错误"
           }
           break
         case 6:
           this.result = {
             type: "info",
-            title: "运行错误",
-            desc: "对于解释型语言，请检查是否存在语法错误"
+            title: "运行错误"
           }
           break
         case 7:
           this.result = {
             type: "error",
-            title: "判题异常",
-            desc: "判题服务器异常或者你提交了恶意代码"
+            title: "内部错误"
+          }
+          break
+        case 8:
+          this.result = {
+            type: "warning",
+            title: "输出超限",
+            desc: "你的程序产生的输出已超过最大限制"
           }
       }
     }

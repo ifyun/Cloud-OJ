@@ -58,7 +58,7 @@ logging:
 project:
   file-dir: /var/lib/cloud_oj/
   code-dir: /tmp/code/
-  runner-image: ${RUNNER_IMAGE:registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner:latest}
+  runner-image: ${RUNNER_IMAGE:registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-runner:latest}
   core-pool-size: ${CORE_POOL_SIZE:8}
   max-pool-size: ${MAX_POOL_SIZE:8}
   queue-capacity: ${QUEUE_CAPACITY:200}

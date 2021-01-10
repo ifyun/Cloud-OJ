@@ -13,16 +13,16 @@
 
 ## 支持语言
 
-Language        | Compiler/Interpreter/Version
-----------------|-------------------------------
-C               | gcc
-C++             | g++ std=14
-Java            | OpenJDK 1.8
-Python          | 3.5
-Bash            |
-C#              | Mono
-JavaScript      | Node v14
-Kotlin          | 1.4.10
+Language        | Compiler/Interpreter  | Version
+----------------|-----------------------|---------------------------
+C               | gcc                   | std=c11
+C++             | g++                   | std=c++17
+Java            | OpenJDK               | 1.8
+Python          |                       | 3.5
+Bash            | -                     | -
+C#              | Mono                  | 4.6.2 (C# 5.0)
+JavaScript      | Node                  | LTS
+Kotlin          | kotlinc               | 1.4.10
 
 ## 使用
 
@@ -46,30 +46,26 @@ project:
 
 #### 2. 构建用于判题的 Docker 镜像
 
-安装 Docker，构建 `runner` 镜像：
-
-```bash
-docker build -t runner ./docker/runner
-```
+需要 Linux 和 CMake，可查看 [judge-runner 文档](./judge-runner/README.md)。
 
 `judge-service` 的配置文件中可以指定镜像：
 
 ```yaml
 project:
-  runner-image: ${RUNNER_IMAGE:runner}
+  runner-image: ${RUNNER_IMAGE:judge-runner}
 ```
 
-> 如果不想构建镜像，可以直接使用 `registry.cn-hangzhou.aliyuncs.com/cloud_oj/runner`
+> 可以直接使用 `registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-runner`
 
-#### 3. 构建、打包
+#### 3. 构建前端和后端
 
-构建服务（需要 Maven）：
+1. 构建服务（需要 Maven、JDK）：
 
 ```bash
 mvn -B package '-Dmaven.test.skip=true' --file pom.xml
 ```
 
-构建 Web（需要 Node.js）：
+2. 构建 Web（需要 Node.js）：
 
 ```bash
 cd web && npm install && npm run build

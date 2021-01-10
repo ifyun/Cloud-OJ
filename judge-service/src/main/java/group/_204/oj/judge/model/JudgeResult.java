@@ -18,7 +18,8 @@ public class JudgeResult {
     private String compileInfo;
     private double passRate;
     private double score;
-    private long time;
-    private long memory;
+    private Long time;
+    private Long memory;
+    private String errorInfo;
     private Date submitTime;
 }

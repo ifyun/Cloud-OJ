@@ -65,16 +65,16 @@ create table user
 
 create table solution
 (
-    solution_id char(36)                                                                                                     not null
+    solution_id char(36)                                                                not null
         primary key,
-    problem_id  int                                                                                                          null,
-    contest_id  int                                                                                                          null,
-    language    int                                                                                                          not null,
-    state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'                                             not null,
-    result      enum ('PASSED', 'TIMEOUT', 'OOM', 'PARTLY_PASSED', 'WRONG', 'COMPILE_ERROR', 'RUNTIME_ERROR', 'JUDGE_ERROR') null,
-    pass_rate   double                                        default 0                                                      not null comment '通过率',
-    user_id     varchar(32)                                                                                                  null,
-    submit_time datetime                                      default CURRENT_TIMESTAMP                                      not null comment '提交时间',
+    problem_id  int                                                                     null,
+    contest_id  int                                                                     null,
+    language    int                                                                     not null,
+    state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'        not null,
+    result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE')          null,
+    pass_rate   double                                        default 0                 not null,
+    user_id     varchar(32)                                                             null,
+    submit_time datetime                                      default CURRENT_TIMESTAMP not null,
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,
@@ -205,22 +205,24 @@ from (select `s`.`user_id`                        AS `user_id`,
 group by `problem_score`.`user_id`;
 
 create view judge_result as
-select `s`.`solution_id`                            AS `solution_id`,
-       `s`.`problem_id`                             AS `problem_id`,
-       `s`.`contest_id`                             AS `contest_id`,
-       `p`.`title`                                  AS `title`,
-       `s`.`language`                               AS `language`,
-       `s`.`state`                                  AS `state`,
-       `s`.`result`                                 AS `result`,
-       truncate(`s`.`pass_rate`, 2)                 AS `pass_rate`,
-       `s`.`user_id`                                AS `user_id`,
-       `s`.`submit_time`                            AS `submit_time`,
-       truncate((`s`.`pass_rate` * `p`.`score`), 1) AS `score`,
-       `sc`.`code`                                  AS `code`,
-       `r`.`time`                                   AS `time`,
-       `r`.`memory`                                 AS `memory`
+select `s`.`solution_id`                                      AS `solution_id`,
+       `s`.`problem_id`                                       AS `problem_id`,
+       `s`.`contest_id`                                       AS `contest_id`,
+       `p`.`title`                                            AS `title`,
+       `s`.`language`                                         AS `language`,
+       `s`.`state`                                            AS `state`,
+       `s`.`result`                                           AS `result`,
+       truncate(`s`.`pass_rate`, 2)                           AS `pass_rate`,
+       `s`.`user_id`                                          AS `user_id`,
+       `s`.`submit_time`                                      AS `submit_time`,
+       truncate((`s`.`pass_rate` * `p`.`score`), 1)           AS `score`,
+       `sc`.`code`                                            AS `code`,
+       `r`.`time`                                             AS `time`,
+       `r`.`memory`                                           AS `memory`,
+       concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
 from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
-         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)));
+         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
+order by `s`.`submit_time`;
 
 -- 初始化角色/权限表
 INSERT INTO cloud_oj.role (role_id, role_name)

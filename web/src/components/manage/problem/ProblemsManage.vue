@@ -48,7 +48,7 @@
       <el-table-column label="题目名称" width="220px">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
-            <span>[{{ scope.row.problemId }}]&nbsp;</span><b>{{ scope.row.title }}</b>
+            {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
           </el-link>
         </template>
       </el-table-column>
@@ -121,7 +121,7 @@
                      @refresh="getProblems"/>
     </el-dialog>
     <!-- Test Data Manage Dialog -->
-    <el-dialog :title="`${selectedTitle}的测试数据`"
+    <el-dialog :title="`${selectedTitle} - 测试数据`"
                :visible.sync="testDataDialog.visible"
                width="850px">
       <TestDataManage :problem-id="selectedId"

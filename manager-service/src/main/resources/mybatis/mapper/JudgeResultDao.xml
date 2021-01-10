@@ -15,7 +15,8 @@
                                    score,
                                    code,
                                    time,
-                                   memory
+                                   memory,
+                                   error_info
         from judge_result
         where user_id = #{userId}
         order by submit_time desc

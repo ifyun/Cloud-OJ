@@ -2,7 +2,7 @@
   <div style="position:relative">
     <el-row>
       <el-col :span="16">
-        <ECharts theme="macarons" :options="pieOption"/>
+        <ECharts :options="pieOption"/>
         <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
       </el-col>
       <el-col :span="8">
@@ -31,23 +31,30 @@
 <script>
 import ECharts from "vue-echarts"
 import "echarts/lib/chart/pie"
-import "echarts/theme/macarons"
+import "echarts/lib/chart/heatmap"
+import "echarts/lib/component/title"
+import "echarts/lib/component/tooltip"
+import "echarts/lib/component/legend"
+import "echarts/lib/component/calendar"
+import "echarts/lib/component/visualMap"
 import green from "@/assets/theme/echarts-theme"
 import {userInfo} from "@/util"
 import {languages} from "@/util/data"
 import {UserApi} from "@/service"
+import moment from "moment"
 
 const year = new Date().getFullYear()
+const formatDate = (time) => {
+  return moment(time).format("M月D日")
+}
 
 export default {
   name: "Overview",
   components: {
     ECharts
   },
-  beforeCreate() {
+  beforeMount() {
     ECharts.registerTheme("green", green)
-  },
-  mounted() {
     this.getOverview()
   },
   props: ["userId"],
@@ -80,7 +87,7 @@ export default {
         },
         tooltip: {
           trigger: "item",
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: '{b}<br>{c} ({d}%)'
         },
         legend: {
           left: "left",
@@ -107,10 +114,15 @@ export default {
             color: "#303133"
           }
         },
-        tooltip: {},
+        tooltip: {
+          formatter(params) {
+            return `${formatDate(params.data[0])}<br>${params.data[1]} 次提交`
+          }
+        },
         visualMap: {
           min: 0,
           max: 15,
+          maxOpen: true,
           type: "piecewise",
           orient: "horizontal",
           left: "center",
@@ -120,7 +132,7 @@ export default {
           top: 80,
           right: 10,
           cellSize: ["auto", 14],
-          range: "2020",
+          range: year,
           dayLabel: {
             firstDay: 1,
             nameMap: "en"
@@ -194,8 +206,8 @@ export default {
           return "#EB6E6F"
         case "TLE":
         case "MLE":
+          return "#F6925F"
         case "RE":
-          return "#E0A242"
         case "CE":
           return "#909399"
       }

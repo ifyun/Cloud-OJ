@@ -28,7 +28,7 @@
           <template slot-scope="scope">
             <el-link
                 :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
-              <span>[{{ scope.row.problemId }}]&nbsp;</span><b>{{ scope.row.title }}</b>
+              {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>

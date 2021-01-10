@@ -48,7 +48,7 @@ mybatis:
 project:
   file-dir: E:/cloud_oj/
   code-dir: E:/cloud_oj/code/
-  runner-image: runner
+  runner-image: judge-runner
   core-pool-size: 8
   max-pool-size: 8
   queue-capacity: 200
