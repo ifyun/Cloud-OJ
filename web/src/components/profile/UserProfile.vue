@@ -6,7 +6,6 @@
                  :show-file-list="false"
                  :action="uploadUrl"
                  :headers="uploadHeaders"
-                 :data="{'userId': userProfile.userId}"
                  :before-upload="beforeUpload"
                  :on-success="uploadSuccess"
                  :on-error="uploadFailed">
@@ -59,7 +58,7 @@
         <i class="el-icon-office-building"></i>
         <span>&nbsp;{{ userProfile.section }}</span>
       </span>
-      <el-button v-if="userInfo != null" size="small" style="margin-top: 15px"
+      <el-button v-if="userId == null" size="small" style="margin-top: 15px"
                  @click="editClick">
         <span>修改个人信息</span>
       </el-button>
@@ -181,11 +180,10 @@ export default {
         }
 
         UserApi.updateProfile(this.userProfile, userInfo())
-            .then((res) => {
+            .then(() => {
               this.profileEditor.display = false
               Notice.notify.success(this, {
-                title: "已保存",
-                message: `${res.status} ${res.statusText}`
+                title: "已保存"
               })
               passwordChanged && toLoginPage()
               this.updateLocalUserInfo()

@@ -28,13 +28,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class Judgement {
-    private static final String MEM_LIMIT = "65535";
-    private static final String MEM_LIMIT_JVM = "131071";       // For Java/Kotlin
+    private static final String MEM_LIMIT = "64";           // 内存限制，单位：MB
+    private static final String MAX_MEM_LIMIT = "512";      // 最大（实际）内存限制，单位：MB
+    private static final String OUTPUT_LIMIT = "8182";      // 输出限制，单位：KB
 
     private static final int AC = 0;
     private static final int TLE = 2;
     private static final int MLE = 3;
-    private static final int RE = 4;
+    private static final int OLE = 4;
 
     @Value("${project.file-dir}")
     private String fileDir;
@@ -89,8 +90,8 @@ public class Judgement {
      * @param results List of {@link RunResult}
      */
     private void calcResult(Solution solution, Runtime runtime, List<RunResult> results) {
-        if (runtime.getResult() == SolutionResult.JUDGE_ERROR
-                || runtime.getResult() == SolutionResult.RUNTIME_ERROR) {
+        if (runtime.getResult() == SolutionResult.IE
+                || runtime.getResult() == SolutionResult.RE) {
             solution.setResult(runtime.getResult());
         } else {
             long time = 0;
@@ -98,7 +99,7 @@ public class Judgement {
             int ac = 0;
             int tle = 0;
             int mle = 0;
-            int re = 0;
+            int ole = 0;
 
             for (RunResult result : results) {
                 switch (result.getStatus()) {
@@ -111,8 +112,8 @@ public class Judgement {
                     case MLE:
                         mle++;
                         break;
-                    case RE:
-                        re++;
+                    case OLE:
+                        ole++;
                         break;
                 }
 
@@ -124,28 +125,28 @@ public class Judgement {
             double passRate = 0;
             SolutionResult result;
 
+            if (ac == 0) {
+                result = SolutionResult.WA;
+            } else if (ac < total) {
+                passRate = (double) ac / total;
+                result = SolutionResult.PA;
+            } else {
+                passRate = 1;
+                result = SolutionResult.AC;
+            }
+
+            if (ole != 0) {
+                result = SolutionResult.OLE;
+            } else if (mle != 0) {
+                result = SolutionResult.MLE;
+            } else if (tle != 0) {
+                result = SolutionResult.TLE;
+            }
+
             runtime.setTotal(total);
             runtime.setPassed(ac);
             runtime.setTime(time);
             runtime.setMemory(memory);
-
-            if (ac == 0) {
-                result = SolutionResult.WRONG;
-            } else if (ac < total) {
-                passRate = (double) ac / total;
-                result = SolutionResult.PARTLY_PASSED;
-            } else {
-                passRate = 1;
-                result = SolutionResult.PASSED;
-            }
-
-            if (tle != 0)
-                result = SolutionResult.TIMEOUT;
-            if (mle != 0)
-                result = SolutionResult.OOM;
-            if (re != 0)
-                result = SolutionResult.RUNTIME_ERROR;
-
             solution.setResult(result);
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
@@ -167,17 +168,17 @@ public class Judgement {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
             int outputCount = getOutputCount(solution.getProblemId());
             if (outputCount == 0) {
-                throw new JudgeError(String.format("缺少测试数据: problemId=%d", solution.getProblemId()));
+                throw new JudgeError(String.format("题目 [%s] 缺少测试数据.", solution.getProblemId()));
             }
             ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
             results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
             log.error("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
-            runtime.setResult(SolutionResult.RUNTIME_ERROR);
+            runtime.setResult(SolutionResult.RE);
         } catch (JudgeError | InterruptedException | IOException | UnsupportedLanguageError e) {
             log.error("Judge Error: {}", e.getMessage());
-            runtime.setResult(SolutionResult.JUDGE_ERROR);
+            runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
         }
 
@@ -198,15 +199,14 @@ public class Judgement {
         process.waitFor();
 
         List<RunResult> results;
-        String stderr = getOutput(process.getErrorStream());
 
-        if (stderr.isEmpty()) {
+        if (process.exitValue() == 0) {
             String solutionDir = codeDir + solutionId;
-            // Get run result
-            String resultStr = getOutputFromFile(solutionDir + "/result.json");
+            String resultStr = getResultFromFile(solutionDir + "/result.json");
             results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
             });
         } else {
+            String stderr = getOutput(process.getErrorStream());
             throw new RuntimeError(stderr);
         }
 
@@ -222,7 +222,7 @@ public class Judgement {
     }
 
     @SneakyThrows
-    private String getOutputFromFile(String filePath) {
+    private String getResultFromFile(String filePath) {
         File file = new File(filePath);
 
         if (file.exists()) {
@@ -262,30 +262,31 @@ public class Judgement {
         switch (language) {
             case C:
             case CPP:
-                cmd.addAll(Arrays.asList("./Solution", timeout, MEM_LIMIT, MEM_LIMIT));
+                cmd.add("./Solution");
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("java@-Xms8m@-Xmx64m@Solution", timeout, MEM_LIMIT, MEM_LIMIT_JVM));
+                cmd.add(String.format("java@-Xms16m@-Xmx%sm@Solution", MAX_MEM_LIMIT));
                 break;
             case PYTHON:
-                cmd.addAll(Arrays.asList("python3@Solution.py", timeout, MEM_LIMIT, MEM_LIMIT));
+                cmd.add("python3@Solution.py");
                 break;
             case BASH:
-                cmd.addAll(Arrays.asList("sh@Solution.sh", timeout, MEM_LIMIT, MEM_LIMIT));
+                cmd.add("sh@Solution.sh");
                 break;
             case C_SHARP:
-                cmd.addAll(Arrays.asList("mono@Solution.exe", timeout, MEM_LIMIT, MEM_LIMIT));
+                cmd.add("mono@Solution.exe");
                 break;
             case JAVA_SCRIPT:
-                cmd.addAll(Arrays.asList("node@Solution.js", timeout, MEM_LIMIT, MEM_LIMIT));
+                cmd.add("node@Solution.js");
                 break;
             case KOTLIN:
-                cmd.addAll(Arrays.asList("kotlin@SolutionKt", timeout, MEM_LIMIT, MEM_LIMIT_JVM));
+                cmd.add("kotlin@SolutionKt");
                 break;
             default:
                 throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
         }
 
+        cmd.addAll(Arrays.asList(timeout, MEM_LIMIT, MAX_MEM_LIMIT, OUTPUT_LIMIT));
         cmd.add(String.format("/%s", dataDirInContainer));
         builder.command(cmd);
 

@@ -24,11 +24,6 @@
                 <Icon name="quote-left" inverse/>
               </el-button>
             </el-tooltip>
-            <el-tooltip placement="top" content="样例">
-              <el-button size="mini" @click="sample">
-                <Icon name="vial" inverse/>
-              </el-button>
-            </el-tooltip>
             <el-tooltip placement="top" content="代码块(支持KaTeX公式)">
               <el-button size="mini" @click="code">
                 <Icon name="file-code" inverse/>
@@ -133,7 +128,6 @@ import "vue-awesome/icons/image"
 import "vue-awesome/icons/quote-left"
 import "vue-awesome/icons/link"
 import "vue-awesome/icons/info-circle"
-import "vue-awesome/icons/vial"
 import "vue-awesome/icons/file-code"
 import {Notice, userInfo} from "@/util"
 import {ApiPath} from "@/service"
@@ -283,13 +277,6 @@ export default {
       }
       this.replaceSelection(content);
       this.imageDialog.visible = false
-    },
-    sample() {
-      let {anchor, head} = this.listSelections()[0]
-      head.line >= anchor.line && head.sticky === "before" && ([head, anchor] = [anchor, head])
-      let content = this.getRange(head, anchor)
-      let str = `<pre>\n${content}\n</pre>\n`
-      this.insertBlock(str)
     },
     /**
      * 插入代码块或将选中的文本设置为代码块

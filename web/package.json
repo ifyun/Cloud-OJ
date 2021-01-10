@@ -8,12 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "core-js": "^3.8.1",
     "element-ui": "^2.14.1",
     "js-md5": "^0.7.3",
-    "markdown-it-vue": "^1.1.5",
+    "markdown-it-vue": "^1.1.6",
     "moment": "^2.29.1",
     "qs": "^6.9.4",
     "vue": "^2.6.12",

@@ -16,6 +16,7 @@ public class JudgeResult {
     private Double score;
     private Long time;
     private Long memory;
+    private String errorInfo;
     private String code;
     private Integer language;
     private Integer state;

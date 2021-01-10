@@ -55,6 +55,10 @@ html, body {
     display: inline-block;
 }
 
+.result-tag {
+    cursor: pointer;
+}
+
 .contest-tag {
     font-weight: bold;
     border-radius: 20px;
@@ -114,6 +118,7 @@ html, body {
 
 ::-webkit-scrollbar {
     width: 6px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -130,4 +135,12 @@ html, body {
 
 .katex-html > .bottom {
     height: 0 !important;
+}
+
+.result-error {
+    padding: 0 5px;
+    font: inherit;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #F56C6C;
 }

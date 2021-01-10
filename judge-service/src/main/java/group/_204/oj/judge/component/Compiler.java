@@ -67,7 +67,7 @@ class Compiler {
         String src = writeCode(solutionId, languageId, sourceCode);
 
         if (src.isEmpty()) {
-            String err = "编译异常: 无法写入源码";
+            String err = "编译错误: 无法写入源码";
             log.error(err);
             return new Compile(solutionId, -1, err);
         }
@@ -76,7 +76,7 @@ class Compiler {
             Language language = Language.get(languageId);
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
-            log.error("编译异常: {}", e.getMessage());
+            log.error("编译错误: {}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -101,10 +101,10 @@ class Compiler {
         // 构造编译命令
         switch (language) {
             case C:
-                cmd.addAll(Arrays.asList("gcc", "Solution.c", "-o", "Solution"));
+                cmd.addAll(Arrays.asList("gcc", "-std=c11", "Solution.c", "-o", "Solution"));
                 break;
             case CPP:
-                cmd.addAll(Arrays.asList("g++", "Solution.cpp", "-o", "Solution"));
+                cmd.addAll(Arrays.asList("g++", "-std=c++17", "Solution.cpp", "-o", "Solution"));
                 break;
             case JAVA:
                 cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
@@ -116,11 +116,9 @@ class Compiler {
                 cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
                 break;
             case PYTHON:
-                return new Compile(solutionId, 0, "Python");
             case BASH:
-                return new Compile(solutionId, 0, "Bash");
             case JAVA_SCRIPT:
-                return new Compile(solutionId, 0, "JavaScript");
+                return new Compile(solutionId, 0);
             default:
                 throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
         }
@@ -128,7 +126,7 @@ class Compiler {
         try {
             processBuilder.command(cmd);
             Process process = processBuilder.start();
-            process.waitFor(6000, TimeUnit.SECONDS);
+            process.waitFor();
             // 获取错误流，为空说明编译成功
             String error = getOutput(process.getErrorStream());
 
@@ -139,7 +137,7 @@ class Compiler {
                 throw new CompileError(error);
             }
         } catch (IOException | InterruptedException | CompileError e) {
-            log.error("编译异常: solutionId={}", e.getMessage());
+            log.error("编译错误: solutionId={}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }

@@ -56,13 +56,13 @@
         group by date
     </select>
     <select id="getResultStatistics" resultType="java.util.Map">
-        select count(result = 'PASSED' or null)        as AC,
-               count(result = 'WRONG' or null)         as WA,
-               count(result = 'TIMEOUT' or null)       as TLE,
-               count(result = 'OOM' or null)           as MLE,
-               count(result = 'RUNTIME_ERROR' or null) as RE,
-               count(result = 'COMPILE_ERROR' or null) as CE,
-               count(solution_id)                      as total
+        select count(result = 'AC' or null)  as AC,
+               count(result = 'WA' or null)  as WA,
+               count(result = 'TLE' or null) as TLE,
+               count(result = 'MLE' or null) as MLE,
+               count(result = 'RE' or null)  as RE,
+               count(result = 'CE' or null)  as CE,
+               count(solution_id)            as total
         from solution
         where user_id = #{userId}
           and contest_id is null

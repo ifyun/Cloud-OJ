@@ -36,7 +36,7 @@ public class JudgementAsync {
     public void judge(Solution solution) {
         compilerAsync.compile(solution, (compile -> {
             if (compile.getState() == -1) {
-                solution.setResult(SolutionResult.COMPILE_ERROR);
+                solution.setResult(SolutionResult.CE);
             } else {
                 judgement.judge(solution);
             }

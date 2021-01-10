@@ -28,12 +28,12 @@
         <BottomArea/>
         <div class="recommend">
           <span style="margin-right: 5px">推荐使用</span>
-          <el-link href="https://www.microsoft.com/zh-cn/edge">
+          <el-link href="https://www.microsoft.com/zh-cn/edge" target="_blank">
             <Icon class="icon" name="brands/edge"/>
-            Edge
+            新版 Edge
           </el-link>
           、
-          <el-link href="https://www.google.cn/chrome/">
+          <el-link href="https://www.google.cn/chrome/" target="_blank">
             <Icon class="icon" name="brands/chrome"/>
             Chrome
           </el-link>
