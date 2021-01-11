@@ -24,7 +24,7 @@ public class ContestController implements CRUDController {
      * 获取竞赛/作业
      */
     @GetMapping()
-    public ResponseEntity<?> Contests(Integer page, Integer limit) {
+    public ResponseEntity<?> contests(Integer page, Integer limit) {
         if (systemSettings.getConfig().isShowNotStartedContest())
             return buildGETResponse(contestService.getAllContest(page, limit));
         else
@@ -35,7 +35,7 @@ public class ContestController implements CRUDController {
      * 获取竞赛/作业的详细信息
      */
     @GetMapping(path = "detail")
-    public ResponseEntity<?> Contest(Integer contestId) {
+    public ResponseEntity<?> contest(Integer contestId) {
         return buildGETResponse(contestService.getContestByID(contestId));
     }
 

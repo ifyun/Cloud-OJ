@@ -13,6 +13,7 @@
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
+import axios from "axios"
 import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
 
@@ -39,7 +40,7 @@ export default {
   },
   methods: {
     loadHelpDoc() {
-      this.$axios.get("./doc/help.md")
+      axios.get("./doc/help.md")
           .then((res) => {
             this.helpDoc = res.data
           })

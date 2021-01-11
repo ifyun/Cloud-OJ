@@ -178,7 +178,7 @@ export default {
 
       for (let i = 0; i < preference.length; i++) {
         preferenceData.push({
-          name: languages[preference[i]["language"]],
+          name: languages[parseInt(preference[i]["language"])],
           value: preference[i]["count"]
         })
       }

@@ -79,15 +79,15 @@ const AuthApi = {
 }
 
 const UserApi = {
-    getAll(page, size, userInfo) {
+    getAll(page, limit, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.USER_ADMIN,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -158,8 +158,8 @@ const UserApi = {
                 url: ApiPath.OVERVIEW,
                 method: "GET",
                 params: {
-                    "userId": userId,
-                    "year": year
+                    userId,
+                    year
                 }
             }).then((res) => {
                 resolve(res.data)
@@ -168,15 +168,15 @@ const UserApi = {
             })
         })
     },
-    getCommitHistory(page, size, userInfo) {
+    getCommitHistory(page, limit, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.HISTORY,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -191,7 +191,7 @@ const ContestApi = {
     /**
      * 获取所有竞赛/作业
      */
-    getAll(page, size, userInfo = null) {
+    getAll(page, limit, userInfo = null) {
         let reqUrl, reqHeaders
         if (userInfo == null) {
             reqUrl = ApiPath.CONTEST
@@ -206,8 +206,8 @@ const ContestApi = {
                 method: "GET",
                 headers: reqHeaders,
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -219,17 +219,18 @@ const ContestApi = {
     /**
      * 获取已开始竞赛/作业中的题目
      */
-    getProblemsFromStarted(contestId, page, size, userInfo) {
+    getProblemsFromStarted(contestId, page, limit, userInfo) {
         return new Promise((resolve, reject) => {
+            const userId = userInfo.userId
             axios({
                 url: ApiPath.CONTEST_PROBLEM,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "contestId": contestId,
-                    "userId": userInfo.userId,
-                    "page": page,
-                    "limit": size
+                    contestId,
+                    userId,
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -241,15 +242,15 @@ const ContestApi = {
     /**
      * 获取不在指定竞赛/作业中的题目
      */
-    getProblemsNotInContest(contestId, page, size, userInfo) {
+    getProblemsNotInContest(contestId, page, limit, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: `${ApiPath.CONTEST_ADMIN}/problems_not_in_contest/${contestId}`,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -261,16 +262,16 @@ const ContestApi = {
     /**
      * 获取竞赛/作业中的题目
      */
-    getProblems(contestId, page, size, userInfo) {
+    getProblems(contestId, page, limit, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: `${ApiPath.CONTEST_ADMIN}/problem`,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "contestId": contestId,
-                    "page": page,
-                    "limit": size
+                    contestId,
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -330,7 +331,7 @@ const ContestApi = {
                 url: `${ApiPath.CONTEST}/detail`,
                 method: "GET",
                 params: {
-                    "contestId": contestId
+                    contestId
                 }
             }).then((res) => {
                 resolve(res.data)
@@ -372,16 +373,16 @@ const ProblemApi = {
     /**
      * 获取开放题目
      */
-    getAllOpened(page, size, keyword = null, userId = null) {
+    getAllOpened(page, limit, keyword = null, userId = null) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.PROBLEM,
                 method: "GET",
                 params: {
-                    "keyword": keyword,
-                    "userId": userId,
-                    "page": page,
-                    "limit": size
+                    keyword,
+                    userId,
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -393,16 +394,16 @@ const ProblemApi = {
     /**
      * 获取所有题目
      */
-    getAll(page, size, keyword = null, userInfo) {
+    getAll(page, limit, keyword = null, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.PROBLEM_ADMIN,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "keyword": keyword,
-                    "page": page,
-                    "limit": size
+                    keyword,
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -455,14 +456,14 @@ const ProblemApi = {
     /**
      * 切换开放/关闭状态
      */
-    changeState(problemId, isEnable, userInfo) {
+    changeState(problemId, enable, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: `${ApiPath.PROBLEM_ADMIN}/${problemId}`,
                 method: "PUT",
                 headers: buildHeaders(userInfo),
                 params: {
-                    enable: isEnable
+                    enable
                 }
             }).then((res) => {
                 resolve(res)
@@ -552,14 +553,14 @@ const JudgeApi = {
 }
 
 const RankingApi = {
-    getRanking(page, size) {
+    getRanking(page, limit) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.RANKING,
                 method: "GET",
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 204 ? null : res.data)
@@ -568,7 +569,7 @@ const RankingApi = {
             })
         })
     },
-    getContestRanking(contestId, page, size, userInfo = null) {
+    getContestRanking(contestId, page, limit, userInfo = null) {
         let reqUrl = ApiPath.CONTEST_RANKING
         if (userInfo != null && userInfo["roleId"] >= 2) {
             reqUrl = ApiPath.CONTEST_RANKING_ADMIN
@@ -579,8 +580,8 @@ const RankingApi = {
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "page": page,
-                    "limit": size
+                    page,
+                    limit
                 }
             }).then((res) => {
                 resolve(res.status === 204 ? null : res.data)
@@ -596,8 +597,8 @@ const RankingApi = {
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "contestId": contestId,
-                    "userId": userId
+                    contestId,
+                    userId
                 }
             }).then((res) => {
                 resolve(res.data)
