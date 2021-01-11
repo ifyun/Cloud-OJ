@@ -3,6 +3,9 @@ module.exports = {
     transpileDependencies: [
         /\bvue-awesome\b/
     ],
+    chainWebpack: (config) => {
+      config.plugins.delete("prefetch")
+    },
     devServer: {
         port: 8081,
         proxy: {
