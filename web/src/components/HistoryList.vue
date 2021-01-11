@@ -2,7 +2,7 @@
   <div class="content">
     <el-card style="width: 100%">
       <el-table :data="histories.data" stripe v-loading="loading">
-        <el-table-column label="题目名称" width="300px">
+        <el-table-column label="题目名称" width="350px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
               {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>

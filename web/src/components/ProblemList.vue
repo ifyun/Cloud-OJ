@@ -24,7 +24,7 @@
         </el-form>
       </div>
       <el-table :data="problems.data" stripe v-loading="loading">
-        <el-table-column label="题目名称" width="280px">
+        <el-table-column label="题目名称" width="320px">
           <template slot-scope="scope">
             <el-link
                 :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
@@ -32,7 +32,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column align="left" width="110px">
+        <el-table-column align="left" width="105px">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.result !== undefined" size="small" effect="plain"
                     :type="resultTags[scope.row.result].type">
@@ -79,7 +79,7 @@
             <b>{{ scope.row.score }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="130px" align="right">
+        <el-table-column label="创建时间" width="120px" align="right">
           <template slot-scope="scope">
             <i class="el-icon-date el-icon--left"></i>
             <span>{{ formatDate(scope.row["createAt"]) }}</span>

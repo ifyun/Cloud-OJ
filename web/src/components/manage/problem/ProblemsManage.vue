@@ -45,7 +45,7 @@
       </el-form>
     </div>
     <el-table :data="problems.data" stripe v-loading="loading">
-      <el-table-column label="题目名称" width="220px">
+      <el-table-column label="题目名称" width="250px">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
