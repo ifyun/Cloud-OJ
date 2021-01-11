@@ -276,7 +276,7 @@ export default {
     getProblem() {
       let promise
 
-      if (this.contestId === undefined && userInfo() != null && userInfo()["roleId"] >= 2) {
+      if (this.contestId == null || (userInfo() != null && userInfo()["roleId"] >= 2)) {
         promise = ProblemApi.get(this.problemId, userInfo())
       } else {
         promise = ContestApi.getProblem(this.contestId, this.problemId, userInfo())
