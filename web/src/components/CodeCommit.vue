@@ -278,10 +278,12 @@ export default {
     getProblem() {
       let promise
 
-      if (this.contestId == null || (userInfo() != null && userInfo()["roleId"] >= 2)) {
+      if (this.contestId != null) {
+        promise = ContestApi.getProblem(this.contestId, this.problemId, userInfo())
+      } else if (userInfo() != null && userInfo()["roleId"] >= 2) {
         promise = ProblemApi.get(this.problemId, userInfo())
       } else {
-        promise = ContestApi.getProblem(this.contestId, this.problemId, userInfo())
+        promise = ProblemApi.get(this.problemId)
       }
 
       promise.then((data) => {
