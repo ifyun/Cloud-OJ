@@ -44,7 +44,7 @@
       <el-form-item>
         <el-button class="login-button" type="success" round
                    :loading="loading"
-                   @click="signup('signupForm')">注 册
+                   @click="signup">注 册
         </el-button>
       </el-form-item>
     </el-form>
@@ -114,8 +114,8 @@ export default {
     }
   },
   methods: {
-    signup(formName) {
-      this.$refs[formName].validate((valid) => {
+    signup() {
+      this.$refs["signupForm"].validate((valid) => {
         if (!valid) {
           return false
         }
@@ -128,8 +128,8 @@ export default {
             offset: 0,
             title: "注册成功"
           })
-          this.$refs[formName].resetFields()
-          this.$refs[formName].clearValidate()
+          this.$refs["signupForm"].resetFields()
+          this.$refs["signupForm"].clearValidate()
         }).catch((error) => {
           const msg = error.code === 409 ? "ID 已被使用" : `${error.msg}`
           Notice.notify.error(this, {

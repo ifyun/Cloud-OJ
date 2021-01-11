@@ -82,11 +82,11 @@ export default {
     return {
       userInfo: userInfo(),
       paths: {
-        "1": "/",
-        "2": "/contest",
-        "3": "/ranking",
-        "4": "/manage",
-        "5": "/help"
+        1: "/",
+        2: "/contest",
+        3: "/ranking",
+        4: "/manage",
+        5: "/help"
       }
     }
   },
@@ -94,7 +94,7 @@ export default {
     onSelect(key) {
       if (key === "2" || key === "3")
         window.sessionStorage.removeItem("contest")
-      window.location.href = this.paths[key]
+      window.location.href = this.paths[parseInt(key)]
     },
     login() {
       window.location.href = "/login"

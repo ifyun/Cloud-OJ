@@ -181,8 +181,9 @@ export default {
   },
   data() {
     let validateDelete = (rule, value, callback) => {
-      if (value !== this.selectedTitle)
+      if (value !== this.selectedTitle) {
         return callback(new Error("请确认输入正确"))
+      }
       callback()
     }
     return {

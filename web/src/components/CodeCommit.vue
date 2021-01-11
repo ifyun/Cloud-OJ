@@ -233,20 +233,22 @@ export default {
       window.history.back()
     },
     calcContentHeight() {
-      if (this.windowHeight <= 900)
+      if (this.windowHeight <= 900) {
         return "800px"
-      else if (this.windowHeight >= 1200)
+      } else if (this.windowHeight >= 1200) {
         return "1100px"
-      else
+      } else {
         return `${this.windowHeight - 130}px`
+      }
     },
     calcCodeHeight() {
-      if (this.windowHeight <= 900)
+      if (this.windowHeight <= 900) {
         return "640px"
-      else if (this.windowHeight >= 1200)
+      } else if (this.windowHeight >= 1200) {
         return "850px"
-      else
+      } else {
         return `${this.windowHeight - 290}px`
+      }
     },
     getCachedCode() {
       let code = window.sessionStorage.getItem("code");
@@ -295,7 +297,7 @@ export default {
       })
     },
     languageChange(value) {
-      this.cmOptions.mode = languageMode[value]
+      this.cmOptions.mode = languageMode[parseInt(value)]
     },
     /**
      * 提交代码
@@ -398,7 +400,7 @@ export default {
       switch (data.result) {
         case 0:
           this.result = {
-            type: 'success',
+            type: "success",
             title: "完全正确",
             desc: `耗时: ${data.time}ms, 内存占用: ${prettyMemory(data.memory)}`
           }

@@ -38,10 +38,11 @@ function copyObject(src) {
 }
 
 function prettyMemory(mem) {
-    if (mem <= 1024)
+    if (mem <= 1024) {
         return `${mem} KB`
-    else
+    } else {
         return `${(mem / 1024).toFixed(2)} MB`
+    }
 }
 
 function callNotify(ctx, data, type) {
