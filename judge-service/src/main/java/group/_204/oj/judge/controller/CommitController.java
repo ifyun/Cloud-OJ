@@ -6,7 +6,6 @@ import group._204.oj.judge.model.Contest;
 import group._204.oj.judge.model.JudgeResult;
 import group._204.oj.judge.model.Msg;
 import group._204.oj.judge.service.CommitService;
-import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,7 +21,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/commit")
-@Api(tags = "提交代码/获取结果")
 public class CommitController {
 
     @Resource
@@ -37,14 +35,10 @@ public class CommitController {
     @Resource
     private Queue commitQueue;
 
-    @ApiOperation(value = "提交代码")
-    @ApiImplicitParam(name = "data", value = "用户的代码及相关数据", required = true)
-    @ApiResponses({
-            @ApiResponse(code = 202, message = "已接受(提交到队列)"),
-            @ApiResponse(code = 400, message = "提交失败，可能使用了不允许的语言", response = Msg.class),
-            @ApiResponse(code = 403, message = "不允许提交，竞赛/作业已结束", response = Msg.class)
-    })
-    @PostMapping(consumes = "application/json", produces = "application/json")
+    /**
+     * 提交代码
+     */
+    @PostMapping()
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         Integer contestId = data.getContestId();
 
@@ -68,17 +62,8 @@ public class CommitController {
 
     /**
      * 获取判题结果
-     *
-     * @param solutionId 题目 Id
-     * @return {@link ResponseEntity} 判题结果
      */
-    @ApiOperation(value = "获取结果")
-    @ApiImplicitParam(name = "solutionId", value = "答案 UUID", dataTypeClass = String.class)
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "成功获取结果", response = JudgeResult.class),
-            @ApiResponse(code = 204, message = "无结果")
-    })
-    @GetMapping(produces = "application/json")
+    @GetMapping()
     public ResponseEntity<?> getResult(String solutionId) {
         JudgeResult result = commitService.getResult(solutionId);
         return result == null ?

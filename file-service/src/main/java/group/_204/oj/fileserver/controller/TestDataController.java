@@ -1,7 +1,6 @@
 package group._204.oj.fileserver.controller;
 
 import group._204.oj.fileserver.model.TestData;
-import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,24 +11,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/test_data")
-@Api(tags = "测试数据")
 public class TestDataController {
 
     @Value("${project.file-dir}")
     private String fileDir;
 
-    @ApiOperation(value = "获取测试数据列表", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "problemId", required = true, example = "1001")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "成功", response = TestData.class, responseContainer = "List"),
-            @ApiResponse(code = 204, message = "无数据")
-    })
-    @GetMapping(path = "{problemId}", produces = "application/json")
+    /**
+     * 获取测试数据列表
+     */
+    @GetMapping(path = "{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable Integer problemId) {
         String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
@@ -42,15 +36,6 @@ public class TestDataController {
                 // 读取文件名称
                 testData.setFileName(file.getName());
                 testData.setSize(file.length());
-
-                try (BufferedReader reader =
-                             new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-                    // 读取文件内容
-                    testData.setContent(reader.lines().collect(Collectors.joining("\n")));
-                } catch (IOException ignored) {
-
-                }
-
                 testDataList.add(testData);
             }
 
@@ -59,15 +44,9 @@ public class TestDataController {
                 ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "上传测试数据", notes = "需要题目管理员权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "problemId", required = true, example = "1001"),
-            @ApiImplicitParam(name = "file", value = "测试数据文件(*.in, *.out)", required = true)
-    })
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "上传成功"),
-            @ApiResponse(code = 500, message = "无法写入文件")
-    })
+    /**
+     * 上传测试数据
+     */
     @PostMapping
     public ResponseEntity<?> uploadTestData(@RequestParam Integer problemId,
                                             @RequestParam("file") MultipartFile[] files) {
@@ -100,15 +79,9 @@ public class TestDataController {
     }
 
 
-    @ApiOperation(value = "删除测试数据文件", notes = "需要题目管理员权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "problemId", required = true, example = "1001"),
-            @ApiImplicitParam(name = "name", value = "文件名称", required = true)
-    })
-    @ApiResponses({
-            @ApiResponse(code = 204, message = "删除成功"),
-            @ApiResponse(code = 500, message = "无法删除文件")
-    })
+    /**
+     * 删除测试数据文件
+     */
     @DeleteMapping(path = "{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
         String testDataDir = fileDir + "test_data/";

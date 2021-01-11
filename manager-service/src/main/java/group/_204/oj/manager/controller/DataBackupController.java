@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.manager.model.Problem;
 import group._204.oj.manager.service.ProblemService;
-import io.swagger.annotations.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,6 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("backup")
-@Api(tags = "题目导入/导出")
 public class DataBackupController {
 
     @Resource
@@ -38,12 +36,7 @@ public class DataBackupController {
      * 导出题目
      */
     @SneakyThrows
-    @ApiOperation(value = "导出题目", notes = "需要题目管理员权限")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "导出成功", response = Problem.class, responseContainer = "List"),
-            @ApiResponse(code = 204, message = "无数据")
-    })
-    @GetMapping(produces = "application/json")
+    @GetMapping()
     public void backupProblems(HttpServletResponse response) {
         List<Problem> problems = problemService.backup();
 
@@ -58,13 +51,10 @@ public class DataBackupController {
         }
     }
 
+    /**
+     * 导入题目
+     */
     @SneakyThrows
-    @ApiOperation(value = "导入题目", notes = "需要题目管理员权限")
-    @ApiImplicitParam(name = "file", value = ".json 文件", required = true)
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "导入成功"),
-            @ApiResponse(code = 400, message = "导入失败")
-    })
     @PostMapping
     public ResponseEntity<?> importProblems(@RequestParam("file") MultipartFile file) {
         try {
