@@ -33,7 +33,7 @@ public class ProblemController implements CRUDController {
     })
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAllEnable(String userId, String keyword, Integer page, Integer limit) {
-        return keyword != null ?
+        return keyword != null && !keyword.isEmpty() ?
                 buildGETResponse(problemService.searchProblems(userId, keyword, page, limit, true))
                 : buildGETResponse(problemService.getEnableProblems(userId, page, limit));
     }
@@ -50,7 +50,7 @@ public class ProblemController implements CRUDController {
     })
     @GetMapping(path = "pro", produces = "application/json")
     public ResponseEntity<?> getAll(String keyword, Integer page, Integer limit) {
-        return keyword != null ?
+        return keyword != null && !keyword.isEmpty() ?
                 buildGETResponse(problemService.searchProblems(null, keyword, page, limit, false))
                 : buildGETResponse(problemService.getProblems(null, page, limit));
     }

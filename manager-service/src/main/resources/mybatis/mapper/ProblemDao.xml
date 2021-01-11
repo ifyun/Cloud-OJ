@@ -14,10 +14,10 @@
                 , result, passed
                 from problem p
                 left join `contest-problem` cp on p.problem_id = cp.problem_id
-                <if test="enable == true">
-                    and p.enable = true
-                </if>
                 left join contest c on cp.contest_id = c.contest_id
+                <if test="enable == true">
+                    and enable = true
+                </if>
                 left join (select user_id, problem_id, min(result - 1) result
                 from judge_result
                 where user_id = #{userId}
@@ -31,12 +31,15 @@
             <otherwise>
                 from problem p
                 left join `contest-problem` cp on p.problem_id = cp.problem_id
-                <if test="enable == true">
-                    and p.enable = true
-                </if>
                 left join contest c on cp.contest_id = c.contest_id
+                <if test="enable == true">
+                    and enable = true
+                </if>
             </otherwise>
         </choose>
+        <if test="enable == true">
+            where p.enable = true
+        </if>
         limit #{start}, #{limit};
         select found_rows()
     </select>
@@ -79,10 +82,10 @@
                 , result, passed
                 from problem p
                 left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
                 <if test="enable == true">
                     and enable = true
                 </if>
-                left join contest c on cp.contest_id = c.contest_id
                 left join (select user_id, problem_id, min(result - 1) result
                 from judge_result
                 where user_id = #{userId}
@@ -96,13 +99,16 @@
             <otherwise>
                 from problem p
                 left join `contest-problem` cp on p.problem_id = cp.problem_id
+                left join contest c on cp.contest_id = c.contest_id
                 <if test="enable == true">
                     and enable = true
                 </if>
-                left join contest c on cp.contest_id = c.contest_id
             </otherwise>
         </choose>
         where title like concat(#{keyword}, '%')
+        <if test="enable == true">
+            and enable = true
+        </if>
         or find_in_set(#{keyword}, category)
         or c.contest_name like concat(#{keyword}, '%')
         limit #{start}, #{limit};
