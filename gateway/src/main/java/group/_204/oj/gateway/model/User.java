@@ -2,8 +2,6 @@ package group._204.oj.gateway.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@ApiModel(description = "用户信息")
 public class User implements UserDetails {
 
     private String userId;
@@ -28,17 +25,14 @@ public class User implements UserDetails {
     private String section;
     private String email;
 
-    @ApiModelProperty("权限ID，该属性仅前端使用，实际权限的判断由 JWT Token 验证得出")
     private int roleId;
     private String roleName;
 
     @JsonIgnore
     private List<Role> roles;
 
-    @ApiModelProperty("JWT Token")
     private String token;
 
-    @ApiModelProperty("JWT Token 失效时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expire;
 

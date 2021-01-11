@@ -1,6 +1,5 @@
 package group._204.oj.fileserver.controller;
 
-import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,21 +14,14 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/image")
-@Api(tags = "图片")
 public class ImageController {
 
     @Value("${project.file-dir}")
     private String fileDir;
 
-    @ApiOperation(value = "上传头像", notes = "/image/avatar/{userId}.png 可以获取头像文件")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", required = true),
-            @ApiImplicitParam(name = "file", value = "jpg, png", dataTypeClass = MultipartFile.class, required = true)
-    })
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "上传成功"),
-            @ApiResponse(code = 500, message = "无法写入文件")
-    })
+    /**
+     * 上传头像
+     */
     @PostMapping(path = "avatar")
     public ResponseEntity<?> uploadAvatar(@RequestHeader String userId,
                                           @RequestParam("file") MultipartFile file) {
@@ -54,14 +46,9 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation(value = "上传题目图片", notes = "/image/problem/{图片名称} 可以获取题目图片")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "file", value = "jpg, png, svg", dataTypeClass = MultipartFile.class, required = true)
-    })
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "上传成功"),
-            @ApiResponse(code = 500, message = "无法写入文件")
-    })
+    /**
+     * 上传题目图片
+     */
     @PostMapping(path = "problem")
     public ResponseEntity<?> uploadProblemImage(@RequestParam("file") MultipartFile file) {
         String problemImageDir = fileDir + "image/problem/";

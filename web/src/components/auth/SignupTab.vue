@@ -55,7 +55,7 @@
 import {copyObject, Notice} from "@/util"
 import {UserApi} from "@/service"
 
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs")
 
 export default {
   name: "SignupTab",
@@ -64,12 +64,13 @@ export default {
   },
   data() {
     const validatePassword = (rule, value, callback) => {
-      if (value === "")
+      if (value === "") {
         callback(new Error("请再次填写密码"))
-      else if (value !== this.signupForm.password)
+      } else if (value !== this.signupForm.password) {
         callback(new Error("两次密码不一致"))
-      else
+      } else {
         callback()
+      }
     }
     const validateUserId = (rule, value, callback) => {
       const regx = /^[A-Za-z0-9]+$/
@@ -122,14 +123,13 @@ export default {
         let user = copyObject(this.signupForm)
         user.checkPassword = ""
         user.password = bcrypt.hashSync(this.$md5(user.password), 10)
-        UserApi.save(user).then((res) => {
+        UserApi.save(user, null, true).then(() => {
           Notice.notify.success(this, {
             offset: 0,
-            title: "注册成功",
-            message: `${res.status} ${res.statusText}`
+            title: "注册成功"
           })
           this.$refs[formName].resetFields()
-          this.$refs["deleteForm"].clearValidate()
+          this.$refs[formName].clearValidate()
         }).catch((error) => {
           const msg = error.code === 409 ? "ID 已被使用" : `${error.msg}`
           Notice.notify.error(this, {
