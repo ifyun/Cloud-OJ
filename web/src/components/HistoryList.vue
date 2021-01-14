@@ -1,21 +1,20 @@
 <template>
   <div class="content">
-    <el-card style="width: 100%">
+    <div style="width: 100%">
       <el-table :data="histories.data" stripe v-loading="loading">
-        <el-table-column label="题目名称" width="350px">
+        <el-table-column label="题目" width="320px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
               {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="结果" align="center">
+        <el-table-column label="结果" width="105px" align="center">
           <template slot-scope="scope">
-            <el-tag class="result-tag" size="small" effect="plain"
+            <el-tag class="result-tag" size="small" effect="light"
                     :type="resultTag(scope.row).type" @click="resultClick(scope.row)">
-              <i :class="resultTag(scope.row).icon">
-                {{ resultTag(scope.row).text }}
-              </i>
+              <i class="el-icon--left" :class="resultTag(scope.row).icon"/>
+              <span>{{ resultTag(scope.row).text }}</span>
             </el-tag>
           </template>
         </el-table-column>
@@ -50,7 +49,7 @@
             <b>{{ scope.row['score'] }}</b>
           </template>
         </el-table-column>
-        <el-table-column label="提交时间" width="150px" align="right">
+        <el-table-column label="提交时间" width="130px" align="right">
           <template slot-scope="scope">
             <i class="el-icon-time"> {{ scope.row['submitTime'] }}</i>
           </template>
@@ -61,7 +60,7 @@
                      :current-page.sync="currentPage"
                      @size-change="getHistories" @current-change="getHistories">
       </el-pagination>
-    </el-card>
+    </div>
   </div>
 </template>
 

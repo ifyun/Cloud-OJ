@@ -43,16 +43,18 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column width="120px" align="center">
-          <template slot="header">
-            <i class="el-icon-menu"></i>
-          </template>
+        <el-table-column width="50px" align="right">
           <template slot-scope="scope">
-            <el-button v-if="scope.row['started']" type="text"
-                       icon="el-icon-s-data"
-                       @click="seeRanking(scope.row)">
-              排行榜
-            </el-button>
+            <el-dropdown v-if="scope.row['started']" trigger="click" @command="seeRanking($event, scope.row)">
+            <span class="el-dropdown-link">
+              <i class="el-icon-arrow-down"></i>
+            </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item icon="el-icon-s-data" command="ranking">
+                  查看排行榜
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -136,7 +138,7 @@ export default {
         return langArr.join(" / ")
       }
     },
-    seeRanking(contest) {
+    seeRanking(_, contest) {
       window.location.href = `/ranking?contestId=${contest.contestId}`
     }
   }
@@ -150,5 +152,10 @@ export default {
 
 .languages {
   color: #606266;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #303133;
 }
 </style>

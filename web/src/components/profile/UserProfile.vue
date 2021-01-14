@@ -59,8 +59,8 @@
         <span>&nbsp;{{ userProfile.section }}</span>
       </span>
       <el-button v-if="userId == null" size="small" style="margin-top: 15px"
-                 @click="editClick">
-        <span>修改个人信息</span>
+                 icon="el-icon-edit-outline" @click="editClick">
+        修改个人信息
       </el-button>
     </div>
   </div>
@@ -69,18 +69,20 @@
 <script>
 import {Notice, saveToken, toLoginPage, userInfo} from "@/util"
 import {ApiPath, UserApi} from "@/service"
+import axios from "axios"
 
 const bcrypt = require('bcryptjs')
 
 export default {
   name: "UserProfile",
-  mounted() {
+  beforeMount() {
     if (this.userId != null) {
       this.getProfile()
       this.checkAvatar(this.userId)
     } else {
       this.resetProfileData()
       this.checkAvatar(userInfo().userId)
+      document.title = "个人中心 - Cloud OJ"
     }
   },
   props: ["userId"],
@@ -122,7 +124,7 @@ export default {
     checkAvatar(userId) {
       this.avatarUrl = ""
       const url = `${ApiPath.AVATAR}/${userId}.png`
-      this.$axios.head(url).then(() => {
+      axios.head(url).then(() => {
         this.avatarUrl = url
       })
     },
@@ -228,12 +230,11 @@ export default {
   height: 800px;
   border-right: 1px solid #e0e0e0;
   flex-direction: column;
-  padding-left: 5px;
   padding-right: 15px;
 }
 
 .avatar {
-  width: 80%;
+  width: 75%;
   height: auto;
   display: block;
   border-radius: 200px;

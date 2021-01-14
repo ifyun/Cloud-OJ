@@ -23,7 +23,6 @@
         </div>
       </el-col>
     </el-row>
-    <el-divider></el-divider>
     <ECharts class="activities" theme="green" :options="activitiesOption"/>
   </div>
 </template>
@@ -130,8 +129,8 @@ export default {
         },
         calendar: {
           top: 80,
-          right: 10,
-          cellSize: ["auto", 14],
+          right: 0,
+          cellSize: ["auto", "14"],
           range: year,
           dayLabel: {
             firstDay: 1,
@@ -229,7 +228,7 @@ export default {
 }
 
 .activities {
-  width: 100%;
+  width: 810px;
   height: 250px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <TopNavigation active="4"/>
+    <TopNavigation active=""/>
     <div v-if="error.code != null">
       <Error :error="error"/>
       <BottomArea class="bottom"/>
@@ -15,7 +15,7 @@
             <span>折叠</span>
           </el-menu-item>
           <el-menu-item index="1" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
-            <i class="el-icon-s-order"></i>
+            <i class="el-icon-s-grid"></i>
             <span slot="title">题库管理</span>
           </el-menu-item>
           <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">

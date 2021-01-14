@@ -6,7 +6,6 @@ const Page404 = () => import("@/page/404")
 const Login = () => import("@/page/Login")
 const Problems = () => import("@/page/Problems")
 const Contest = () => import("@/page/Contest")
-const History = () => import("@/page/CommitHistory")
 const Profile = () => import("@/page/Profile")
 const Ranking = () => import("@/page/Ranking")
 const Manage = () => import("@/page/Manage")
@@ -20,7 +19,6 @@ const routes = [
     {path: "/", redirect: 'problems'},
     {path: "/problems", component: Problems},
     {path: "/contest", component: Contest},
-    {path: "/history", component: History},
     {path: "/profile", component: Profile},
     {path: "/ranking", component: Ranking},
     {path: "/manage", component: Manage},

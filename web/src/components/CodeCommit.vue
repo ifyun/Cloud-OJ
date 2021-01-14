@@ -32,7 +32,7 @@
           <el-card :style="{height: calcContentHeight()}">
             <el-form :inline="true" size="medium">
               <el-row>
-                <el-col :span="12">
+                <el-col :span="14">
                   <el-form-item label="语言">
                     <el-select v-model="language" placeholder="请选择语言" size="medium"
                                @change="languageChange">
@@ -46,7 +46,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="10">
                   <el-form-item label="主题" style="float: right">
                     <el-select style="width: 160px" v-model="cmOptions.theme" size="medium">
                       <el-option v-for="theme in codeStyle"
@@ -469,8 +469,7 @@ export default {
 .container {
   padding: 0 20px;
   flex-direction: column;
-  min-width: 1200px !important;
-  max-width: 1450px !important;
+  min-width: 1250px !important;
 }
 
 .steps {

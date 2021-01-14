@@ -1,8 +1,8 @@
 const languages = ["C", "C++", "Java", "Python", "Bash", "C#", "JavaScript", "Kotlin"]
 
 const stateTags = {
-    0: {text: "等待判题", type: "primary", icon: "el-icon-loading"},
-    1: {text: "等待写入", type: "primary", icon: "el-icon-loading"}
+    1: {text: "等待判题", type: "primary", icon: "el-icon-loading"},
+    2: {text: "等待写入", type: "primary", icon: "el-icon-loading"}
 }
 
 const resultTags = {

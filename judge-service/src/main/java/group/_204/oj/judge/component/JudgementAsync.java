@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.function.Consumer;
 
 @Slf4j
 @Component
@@ -31,9 +32,10 @@ public class JudgementAsync {
      * 异步判题
      *
      * @param solution {@link Solution}
+     * @param callback 判题结束回调
      */
     @Async("judgeExecutor")
-    public void judge(Solution solution) {
+    public void judge(Solution solution, Consumer<Void> callback) {
         compilerAsync.compile(solution, (compile -> {
             if (compile.getState() == -1) {
                 solution.setResult(SolutionResult.CE);
@@ -42,12 +44,10 @@ public class JudgementAsync {
             }
 
             solution.setState(SolutionState.JUDGED);
-
+            solutionDao.update(solution);
+            log.info("Judged: solutionId=[{}], user=[{}].", solution.getSolutionId(), solution.getUserId());
+            callback.accept(null);
             fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage());
-
-            if (solutionDao.update(solution) != 0) {
-                log.debug("判题完成: solutionId={}.", solution.getSolutionId());
-            }
         }));
     }
 }

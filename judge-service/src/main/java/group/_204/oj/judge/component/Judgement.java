@@ -20,11 +20,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * 判题模块
- */
 @Slf4j
 @Component
 public class Judgement {
@@ -73,10 +71,9 @@ public class Judgement {
      * @param solution {@link Solution}
      */
     public void judge(Solution solution) {
+        log.info("Judging: solutionId=[{}], user=[{}].", solution.getSolutionId(), solution.getUserId());
+
         long timeout = runtimeDao.getTimeout(solution.getProblemId());
-
-        log.debug("正在判题: solutionId={}.", solution.getSolutionId());
-
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
 
@@ -166,17 +163,13 @@ public class Judgement {
 
         try {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
-            int outputCount = getOutputCount(solution.getProblemId());
-            if (outputCount == 0) {
-                throw new JudgeError(String.format("题目 [%s] 缺少测试数据.", solution.getProblemId()));
-            }
             ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
             results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
             log.error("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RE);
-        } catch (JudgeError | InterruptedException | IOException | UnsupportedLanguageError e) {
+        } catch (InterruptedException | IOException | UnsupportedLanguageError e) {
             log.error("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
@@ -196,18 +189,21 @@ public class Judgement {
     private List<RunResult> run(ProcessBuilder cmd, String solutionId)
             throws RuntimeError, IOException, InterruptedException {
         Process process = cmd.start();
-        process.waitFor();
-
         List<RunResult> results;
 
-        if (process.exitValue() == 0) {
-            String solutionDir = codeDir + solutionId;
-            String resultStr = getResultFromFile(solutionDir + "/result.json");
-            results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
-            });
+        if (process.waitFor(10, TimeUnit.SECONDS)) {
+            if (process.exitValue() == 0) {
+                String solutionDir = codeDir + solutionId;
+                String resultStr = getResultFromFile(solutionDir + "/result.json");
+                results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
+                });
+            } else {
+                String stderr = getOutput(process.getErrorStream());
+                throw new RuntimeError(stderr);
+            }
         } else {
-            String stderr = getOutput(process.getErrorStream());
-            throw new RuntimeError(stderr);
+            process.destroy();
+            throw new InterruptedException("Wait too long.");
         }
 
         return results;
@@ -243,7 +239,7 @@ public class Judgement {
         Language language = Language.get(solution.getLanguage());
 
         if (language == null) {
-            throw new UnsupportedLanguageError("不支持的语言: null.");
+            throw new UnsupportedLanguageError("Unsupported language: null.");
         }
 
         String solutionDir = codeDir + solution.getSolutionId();
@@ -283,7 +279,7 @@ public class Judgement {
                 cmd.add("kotlin@SolutionKt");
                 break;
             default:
-                throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
+                throw new UnsupportedLanguageError(String.format("Unsupport language: %s.", language));
         }
 
         cmd.addAll(Arrays.asList(timeout, MEM_LIMIT, MAX_MEM_LIMIT, OUTPUT_LIMIT));
@@ -291,20 +287,5 @@ public class Judgement {
         builder.command(cmd);
 
         return builder;
-    }
-
-    /**
-     * 获取输出数据个数
-     */
-    private int getOutputCount(int problemId) {
-        String testDataDir = fileDir + "test_data/";
-        File dir = new File(testDataDir + problemId);
-
-        File[] files = dir.listFiles(pathname -> {
-            String name = pathname.getName();
-            return name.substring(name.lastIndexOf('.')).equals(".out");
-        });
-
-        return files == null ? 0 : files.length;
     }
 }

@@ -15,13 +15,12 @@ html, body {
 
 .el-container {
     min-width: 1100px !important;
-    max-width: 1250px;
-    margin: 35px auto 0;
+    max-width: 1300px;
+    margin: 25px auto 0;
 }
 
-.el-card {
+.el-card, .el-tabs--border-card {
     box-shadow: none !important;
-    /*border: none !important;*/
 }
 
 .header-wrapper {
@@ -104,7 +103,10 @@ html, body {
     word-spacing: 0.2em;
     font-size: 12pt;
     font-family: sans-serif !important;
-    padding: 5px 0;
+}
+
+.CodeMirror-linenumbers {
+    border-right: 1px solid #404040;
 }
 
 .vue-codemirror {
@@ -112,7 +114,7 @@ html, body {
 }
 
 .bottom {
-    margin-top: 45px;
+    margin-top: 35px;
     margin-bottom: 15px;
 }
 
@@ -138,7 +140,7 @@ html, body {
 }
 
 .result-error {
-    padding: 0 5px;
+    padding: 0 15px;
     font: inherit;
     white-space: pre-wrap;
     word-break: break-word;

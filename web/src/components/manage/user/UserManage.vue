@@ -26,7 +26,15 @@
           <span>用户名</span>
         </template>
         <template slot-scope="scope">
-          <el-link :href="`/profile?userId=${scope.row.userId}`"><b>{{ scope.row.name }}</b></el-link>
+          <div style="display: inline-flex;align-items: center">
+            <el-link :underline="false" :href="`/profile?userId=${scope.row.userId}`">
+              <b>{{ scope.row.name }}</b>
+            </el-link>
+            <el-tag v-if="scope.row.userId === userInfo.userId" class="el-icon--right"
+                    type="success" size="mini" effect="dark">
+              你自己
+            </el-tag>
+          </div>
         </template>
       </el-table-column>
       <el-table-column width="200px" align="center">
@@ -46,7 +54,7 @@
           <i class="el-icon-time"> {{ scope.row["createAt"] }}</i>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center">
+      <el-table-column width="180px" align="center">
         <template slot="header">
           <i class="el-icon-menu el-icon--left"></i>
           <span>操作</span>
@@ -55,6 +63,7 @@
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit"
                        @click="editClick(scope.row)">
+              编辑
             </el-button>
             <el-button size="mini" icon="el-icon-delete" type="danger"
                        :disabled="scope.row.userId === 'root'"
@@ -129,6 +138,7 @@ export default {
     }
     return {
       loading: Boolean,
+      userInfo: userInfo(),
       roleNames: [
         "用户",
         "用户管理员",
