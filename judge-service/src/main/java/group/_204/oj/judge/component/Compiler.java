@@ -14,11 +14,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * 编译模块
- */
 @Slf4j
 @Component
 class Compiler {
@@ -45,9 +43,9 @@ class Compiler {
         File dir = new File(codeDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
-                log.info("目录 {} 不存在, 已创建.", codeDir);
+                log.info("Dir {} does not exist, created.", codeDir);
             } else {
-                log.info("无法创建目录 {}.", codeDir);
+                log.info("Cannot create dir {}.", codeDir);
             }
         }
     }
@@ -66,7 +64,7 @@ class Compiler {
         String src = writeCode(solutionId, languageId, sourceCode);
 
         if (src.isEmpty()) {
-            String err = "编译错误: 无法写入源码";
+            String err = "Compile error: Cannot write source code.";
             log.error(err);
             return new Compile(solutionId, -1, err);
         }
@@ -75,7 +73,7 @@ class Compiler {
             Language language = Language.get(languageId);
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
-            log.error("编译错误: {}", e.getMessage());
+            log.error("Compile error: {}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -90,7 +88,7 @@ class Compiler {
     public Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
 
         if (language == null) {
-            throw new UnsupportedLanguageError("不支持的语言: null.");
+            throw new UnsupportedLanguageError("Unsupported language: null.");
         }
 
         String solutionDir = codeDir + solutionId;
@@ -100,10 +98,12 @@ class Compiler {
         // 构造编译命令
         switch (language) {
             case C:
-                cmd.addAll(Arrays.asList("gcc", "-std=c11", "Solution.c", "-o", "Solution"));
+                cmd.addAll(Arrays.asList("gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors",
+                        "Solution.c", "-o", "Solution"));
                 break;
             case CPP:
-                cmd.addAll(Arrays.asList("g++", "-std=c++17", "Solution.cpp", "-o", "Solution"));
+                cmd.addAll(Arrays.asList("g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors",
+                        "Solution.cpp", "-o", "Solution"));
                 break;
             case JAVA:
                 cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
@@ -119,24 +119,25 @@ class Compiler {
             case JAVA_SCRIPT:
                 return new Compile(solutionId, 0);
             default:
-                throw new UnsupportedLanguageError(String.format("不支持的语言: %s.", language));
+                throw new UnsupportedLanguageError(String.format("Unsupported language: %s.", language));
         }
 
         try {
             processBuilder.command(cmd);
             Process process = processBuilder.start();
-            process.waitFor();
-            // 获取错误流，为空说明编译成功
-            String error = getOutput(process.getErrorStream());
-
-            if (error.isEmpty()) {
-                log.debug("编译成功: solutionId={}", solutionId);
-                return new Compile(solutionId, 0, null);
+            if (process.waitFor(10, TimeUnit.SECONDS)) {
+                if (process.exitValue() == 0) {
+                    return new Compile(solutionId, 0, null);
+                } else {
+                    String error = getOutput(process.getErrorStream());
+                    throw new CompileError(error);
+                }
             } else {
-                throw new CompileError(error);
+                process.destroy();
+                throw new InterruptedException("Compile timeout.");
             }
         } catch (IOException | InterruptedException | CompileError e) {
-            log.error("编译错误: solutionId={}", e.getMessage());
+            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -168,7 +169,7 @@ class Compiler {
         File solutionDir = new File(codeDir + solutionId);
 
         if (!solutionDir.mkdirs()) {
-            log.error("无法创建目录 {}", solutionDir.getName());
+            log.error("Cannot create dir {}", solutionDir.getName());
             return "";
         }
 
@@ -189,7 +190,7 @@ class Compiler {
 
                 return file.getPath();
             } else {
-                log.error("无法创建文件 {}", file.getName());
+                log.error("Cannot creat file {}", file.getName());
             }
         } catch (IOException e) {
             log.error(e.getMessage());

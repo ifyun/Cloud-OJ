@@ -34,11 +34,10 @@
         </el-table-column>
         <el-table-column align="left" width="105px">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.result !== undefined" size="small" effect="plain"
+            <el-tag v-if="scope.row.result !== undefined" size="small" effect="light"
                     :type="resultTags[scope.row.result].type">
-              <i :class="resultTags[scope.row.result].icon">
-                {{ resultTags[scope.row.result].text }}
-              </i>
+              <i class="el-icon--left" :class="resultTags[scope.row.result].icon"/>
+              <span>{{ resultTags[scope.row.result].text }}</span>
             </el-tag>
           </template>
         </el-table-column>

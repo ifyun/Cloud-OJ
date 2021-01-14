@@ -21,6 +21,9 @@ spring:
     port: 5672
     username: cloud@oj
     password: cloud@oj
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 management:
   endpoints:

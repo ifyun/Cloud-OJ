@@ -2,38 +2,33 @@
   <el-header>
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
-        <el-col :span="4">
-          <div class="logo-div">
-            <img class="logo" :src="'/favicon.svg'" alt="logo">
-            <a class="app-name" type="success" href="/">Cloud OJ</a>
+        <el-col :span="20">
+          <div class="flex-nav">
+            <div class="logo-div">
+              <img class="logo" :src="'/favicon.svg'" alt="logo">
+              <a class="app-name" type="success" href="/">Cloud OJ</a>
+            </div>
+            <!-- Nav Menu -->
+            <el-menu class="top-menu" mode="horizontal" :default-active="active" @select="onSelect"
+                     background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#409EFF">
+              <el-menu-item index="1">
+                <i class="el-icon-s-grid"></i>
+                <span>题库</span>
+              </el-menu-item>
+              <el-menu-item index="2">
+                <i class="el-icon-s-flag"></i>
+                <span>竞赛/作业</span>
+              </el-menu-item>
+              <el-menu-item index="3">
+                <i class="el-icon-s-data"></i>
+                <span>排行榜</span>
+              </el-menu-item>
+              <el-menu-item index="4">
+                <i class="el-icon-question"></i>
+                <span>帮助</span>
+              </el-menu-item>
+            </el-menu>
           </div>
-        </el-col>
-        <el-col :span="16" style="display: flex; justify-content: center">
-          <!-- Nav Menu -->
-          <el-menu class="top-nav" mode="horizontal" :default-active="active" @select="onSelect"
-                   background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#FFFFFF">
-            <el-menu-item index="1">
-              <i class="el-icon-s-order"></i>
-              <span>题库</span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-s-flag"></i>
-              <span>竞赛/作业</span>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <i class="el-icon-s-data"></i>
-              <span>排行榜</span>
-            </el-menu-item>
-            <el-menu-item index="4"
-                          v-if="userInfo != null && userInfo['roleId'] > 0">
-              <i class="el-icon-s-management"></i>
-              <span>管理</span>
-            </el-menu-item>
-            <el-menu-item index="5">
-              <i class="el-icon-question"></i>
-              <span>帮助</span>
-            </el-menu-item>
-          </el-menu>
         </el-col>
         <el-col :span="4">
           <div class="account-area">
@@ -54,9 +49,10 @@
                   <i class="el-icon-user"></i>
                   <span>个人中心</span>
                 </el-dropdown-item>
-                <el-dropdown-item command="history">
-                  <i class="el-icon-time"></i>
-                  <span>提交记录</span>
+                <el-dropdown-item v-if="userInfo != null && userInfo['roleId'] > 0"
+                                  command="manage">
+                  <i class="el-icon-s-management"></i>
+                  <span>后台管理</span>
                 </el-dropdown-item>
                 <el-dropdown-item command="exit">
                   <i class="el-icon-switch-button"></i>
@@ -85,8 +81,7 @@ export default {
         1: "/",
         2: "/contest",
         3: "/ranking",
-        4: "/manage",
-        5: "/help"
+        4: "/help"
       }
     }
   },
@@ -101,16 +96,14 @@ export default {
     },
     userMenuClick(command) {
       switch (command) {
-        case "history":
-          window.location.href = "/history"
-          break
         case "profile":
           window.location.href = "/profile"
           break
+        case "manage":
+          window.location.href = "/manage"
+          break
         case "exit":
           this.logoff()
-          break
-
       }
     },
     logoff() {
@@ -127,12 +120,14 @@ export default {
 </script>
 
 <style scoped>
-.top-nav {
-  border: none !important;
+.flex-nav {
+  display: flex;
+  flex-direction: row;
 }
 
-.el-menu-item.is-active {
-  border-bottom-width: 3px !important;
+.top-menu {
+  border: none !important;
+  margin-left: 35px;
 }
 
 .header-wrapper {
@@ -149,7 +144,6 @@ export default {
 }
 
 .avatar {
-  cursor: pointer;
   height: 32px;
   width: 32px;
   border-radius: 16px;
@@ -157,7 +151,7 @@ export default {
 }
 
 .el-dropdown-link {
-  margin-left: 5px;
+  margin-left: 10px;
   cursor: pointer;
   color: #409EFF;
 }
