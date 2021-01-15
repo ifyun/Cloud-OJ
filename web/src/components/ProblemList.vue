@@ -137,7 +137,7 @@ export default {
       pageSize: 15,
       currentPage: 1,
       keyword: "",
-      resultTags: resultTags
+      resultTags
     }
   },
   methods: {
