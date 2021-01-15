@@ -189,7 +189,7 @@ export default {
     },
     editClick(index) {
       let i = this.pageSize * (this.currentPage - 1) + index
-      this.selectedContest = copyObject(this.contests.data[i])
+      this.selectedContest = copyObject(this.contests.data[parseInt(i)])
       this.editorDialog = {
         create: false,
         title: this.selectedContest.contestName,
@@ -198,7 +198,7 @@ export default {
     },
     manageProblemsClick(index) {
       let i = this.pageSize * (this.currentPage - 1) + index
-      this.selectedContest = copyObject(this.contests.data[i])
+      this.selectedContest = copyObject(this.contests.data[parseInt(i)])
       this.problemsDialog.visible = true
     },
     addContestClick() {

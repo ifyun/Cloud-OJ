@@ -32,9 +32,11 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main class="main">
-        <component :is="currentView"/>
-        <BottomArea style="margin-top: 50px"/>
+      <el-main>
+        <div class="main">
+          <component :is="currentView"/>
+          <BottomArea style="margin-top: 50px"/>
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -139,7 +141,7 @@ export default {
 }
 
 .main {
-  max-width: 1500px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 

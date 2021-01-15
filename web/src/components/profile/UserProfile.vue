@@ -50,13 +50,13 @@
       <span class="user-id">{{ userProfile.userId }}</span>
       <span v-if="userProfile.email !== undefined && userProfile.email !== ''"
             style="margin-top: 15px;">
-        <i class="el-icon-message"></i>
-        <span>&nbsp;{{ userProfile.email }}</span>
+        <i class="el-icon-message el-icon--left"/>
+        <span>{{ userProfile.email }}</span>
       </span>
       <span v-if="userProfile.section !== undefined && userProfile.section !== ''"
             style="margin-top: 5px;">
-        <i class="el-icon-office-building"></i>
-        <span>&nbsp;{{ userProfile.section }}</span>
+        <i class="el-icon-office-building el-icon--left"></i>
+        <span>{{ userProfile.section }}</span>
       </span>
       <el-button v-if="userId == null" size="small" style="margin-top: 15px"
                  icon="el-icon-edit-outline" @click="editClick">
@@ -243,7 +243,7 @@ export default {
 }
 
 .name {
-  font-size: 14pt;
+  font-size: 13pt;
   font-weight: bold;
   color: #303133;
 }

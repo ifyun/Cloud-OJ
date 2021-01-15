@@ -92,10 +92,14 @@ class Compiler {
         }
 
         String solutionDir = codeDir + solutionId;
-        List<String> cmd = new ArrayList<>(Arrays.asList("docker", "run", "--rm", "--network", "none",
-                "-v", solutionDir + ":/tmp/code", "-w", "/tmp/code", runnerImage));
 
-        // 构造编译命令
+        List<String> cmd = new ArrayList<>(Arrays.asList(
+                "docker", "run", "--rm",
+                "--network", "none",
+                "-v", solutionDir + ":/tmp/code:ro",
+                "-w", "/tmp/code", runnerImage
+        ));
+
         switch (language) {
             case C:
                 cmd.addAll(Arrays.asList("gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors",
@@ -137,7 +141,7 @@ class Compiler {
                 throw new InterruptedException("Compile timeout.");
             }
         } catch (IOException | InterruptedException | CompileError e) {
-            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
+            log.error("Compile error: solutionId={}, error={}.", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -165,32 +169,26 @@ class Compiler {
      * @return 文件路径
      */
     private String writeCode(String solutionId, int language, String source) {
-        File file;
+        File sourceFile;
         File solutionDir = new File(codeDir + solutionId);
 
         if (!solutionDir.mkdirs()) {
-            log.error("Cannot create dir {}", solutionDir.getName());
+            log.error("Cannot create dir {}.", solutionDir.getName());
             return "";
         }
 
-        if (Language.get(language) == Language.JAVA) {
-            file = new File(solutionDir + "/Solution.java");
-        } else if (Language.get(language) == Language.C_SHARP) {
-            file = new File(solutionDir + "/Solution.cs");
-        } else {
-            file = new File(solutionDir + "/Solution" + Language.getExt(language));
-        }
+        sourceFile = new File(solutionDir + "/Solution" + Language.getExt(language));
 
         try {
-            if (file.exists() || file.createNewFile()) {
-                FileWriter writer = new FileWriter(file, false);
+            if (sourceFile.exists() || sourceFile.createNewFile()) {
+                FileWriter writer = new FileWriter(sourceFile, false);
                 writer.write(source);
                 writer.flush();
                 writer.close();
 
-                return file.getPath();
+                return sourceFile.getPath();
             } else {
-                log.error("Cannot creat file {}", file.getName());
+                log.error("Cannot creat file {}.", sourceFile.getName());
             }
         } catch (IOException e) {
             log.error(e.getMessage());

@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import group._204.oj.judge.config.RabbitConfig;
 import group._204.oj.judge.model.CommitData;
 import group._204.oj.judge.service.CommitService;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
