@@ -59,12 +59,6 @@ public class Judgement {
         }
     }
 
-    private static class JudgeError extends Exception {
-        JudgeError(String msg) {
-            super(msg);
-        }
-    }
-
     /**
      * 判题
      *
@@ -93,27 +87,10 @@ public class Judgement {
         } else {
             long time = 0;
             long memory = 0;
-            int ac = 0;
-            int tle = 0;
-            int mle = 0;
-            int ole = 0;
+            int[] resultCount = {0, 0, 0, 0, 0};
 
             for (RunResult result : results) {
-                switch (result.getStatus()) {
-                    case AC:
-                        ac++;
-                        break;
-                    case TLE:
-                        tle++;
-                        break;
-                    case MLE:
-                        mle++;
-                        break;
-                    case OLE:
-                        ole++;
-                        break;
-                }
-
+                resultCount[result.getStatus()]++;
                 time = result.getTimeUsed() > time ? result.getTimeUsed() : time;
                 memory = result.getMemUsed() > memory ? result.getMemUsed() : memory;
             }
@@ -122,26 +99,26 @@ public class Judgement {
             double passRate = 0;
             SolutionResult result;
 
-            if (ac == 0) {
+            if (resultCount[AC] == 0) {
                 result = SolutionResult.WA;
-            } else if (ac < total) {
-                passRate = (double) ac / total;
+            } else if (resultCount[AC] < total) {
+                passRate = (double) resultCount[AC] / total;
                 result = SolutionResult.PA;
             } else {
                 passRate = 1;
                 result = SolutionResult.AC;
             }
 
-            if (ole != 0) {
+            if (resultCount[OLE] != 0) {
                 result = SolutionResult.OLE;
-            } else if (mle != 0) {
+            } else if (resultCount[MLE] != 0) {
                 result = SolutionResult.MLE;
-            } else if (tle != 0) {
+            } else if (resultCount[TLE] != 0) {
                 result = SolutionResult.TLE;
             }
 
             runtime.setTotal(total);
-            runtime.setPassed(ac);
+            runtime.setPassed(resultCount[AC]);
             runtime.setTime(time);
             runtime.setMemory(memory);
             solution.setResult(result);
@@ -176,7 +153,6 @@ public class Judgement {
         }
 
         runtimeDao.update(runtime);
-
         return results;
     }
 
@@ -248,7 +224,8 @@ public class Judgement {
         ProcessBuilder builder = new ProcessBuilder();
 
         List<String> cmd = new ArrayList<>(Arrays.asList(
-                "docker", "run", "--rm", "--network", "none",
+                "docker", "run", "--rm",
+                "--network", "none",
                 "-v", String.format("%s:/tmp/code", solutionDir),
                 "-v", String.format("%s:/%s:ro", testDataDir, dataDirInContainer),
                 "-w", "/tmp/code",
@@ -279,7 +256,7 @@ public class Judgement {
                 cmd.add("kotlin@SolutionKt");
                 break;
             default:
-                throw new UnsupportedLanguageError(String.format("Unsupport language: %s.", language));
+                throw new UnsupportedLanguageError(String.format("Unsupported language: %s.", language));
         }
 
         cmd.addAll(Arrays.asList(timeout, MEM_LIMIT, MAX_MEM_LIMIT, OUTPUT_LIMIT));
