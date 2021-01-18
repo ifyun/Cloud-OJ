@@ -2,14 +2,17 @@ import qs from "qs"
 
 let colorIndex = 1,
     colorMap = new Map()
+
 const TOKEN = "token"
 
 function tagColor(tag) {
-    if (colorMap[tag] === undefined) {
-        let i = colorIndex++ % 8
-        colorMap[tag] = `tag-color-${i === 0 ? 1 : i}`
+    if (colorMap.get(tag) === undefined) {
+        let i = colorIndex % 8
+        colorMap.set(tag, `tag-color-${i === 0 ? 1 : i}`)
+        colorIndex++
     }
-    return colorMap[tag]
+
+    return colorMap.get(tag)
 }
 
 function userInfo() {

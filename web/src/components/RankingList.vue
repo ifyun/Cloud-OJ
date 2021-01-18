@@ -29,7 +29,7 @@
                  src="@/assets/icons/medal-no.2.svg" alt="2">
             <img v-else-if="scope.row['rank'] === 3" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.3.svg" alt="3">
-            <span v-else><b>{{ scope.row['rank'] }}</b></span>
+            <span v-else>{{ scope.row['rank'] }}</span>
           </template>
         </el-table-column>
         <el-table-column width="55px" align="right">
@@ -43,10 +43,10 @@
         <el-table-column>
           <template slot="header">
             <i class="el-icon-user-solid el-icon--left"/>
-            <span>用户名</span>
+            <span>用户</span>
           </template>
           <template slot-scope="scope">
-            <el-link :href="`/profile?userId=${scope.row.userId}`"><b>{{ scope.row.name }}</b></el-link>
+            <el-link :href="`/profile?userId=${scope.row.userId}`">{{ scope.row.name }}</el-link>
           </template>
         </el-table-column>
         <el-table-column label="总提交次数" width="150px" align="right">

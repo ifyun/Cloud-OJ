@@ -20,14 +20,7 @@
     </el-alert>
     <el-table :data="testData" border max-height="600" v-loading="loading"
               :default-sort="{prop: 'fileName', order: 'ascending'}">
-      <el-table-column label="文件名">
-        <template slot-scope="scope">
-          <el-popover trigger="click" placement="right-end">
-            <pre class="test-data">{{ scope.row.content }}</pre>
-            <el-button slot="reference" size="mini">{{ scope.row['fileName'] }}
-            </el-button>
-          </el-popover>
-        </template>
+      <el-table-column label="文件名" prop="fileName">
       </el-table-column>
       <el-table-column label="文件大小" width="200px" align="right">
         <template slot-scope="scope">
@@ -147,9 +140,5 @@ export default {
 </script>
 
 <style scoped>
-.test-data {
-  max-width: 500px;
-  max-height: 500px;
-  white-space: pre-wrap;
-}
+
 </style>

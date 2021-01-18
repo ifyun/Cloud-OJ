@@ -48,7 +48,7 @@
       <el-table-column label="题目名称" width="250px">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
-            {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
+            {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
           </el-link>
         </template>
       </el-table-column>
@@ -96,7 +96,7 @@
               <el-dropdown-item icon="el-icon-edit" command="edit">
                 编辑
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-s-grid" command="manage-data">
+              <el-dropdown-item icon="el-icon-document" command="manage-data">
                 管理测试数据
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete" command="delete" style="color: #F56C6C">

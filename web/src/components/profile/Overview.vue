@@ -177,15 +177,15 @@ export default {
 
       for (let i = 0; i < preference.length; i++) {
         preferenceData.push({
-          name: languages[parseInt(preference[i]["language"])],
-          value: preference[i]["count"]
+          name: languages[parseInt(preference[i].language)],
+          value: preference[i].count
         })
       }
 
       for (let i = 0; i < activities.length; i++) {
         activitiesData.push([
-          activities[i]["date"],
-          activities[i]["count"]
+          activities[i].date,
+          activities[i].count
         ])
       }
 
@@ -193,8 +193,9 @@ export default {
       this.activitiesOption.series.data = activitiesData
     },
     calcPercentage(key) {
-      if (this.resultStatistics.total === 0)
+      if (this.resultStatistics.total === 0) {
         return 0
+      }
       return Math.round((this.resultStatistics[key] / this.resultStatistics.total) * 100)
     },
     getColor(key) {

@@ -5,7 +5,7 @@
         <el-table-column label="题目" width="320px">
           <template slot-scope="scope">
             <el-link @click="titleClick(scope.row)">
-              {{ scope.row.problemId }}&nbsp;-&nbsp;<b>{{ scope.row.title }}</b>
+              {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
