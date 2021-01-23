@@ -109,6 +109,10 @@ function SiteSetting() {
         }
     }
 
+    let setTitle = (title) => {
+        document.title = `${title} - ${this.name}`
+    }
+
     this.setTitle = (title = null) => {
         if (this.initialized === false) {
             SettingsApi.get().then((data) => {
@@ -117,7 +121,6 @@ function SiteSetting() {
                 }
                 this.initialized = true
             }).catch(() => {
-                console.error("Failed to load site name, use default.")
                 this.name = "Cloud OJ"
             }).finally(() => {
                 title != null && setTitle(title)
@@ -135,10 +138,6 @@ function SiteSetting() {
     this.setFavicon = (url) => {
         let link = document.querySelector("link[rel*=icon]")
         link.href = url
-    }
-
-    let setTitle = (title) => {
-        document.title = `${title} - ${this.name}`
     }
 
     this.savePreference = () => {

@@ -152,7 +152,6 @@ export default {
   },
   watch: {
     code(val) {
-      console.log(val)
       window.sessionStorage.setItem("code", JSON.stringify({
         problemId: this.problemId,
         language: this.language,
