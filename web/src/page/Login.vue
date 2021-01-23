@@ -89,7 +89,6 @@ export default {
         this.logoUrl = url
         this.siteSetting.setFavicon(url)
       }).catch(() => {
-        console.warn("use default favicon.")
         this.logoUrl = "/favicon.png"
       })
     }

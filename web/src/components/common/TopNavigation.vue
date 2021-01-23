@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       logoUrl: "",
-      siteSetting: siteSetting,
+      siteSetting,
       userInfo: userInfo(),
       paths: {
         1: "/",
@@ -129,7 +129,6 @@ export default {
         this.logoUrl = url
         this.siteSetting.setFavicon(url)
       }).catch(() => {
-        console.warn("use default favicon.")
         this.logoUrl = "/favicon.png"
       })
     }
