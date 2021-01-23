@@ -18,14 +18,14 @@ export default {
     Error,
     BottomArea
   },
-  mounted() {
-    document.title = "404 · Cloud OJ"
+  beforeMount() {
+    this.siteSetting.setTitle("404")
   },
   data() {
     return {
       error: {
         code: 404,
-        text: "页面不存在"
+        msg: "页面不存在"
       }
     }
   }

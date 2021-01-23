@@ -78,9 +78,13 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="130px" align="center">
+      <el-table-column width="130px" align="center">
+        <template slot="header">
+          <i class="el-icon-date el-icon--left"/>
+          <span>创建时间</span>
+        </template>
         <template slot-scope="scope">
-          <i class="el-icon-time"> {{ formatDate(scope.row["createAt"]) }}</i>
+          {{ formatDate(scope.row["createAt"]) }}
         </template>
       </el-table-column>
       <el-table-column width="70px" align="center">
@@ -107,16 +111,16 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
-                   :page-size.sync="pageSize" :total="problems.count" :current-page.sync="currentPage"
+    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+                   :page-size.sync="pageSize" :total="problems.count"
+                   :current-page.sync="currentPage"
                    @size-change="getProblems" @current-change="getProblems">
     </el-pagination>
     <!-- Editor Dialog -->
-    <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen
+    <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen center
                :close-on-press-escape="false" :close-on-click-modal="false"
                :visible.sync="editorDialog.visible">
-      <ProblemEditor :problem-id="selectedId"
-                     :create="editorDialog.create"
+      <ProblemEditor class="editor" :problem-id="selectedId" :create="editorDialog.create"
                      :dialog-visible.sync="editorDialog.visible"
                      @refresh="getProblems"/>
     </el-dialog>
@@ -169,13 +173,13 @@ import {ApiPath, ProblemApi} from "@/service"
 import moment from "moment";
 
 export default {
-  name: "ProblemManager",
+  name: "ProblemManage",
   components: {
     TestDataManage,
     ProblemEditor
   },
   beforeMount() {
-    document.title = "题库管理 - Cloud OJ"
+    this.siteSetting.setTitle("题库管理")
     this.loadPage()
     this.getProblems()
   },
@@ -380,8 +384,9 @@ export default {
 </script>
 
 <style scoped>
-.editor-dialog {
-  min-width: 1100px;
+.editor {
+  max-width: 1450px;
+  margin: 0 auto;
 }
 
 .el-dropdown-link {

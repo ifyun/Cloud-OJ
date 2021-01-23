@@ -44,9 +44,9 @@
 
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
-import ProblemsManage from "@/components/manage/problem/ProblemsManage"
-import ContestManage from "@/components/manage/contest/ContestManage"
-import UserManage from "@/components/manage/user/UserManage"
+import ProblemsManage from "@/components/manage/problem/Index"
+import ContestManage from "@/components/manage/contest/Index"
+import UserManage from "@/components/manage/user/Index"
 import Settings from "@/components/manage/Settings"
 import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
@@ -129,11 +129,11 @@ export default {
   height: 100%;
   width: auto !important;
   border-right: 1px solid #EBEEF5;
-  background-color: #f6f6f6;
+  background-color: white;
 }
 
 .container {
-  margin-top: 0;
+  margin-top: 60px;
   padding: 0;
   min-width: 1150px !important;
   max-width: 100% !important;

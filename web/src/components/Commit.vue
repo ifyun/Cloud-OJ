@@ -2,80 +2,65 @@
   <Error v-if="error.code != null"
          :error="error"/>
   <el-container v-else class="container">
-    <el-page-header v-if="problem.problemId !== undefined"
-                    :content="`${problemId}. ${problem.title}`"
-                    @back="back">
-    </el-page-header>
-    <div style="width: 100%; margin-top: 20px"
-         v-if="problem.problemId !== undefined">
-      <el-row :gutter="15">
+    <el-card style="width: 100%" v-if="problem.problemId !== undefined">
+      <el-row :gutter="5">
         <el-col :span="12">
-          <el-card style="overflow: auto"
-                   :style="{height: calcContentHeight()}">
-            <div style="margin: 10px">
-              <el-button-group style="margin-bottom: 25px">
-                <el-button size="small" icon="el-icon-warning">
+          <div class="content" style="overflow: auto" :style="{height: contentHeight()}">
+            <span>{{ `${problemId}. ${problem.title}` }}</span>
+            <div style="margin-top: 15px">
+              <el-button-group class="limits">
+                <el-button size="mini" icon="el-icon-warning">
                   {{ problem.score }} 分
                 </el-button>
-                <el-button size="small" icon="el-icon-time">
+                <el-button size="mini" icon="el-icon-time">
                   {{ problem.timeout }} ms
                 </el-button>
-                <el-button size="small" icon="el-icon-cpu">
+                <el-button size="mini" icon="el-icon-cpu">
                   64 MB
                 </el-button>
               </el-button-group>
               <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
             </div>
-          </el-card>
+          </div>
         </el-col>
         <el-col :span="12">
-          <el-card :style="{height: calcContentHeight()}">
-            <el-form :inline="true" size="medium">
-              <el-row>
-                <el-col :span="14">
-                  <el-form-item label="语言">
-                    <el-select v-model="language" placeholder="请选择语言" size="medium"
-                               @change="languageChange">
-                      <el-option v-for="lang in enabledLanguages"
-                                 :key="lang.name"
-                                 :label="lang.name"
-                                 :value="lang.id">
-                        <span style="float: left">{{ lang.name }}</span>
-                        <span style="float: right">{{ lang.version }}</span>
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="10">
-                  <el-form-item label="主题" style="float: right">
-                    <el-select style="width: 160px" v-model="cmOptions.theme" size="medium">
-                      <el-option v-for="theme in codeStyle"
-                                 :key="theme.id" :label="theme.name" :value="theme.id">
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
-            <div :style="{height: calcCodeHeight()}">
+          <div class="content content-code" :style="{height: contentHeight()}">
+            <div :style="{height: codeHeight()}">
+              <div class="toolbar">
+                <img class="lang-icon" :src="languageIcons[language].icon"
+                     :alt="languageIcons[language].name">
+                <el-select v-model="language" size="small"
+                           @change="languageChange">
+                  <el-option v-for="lang in enabledLanguages" :key="lang.name"
+                             :label="`语言: ${lang.name}`" :value="lang.id">
+                    <span style="float: left">{{ lang.name }}</span>
+                    <span style="float: right">{{ lang.version }}</span>
+                  </el-option>
+                </el-select>
+                <el-select v-model="cmOptions.theme" size=small
+                           @change="savePreference">
+                  <el-option v-for="theme in codeStyle" :key="theme.id"
+                             :label="`主题: ${theme.name}`" :value="theme.id">
+                    <span style="float: left">{{ theme.name }}</span>
+                  </el-option>
+                </el-select>
+                <el-button size="mini" type="success" :disabled="disableCommit" @click="commitCode">
+                  <Icon name="play" class="el-icon--left" scale="0.89"/>
+                  <span>运行</span>
+                </el-button>
+                <el-button size="mini" type="info" :disabled="disableLastResult"
+                           @click="resultDialog.visible = true">
+                  <Icon name="history" class="el-icon--left" scale="0.89"/>
+                  <span>上次结果</span>
+                </el-button>
+              </div>
               <codemirror v-model="code" :options="cmOptions">
               </codemirror>
             </div>
-            <el-button-group style="margin-top: 25px">
-              <el-button size="medium" type="success" round :disabled="disableCommit" @click="commitCode">
-                <Icon name="play" class="el-icon--left"/>
-                <span>提交运行</span>
-              </el-button>
-              <el-button size="medium" type="success" round :disabled="result.title === undefined"
-                         @click="resultDialog.visible = true">
-                <Icon name="box" class="el-icon--left"/>
-                <span>上次结果</span>
-              </el-button>
-            </el-button-group>
-          </el-card>
+          </div>
         </el-col>
       </el-row>
-    </div>
+    </el-card>
     <el-dialog title="获取判题结果" width="600px"
                :visible.sync="resultDialog.visible"
                :close-on-click-modal="false"
@@ -111,17 +96,19 @@ import "codemirror/mode/python/python.js"
 import "codemirror/mode/shell/shell.js"
 import "codemirror/mode/javascript/javascript"
 import "codemirror/lib/codemirror.css"
+import "codemirror/theme/eclipse.css"
 import "codemirror/theme/monokai.css"
 import "codemirror/theme/material.css"
-import "codemirror/theme/material-darker.css"
-import "codemirror/theme/dracula.css"
+import "codemirror/theme/darcula.css"
+import "codemirror/theme/panda-syntax.css"
 import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/addon/edit/closebrackets.js"
 import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/play"
-import "vue-awesome/icons/box"
+import "vue-awesome/icons/history"
+import {languageIcons} from "@/util/data"
 
 const languageMode = [
   "text/x-csrc",
@@ -135,20 +122,20 @@ const languageMode = [
 ]
 
 const languageOptions = [
-  {id: 0, name: "C", version: "gcc(std=c11)"},
-  {id: 1, name: "C++", version: "g++(std=c++17)"},
+  {id: 0, name: "C", version: "gcc(c11)"},
+  {id: 1, name: "C++", version: "g++(c++17)"},
   {id: 2, name: "Java", version: "1.8"},
   {id: 3, name: "Python", version: "3.5"},
   {id: 4, name: "Bash"},
   {id: 5, name: "C#", version: "Mono"},
-  {id: 6, name: "JavaScript", version: "Node v14"},
+  {id: 6, name: "JavaScript", version: "Node.js"},
   {id: 7, name: "Kotlin", version: "1.4.10"}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
 
 export default {
-  name: "CodeCommit",
+  name: "Commit",
   components: {
     codemirror,
     MarkdownItVue,
@@ -156,25 +143,36 @@ export default {
     Icon
   },
   computed: {
-    disableCommit: vm => {
+    disableCommit: (vm) => {
       return vm.code.trim().length === 0
+    },
+    disableLastResult: (vm) => {
+      return vm.result.title === undefined
     }
   },
   watch: {
     code(val) {
+      console.log(val)
       window.sessionStorage.setItem("code", JSON.stringify({
+        problemId: this.problemId,
         language: this.language,
-        code: val
+        content: val
       }))
     }
+  },
+  beforeMount() {
+    const p = this.siteSetting.preference
+    this.language = p.language
+    this.cmOptions.theme = p.highlight
+    this.languageChange()
+    this.getProblem()
+    this.getCachedCode()
   },
   mounted() {
     const ctx = this
     window.onresize = () => {
       ctx.windowHeight = document.body.clientHeight
     }
-    this.getProblem()
-    this.getCachedCode()
   },
   data() {
     return {
@@ -192,14 +190,16 @@ export default {
       contestId: searchParams().contestId,
       code: "",
       codeStyle: [
+        {id: "eclipse", name: "Eclipse"},
         {id: "monokai", name: "Monokai"},
         {id: "material", name: "Material"},
-        {id: "material-darker", name: "Material Darker"},
-        {id: "dracula", name: "Dracula"},
+        {id: "darcula", name: "Darcula"},
+        {id: "panda-syntax", name: "Panda"}
       ],
+      languageIcons,
       cmOptions: {
         mode: "text/x-csrc",
-        theme: "monokai",
+        theme: "darkula",
         tabSize: 4,
         smartIndent: true,
         indentUnit: 4,
@@ -232,30 +232,31 @@ export default {
     back() {
       window.history.back()
     },
-    calcContentHeight() {
+    contentHeight() {
+      const offset = 120
       if (this.windowHeight <= 900) {
-        return "800px"
-      } else if (this.windowHeight >= 1200) {
-        return "1100px"
+        return `${900 - offset}px`
+      } else if (this.windowHeight >= 1300) {
+        return `${1300 - offset}px`
       } else {
-        return `${this.windowHeight - 130}px`
+        return `${this.windowHeight - offset}px`
       }
     },
-    calcCodeHeight() {
+    codeHeight() {
+      const offset = 155
       if (this.windowHeight <= 900) {
-        return "640px"
+        return `${900 - offset}px`
       } else if (this.windowHeight >= 1200) {
-        return "850px"
+        return `${1200 - offset}px`
       } else {
-        return `${this.windowHeight - 290}px`
+        return `${this.windowHeight - offset}px`
       }
     },
     getCachedCode() {
-      let code = window.sessionStorage.getItem("code");
-      if (code != null) {
-        code = JSON.parse(code)
-        this.code = code["code"]
-        this.language = code["language"]
+      const code = JSON.parse(window.sessionStorage.getItem("code"))
+      if (code != null && Number(code.problemId) === Number(this.problemId)) {
+        this.code = code.content
+        this.language = code.language
         this.languageChange(this.language)
         this.$forceUpdate()
       }
@@ -287,7 +288,7 @@ export default {
       }
 
       promise.then((data) => {
-        document.title = `${data.title} - Cloud OJ`
+        this.siteSetting.setTitle(data.title)
         this.problem = data
         this.calcLanguages()
       }).catch((error) => {
@@ -298,8 +299,16 @@ export default {
         }
       })
     },
-    languageChange(value) {
-      this.cmOptions.mode = languageMode[parseInt(value)]
+    languageChange() {
+      this.cmOptions.mode = languageMode[parseInt(this.language)]
+      this.savePreference()
+    },
+    savePreference() {
+      this.siteSetting.preference = {
+        language: this.language,
+        highlight: this.cmOptions.theme
+      }
+      this.siteSetting.savePreference()
     },
     /**
      * 提交代码
@@ -456,8 +465,7 @@ export default {
         case 8:
           this.result = {
             type: "warning",
-            title: "输出超限",
-            desc: "你的程序产生的输出已超过最大限制"
+            title: "输出超限"
           }
       }
     }
@@ -470,6 +478,46 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   min-width: 1250px !important;
+  max-width: 1600px !important;
+}
+
+.content {
+  padding: 0 15px;
+}
+
+.content-code {
+  border-left: 1px solid #EBEEF5;
+}
+
+.limits {
+  margin-bottom: 25px
+}
+
+.limits button {
+  cursor: default;
+}
+
+.toolbar {
+  margin-bottom: 3px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.toolbar * {
+  margin-left: 3px;
+}
+
+.toolbar *:first-child {
+  margin-left: 0;
+}
+
+.lang-icon {
+  height: 24px;
+  width: 24px;
+  padding: 2px;
+  border-radius: 2px;
+  border: 1px solid #DCDFE6;
 }
 
 .steps {

@@ -26,8 +26,7 @@
           <el-col :span="16">
             <h3>隐藏进行中的竞赛排行榜</h3>
             <el-alert show-icon type="info" :closable="false"
-                      title="开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）">
-            </el-alert>
+                      title="开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）"/>
           </el-col>
           <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
@@ -35,13 +34,12 @@
             </el-switch>
           </el-col>
         </el-row>
-        <el-divider></el-divider>
+        <el-divider/>
         <el-row :gutter="20">
           <el-col :span="16">
             <h3>显示未开始的竞赛</h3>
             <el-alert show-icon type="info" :closable="false"
-                      title="开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目">
-            </el-alert>
+                      title="开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目"/>
           </el-col>
           <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
@@ -49,7 +47,30 @@
             </el-switch>
           </el-col>
         </el-row>
-        <el-button style="margin-top: 35px" type="primary" size="medium" icon="el-icon-check"
+        <el-divider/>
+        <el-row>
+          <el-col :span="16">
+            <h3>网站名称</h3>
+            <el-input v-model="settings.siteName" size="medium" placeholder="Cloud OJ"/>
+          </el-col>
+        </el-row>
+        <el-divider/>
+        <el-row>
+          <el-col :span="16">
+            <h3>网站图标</h3>
+            <el-upload class="logo-uploader" :show-file-list="false" :action="logo.uploadUrl"
+                       :headers="logo.uploadHeaders" :before-upload="beforeUpload"
+                       :on-success="uploadSuccess" :on-error="uploadFailed">
+              <img v-if="logo.url" :src="logo.url" class="logo-uploaded" alt="logo">
+              <i v-else class="el-icon-plus logo-uploader-icon"/>
+            </el-upload>
+            <el-button style="margin-top: 5px" type="danger" plain size="mini" icon="el-icon-refresh-left"
+                       @click="deleteLogo">
+              恢复默认
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-button style="margin-top: 35px" type="success" size="medium" icon="el-icon-check"
                    :disabled="loading" @click="saveSettings">
           保存设置
         </el-button>
@@ -60,14 +81,18 @@
 
 <script>
 import {Notice, userInfo} from "@/util"
-import {SettingsApi} from "@/service"
+import {ApiPath, SettingsApi} from "@/service"
+import axios from "axios"
+
+const title = "系统设置"
 
 export default {
   name: "Settings",
   beforeMount() {
-    document.title = "系统设置 - Cloud OJ"
     this.getQueueInfo()
     this.getSettings()
+    this.siteSetting.setTitle(title)
+    this.checkLogo()
   },
   data() {
     return {
@@ -79,6 +104,15 @@ export default {
       settings: {
         showRankingAfterEnded: false,
         showNotStartedContest: false,
+        siteName: ""
+      },
+      logo: {
+        url: "/favicon.svg",
+        uploadUrl: ApiPath.IMAGE + "/logo",
+        uploadHeaders: {
+          "token": userInfo().token,
+          "userId": userInfo().userId
+        }
       }
     }
   },
@@ -97,7 +131,7 @@ export default {
           })
     },
     getSettings() {
-      SettingsApi.get(userInfo())
+      SettingsApi.get()
           .then((data) => {
             this.settings = data
           })
@@ -118,6 +152,7 @@ export default {
               title: "已保存",
               message: `${res.status} ${res.statusText}`
             })
+            this.siteName.reload(title)
           })
           .catch((error) => {
             Notice.notify.error(this, {
@@ -125,6 +160,48 @@ export default {
               message: `${error.code} ${error.msg}`
             })
           })
+    },
+    beforeUpload(file) {
+      const isTypeOk = ["image/jpeg", "image/png"].indexOf(file.type) !== -1
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isTypeOk) {
+        this.$message.error("图标只能是 JPG/PNG 格式!");
+      }
+
+      if (!isLt2M) {
+        this.$message.error("图标大小不能超过 2MB!");
+      }
+
+      return isTypeOk && isLt2M;
+    },
+    uploadSuccess() {
+      this.checkLogo()
+      Notice.message.success(this, "网站图标已更新")
+    },
+    uploadFailed(err) {
+      Notice.notify.error(this, {
+        title: "上传图标失败",
+        message: `${err.status} ${err.error}`
+      })
+    },
+    checkLogo() {
+      this.logo.url = ""
+      const url = `${ApiPath.IMAGE}/favicon.png`
+      axios.head(url).then(() => {
+        this.logo.url = url
+        this.siteSetting.setFavicon(url)
+      }).catch(() => {
+        this.logo.url = "/favicon.png"
+      })
+    },
+    deleteLogo() {
+      SettingsApi.deleteLogo(userInfo()).then(() => {
+        Notice.message.success(this, "网站图标已恢复默认")
+        this.checkLogo()
+      }).catch(() => {
+        Notice.message.error(this, "恢复默认图标失败")
+      })
     }
   }
 }
@@ -139,5 +216,36 @@ h3 {
 .switch {
   margin-top: 5px;
   margin-left: 50px;
+}
+</style>
+
+<style>
+.logo-uploader .el-upload {
+  border: 1px dashed #e0e0e0;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.logo-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
+}
+
+.logo-uploaded {
+  width: 150px;
+  height: 150px;
+  padding: 5px;
+  display: block;
+  border-radius: 5px;
 }
 </style>

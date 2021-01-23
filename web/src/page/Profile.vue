@@ -3,21 +3,21 @@
     <TopNavigation active=""/>
     <Error v-if="error.code != null" :error="error"/>
     <el-container v-else class="container">
-        <el-tabs type="border-card" style="width: 100%">
-          <el-tab-pane label="概览">
-            <el-row :gutter="10">
-              <el-col :span="6">
-                <UserProfile :user-id="userId" @error="onError"/>
-              </el-col>
-              <el-col :span="18">
-                <Overview :user-id="userId" @error="onError"/>
-              </el-col>
-            </el-row>
-          </el-tab-pane>
-          <el-tab-pane v-if="userId == null" label="提交记录">
-            <HistoryList/>
-          </el-tab-pane>
-        </el-tabs>
+      <el-tabs type="border-card" style="width: 100%">
+        <el-tab-pane label="概览">
+          <el-row :gutter="10">
+            <el-col :span="6">
+              <UserProfile :user-id="userId" @error="onError"/>
+            </el-col>
+            <el-col :span="18">
+              <Overview :user-id="userId" @error="onError"/>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane v-if="userId == null" label="提交记录">
+          <HistoryList/>
+        </el-tab-pane>
+      </el-tabs>
       <BottomArea class="bottom"/>
     </el-container>
   </div>
@@ -67,9 +67,9 @@ export default {
 
 <style scoped>
 .container {
-  padding: 0 10px;
+  padding: 0 20px;
   flex-direction: column;
   align-items: center;
-  max-width: 1200px !important;
+  max-width: 1300px !important;
 }
 </style>

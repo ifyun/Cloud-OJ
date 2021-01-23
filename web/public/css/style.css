@@ -10,26 +10,7 @@ html, body {
     min-width: 1100px;
     margin: 0 auto;
     padding: 0 !important;
-    z-index: 10;
-}
-
-.el-container {
-    min-width: 1100px !important;
-    max-width: 1300px;
-    margin: 25px auto 0;
-}
-
-.el-card, .el-tabs--border-card {
-    box-shadow: none !important;
-}
-
-.header-wrapper {
-    border-bottom: solid 1px #e6e6e6;
-}
-
-.logo {
-    height: 32px;
-    border-radius: 6px;
+    z-index: 100;
 }
 
 .logo-div {
@@ -38,20 +19,32 @@ html, body {
 }
 
 .app-name {
-    margin-left: 10px;
+    margin-left: 12px;
     font-weight: bold !important;
     font-size: 16pt !important;
     text-decoration: none;
-    color: white;
+    color: #606266;
+}
+
+.el-container {
+    min-width: 1100px !important;
+    max-width: 1400px;
+    margin: 86px auto 0;
+}
+
+.el-card, .el-tabs--border-card {
+    box-shadow: none !important;
 }
 
 .tag {
     cursor: pointer;
-    border-radius: 20px;
-    padding: 1px 10px;
+    border-radius: 12px;
+    padding: 0 10px;
     margin: 2px 2px;
     color: white;
     display: inline-block;
+    font-size: 12px;
+    line-height: 24px;
 }
 
 .result-tag {
@@ -105,8 +98,8 @@ html, body {
     font-family: sans-serif !important;
 }
 
-.CodeMirror-linenumbers {
-    border-right: 1px solid #404040;
+.cm-s-eclipse {
+    border: 1px solid #DDDDDD;
 }
 
 .vue-codemirror {

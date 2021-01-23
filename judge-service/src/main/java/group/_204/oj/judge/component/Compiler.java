@@ -96,7 +96,7 @@ class Compiler {
         List<String> cmd = new ArrayList<>(Arrays.asList(
                 "docker", "run", "--rm",
                 "--network", "none",
-                "-v", solutionDir + ":/tmp/code:ro",
+                "-v", solutionDir + ":/tmp/code",
                 "-w", "/tmp/code", runnerImage
         ));
 

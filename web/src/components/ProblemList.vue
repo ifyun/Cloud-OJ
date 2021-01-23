@@ -32,7 +32,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column align="left" width="105px">
+        <el-table-column v-if="userInfo != null" label="状态" align="center" width="105px">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.result !== undefined" size="small" effect="light"
                     :type="resultTags[scope.row.result].type">
@@ -73,19 +73,19 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="分数" width="70px" align="right">
-          <template slot-scope="scope">
-            <b>{{ scope.row.score }}</b>
-          </template>
+        <el-table-column label="分数" prop="score" width="70px" align="right">
         </el-table-column>
-        <el-table-column label="创建时间" width="120px" align="right">
+        <el-table-column width="100px" align="right">
+          <template slot="header">
+            <i class="el-icon-date el-icon--left"/>
+            <span>创建时间</span>
+          </template>
           <template slot-scope="scope">
-            <i class="el-icon-date el-icon--left"></i>
-            <span>{{ formatDate(scope.row["createAt"]) }}</span>
+            {{ formatDate(scope.row["createAt"]) }}
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="problems.count"
                      :current-page.sync="currentPage"
                      @size-change="getProblems" @current-change="getProblems">
@@ -113,9 +113,8 @@ export default {
       this.getContest()
     } else {
       this.getProblems()
-      document.title = "题库 - Cloud OJ"
+      this.siteSetting.setTitle("题库")
     }
-
   },
   data() {
     return {
@@ -157,7 +156,7 @@ export default {
         toLoginPage()
       }
       ContestApi.get(this.contestId).then((data) => {
-        document.title = `${data.contestName} - Cloud OJ`
+        this.siteSetting.setTitle(data.contestName)
         this.contest = data
         this.getProblems()
       }).catch((error) => {
@@ -182,7 +181,7 @@ export default {
             this.userInfo
         )
       } else {
-        // Only get opened problems
+        // Get all opened problems
         promise = ProblemApi.getAllOpened(
             this.currentPage,
             this.pageSize,

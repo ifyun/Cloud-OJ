@@ -11,13 +11,13 @@
       </el-form-item>
       <el-form-item prop="password">
         <el-input class="login-input" type="password" auto-complete="new-password"
-                  prefix-icon="el-icon-lock" placeholder="密码"
-                  v-model="loginForm.password">
+                  prefix-icon="el-icon-lock" placeholder="密码" v-model="loginForm.password"
+                  @keyup.enter.native="login">
         </el-input>
       </el-form-item>
       <el-form-item>
         <el-button class="login-button" type="primary" round
-                   :loading="loading" @click="onLogin">登 录
+                   :loading="loading" @click="login">登 录
         </el-button>
       </el-form-item>
     </el-form>
@@ -30,8 +30,8 @@ import {AuthApi} from "@/service"
 
 export default {
   name: "LoginTab",
-  mounted() {
-    document.title = "登录 - Cloud OJ"
+  beforeMount() {
+    this.siteSetting.setTitle("登录")
   },
   data() {
     return {
@@ -51,7 +51,7 @@ export default {
     }
   },
   methods: {
-    onLogin() {
+    login() {
       this.loading = true
       this.$refs["loginForm"].validate((valid) => {
         if (valid) {

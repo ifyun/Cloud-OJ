@@ -1,16 +1,17 @@
 <template>
-  <el-header>
+  <el-header class="header">
     <div class="header-wrapper">
       <el-row type="flex" align="middle">
         <el-col :span="20">
-          <div class="flex-nav">
+          <div class="nav">
             <div class="logo-div">
-              <img class="logo" :src="'/favicon.svg'" alt="logo">
-              <a class="app-name" type="success" href="/">Cloud OJ</a>
+              <a href="/">
+                <img class="logo" :src="logoUrl" alt="logo">
+              </a>
+              <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
             </div>
             <!-- Nav Menu -->
-            <el-menu class="top-menu" mode="horizontal" :default-active="active" @select="onSelect"
-                     background-color="#3B3B3B" text-color="#F0F0F0" active-text-color="#409EFF">
+            <el-menu class="top-menu" mode="horizontal" :default-active="active" @select="onSelect">
               <el-menu-item index="1">
                 <i class="el-icon-s-grid"></i>
                 <span>题库</span>
@@ -32,17 +33,16 @@
         </el-col>
         <el-col :span="4">
           <div class="account-area">
-            <img class="avatar"
-                 :src="userInfo != null ? `./api/file/image/avatar/${userInfo.userId}.png` : '/icons/user.svg'"
+            <img v-if="userInfo != null" class="avatar el-icon--left"
+                 :src="`/api/file/image/avatar/${userInfo.userId}.png`"
                  onerror="this.src='/icons/no_avatar.png'" alt="avatar">
-            <span class="el-dropdown-link" style="color: #E0E0E0"
-                  v-if="userInfo == null"
-                  @click="login">登录
-            </span>
+            <el-button type="primary" size="mini" v-if="userInfo == null" @click="login">
+              登录
+            </el-button>
             <el-dropdown v-else @command="userMenuClick">
-              <span class="el-dropdown-link" style="color: #E0E0E0">
-                <span><b>{{ userInfo != null ? userInfo.name : '' }}</b></span>
-                <i class="el-icon-arrow-down el-icon--right"></i>
+              <span class="el-dropdown-link" style="color: #303133">
+                <span>{{ userInfo != null ? userInfo.name : '' }}</span>
+                <i class="el-icon-arrow-down el-icon--right"/>
               </span>
               <el-dropdown-menu>
                 <el-dropdown-item command="profile">
@@ -68,14 +68,21 @@
 </template>
 
 <script>
-import {toLoginPage, userInfo} from "@/util"
-import {AuthApi} from "@/service"
+import {siteSetting, toLoginPage, userInfo} from "@/util"
+import {ApiPath, AuthApi} from "@/service"
+import axios from "axios"
 
 export default {
   name: "TopNavigation",
   props: ["active"],
+  beforeMount() {
+    siteSetting.setTitle()
+    this.checkLogo()
+  },
   data() {
     return {
+      logoUrl: "",
+      siteSetting: siteSetting,
       userInfo: userInfo(),
       paths: {
         1: "/",
@@ -87,8 +94,9 @@ export default {
   },
   methods: {
     onSelect(key) {
-      if (key === "2" || key === "3")
+      if (key === "2" || key === "3") {
         window.sessionStorage.removeItem("contest")
+      }
       window.location.href = this.paths[parseInt(key)]
     },
     login() {
@@ -114,13 +122,36 @@ export default {
           .catch(() => {
             toLoginPage()
           })
+    },
+    checkLogo() {
+      const url = `${ApiPath.IMAGE}/favicon.png`
+      axios.head(url).then(() => {
+        this.logoUrl = url
+        this.siteSetting.setFavicon(url)
+      }).catch(() => {
+        console.warn("use default favicon.")
+        this.logoUrl = "/favicon.png"
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-.flex-nav {
+.header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.header-wrapper {
+  border-bottom: solid 1px #e6e6e6;
+  padding: 0 20px;
+  background-color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+.nav {
   display: flex;
   flex-direction: row;
 }
@@ -128,12 +159,11 @@ export default {
 .top-menu {
   border: none !important;
   margin-left: 35px;
+  background-color: inherit;
 }
 
-.header-wrapper {
-  border-bottom: solid 1px #e6e6e6;
-  padding: 0 20px;
-  background-color: #3B3B3B;
+.logo {
+  height: 40px;
 }
 
 .account-area {
@@ -144,24 +174,18 @@ export default {
 }
 
 .avatar {
-  height: 32px;
-  width: 32px;
-  border-radius: 16px;
-  margin-right: 2px;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
 }
 
 .el-dropdown-link {
-  margin-left: 10px;
   cursor: pointer;
   color: #409EFF;
 }
 
 .el-icon-arrow-down {
   font-size: 12px;
-}
-
-.el-menu-item i {
-  color: #F0F0F0;
 }
 
 .el-menu-item.is-active i {
