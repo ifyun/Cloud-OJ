@@ -9,7 +9,7 @@
 <script>
 import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
-import CommitCode from "@/components/CodeCommit"
+import CommitCode from "@/components/Commit"
 
 export default {
   name: "Commit",

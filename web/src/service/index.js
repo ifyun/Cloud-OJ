@@ -4,6 +4,7 @@ import qs from "qs"
 const ApiPath = {
     LOGIN: "/api/auth/login",
     LOGOFF: "/api/auth/logoff",
+    IMAGE: "/api/file/image",
     AVATAR: "/api/file/image/avatar",
     PROBLEM: "/api/manager/problem",
     PROBLEM_IMAGE: "/api/file/image/problem",
@@ -623,12 +624,11 @@ const SettingsApi = {
             })
         })
     },
-    get(userInfo) {
+    get() {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.SETTINGS,
-                method: "GET",
-                headers: buildHeaders(userInfo)
+                method: "GET"
             }).then((res) => {
                 resolve(res.data)
             }).catch((error) => {
@@ -649,8 +649,20 @@ const SettingsApi = {
                 reject(resolveError(error))
             })
         })
+    },
+    deleteLogo(userInfo) {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: `${ApiPath.IMAGE}/logo`,
+                method: "DELETE",
+                headers: buildHeaders(userInfo)
+            }).then((res) => {
+                resolve(res)
+            }).catch((error) => {
+                reject(resolveError(error))
+            })
+        })
     }
-
 }
 
 export {

@@ -18,9 +18,12 @@ export default {
       msg: String
     }
   },
+  mounted() {
+    this.siteSetting.setTitle(this.error.code)
+  },
   methods: {
     gotoIndex() {
-      window.location.href = "./"
+      window.location.href = "/"
     },
     back() {
       window.history.back()
@@ -31,7 +34,7 @@ export default {
 
 <style scoped>
 .error {
-  margin-top: 50px;
+  margin-top: 86px;
   display: flex;
   flex-direction: column;
   justify-content: center;

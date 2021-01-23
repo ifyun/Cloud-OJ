@@ -68,7 +68,7 @@
         <el-table-column label="分数" prop="totalScore" width="150px" align="right">
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="ranking.count"
                      :current-page.sync="currentPage"
                      @size-change="getRankingList" @current-change="getRankingList">
@@ -108,7 +108,7 @@ export default {
     if (this.contestId != null) {
       this.getContest()
     } else {
-      document.title = "排行榜 - Cloud OJ"
+      this.siteSetting.setTitle("排行榜")
     }
     this.getRankingList()
   },
@@ -165,7 +165,7 @@ export default {
         return
       }
       ContestApi.get(this.contestId).then((data) => {
-        document.title = `${data.contestName} - 排行榜 - Cloud OJ`
+        this.siteSetting.setTitle(`${data.contestName} - 排行榜`)
         this.contest = data
         this.getRankingList()
       }).catch((error) => {

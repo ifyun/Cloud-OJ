@@ -25,7 +25,7 @@ export default {
     MarkdownItVue
   },
   beforeMount() {
-    document.title = "帮助 - Cloud OJ"
+    this.siteSetting.setTitle("帮助")
     this.loadHelpDoc()
   },
   data() {

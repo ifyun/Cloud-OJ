@@ -32,12 +32,13 @@ public class SystemSettings {
     public static class Config {
         private boolean showRankingAfterEnded = false;
         private boolean showNotStartedContest = false;
+        private String siteName = "";
     }
 
     @PostConstruct
     public void init() {
         loadConfig();
-        log.info("Load system config: {}", config.toString());
+        log.info("Load system config: {}.", config.toString());
     }
 
     public void loadConfig() {
@@ -56,7 +57,7 @@ public class SystemSettings {
 
     public boolean setConfig(Config config) {
         this.config = config;
-        log.info("Update system config: {}", config);
+        log.info("Update system config: {}.", config);
         File configFile = new File(fileDir + "config.json");
 
         try {
@@ -64,7 +65,7 @@ public class SystemSettings {
             objectMapper.writeValue(writer, config);
             return true;
         } catch (IOException e) {
-            log.error("Cannot save system config to file: {}", e.getMessage());
+            log.error("Cannot save system config to file: {}.", e.getMessage());
             return false;
         }
     }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-card>
     <el-form label-width="80px" ref="problemForm"
              :model="problem" v-loading="loading"
              :rules="problemRules"
@@ -24,8 +24,8 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="分类/标签">
-        <el-tag :key="tag" effect="plain" type="primary"
+      <el-form-item label="分类/标签" class="tags">
+        <el-tag :key="tag" effect="dark" type="primary"
                 closable @close="tagClose(tag)"
                 v-for="tag in tags">{{ tag }}
         </el-tag>
@@ -39,30 +39,31 @@
                    @click="showTagInput">+ 新分类
         </el-button>
       </el-form-item>
-      <el-divider>题目内容</el-divider>
-      <MarkdownEditor :height="700" :data="problem.description"
+      <el-divider/>
+      <MarkdownEditor :height="720" :data="problem.description"
                       @change="editorChange"/>
+      <!-- 用于表单验证 -->
       <el-form-item label-width="0" prop="description">
         <el-input style="display: none" type="textarea"
                   v-model="problem.description">
         </el-input>
       </el-form-item>
       <el-form-item label-width="0">
-        <el-button type="primary" :disabled="!dataChanged"
+        <el-button type="primary" :disabled="!dataChanged" size="small"
                    :icon="problemId === null ? 'el-icon-plus': 'el-icon-check'"
                    @click="save">
-          {{ problemId === null ? '提交' : '保存修改' }}
+          保存
         </el-button>
         <el-popconfirm style="margin-left: 10px" title="确定要重置吗，所有更改都会丢失？"
                        placement="right-end" @onConfirm="resetForm">
-          <el-button slot="reference" type="danger" icon="el-icon-refresh-left"
+          <el-button slot="reference" type="danger" size="small" icon="el-icon-refresh-left"
                      :disabled="!dataChanged" :loading="loading">
             重置
           </el-button>
         </el-popconfirm>
       </el-form-item>
     </el-form>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -135,7 +136,7 @@ export default {
           {required: true, type: "number", message: "请填写分值", trigger: "blur"}
         ],
         timeout: [
-          {required: true, type: "number", message: "请填写时限", trigger: "blur"}
+          {required: true, type: "number", message: "请填写运行时间限制", trigger: "blur"}
         ],
         description: [
           {required: true, message: "请输入题目描述", trigger: "blur"}
@@ -238,16 +239,16 @@ export default {
 </script>
 
 <style scoped>
-.el-tag {
+.tags * {
+  margin-left: 10px;
   vertical-align: middle;
 }
 
-.el-tag + .el-tag {
-  margin-left: 10px;
+.tags *:first-child {
+  margin-left: 0;
 }
 
 .button-new-tag {
-  margin-left: 10px;
   height: 32px;
   line-height: 30px;
   padding-top: 0;
@@ -257,7 +258,6 @@ export default {
 
 .input-new-tag {
   width: 90px;
-  margin-left: 10px;
   vertical-align: middle;
 }
 </style>

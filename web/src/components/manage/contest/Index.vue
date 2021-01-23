@@ -51,7 +51,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 10px" background layout="total, prev, pager, next"
+    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
                    :page-size="pageSize" :total="contests.count"
                    :current-page.sync="currentPage"
                    @size-change="getContests" @current-change="getContests">
@@ -100,13 +100,13 @@ import ContestEditor from "@/components/manage/contest/ContestEditor"
 import {ContestApi} from "@/service"
 
 export default {
-  name: "CompetitionManage",
+  name: "ContestManage",
   components: {
     ContestEditor,
     ContestProblemsManage
   },
   beforeMount() {
-    document.title = "竞赛/作业管理 - Cloud OJ"
+    this.siteSetting.setTitle("竞赛/作业管理")
     this.loadPage()
     this.getContests()
   },

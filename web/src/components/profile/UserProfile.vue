@@ -11,7 +11,7 @@
                  :on-error="uploadFailed">
         <img v-if="avatarUrl" :src="avatarUrl"
              class="avatar-uploaded" alt="avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        <i v-else class="el-icon-plus avatar-uploader-icon"/>
       </el-upload>
       <el-divider></el-divider>
       <el-form ref="profileForm" :model="userProfile" :rules="rules">
@@ -82,7 +82,7 @@ export default {
     } else {
       this.resetProfileData()
       this.checkAvatar(userInfo().userId)
-      document.title = "个人中心 - Cloud OJ"
+      this.siteSetting.setTitle("个人中心")
     }
   },
   props: ["userId"],
@@ -131,7 +131,7 @@ export default {
     getProfile() {
       UserApi.getProfile(this.userId)
           .then((data) => {
-            document.title = `${data["name"]} - Cloud OJ`
+            this.siteSetting.setTitle(`${data["name"]}`)
             this.userProfile = data
           })
           .catch((error) => {
@@ -156,10 +156,10 @@ export default {
       this.checkAvatar(this.userProfile.userId)
       Notice.message.success(this, "头像已更新")
     },
-    uploadFailed(res) {
+    uploadFailed(err) {
       Notice.notify.error(this, {
         title: "上传头像失败",
-        message: `${res.status} ${res.statusText}`
+        message: `${err.status} ${err.error}`
       })
     },
     editClick() {

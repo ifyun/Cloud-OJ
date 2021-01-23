@@ -1,4 +1,5 @@
 import qs from "qs"
+import {SettingsApi} from "@/service"
 
 let colorIndex = 1,
     colorMap = new Map()
@@ -96,6 +97,57 @@ const Notice = {
     }
 }
 
+function SiteSetting() {
+    this.name = ""
+    this.initialized = false
+    this.preference = JSON.parse(localStorage.getItem("preference"))
+
+    if (this.preference == null) {
+        this.preference = {
+            language: 0,
+            highlight: "darkula"
+        }
+    }
+
+    this.setTitle = (title = null) => {
+        if (this.initialized === false) {
+            SettingsApi.get().then((data) => {
+                if (data.siteName !== "") {
+                    this.name = data.siteName
+                }
+                this.initialized = true
+            }).catch(() => {
+                console.error("Failed to load site name, use default.")
+                this.name = "Cloud OJ"
+            }).finally(() => {
+                title != null && setTitle(title)
+            })
+        } else {
+            title != null && setTitle(title)
+        }
+    }
+
+    this.reload = (title) => {
+        this.initialized = false
+        this.setTitle(title)
+    }
+
+    this.setFavicon = (url) => {
+        let link = document.querySelector("link[rel*=icon]")
+        link.href = url
+    }
+
+    let setTitle = (title) => {
+        document.title = `${title} - ${this.name}`
+    }
+
+    this.savePreference = () => {
+        localStorage.setItem("preference", JSON.stringify(this.preference))
+    }
+}
+
+const siteSetting = new SiteSetting()
+
 export {
     tagColor,
     userInfo,
@@ -105,5 +157,6 @@ export {
     clearToken,
     copyObject,
     prettyMemory,
-    Notice
+    siteSetting,
+    Notice,
 }

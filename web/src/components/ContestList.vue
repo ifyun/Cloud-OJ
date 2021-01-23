@@ -58,9 +58,9 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" background
-                     layout="total, prev, pager, next" :page-size.sync="pageSize"
-                     :total="contests.count" :current-page.sync="currentPage"
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+                     :page-size.sync="pageSize" :total="contests.count"
+                     :current-page.sync="currentPage"
                      @size-change="getContests" @current-change="getContests">
       </el-pagination>
     </el-card>
@@ -76,7 +76,7 @@ import {ContestApi} from "@/service"
 export default {
   name: "CompetitionList",
   beforeMount() {
-    document.title = "竞赛/作业 - Cloud OJ"
+    this.siteSetting.setTitle("竞赛/作业")
     this.loadPage()
     this.getContests()
   },

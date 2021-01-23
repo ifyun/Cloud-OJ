@@ -67,12 +67,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/manager/contest/pro/**").hasRole(Role.PA)
                 .antMatchers("/api/manager/contest/problem/**").hasRole(Role.USER)
                 .antMatchers("/api/manager/ranking/pro/**").hasRole(Role.PA)
-                .antMatchers(HttpMethod.GET, "/api/manager/settings/**").hasRole(Role.USER)
+                .antMatchers(HttpMethod.GET, "/api/manager/settings/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/manager/settings/**").hasRole(Role.SU)
                 .antMatchers("/api/judge/commit").hasRole(Role.USER)
                 .antMatchers("/api/judge/pro/**").hasRole(Role.PA)
                 .antMatchers("/api/file/test_data/**").hasRole(Role.PA)
                 .antMatchers(HttpMethod.GET, "/api/file/image/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/api/file/image/**").hasRole(Role.SU)
                 .antMatchers(HttpMethod.POST, "/api/file/image/problem/**").hasRole(Role.PA)
                 .antMatchers(HttpMethod.POST, "/api/file/image/avatar/**").hasRole(Role.USER);
     }

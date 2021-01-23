@@ -11,7 +11,10 @@
     <div class=right>
       <div id="login-content">
         <div class="logo-div">
-          <a href="/"><img class="logo" :src="'/favicon.svg'" alt="logo"></a>
+          <a href="/">
+            <img class="logo" :src="logoUrl" alt="logo">
+          </a>
+          <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
         </div>
         <div v-if="currentView === 'LoginTab'" class="title">
           <h2>登录</h2>
@@ -51,6 +54,9 @@ import BottomArea from "@/components/common/BottomArea"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/brands/chrome"
 import "vue-awesome/icons/brands/edge"
+import {ApiPath} from "@/service"
+import axios from "axios"
+import {siteSetting} from "@/util"
 
 export default {
   name: "Login",
@@ -62,8 +68,13 @@ export default {
   },
   data() {
     return {
-      currentView: "LoginTab"
+      currentView: "LoginTab",
+      logoUrl: "",
+      siteSetting
     }
+  },
+  beforeMount() {
+    this.checkLogo()
   },
   methods: {
     login() {
@@ -71,6 +82,16 @@ export default {
     },
     signup() {
       this.currentView = "SignupTab"
+    },
+    checkLogo() {
+      const url = `${ApiPath.IMAGE}/favicon.png`
+      axios.head(url).then(() => {
+        this.logoUrl = url
+        this.siteSetting.setFavicon(url)
+      }).catch(() => {
+        console.warn("use default favicon.")
+        this.logoUrl = "/favicon.png"
+      })
     }
   }
 }
@@ -134,8 +155,11 @@ export default {
 }
 
 .logo {
-  height: 50px;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  height: 45px;
+}
+
+.app-name {
+  font-size: 24pt !important;
 }
 
 h1 {

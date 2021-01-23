@@ -57,7 +57,7 @@
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="preview" :style="{ height: `${height + 20}px`}">
+          <div class="preview" :style="{ height: `${height + 10}px`}">
             <markdown-it-vue ref="md" :options="mdOptions" :content="content"/>
           </div>
         </el-col>
@@ -69,14 +69,10 @@
       <el-row>
         <el-col :span="6">
           <div class="upload-wrapper">
-            <el-upload :action="imageDialog.uploadUrl"
-                       :headers="imageDialog.headers"
-                       list-type="picture-card"
-                       :before-upload="checkImageType"
-                       :on-success="imageUploadSuccess"
-                       :on-error="imageUploadError"
-                       :on-preview="imagePreview"
-                       :on-remove="removeImage">
+            <el-upload list-type="picture-card" :action="imageDialog.uploadUrl"
+                       :headers="imageDialog.headers" :before-upload="checkImageType"
+                       :on-success="imageUploadSuccess" :on-error="imageUploadError"
+                       :on-preview="imagePreview" :on-remove="removeImage">
               <i class="el-icon-plus"></i>
             </el-upload>
             <el-dialog :visible.sync="imageDialog.previewDialogVisible" append-to-body>
@@ -298,10 +294,6 @@ export default {
       head.line >= anchor.line && head.sticky === "before" && ([head, anchor] = [anchor, head])
       let content = this.getRange(head, anchor)
 
-      if (content.length === 0) {
-        content = type
-      }
-
       let str = `::: ${type}\n${content}\n:::\n`
       this.insertBlock(str)
     },
@@ -407,7 +399,8 @@ export default {
 }
 
 .toolbar {
-  margin: 3px;
+  padding: 2px;
+  border-bottom: 1px solid #3F3F3F;
 }
 
 .toolbar button {

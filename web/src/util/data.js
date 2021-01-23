@@ -1,5 +1,16 @@
 const languages = ["C", "C++", "Java", "Python", "Bash", "C#", "JavaScript", "Kotlin"]
 
+const languageIcons = {
+    0: {name: "C", icon: "/icons/lang/c.svg"},
+    1: {name: "C++", icon: "/icons/lang/cpp.svg"},
+    2: {name: "Java", icon: "/icons/lang/java.svg"},
+    3: {name: "Python", icon: "/icons/lang/python.svg"},
+    4: {name: "Bash", icon: "/icons/lang/bash.svg"},
+    5: {name: "C#", icon: "/icons/lang/csharp.svg"},
+    6: {name: "JavaScript", icon: "/icons/lang/js.svg"},
+    7: {name: "Kotlin", icon: "/icons/lang/kotlin.svg"}
+}
+
 const stateTags = {
     1: {text: "等待判题", type: "primary", icon: "el-icon-loading"},
     2: {text: "等待写入", type: "primary", icon: "el-icon-loading"}
@@ -19,6 +30,7 @@ const resultTags = {
 
 export {
     languages,
+    languageIcons,
     stateTags,
     resultTags
 }

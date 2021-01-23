@@ -28,7 +28,7 @@
         <template slot-scope="scope">
           <div style="display: inline-flex;align-items: center">
             <el-link :underline="false" :href="`/profile?userId=${scope.row.userId}`">
-              <b>{{ scope.row.name }}</b>
+              {{ scope.row.name }}
             </el-link>
             <el-tag v-if="scope.row.userId === userInfo.userId" class="el-icon--right"
                     type="success" size="mini" effect="dark">
@@ -73,8 +73,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 10px"
-                   background layout="total, prev, pager, next"
+    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
                    :page-size.sync="pageSize" :total="users.count"
                    :current-page.sync="currentPage"
                    @size-change="getUsers" @current-change="getUsers">
@@ -126,7 +125,7 @@ export default {
     Icon
   },
   beforeMount() {
-    document.title = "用户管理 - Cloud OJ"
+    this.siteSetting.setTitle("用户管理")
     this.loadPage()
     this.getUsers()
   },
@@ -243,7 +242,7 @@ export default {
         }
         UserApi.delete(this.selectedUser.userId, userInfo())
             .then((res) => {
-              this.deleteDialogVisible = false
+              this.deleteDialog.visible = false
               Notice.notify.info(this, {
                 title: `用户 ${this.selectedUser.userId} 已删除`,
                 message: `${res.status} ${res.statusText}`
