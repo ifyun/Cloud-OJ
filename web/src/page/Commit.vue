@@ -17,6 +17,13 @@ export default {
     TopNavigation,
     BottomArea,
     CommitCode
+  },
+  mounted() {
+    console.log(
+        "%c别学了，打游戏不香吗?",
+        "color: white; background: orange; padding: 2px 8px;" +
+        "font-family: sans-serif;"
+    )
   }
 }
 </script>

@@ -99,6 +99,8 @@ const Notice = {
 
 function SiteSetting() {
     this.name = ""
+    this.icp = ""
+    this.icpUrl = ""
     this.initialized = false
     this.preference = JSON.parse(localStorage.getItem("preference"))
 
@@ -118,6 +120,8 @@ function SiteSetting() {
             SettingsApi.get().then((data) => {
                 if (data.siteName !== "") {
                     this.name = data.siteName
+                    this.icp = data.icp
+                    this.icpUrl = data.icpUrl
                 }
                 this.initialized = true
             }).catch(() => {

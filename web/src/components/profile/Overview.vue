@@ -7,15 +7,14 @@
       </el-col>
       <el-col :span="8">
         <b style="font-size: 13pt">结果统计({{ resultStatistics.total }}次提交)</b>
-        <div style="margin-top: 70px">
+        <div style="margin-top: 35px">
           <div class="result-bar" v-for="(key, index) in resultKeys" :key="index">
             <el-row>
               <el-col :span="4">
                 <b :style="{color: getColor(key)}">{{ key }}</b>
               </el-col>
               <el-col :span="20">
-                <el-progress :stroke-width="18" :text-inside="true" :color="getColor(key)"
-                             :percentage="calcPercentage(key)">
+                <el-progress :stroke-width="10" :color="getColor(key)" :percentage="calcPercentage(key)">
                 </el-progress>
               </el-col>
             </el-row>
@@ -92,14 +91,17 @@ export default {
           left: "left",
           top: "50",
           orient: "vertical",
-          data: languages
+          data: []
         },
         series: [
           {
             name: "语言偏好",
             type: "pie",
             center: ["50%", "50%"],
-            radius: [50, 120],
+            radius: [35, 125],
+            itemStyle: {
+              borderRadius: 6
+            },
             roseType: "area",
             data: []
           }
@@ -115,7 +117,7 @@ export default {
         },
         tooltip: {
           formatter(params) {
-            return `${formatDate(params.data[0])}<br>${params.data[1]} 次提交`
+            return `${formatDate(params.data[0])}<br>${params.data[1]} AC`
           }
         },
         visualMap: {
@@ -172,12 +174,14 @@ export default {
       let preference = overview["preference"]
       let activities = overview["activities"]
 
+      let preferenceLegend = []
       let preferenceData = []
       let activitiesData = []
 
       for (let i = 0; i < preference.length; i++) {
+        preferenceLegend.push(languages[preference[i].language].name)
         preferenceData.push({
-          name: languages[parseInt(preference[i].language)],
+          name: languages[parseInt(preference[i].language)].name,
           value: preference[i].count
         })
       }
@@ -189,6 +193,7 @@ export default {
         ])
       }
 
+      this.pieOption.legend.data = preferenceLegend
       this.pieOption.series[0].data = preferenceData
       this.activitiesOption.series.data = activitiesData
     },

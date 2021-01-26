@@ -10,7 +10,7 @@
         <el-menu class="side-nav" mode="vertical" :default-active="active"
                  :collapse="collapse" @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
-            <i v-bind:class="collapse? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
+            <i v-bind:class="collapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
             <span>折叠</span>
           </el-menu-item>
@@ -147,7 +147,7 @@ export default {
 
 .el-menu-item.is-active {
   color: #409EFF;
-  background-color: #EEEEEE;
+  background-color: #F5F5F5;
   box-shadow: inset -2px 0 0 #409EFF;
 }
 </style>

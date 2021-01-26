@@ -5,43 +5,47 @@
     <el-card style="width: 100%" v-if="problem.problemId !== undefined">
       <el-row :gutter="5">
         <el-col :span="12">
-          <div class="content" style="overflow: auto" :style="{height: contentHeight()}">
-            <span>{{ `${problemId}. ${problem.title}` }}</span>
-            <div style="margin-top: 15px">
-              <el-button-group class="limits">
-                <el-button size="mini" icon="el-icon-warning">
+          <div class="content-problem" style="overflow: auto" :style="{height: contentHeight()}">
+            <h4 id="title">{{ `${problemId}. ${problem.title}` }}</h4>
+            <div>
+              <div class="limits">
+                <el-tag type="info" size="medium">
+                  <i class="el-icon-question el-icon--left"/>
                   {{ problem.score }} 分
-                </el-button>
-                <el-button size="mini" icon="el-icon-time">
-                  {{ problem.timeout }} ms
-                </el-button>
-                <el-button size="mini" icon="el-icon-cpu">
-                  64 MB
-                </el-button>
-              </el-button-group>
+                </el-tag>
+                <el-tag type="info" size="medium">
+                  <i class="el-icon-time el-icon--left"/>
+                  时间限制: {{ problem.timeout }} ms
+                </el-tag>
+                <el-tag type="info" size="medium">
+                  <i class="el-icon-cpu el-icon--left"/>
+                  内存限制: 64 MB
+                </el-tag>
+              </div>
               <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
             </div>
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="content content-code" :style="{height: contentHeight()}">
+          <div class="content-editor" :style="{height: contentHeight()}">
             <div :style="{height: codeHeight()}">
               <div class="toolbar">
                 <img class="lang-icon" :src="languageIcons[language].icon"
                      :alt="languageIcons[language].name">
-                <el-select v-model="language" size="small"
+                <el-select v-model="language" size="small" style="width: 260px"
                            @change="languageChange">
                   <el-option v-for="lang in enabledLanguages" :key="lang.name"
-                             :label="`语言: ${lang.name}`" :value="lang.id">
+                             :label="`编程语言: ${lang.name}`" :value="lang.id">
                     <span style="float: left">{{ lang.name }}</span>
                     <span style="float: right">{{ lang.version }}</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="cmOptions.theme" size=small
+                <el-select v-model="cmOptions.theme" size=small style="width: 260px"
                            @change="savePreference">
                   <el-option v-for="theme in codeStyle" :key="theme.id"
-                             :label="`主题: ${theme.name}`" :value="theme.id">
+                             :label="`代码高亮: ${theme.name}`" :value="theme.id">
                     <span style="float: left">{{ theme.name }}</span>
+                    <span style="float: right">{{ theme.type }}</span>
                   </el-option>
                 </el-select>
                 <el-button size="mini" type="success" :disabled="disableCommit" @click="commitCode">
@@ -91,11 +95,11 @@ import Error from "@/components/Error"
 import {Notice, toLoginPage, searchParams, userInfo, prettyMemory} from "@/util"
 import {ContestApi, JudgeApi, ProblemApi} from "@/service"
 import {codemirror} from "vue-codemirror"
+import "codemirror/lib/codemirror.css"
 import "codemirror/mode/clike/clike.js"
 import "codemirror/mode/python/python.js"
 import "codemirror/mode/shell/shell.js"
 import "codemirror/mode/javascript/javascript"
-import "codemirror/lib/codemirror.css"
 import "codemirror/theme/eclipse.css"
 import "codemirror/theme/monokai.css"
 import "codemirror/theme/material.css"
@@ -108,7 +112,7 @@ import "markdown-it-vue/dist/markdown-it-vue.css"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/play"
 import "vue-awesome/icons/history"
-import {languageIcons} from "@/util/data"
+import {languages} from "@/util/data"
 
 const languageMode = [
   "text/x-csrc",
@@ -122,8 +126,8 @@ const languageMode = [
 ]
 
 const languageOptions = [
-  {id: 0, name: "C", version: "gcc(c11)"},
-  {id: 1, name: "C++", version: "g++(c++17)"},
+  {id: 0, name: "C", version: "gcc"},
+  {id: 1, name: "C++", version: "g++"},
   {id: 2, name: "Java", version: "1.8"},
   {id: 3, name: "Python", version: "3.5"},
   {id: 4, name: "Bash"},
@@ -135,7 +139,7 @@ const languageOptions = [
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
 
 export default {
-  name: "Commit",
+  name: "CommitCode",
   components: {
     codemirror,
     MarkdownItVue,
@@ -189,13 +193,13 @@ export default {
       contestId: searchParams().contestId,
       code: "",
       codeStyle: [
-        {id: "eclipse", name: "Eclipse"},
-        {id: "monokai", name: "Monokai"},
-        {id: "material", name: "Material"},
-        {id: "darcula", name: "Darcula"},
-        {id: "panda-syntax", name: "Panda"}
+        {id: "eclipse", name: "Eclipse", type: "Light"},
+        {id: "monokai", name: "Monokai", type: "Dark"},
+        {id: "material", name: "Material", type: "Dark"},
+        {id: "darcula", name: "Darcula", type: "Dark"},
+        {id: "panda-syntax", name: "Panda", type: "Dark"}
       ],
-      languageIcons,
+      languageIcons: languages,
       cmOptions: {
         mode: "text/x-csrc",
         theme: "darkula",
@@ -203,8 +207,6 @@ export default {
         smartIndent: true,
         indentUnit: 4,
         lineNumbers: true,
-        line: true,
-        showHint: true,
         matchBrackets: true,
         autoCloseBrackets: true
       },
@@ -228,9 +230,6 @@ export default {
     }
   },
   methods: {
-    back() {
-      window.history.back()
-    },
     contentHeight() {
       const offset = 120
       if (this.windowHeight <= 900) {
@@ -314,7 +313,7 @@ export default {
      */
     commitCode() {
       if (userInfo() == null) {
-        alert("请先登录！")
+        this.$alert("请先登录！", "提示")
         return
       }
       this.resultDialog.active = null
@@ -324,7 +323,7 @@ export default {
         userId: userInfo().userId,
         problemId: this.problemId,
         language: this.language,
-        sourceCode: this.code
+        sourceCode: this.code.trim()
       }
       if (this.contestId !== undefined) {
         data.contestId = this.contestId
@@ -480,20 +479,30 @@ export default {
   max-width: 1600px !important;
 }
 
-.content {
-  padding: 0 15px;
+.content-problem {
+  padding-right: 15px;
 }
 
-.content-code {
+.content-editor {
+  padding-left: 15px;
   border-left: 1px solid #EBEEF5;
 }
 
-.limits {
-  margin-bottom: 25px
+#title {
+  color: #303133;
+  margin: 0 0 15px 0;
 }
 
-.limits button {
-  cursor: default;
+.limits {
+  margin-bottom: 20px
+}
+
+.limits * {
+  margin-left: 5px;
+}
+
+.limits *:first-child {
+  margin-left: 0;
 }
 
 .toolbar {
@@ -521,5 +530,6 @@ export default {
 
 .steps {
   padding: 12px 20px;
+  margin-bottom: 5px;
 }
 </style>

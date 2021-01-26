@@ -179,7 +179,7 @@ public class Judgement {
             }
         } else {
             process.destroy();
-            throw new InterruptedException("Wait too long.");
+            throw new InterruptedException("Judge timeout.");
         }
 
         return results;

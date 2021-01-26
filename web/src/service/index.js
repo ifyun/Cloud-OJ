@@ -41,9 +41,9 @@ function buildHeaders(userInfo) {
     return userInfo != null ? {
         "userId": userInfo.userId,
         "token": userInfo.token,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json;charset=utf-8"
     } : {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json;charset=utf-8"
     }
 }
 

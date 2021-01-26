@@ -10,7 +10,7 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input class="login-input" type="password" auto-complete="new-password"
+        <el-input class="login-input" type="password" auto-complete="off"
                   prefix-icon="el-icon-lock" placeholder="密码" v-model="loginForm.password"
                   @keyup.enter.native="login">
         </el-input>

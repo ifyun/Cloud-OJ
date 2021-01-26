@@ -39,16 +39,14 @@
                    @click="showTagInput">+ 新分类
         </el-button>
       </el-form-item>
-      <el-divider/>
-      <MarkdownEditor :height="720" :data="problem.description"
-                      @change="editorChange"/>
+      <MarkdownEditor :data="problem.description" @change="editorChange"/>
       <!-- 用于表单验证 -->
       <el-form-item label-width="0" prop="description">
         <el-input style="display: none" type="textarea"
                   v-model="problem.description">
         </el-input>
       </el-form-item>
-      <el-form-item label-width="0">
+      <el-form-item label-width="0" style="margin-bottom: 0">
         <el-button type="primary" :disabled="!dataChanged" size="small"
                    :icon="problemId === null ? 'el-icon-plus': 'el-icon-check'"
                    @click="save">
@@ -116,9 +114,7 @@ export default {
   },
   data() {
     return {
-      // problem 对象是否首次改变
       firstChange: true,
-      // problem 对象是否已发生改变
       dataChanged: false,
       loading: false,
       reset: false,

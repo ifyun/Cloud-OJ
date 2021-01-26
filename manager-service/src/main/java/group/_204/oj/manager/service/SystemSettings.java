@@ -33,6 +33,8 @@ public class SystemSettings {
         private boolean showRankingAfterEnded = false;
         private boolean showNotStartedContest = false;
         private String siteName = "";
+        private String icp = "";
+        private String icpUrl = "";
     }
 
     @PostConstruct

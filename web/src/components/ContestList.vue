@@ -125,17 +125,21 @@ export default {
       return moment(time).format("HH:mm:ss")
     },
     calcLanguages(lang) {
-      const max = (1 << languages.length) - 1
+      let languageNames = []
+      for (let i in languages) {
+        languageNames.push(languages[i].name)
+      }
+      const max = (1 << languageNames.length) - 1
       if ((lang & max) === max) {
         return "无限制"
       } else {
-        let langArr = []
-        languages.forEach((value, index) => {
+        let languageLimit = []
+        languageNames.forEach((value, index) => {
           let t = 1 << index
           if ((lang & t) === t)
-            langArr.push(value)
+            languageLimit.push(value)
         })
-        return langArr.join(" / ")
+        return languageLimit.join(" / ")
       }
     },
     seeRanking(_, contest) {

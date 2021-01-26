@@ -25,8 +25,7 @@
         <el-row :gutter="20">
           <el-col :span="16">
             <h3>隐藏进行中的竞赛排行榜</h3>
-            <el-alert show-icon type="info" :closable="false"
-                      title="开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）"/>
+            <span class="info">开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）</span>
           </el-col>
           <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
@@ -38,8 +37,7 @@
         <el-row :gutter="20">
           <el-col :span="16">
             <h3>显示未开始的竞赛</h3>
-            <el-alert show-icon type="info" :closable="false"
-                      title="开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目"/>
+            <span class="info">开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目</span>
           </el-col>
           <el-col :span="8">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
@@ -49,25 +47,31 @@
         </el-row>
         <el-divider/>
         <el-row>
-          <el-col :span="16">
-            <h3>网站名称</h3>
-            <el-input v-model="settings.siteName" size="medium" placeholder="Cloud OJ"/>
-          </el-col>
-        </el-row>
-        <el-divider/>
-        <el-row>
-          <el-col :span="16">
-            <h3>网站图标</h3>
-            <el-upload class="logo-uploader" :show-file-list="false" :action="logo.uploadUrl"
-                       :headers="logo.uploadHeaders" :before-upload="beforeUpload"
-                       :on-success="uploadSuccess" :on-error="uploadFailed">
-              <img v-if="logo.url" :src="logo.url" class="logo-uploaded" alt="logo">
-              <i v-else class="el-icon-plus logo-uploader-icon"/>
-            </el-upload>
-            <el-button style="margin-top: 5px" type="danger" plain size="mini" icon="el-icon-refresh-left"
-                       @click="deleteLogo">
-              恢复默认
-            </el-button>
+          <el-col :span="10">
+            <h3>网站设置</h3>
+            <el-form label-width="80px" label-position="left" size="medium">
+              <el-form-item label="网站名称">
+                <el-input v-model="settings.siteName" placeholder="Cloud OJ"/>
+              </el-form-item>
+              <el-form-item label="备案号">
+                <el-input v-model="settings.icp" placeholder="例如: 京ICP备00000000号"/>
+              </el-form-item>
+              <el-form-item label="备案链接">
+                <el-input v-model="settings.icpUrl" placeholder="填写备案网站的链接"/>
+              </el-form-item>
+              <el-form-item label="网站图标">
+                <el-upload class="logo-uploader" :show-file-list="false" :action="logo.uploadUrl"
+                           :headers="logo.uploadHeaders" :before-upload="beforeUpload"
+                           :on-success="uploadSuccess" :on-error="uploadFailed">
+                  <img v-if="logo.url" :src="logo.url" class="logo-uploaded" alt="logo">
+                  <i v-else class="el-icon-plus logo-uploader-icon"/>
+                </el-upload>
+                <el-button type="danger" plain size="mini" icon="el-icon-refresh-left"
+                           @click="deleteLogo">
+                  恢复默认图标
+                </el-button>
+              </el-form-item>
+            </el-form>
           </el-col>
         </el-row>
         <el-button style="margin-top: 35px" type="success" size="medium" icon="el-icon-check"
@@ -104,7 +108,9 @@ export default {
       settings: {
         showRankingAfterEnded: false,
         showNotStartedContest: false,
-        siteName: ""
+        siteName: "",
+        icp: "",
+        icpUrl: ""
       },
       logo: {
         url: "/favicon.svg",
@@ -152,9 +158,10 @@ export default {
               title: "已保存",
               message: `${res.status} ${res.statusText}`
             })
-            this.siteName.reload(title)
+            this.siteSetting.reload(title)
           })
           .catch((error) => {
+            console.log(error)
             Notice.notify.error(this, {
               title: "保存系统设置失败",
               message: `${error.code} ${error.msg}`
@@ -163,17 +170,17 @@ export default {
     },
     beforeUpload(file) {
       const isTypeOk = ["image/jpeg", "image/png"].indexOf(file.type) !== -1
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isTypeOk) {
-        this.$message.error("图标只能是 JPG/PNG 格式!");
+        this.$message.error("图标只能是 JPG/PNG 格式!")
       }
 
       if (!isLt2M) {
-        this.$message.error("图标大小不能超过 2MB!");
+        this.$message.error("图标大小不能超过 2MB!")
       }
 
-      return isTypeOk && isLt2M;
+      return isTypeOk && isLt2M
     },
     uploadSuccess() {
       this.checkLogo()
@@ -213,6 +220,11 @@ h3 {
   color: #606266;
 }
 
+.info {
+  color: #909399;
+  font-size: 14px;
+}
+
 .switch {
   margin-top: 5px;
   margin-left: 50px;
@@ -235,15 +247,15 @@ h3 {
 .logo-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 150px;
-  height: 150px;
-  line-height: 150px;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
   text-align: center;
 }
 
 .logo-uploaded {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   padding: 5px;
   display: block;
   border-radius: 5px;

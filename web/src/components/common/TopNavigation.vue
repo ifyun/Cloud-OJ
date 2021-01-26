@@ -36,9 +36,10 @@
             <img v-if="userInfo != null" class="avatar el-icon--left"
                  :src="`/api/file/image/avatar/${userInfo.userId}.png`"
                  onerror="this.src='/icons/no_avatar.png'" alt="avatar">
-            <el-button type="primary" size="mini" v-if="userInfo == null" @click="login">
-              登录
-            </el-button>
+            <el-link v-if="userInfo == null" :underline="false" href="/login">
+              <Icon class="el-icon--left" name="sign-in-alt" scale="0.85"/>
+              <span>登录/注册</span>
+            </el-link>
             <el-dropdown v-else @command="userMenuClick">
               <span class="el-dropdown-link" style="color: #303133">
                 <span>{{ userInfo != null ? userInfo.name : '' }}</span>
@@ -70,10 +71,15 @@
 <script>
 import {siteSetting, toLoginPage, userInfo} from "@/util"
 import {ApiPath, AuthApi} from "@/service"
+import Icon from "vue-awesome/components/Icon"
+import "vue-awesome/icons/sign-in-alt"
 import axios from "axios"
 
 export default {
   name: "TopNavigation",
+  components: {
+    Icon
+  },
   props: ["active"],
   beforeMount() {
     siteSetting.setTitle()
@@ -98,9 +104,6 @@ export default {
         window.sessionStorage.removeItem("contest")
       }
       window.location.href = this.paths[parseInt(key)]
-    },
-    login() {
-      window.location.href = "/login"
     },
     userMenuClick(command) {
       switch (command) {
