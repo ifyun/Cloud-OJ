@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ height: `${height}px` }">
+  <div :style="{ height: `${editorHeight()}px` }">
     <div class="editor-wrapper">
       <el-row>
         <el-col :span="12">
@@ -50,14 +50,14 @@
               </el-button>
             </el-tooltip>
           </div>
-          <div :style="{ height: `${height}px` }">
+          <div :style="{ height: `${editorHeight()}px` }">
             <codemirror style="line-height: 1.5" :options="cmOptions"
                         ref="editor" v-model="content">
             </codemirror>
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="preview" :style="{ height: `${height + 10}px`}">
+          <div class="preview" :style="{ height: `${editorHeight() + 10}px`}">
             <markdown-it-vue ref="md" :options="mdOptions" :content="content"/>
           </div>
         </el-col>
@@ -152,8 +152,15 @@ export default {
       return this.$refs["editor"].codemirror
     }
   },
+  mounted() {
+    const ctx = this
+    window.onresize = () => {
+      ctx.windowHeight = document.body.clientHeight
+    }
+  },
   data() {
     return {
+      windowHeight: document.body.clientHeight,
       content: "",
       cmOptions: {
         mode: "text/x-markdown",
@@ -187,6 +194,17 @@ export default {
     }
   },
   methods: {
+    editorHeight() {
+      const offset = 260
+
+      if (this.windowHeight <= 1000) {
+        return 1000 - offset
+      } else if (this.windowHeight >= 1400) {
+        return 1400 - offset
+      } else {
+        return this.windowHeight - offset
+      }
+    },
     getCursor() {
       const cursor = this.cm["getCursor"]()
       return {
@@ -238,7 +256,7 @@ export default {
     },
     checkImageType(file) {
       const isTypeOk = ["image/jpeg", "image/png", "image/svg+xml"].indexOf(file.type) !== -1
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isTypeOk) {
         Notice.message.error(this, "图片只能是 JPG/PNG/SVG")

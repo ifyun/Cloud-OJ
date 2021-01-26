@@ -19,16 +19,13 @@
       </el-form-item>
       <el-form-item label="语言限制" prop="languages">
         <el-checkbox-group v-model="enabledLanguages">
-          <el-checkbox name="language"
-                       v-for="lang in languages"
-                       :label="lang.id"
-                       :key="lang.id">{{ lang.name }}
+          <el-checkbox name="language" v-for="lang in languages"
+                       :label="lang.id" :key="lang.id">{{ lang.name }}
           </el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-check"
-                   @click="save">
+        <el-button type="success" size="small" icon="el-icon-check" @click="save">
           保存
         </el-button>
       </el-form-item>

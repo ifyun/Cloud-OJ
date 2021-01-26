@@ -46,7 +46,7 @@
         </el-table-column>
         <el-table-column label="得分" prop="score" align="right">
         </el-table-column>
-        <el-table-column width="130px" align="right">
+        <el-table-column width="120px" align="right">
           <template slot="header">
             <i class="el-icon-date el-icon--left"/>
             <span>提交时间</span>
@@ -67,7 +67,7 @@
 
 <script>
 import {Notice, prettyMemory, searchParams, toLoginPage, userInfo} from "@/util"
-import {languageIcons, resultTags, stateTags} from "@/util/data"
+import {languages, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
 
 export default {
@@ -86,10 +86,10 @@ export default {
       },
       currentPage: 1,
       pageSize: 15,
-      languages: languageIcons,
+      languages: languages,
       codeDialogVisible: false,
       code: "",
-      prettyMemory: prettyMemory
+      prettyMemory
     }
   },
   methods: {

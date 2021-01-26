@@ -1,6 +1,4 @@
-const languages = ["C", "C++", "Java", "Python", "Bash", "C#", "JavaScript", "Kotlin"]
-
-const languageIcons = {
+const languages = {
     0: {name: "C", icon: "/icons/lang/c.svg"},
     1: {name: "C++", icon: "/icons/lang/cpp.svg"},
     2: {name: "Java", icon: "/icons/lang/java.svg"},
@@ -30,7 +28,6 @@ const resultTags = {
 
 export {
     languages,
-    languageIcons,
     stateTags,
     resultTags
 }

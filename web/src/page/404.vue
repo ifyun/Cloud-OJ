@@ -25,7 +25,7 @@ export default {
     return {
       error: {
         code: 404,
-        msg: "页面不存在"
+        msg: "Page Not Found"
       }
     }
   }

@@ -2,10 +2,6 @@
   <div class="error">
     <span class="error-code">{{ error.code }}</span>
     <span class="error-text">{{ error.msg }}</span>
-    <el-button-group style="margin-top: 25px">
-      <el-button icon="el-icon-back" size="small" @click="back">返回上页</el-button>
-      <el-button icon="el-icon-s-home" size="small" @click="gotoIndex">返回主页</el-button>
-    </el-button-group>
   </div>
 </template>
 
@@ -20,14 +16,6 @@ export default {
   },
   mounted() {
     this.siteSetting.setTitle(this.error.code)
-  },
-  methods: {
-    gotoIndex() {
-      window.location.href = "/"
-    },
-    back() {
-      window.history.back()
-    }
   }
 }
 </script>
