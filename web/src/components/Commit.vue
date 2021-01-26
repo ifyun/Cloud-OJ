@@ -165,9 +165,11 @@ export default {
   },
   beforeMount() {
     const p = this.siteSetting.preference
-    this.language = p.language
-    this.cmOptions.theme = p.highlight
-    this.languageChange()
+    if (p != null) {
+      this.language = p.language
+      this.cmOptions.theme = p.highlight
+      this.languageChange()
+    }
     this.getProblem()
     this.getCachedCode()
   },
@@ -202,7 +204,7 @@ export default {
       languageIcons: languages,
       cmOptions: {
         mode: "text/x-csrc",
-        theme: "darkula",
+        theme: "darcula",
         tabSize: 4,
         smartIndent: true,
         indentUnit: 4,
