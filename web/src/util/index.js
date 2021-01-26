@@ -104,13 +104,6 @@ function SiteSetting() {
     this.initialized = false
     this.preference = JSON.parse(localStorage.getItem("preference"))
 
-    if (this.preference == null) {
-        this.preference = {
-            language: 0,
-            highlight: "darkula"
-        }
-    }
-
     let setTitle = (title) => {
         document.title = `${title} - ${this.name}`
     }
