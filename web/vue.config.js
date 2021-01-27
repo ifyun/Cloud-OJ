@@ -2,8 +2,8 @@ module.exports = {
     productionSourceMap: false,
     transpileDependencies: [
         /\bvue-awesome\b/,
-        'vue-echarts',
-        'resize-detector'
+        "vue-echarts",
+        "resize-detector"
     ],
     chainWebpack: (config) => {
       config.plugins.delete("prefetch")

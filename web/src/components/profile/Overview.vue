@@ -181,7 +181,7 @@ export default {
       for (let i = 0; i < preference.length; i++) {
         preferenceLegend.push(languages[preference[i].language].name)
         preferenceData.push({
-          name: languages[parseInt(preference[i].language)].name,
+          name: languages[preference[i].language].name,
           value: preference[i].count
         })
       }

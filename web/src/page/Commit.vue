@@ -19,6 +19,7 @@ export default {
     CommitCode
   },
   mounted() {
+    /* eslint-disable no-console */
     console.log(
         "%c别学了，打游戏不香吗?",
         "color: white; background: orange; padding: 2px 8px;" +

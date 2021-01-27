@@ -86,7 +86,7 @@ export default {
       },
       currentPage: 1,
       pageSize: 15,
-      languages: languages,
+      languages,
       codeDialogVisible: false,
       code: "",
       prettyMemory

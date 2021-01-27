@@ -161,7 +161,6 @@ export default {
             this.siteSetting.reload(title)
           })
           .catch((error) => {
-            console.log(error)
             Notice.notify.error(this, {
               title: "保存系统设置失败",
               message: `${error.code} ${error.msg}`
