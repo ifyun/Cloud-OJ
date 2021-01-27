@@ -22,7 +22,7 @@ export default {
 
 <style scoped>
 .error {
-  margin-top: 86px;
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;

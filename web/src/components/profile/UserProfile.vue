@@ -71,7 +71,7 @@ import {Notice, saveToken, toLoginPage, userInfo} from "@/util"
 import {ApiPath, UserApi} from "@/service"
 import axios from "axios"
 
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs")
 
 export default {
   name: "UserProfile",
@@ -174,7 +174,7 @@ export default {
         let password = this.userProfile.password
         let passwordChanged = false
 
-        if (password === undefined || password === "") {
+        if (typeof password === "undefined" || password === "") {
           delete this.userProfile.password
         } else {
           this.userProfile.password = bcrypt.hashSync(this.$md5(password), 10)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card>
+    <el-card v-loading="loading">
       <h3>系统信息</h3>
       <el-card style="margin-bottom: 35px">
         <div><b>RabbitMQ 消息队列：</b>
@@ -161,7 +161,6 @@ export default {
             this.siteSetting.reload(title)
           })
           .catch((error) => {
-            console.log(error)
             Notice.notify.error(this, {
               title: "保存系统设置失败",
               message: `${error.code} ${error.msg}`

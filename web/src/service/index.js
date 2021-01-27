@@ -32,7 +32,7 @@ function resolveError(error) {
     const res = error.response
     return {
         code: res.status,
-        msg: res.data === undefined ?
+        msg: typeof res.data === "undefined" ?
             res.responseText : res.data.msg
     }
 }
@@ -130,7 +130,7 @@ const UserApi = {
                 url: ApiPath.PROFILE,
                 method: "GET",
                 params: {
-                    "userId": userId
+                    userId
                 }
             }).then((res) => {
                 resolve(res.data)
@@ -542,7 +542,7 @@ const JudgeApi = {
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {
-                    "solutionId": solutionId
+                    solutionId
                 }
             }).then((res) => {
                 resolve(res.status === 204 ? null : res.data)

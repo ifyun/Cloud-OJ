@@ -124,20 +124,21 @@ export default {
     formatTime(time) {
       return moment(time).format("HH:mm:ss")
     },
-    calcLanguages(lang) {
+    calcLanguages(languageId) {
       let languageNames = []
       for (let i in languages) {
         languageNames.push(languages[i].name)
       }
       const max = (1 << languageNames.length) - 1
-      if ((lang & max) === max) {
+      if ((languageId & max) === max) {
         return "无限制"
       } else {
         let languageLimit = []
         languageNames.forEach((value, index) => {
-          let t = 1 << index
-          if ((lang & t) === t)
+          const lang = 1 << index
+          if ((languageId & lang) === lang) {
             languageLimit.push(value)
+          }
         })
         return languageLimit.join(" / ")
       }

@@ -16,7 +16,7 @@ const routes = [
     {path: "*", component: Page404},
     {path: "/page_not_found", component: Page404},
     {path: "/login", component: Login},
-    {path: "/", redirect: 'problems'},
+    {path: "/", redirect: "problems"},
     {path: "/problems", component: Problems},
     {path: "/contest", component: Contest},
     {path: "/profile", component: Profile},
