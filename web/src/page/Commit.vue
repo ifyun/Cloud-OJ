@@ -1,7 +1,9 @@
 <template>
   <div>
     <TopNavigation/>
-    <CommitCode/>
+    <el-container class="container">
+      <CommitCode/>
+    </el-container>
     <BottomArea class="bottom"/>
   </div>
 </template>
@@ -30,5 +32,10 @@ export default {
 </script>
 
 <style scoped>
-
+.container {
+  padding: 0 20px;
+  flex-direction: column;
+  min-width: 1250px !important;
+  max-width: 1600px !important;
+}
 </style>

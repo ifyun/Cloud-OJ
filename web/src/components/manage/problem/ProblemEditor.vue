@@ -84,7 +84,7 @@ export default {
       immediate: true,
       handler() {
         if (this.dialogVisible) {
-          let formLoaded = this.$refs["problemForm"] !== undefined
+          let formLoaded = typeof this.$refs["problemForm"] !== "undefined"
           this.firstChange = true
           if (this.problemId != null) {
             this.getProblem()

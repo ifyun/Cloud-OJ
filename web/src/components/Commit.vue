@@ -1,28 +1,29 @@
 <template>
-  <Error v-if="error.code != null"
-         :error="error"/>
-  <el-container v-else class="container">
-    <el-card style="width: 100%" v-if="problem.problemId !== undefined">
+  <Error v-if="error.code != null" :error="error"/>
+  <div v-else>
+    <el-card style="width: 100%" v-loading="loading">
       <el-row :gutter="5">
         <el-col :span="12">
           <div class="content-problem" style="overflow: auto" :style="{height: contentHeight()}">
-            <h4 id="title">{{ `${problemId}. ${problem.title}` }}</h4>
-            <div>
-              <div class="limits">
-                <el-tag type="info" size="medium">
-                  <i class="el-icon-question el-icon--left"/>
-                  {{ problem.score }} 分
-                </el-tag>
-                <el-tag type="info" size="medium">
-                  <i class="el-icon-time el-icon--left"/>
-                  时间限制: {{ problem.timeout }} ms
-                </el-tag>
-                <el-tag type="info" size="medium">
-                  <i class="el-icon-cpu el-icon--left"/>
-                  内存限制: 64 MB
-                </el-tag>
+            <div v-if="problem.problemId !== undefined">
+              <h4 id="title">{{ `${problem.problemId}. ${problem.title}` }}</h4>
+              <div>
+                <div class="limits">
+                  <el-tag type="info" size="medium">
+                    <i class="el-icon-question el-icon--left"/>
+                    {{ problem.score }} 分
+                  </el-tag>
+                  <el-tag type="info" size="medium">
+                    <i class="el-icon-time el-icon--left"/>
+                    时间限制: {{ problem.timeout }} ms
+                  </el-tag>
+                  <el-tag type="info" size="medium">
+                    <i class="el-icon-cpu el-icon--left"/>
+                    内存限制: 64 MB
+                  </el-tag>
+                </div>
+                <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
               </div>
-              <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
             </div>
           </div>
         </el-col>
@@ -87,7 +88,7 @@
         <span>重试</span>
       </el-button>
     </el-dialog>
-  </el-container>
+  </div>
 </template>
 
 <script>
@@ -151,7 +152,7 @@ export default {
       return vm.code.trim().length === 0
     },
     disableLastResult: (vm) => {
-      return vm.result.title === undefined
+      return typeof vm.result.title === "undefined"
     }
   },
   watch: {
@@ -181,6 +182,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       windowHeight: document.body.clientHeight,
       mdOptions: {
         markdownIt: {
@@ -297,6 +299,8 @@ export default {
         } else {
           this.error = error
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     languageChange() {
@@ -474,13 +478,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 0 20px;
-  flex-direction: column;
-  min-width: 1250px !important;
-  max-width: 1600px !important;
-}
-
 .content-problem {
   padding-right: 15px;
 }
@@ -525,6 +522,7 @@ export default {
 .lang-icon {
   height: 24px;
   width: 24px;
+  min-width: 24px;
   padding: 2px;
   border-radius: 2px;
   border: 1px solid #DCDFE6;

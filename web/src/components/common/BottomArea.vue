@@ -40,7 +40,6 @@ export default {
 
 <style scoped>
 .bottom-area {
-  margin: 15px 0;
   font-size: 10pt;
 }
 

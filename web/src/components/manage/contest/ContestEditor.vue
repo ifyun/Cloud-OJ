@@ -103,9 +103,10 @@ export default {
   methods: {
     listLanguages() {
       this.enabledLanguages = []
-      let formLoaded = this.$refs["edit-contest"] !== undefined
-      if (formLoaded)
+      let formLoaded = typeof this.$refs["edit-contest"] !== "undefined"
+      if (formLoaded) {
         this.$refs["edit-contest"].clearValidate()
+      }
       if (Object.keys(this.contest).length > 0) {
         let lang = this.contest.languages
         // 列出语言

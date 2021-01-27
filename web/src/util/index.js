@@ -7,7 +7,7 @@ let colorIndex = 1,
 const TOKEN = "token"
 
 function tagColor(tag) {
-    if (colorMap.get(tag) === undefined) {
+    if (typeof colorMap.get(tag) === "undefined") {
         let i = colorIndex % 8
         colorMap.set(tag, `tag-color-${i === 0 ? 1 : i}`)
         colorIndex++
@@ -51,7 +51,7 @@ function prettyMemory(mem) {
 
 function callNotify(ctx, data, type) {
     ctx.$notify[type]({
-        offset: data["offset"] === undefined ? 50 : data["offset"],
+        offset: typeof data["offset"] === "undefined" ? 50 : data["offset"],
         duration: 1500,
         title: data["title"],
         message: data["message"]
