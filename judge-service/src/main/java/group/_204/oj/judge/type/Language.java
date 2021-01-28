@@ -8,7 +8,8 @@ public enum Language {
     BASH(4, ".sh"),
     C_SHARP(5, ".cs"),
     JAVA_SCRIPT(6, ".js"),
-    KOTLIN(7, ".kt");
+    KOTLIN(7, ".kt"),
+    GO(8, ".go");
 
     private final int code;
     private final String ext;

@@ -118,6 +118,9 @@ class Compiler {
             case KOTLIN:
                 cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
                 break;
+            case GO:
+                cmd.addAll(Arrays.asList("go", "build", "Solution.go"));
+                break;
             case PYTHON:
             case BASH:
             case JAVA_SCRIPT:

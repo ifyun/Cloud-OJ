@@ -496,7 +496,7 @@ const TestDataApi = {
                 method: "GET",
                 headers: buildHeaders(userInfo)
             }).then((res) => {
-                resolve(res.data)
+                resolve(res.status === 200 ? res.data : [])
             }).catch((error) => {
                 reject(resolveError(error))
             })

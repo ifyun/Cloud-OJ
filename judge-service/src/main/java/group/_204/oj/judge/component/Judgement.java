@@ -235,6 +235,7 @@ public class Judgement {
         switch (language) {
             case C:
             case CPP:
+            case GO:
                 cmd.add("./Solution");
                 break;
             case JAVA:
