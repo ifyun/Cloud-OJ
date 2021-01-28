@@ -18,11 +18,12 @@ Language        | Compiler/Interpreter  | Version
 C               | gcc                   | std=c11
 C++             | g++                   | std=c++17
 Java            | OpenJDK               | 1.8
-Python          |                       | 3.5
+Python          | -                     | 3.5
 Bash            | -                     | -
 C#              | Mono                  | 4.6.2 (C# 5.0)
 JavaScript      | Node                  | LTS
-Kotlin          | kotlinc               | 1.4.10
+Kotlin          | -                     | 1.4.10
+Go              | -                     | 1.15.7
 
 ## 使用
 

@@ -165,7 +165,9 @@ export default {
       ProblemApi.get(this.problemId, userInfo())
           .then((data) => {
             this.problem = data
-            this.tags = data.category.split(",")
+            if (typeof data.category !== "undefined") {
+              this.tags = data.category.split(",")
+            }
             if (this.reset)
               this.dataChanged = false
           })
@@ -207,6 +209,7 @@ export default {
         if (!valid) {
           return false
         }
+        this.problem.category = this.tags.join(",")
         ProblemApi.save(this.problem, userInfo(), this.create)
             .then(() => {
               this.$emit("update:dialogVisible", false)

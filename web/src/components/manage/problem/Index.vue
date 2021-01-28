@@ -58,7 +58,7 @@
           <span>分类</span>
         </template>
         <template slot-scope="scope">
-          <div v-if="scope.row.category !== ''" style="">
+          <div v-if="typeof scope.row.category !== 'undefined' && scope.row.category !== ''">
             <span v-for="tag in scope.row.category.split(',')"
                   v-bind:key="tag.index"
                   @click="tagClick(tag)"

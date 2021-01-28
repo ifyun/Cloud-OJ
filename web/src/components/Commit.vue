@@ -98,6 +98,7 @@ import {ContestApi, JudgeApi, ProblemApi} from "@/service"
 import {codemirror} from "vue-codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/clike/clike.js"
+import "codemirror/mode/go/go.js"
 import "codemirror/mode/python/python.js"
 import "codemirror/mode/shell/shell.js"
 import "codemirror/mode/javascript/javascript"
@@ -123,7 +124,8 @@ const languageMode = [
   "text/x-sh",
   "text/x-csharp",
   "text/javascript",
-  "text/x-kotlin"
+  "text/x-kotlin",
+  "text/x-go"
 ]
 
 const languageOptions = [
@@ -134,7 +136,8 @@ const languageOptions = [
   {id: 4, name: "Bash"},
   {id: 5, name: "C#", version: "Mono"},
   {id: 6, name: "JavaScript", version: "Node.js"},
-  {id: 7, name: "Kotlin", version: "1.4.10"}
+  {id: 7, name: "Kotlin", version: "1.4.10"},
+  {id: 8, name: "Go", version: "1.15.7"}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
@@ -524,7 +527,7 @@ export default {
   width: 24px;
   min-width: 24px;
   padding: 2px;
-  border-radius: 2px;
+  border-radius: 4px;
   border: 1px solid #DCDFE6;
 }
 

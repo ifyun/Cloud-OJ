@@ -10,6 +10,7 @@ Bash            | -                     | -
 C#              | Mono                  | 4.6.2 (C# 5.0)
 JavaScript      | Node                  | LTS
 Kotlin          | -                     | 1.4.10
+Go              | -                     | 1.15.7
 
 ## 注意事项
 
@@ -82,6 +83,19 @@ public class Solution {
         int b = input.nextInt();
         System.out.print(a + b);
     }
+}
+```
+
+#### Go
+
+```go
+package main
+import "fmt"
+
+func main() {
+    var a, b int
+    fmt.Scanf("%d %d", &a, &b)
+    fmt.Println(a + b)
 }
 ```
 
