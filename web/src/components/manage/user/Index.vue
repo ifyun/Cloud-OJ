@@ -131,8 +131,9 @@ export default {
   },
   data() {
     let validateDelete = (rule, value, callback) => {
-      if (value !== this.selectedUser.userId)
+      if (value !== this.selectedUser.userId) {
         return callback(new Error("请确认输入正确"))
+      }
       callback()
     }
     return {

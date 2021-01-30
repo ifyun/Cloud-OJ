@@ -11,10 +11,10 @@
           <div class="result-bar" v-for="(key, index) in resultKeys" :key="index">
             <el-row>
               <el-col :span="4">
-                <b :style="{color: getColor(key)}">{{ key }}</b>
+                <b :style="{color: resultColor.get(key)}">{{ key }}</b>
               </el-col>
               <el-col :span="20">
-                <el-progress :stroke-width="10" :color="getColor(key)" :percentage="calcPercentage(key)">
+                <el-progress :stroke-width="10" :color="resultColor.get(key)" :percentage="calcPercentage(key)">
                 </el-progress>
               </el-col>
             </el-row>
@@ -75,6 +75,14 @@ export default {
         CE: 0,
         total: 0,
       },
+      resultColor: new Map([
+        ["AC", "#73C13B"],
+        ["WA", "#EB6E6F"],
+        ["TLE", "#F6925F"],
+        ["MLE", "#F6925F"],
+        ["RE", "#909399"],
+        ["CE", "#909399"]
+      ]),
       pieOption: {
         title: {
           text: "语言偏好",
@@ -85,7 +93,7 @@ export default {
         },
         tooltip: {
           trigger: "item",
-          formatter: '{b}<br>{c} ({d}%)'
+          formatter: "{b}<br>{c} ({d}%)"
         },
         legend: {
           left: "left",
@@ -202,20 +210,6 @@ export default {
         return 0
       }
       return Math.round((this.resultStatistics[key] / this.resultStatistics.total) * 100)
-    },
-    getColor(key) {
-      switch (key) {
-        case "AC":
-          return "#73C13B"
-        case "WA":
-          return "#EB6E6F"
-        case "TLE":
-        case "MLE":
-          return "#F6925F"
-        case "RE":
-        case "CE":
-          return "#909399"
-      }
     }
   }
 }

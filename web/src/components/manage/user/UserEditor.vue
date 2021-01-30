@@ -118,7 +118,7 @@ export default {
 
         if (this.create) {
           this.user.password = bcrypt.hashSync(this.$md5(this.user.password), 10)
-        } else if (this.user.newPassword !== undefined) {
+        } else if (typeof this.user.newPassword !== "undefined") {
           this.user.password = bcrypt.hashSync(this.$md5(this.user.newPassword), 10)
         }
 
