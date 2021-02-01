@@ -15,7 +15,7 @@ public interface ContestDao {
 
     List<List<?>> getProblemsNotInContest(int contestId, int start, int limit);
 
-    Contest getContestById(int contestId);
+    Contest getContest(int contestId);
 
     int addContest(Contest contest);
 
@@ -25,5 +25,5 @@ public interface ContestDao {
 
     int addProblem(int contestId, int problemId);
 
-    int deleteProblem(int contestId, int problemId);
+    int removeProblem(int contestId, int problemId);
 }

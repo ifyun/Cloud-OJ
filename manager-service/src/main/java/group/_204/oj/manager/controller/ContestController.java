@@ -36,7 +36,7 @@ public class ContestController implements CRUDController {
      */
     @GetMapping(path = "detail")
     public ResponseEntity<?> contest(Integer contestId) {
-        return buildGETResponse(contestService.getContestByID(contestId));
+        return buildGETResponse(contestService.getContest(contestId));
     }
 
     /**
@@ -118,6 +118,6 @@ public class ContestController implements CRUDController {
      */
     @DeleteMapping(path = "pro/problem/{contestId}/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return buildDELETEResponse(contestService.deleteProblemFromContest(contestId, problemId));
+        return buildDELETEResponse(contestService.removeProblem(contestId, problemId));
     }
 }

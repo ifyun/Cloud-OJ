@@ -23,8 +23,8 @@ public class ContestService {
         return contestDao.getContests((page - 1) * limit, limit, false);
     }
 
-    public Contest getContestByID(int contestId) {
-        return contestDao.getContestById(contestId);
+    public Contest getContest(int contestId) {
+        return contestDao.getContest(contestId);
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {
@@ -54,15 +54,15 @@ public class ContestService {
     }
 
     public Problem getProblemInContest(Integer contestId, Integer problemId) {
-        return problemDao.getProblemInContest(contestId, problemId);
+        return problemDao.getSingleInContest(contestId, problemId);
     }
 
     public boolean addProblemToContest(int contestId, int problemId) {
         return contestDao.addProblem(contestId, problemId) == 1;
     }
 
-    public Msg deleteProblemFromContest(int contestId, int problemId) {
-        int status = contestDao.deleteProblem(contestId, problemId) == 1 ? 204 : 410;
+    public Msg removeProblem(int contestId, int problemId) {
+        int status = contestDao.removeProblem(contestId, problemId) == 1 ? 204 : 410;
         return new Msg(status);
     }
 }

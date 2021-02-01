@@ -8,7 +8,7 @@
         limit #{start},#{limit};
         select found_rows()
     </select>
-    <select id="getById" resultMap="Map.User">
+    <select id="getSingle" resultMap="Map.User">
         select user_id, name, email, section
         from user
         where user_id = #{userId};

@@ -32,30 +32,39 @@ public class ProblemService {
     @Resource
     private ContestDao contestDao;
 
-    public List<List<?>> getEnableProblems(String userId, int page, int limit) {
-        return problemDao.getAll(userId, (page - 1) * limit, limit, true);
+    public List<List<?>> getAllEnabled(String keyword, int page, int limit) {
+        if (keyword == null || keyword.isEmpty()) {
+            keyword = null;
+        }
+        return problemDao.getAllEnabled((page - 1) * limit, limit, keyword);
     }
 
-    public List<List<?>> getProblems(String userId, int page, int limit) {
-        return problemDao.getAll(userId, (page - 1) * limit, limit, false);
+    public List<List<?>> getAll(String keyword, int page, int limit) {
+        if (keyword == null || keyword.isEmpty()) {
+            keyword = null;
+        }
+        return problemDao.getAll((page - 1) * limit, limit, keyword);
     }
 
-    public Problem getProblem(int problemId) {
+    public List<List<?>> getAllWithState(String keyword, String userId, int page, int limit) {
+        if (keyword == null || keyword.isEmpty()) {
+            keyword = null;
+        }
+        return problemDao.getWithState((page - 1) * limit, limit, userId, keyword);
+    }
+
+    public Problem getSingle(int problemId) {
         return problemDao.getSingle(problemId, false);
     }
 
-    public Problem getEnableProblem(int problemId) {
+    public Problem getSingleEnabled(int problemId) {
         return problemDao.getSingle(problemId, true);
     }
 
-    public List<List<?>> searchProblems(String userId, String keyword, int page, int limit, boolean enable) {
-        return problemDao.search(userId, keyword, (page - 1) * limit, limit, enable);
-    }
-
     @Transactional
-    public Msg updateProblem(Problem problem) {
-        Integer contestId = problemDao.inContest(problem.getProblemId());
-        if (contestId != null && contestDao.getContestById(contestId).isStarted()) {
+    public Msg update(Problem problem) {
+        Integer contestId = problemDao.isInContest(problem.getProblemId());
+        if (contestId != null && contestDao.getContest(contestId).isStarted()) {
             return new Msg(400, "不能修改已开始竞赛/作业中的题目");
         }
         int status = problemDao.update(problem) == 1 ? 200 : 304;
@@ -65,8 +74,8 @@ public class ProblemService {
     @Transactional
     public Msg toggleEnable(int problemId, boolean enable) {
         if (enable) {
-            Integer contestId = problemDao.inContest(problemId);
-            if (contestId != null && !contestDao.getContestById(contestId).isEnded()) {
+            Integer contestId = problemDao.isInContest(problemId);
+            if (contestId != null && !contestDao.getContest(contestId).isEnded()) {
                 return new Msg(400, "不能开放未结束竞赛/作业中的题目");
             }
         }
@@ -74,7 +83,7 @@ public class ProblemService {
         return new Msg(status, null);
     }
 
-    public boolean addProblem(Problem problem) {
+    public boolean add(Problem problem) {
         int row = problemDao.add(problem);
         log.info("Add Problem: id={}, title={}", problem.getProblemId(), problem.getTitle());
         return row == 1;
@@ -97,19 +106,12 @@ public class ProblemService {
         return problems;
     }
 
-    public Msg deleteProblem(Integer problemId) {
-        if (problemDao.inContest(problemId) != null) {
+    public Msg delete(Integer problemId) {
+        if (problemDao.isInContest(problemId) != null) {
             return new Msg(400, "无法删除竞赛/作业中的题目");
         }
 
         int row = problemDao.delete(problemId);
-
-        if (row == 1) {
-            log.info("Delete problem: id={}", problemId);
-        } else {
-            log.error("Delete problem failed, id={}", problemId);
-        }
-
         int status = row == 1 ? 204 : 410;
 
         return new Msg(status, null);
@@ -159,7 +161,7 @@ public class ProblemService {
     @Transactional
     public void importProblems(List<Problem> problems) throws Exception {
         for (Problem p : problems) {
-            if (addProblem(p)) {
+            if (add(p)) {
                 if (!writeTestData(p.getProblemId(), p.getTestData()))
                     throw new IOException("Cannot write test data.");
             } else {
@@ -186,7 +188,7 @@ public class ProblemService {
             return;
         }
         for (int i = 0; i < dataList.size(); i++) {
-            FileWriter writer = new FileWriter(new File(dir + "/" + i + ext));
+            FileWriter writer = new FileWriter(dir + "/" + i + ext);
             writer.write(dataList.get(i));
             writer.flush();
             writer.close();

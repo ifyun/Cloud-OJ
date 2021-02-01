@@ -20,13 +20,14 @@ public class ProblemController implements CRUDController {
     /**
      * 获取所有开放的题目
      *
-     * @param userId 若不为空，可以获取题目的判题结果
+     * @param userId  若不为空，可以获取题目的判题结果
+     * @param keyword 关键字
      */
     @GetMapping()
     public ResponseEntity<?> getAllEnable(String userId, String keyword, Integer page, Integer limit) {
-        return keyword != null && !keyword.isEmpty() ?
-                buildGETResponse(problemService.searchProblems(userId, keyword, page, limit, true))
-                : buildGETResponse(problemService.getEnableProblems(userId, page, limit));
+        return userId == null || userId.isEmpty() ?
+                buildGETResponse(problemService.getAllEnabled(keyword, page, limit))
+                : buildGETResponse(problemService.getAllWithState(keyword, userId, page, limit));
     }
 
     /**
@@ -34,17 +35,15 @@ public class ProblemController implements CRUDController {
      */
     @GetMapping(path = "pro")
     public ResponseEntity<?> getAll(String keyword, Integer page, Integer limit) {
-        return keyword != null && !keyword.isEmpty() ?
-                buildGETResponse(problemService.searchProblems(null, keyword, page, limit, false))
-                : buildGETResponse(problemService.getProblems(null, page, limit));
+        return buildGETResponse(problemService.getAll(keyword, page, limit));
     }
 
     /**
-     * 获取单个题目的详细信息"
+     * 获取单个题目（仅开放）
      */
     @GetMapping(path = "{problemId}")
     public ResponseEntity<?> getEnable(@PathVariable Integer problemId) {
-        return buildGETResponse(problemService.getEnableProblem(problemId));
+        return buildGETResponse(problemService.getSingleEnabled(problemId));
     }
 
     /**
@@ -52,7 +51,7 @@ public class ProblemController implements CRUDController {
      */
     @GetMapping(path = "pro/{problemId}")
     public ResponseEntity<?> getSingle(@PathVariable Integer problemId) {
-        return buildGETResponse(problemService.getProblem(problemId));
+        return buildGETResponse(problemService.getSingle(problemId));
     }
 
     /**
@@ -60,14 +59,14 @@ public class ProblemController implements CRUDController {
      */
     @PutMapping(path = "pro")
     public ResponseEntity<?> update(@RequestBody Problem problem) {
-        return buildPUTResponse(problemService.updateProblem(problem));
+        return buildPUTResponse(problemService.update(problem));
     }
 
     /**
      * 切换题目的开放/关闭状态
      */
     @PutMapping(path = "pro/{problemId}")
-    public ResponseEntity<?> updateEnable(@PathVariable Integer problemId, Boolean enable) {
+    public ResponseEntity<?> toggleEnable(@PathVariable Integer problemId, Boolean enable) {
         return buildPUTResponse(problemService.toggleEnable(problemId, enable));
     }
 
@@ -76,7 +75,7 @@ public class ProblemController implements CRUDController {
      */
     @PostMapping(path = "pro", consumes = "application/json")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
-        return buildPOSTResponse(problemService.addProblem(problem));
+        return buildPOSTResponse(problemService.add(problem));
     }
 
     /**
@@ -84,6 +83,6 @@ public class ProblemController implements CRUDController {
      */
     @DeleteMapping(path = "pro/{problemId}")
     public ResponseEntity<?> delete(@PathVariable Integer problemId) {
-        return buildDELETEResponse(problemService.deleteProblem(problemId));
+        return buildDELETEResponse(problemService.delete(problemId));
     }
 }

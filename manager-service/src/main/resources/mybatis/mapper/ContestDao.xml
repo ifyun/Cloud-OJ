@@ -51,7 +51,7 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getContestById" resultMap="Map.Contest">
+    <select id="getContest" resultMap="Map.Contest">
         select *,
                if(start_at &lt;= now(), true, false) as started,
                if(end_at &lt;= now(), true, false)   as ended
@@ -79,7 +79,7 @@
         insert into `contest-problem`(contest_id, problem_id)
             value (#{contestId}, #{problemId})
     </insert>
-    <delete id="deleteProblem">
+    <delete id="removeProblem">
         delete
         from `contest-problem`
         where contest_id = #{contestId}

@@ -6,5 +6,5 @@ import java.util.List;
 
 @Mapper
 public interface JudgeResultDao {
-    List<List<?>> getHistoryByUserId(String userId, int start, int limit);
+    List<List<?>> getHistory(String userId, int start, int limit);
 }
