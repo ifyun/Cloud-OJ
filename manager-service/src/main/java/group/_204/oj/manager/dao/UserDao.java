@@ -11,7 +11,7 @@ public interface UserDao {
 
     List<List<?>> getAll(Integer start, Integer limit);
 
-    User getById(String userId);
+    User getSingle(String userId);
 
     int add(User user);
 

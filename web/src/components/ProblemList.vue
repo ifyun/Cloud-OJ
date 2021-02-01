@@ -16,8 +16,7 @@
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-tag type="success" size="medium"
-                    v-if="keyword !== ''" closable @close="tagClose()">
+            <el-tag v-if="keyword !== ''" type="success" size="medium" closable @close="tagClose()">
               {{ keyword }}
             </el-tag>
           </el-form-item>

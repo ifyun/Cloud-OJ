@@ -13,6 +13,6 @@ public class CommitHistoryService {
     private JudgeResultDao judgeResultDao;
 
     public List<List<?>> getJudged(String userId, int page, int limit) {
-        return judgeResultDao.getHistoryByUserId(userId, (page - 1) * limit, limit);
+        return judgeResultDao.getHistory(userId, (page - 1) * limit, limit);
     }
 }

@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public User getUserInfo(String userId) {
-        return userDao.getById(userId);
+        return userDao.getSingle(userId);
     }
 
     public boolean addUser(User user) {
