@@ -174,7 +174,7 @@ export default {
         create: false
       },
       currentPage: 1,
-      pageSize: 15
+      pageSize: 20
     }
   },
   methods: {

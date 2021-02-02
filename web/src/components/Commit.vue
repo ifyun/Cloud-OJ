@@ -528,7 +528,7 @@ export default {
   min-width: 24px;
   padding: 2px;
   border-radius: 4px;
-  border: 1px solid #DCDFE6;
+  border: 1px solid #F5F5F5;
 }
 
 .steps {
