@@ -170,7 +170,7 @@ import {userInfo, tagColor, toLoginPage, Notice, searchParams} from "@/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
 import {ApiPath, ProblemApi} from "@/service"
-import moment from "moment";
+import moment from "moment"
 
 export default {
   name: "ProblemManage",
@@ -201,7 +201,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 15,
+      pageSize: 20,
       editorDialog: {
         title: "",
         create: false,

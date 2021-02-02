@@ -16,12 +16,9 @@
           </el-button>
         </div>
       </div>
-      <el-table :data="ranking.data" v-loading="loading" :row-style="{height: '55px'}" @row-dblclick="getDetail">
-        <el-table-column width="100px" align="center">
-          <template slot="header">
-            <i class="el-icon-s-data el-icon--left"/>
-            <span>排名</span>
-          </template>
+      <el-table :data="ranking.data" v-loading="loading" :show-header="false" stripe
+                :row-style="{height: '55px'}" @row-dblclick="getDetail">
+        <el-table-column width="60px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.1.svg" alt="1">
@@ -29,10 +26,10 @@
                  src="@/assets/icons/medal-no.2.svg" alt="2">
             <img v-else-if="scope.row['rank'] === 3" align="center" class="ranking-icon"
                  src="@/assets/icons/medal-no.3.svg" alt="3">
-            <span v-else>{{ scope.row['rank'] }}</span>
+            <b v-else>{{ scope.row['rank'] }}</b>
           </template>
         </el-table-column>
-        <el-table-column width="55px" align="right">
+        <el-table-column width="80px" align="right">
           <template slot-scope="scope">
             <img class="avatar" align="center" alt="avatar" style="visibility: hidden"
                  :src="`./api/file/image/avatar/${scope.row.userId}.png`"
@@ -41,34 +38,33 @@
           </template>
         </el-table-column>
         <el-table-column>
-          <template slot="header">
-            <i class="el-icon-user-solid el-icon--left"/>
-            <span>用户</span>
-          </template>
           <template slot-scope="scope">
             <el-link :href="`/profile?userId=${scope.row.userId}`">{{ scope.row.name }}</el-link>
+            <br>
+            <span class="user-id">{{ scope.row.userId }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="总提交次数" width="150px" align="right">
+        <el-table-column width="120px" align="right">
           <template slot-scope="scope">
             <span>{{ scope.row['committed'] }} 次提交</span>
+            <i class="el-icon-top el-icon--right"/>
           </template>
         </el-table-column>
-        <el-table-column width="150px" align="right">
-          <template slot="header">
-            <i class="el-icon-success el-icon--left"></i>
-            <span>通过题目</span>
-          </template>
+        <el-table-column width="120px" align="right">
           <template slot-scope="scope">
-            <span style="cursor: pointer" @click="getDetail(scope.row)">
-              {{ scope.row['passed'] }} 题通过
+            <span class="passed-tag" style="color: #67c23a" @click="getDetail(scope.row)">
+              <span>{{ scope.row['passed'] }} 题通过</span>
+              <i class="el-icon-success el-icon--right"/>
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="分数" prop="totalScore" width="150px" align="right">
+        <el-table-column width="150px" align="right">
+          <template slot-scope="scope">
+            <b style="color: #303133">{{ scope.row["totalScore"] }}</b>
+          </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+      <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="ranking.count"
                      :current-page.sync="currentPage"
                      @size-change="getRankingList" @current-change="getRankingList">
@@ -234,12 +230,13 @@ export default {
 }
 
 .avatar {
-  height: 32px;
-  border-radius: 15px;
+  height: 42px;
+  width: 42px;
+  border-radius: 22px;
 }
 
 .ranking-icon {
-  height: 26px;
+  height: 28px;
 }
 
 .head {
@@ -253,5 +250,18 @@ export default {
   margin-left: auto;
   display: flex;
   align-items: center;
+}
+
+.el-link--inner {
+  color: #303133;
+}
+
+.user-id {
+  font-size: 6px;
+  color: #909399;
+}
+
+.passed-tag {
+  cursor: pointer;
 }
 </style>

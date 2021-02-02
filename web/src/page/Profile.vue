@@ -5,7 +5,7 @@
     <el-container v-else class="container">
       <el-tabs type="border-card" style="width: 100%">
         <el-tab-pane label="概览">
-          <el-row :gutter="10">
+          <el-row :gutter="5">
             <el-col :span="6">
               <UserProfile :user-id="userId" @error="onError"/>
             </el-col>

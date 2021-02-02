@@ -131,7 +131,7 @@ export default {
         endAt: "",
         languages: ""
       },
-      pageSize: 15,
+      pageSize: 20,
       currentPage: 1,
       editorDialog: {
         title: "",

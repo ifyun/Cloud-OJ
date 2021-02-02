@@ -230,15 +230,17 @@ export default {
   height: 800px;
   border-right: 1px solid #e0e0e0;
   flex-direction: column;
-  padding-right: 15px;
+  margin-top: 5px;
+  padding-right: 20px;
+  padding-left: 5px;
 }
 
 .avatar {
-  width: 75%;
-  height: auto;
+  width: 200px;
+  height: 200px;
   display: block;
   border-radius: 200px;
-  border: 3px solid #EBEEF5;
+  border: 2px solid #FAFAFA;
   margin: 0 auto 15px;
 }
 
