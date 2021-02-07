@@ -1,12 +1,12 @@
-#include "runner.h"
-#include "utils.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include "runner.h"
+#include "utils.h"
 
-std::string result::to_json() const {
+std::string Result::to_json() const {
     std::stringstream ss;
     ss << "{"
        << "\"status\": " << status << ", "
@@ -19,20 +19,20 @@ std::string result::to_json() const {
 /**
  * @brief 设置当前进程的资源限制
  */
-void runner::set_limit(const resource_limit &limit) {
+void Runner::set_limit(const Config &config) {
     struct rlimit rl{};
 
-    rl.rlim_cur = (limit.timeout / 1000) + 1;
-    rl.rlim_max = rl.rlim_cur + 1;
+    rl.rlim_cur = (config.timeout / 1000) + 1;
+    rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_CPU, &rl);
 
-    rl.rlim_cur = limit.max_memory * 1024;
+    rl.rlim_cur = config.max_memory << 10;
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_DATA, &rl);
 
-    rl.rlim_cur = limit.output_size * 1024;
+    rl.rlim_cur = config.output_size << 10;
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_FSIZE, &rl);
@@ -41,16 +41,14 @@ void runner::set_limit(const resource_limit &limit) {
 /**
  * @brief 使用 execvp 执行命令判题
  * @param args 命令 + 参数
- * @param limit 资源限制
- * @param in 输入数据
- * @param out 实际输出
+ * @param config 资源限制
  * @return 0 -> 正常返回，1 -> 非正常返回
  */
-int runner::run_cmd(char **args, const resource_limit &limit, const std::string &in, const std::string &out) {
-    auto new_stdin = open(in.c_str(), O_RDONLY, 0644);
-    auto new_stdout = open(out.c_str(), O_RDWR | O_CREAT, 0644);
+int Runner::run_cmd(char **args, const Config &config) {
+    auto new_stdin = open(config.in.c_str(), O_RDONLY, 0644);
+    auto new_stdout = open(config.out.c_str(), O_RDWR | O_CREAT, 0644);
 
-    set_limit(limit);
+    set_limit(config);
 
     if (new_stdin != -1 && new_stdout != -1) {
         dup2(new_stdin, fileno(stdin));
@@ -64,10 +62,10 @@ int runner::run_cmd(char **args, const resource_limit &limit, const std::string 
         close(new_stdin);
         close(new_stdout);
     } else if (new_stdin == -1) {
-        std::cerr << "[ERROR] Failed to open " << in << std::endl;
+        std::cerr << "[ERROR] Failed to open " << config.in << std::endl;
         return 1;
     } else {
-        std::cerr << "[ERROR] Failed to open " << out << std::endl;
+        std::cerr << "[ERROR] Failed to open " << config.out << std::endl;
         return 1;
     }
 
@@ -77,13 +75,12 @@ int runner::run_cmd(char **args, const resource_limit &limit, const std::string 
 /**
  * 计算结果
  */
-result runner::watch_result(pid_t pid, const resource_limit &limit, const std::string &out, const std::string &expect) {
+Result Runner::watch_result(pid_t pid, const Config &config) {
     int status;
     struct rusage ru{};
-    struct result res{};
+    struct Result res{};
 
     if (wait4(pid, &status, 0, &ru) == -1) {
-        // Runtime error
         exit(EXIT_FAILURE);
     }
 
@@ -95,10 +92,10 @@ result runner::watch_result(pid_t pid, const resource_limit &limit, const std::s
         auto signal = WTERMSIG(status);
         switch (signal) {
             case SIGSEGV:
-                if (res.memUsed > limit.memory) {
+                if (res.memUsed > config.memory) {
                     res.status = MLE;
                 } else {
-                    std::cerr << "[ERROR] Invalid access to storage";
+                    std::cerr << "[ERROR] Invalid access\n";
                     exit(EXIT_FAILURE);
                 }
                 break;
@@ -110,19 +107,18 @@ result runner::watch_result(pid_t pid, const resource_limit &limit, const std::s
                 res.status = OLE;
                 break;
             default:
-                // Runtime error
                 exit(EXIT_FAILURE);
         }
     } else {
-        if (res.timeUsed > limit.timeout) {
+        if (res.timeUsed > config.timeout) {
             res.status = TLE;
-        } else if (res.memUsed > limit.memory) {
+        } else if (res.memUsed > config.memory) {
             res.status = MLE;
         } else if (WEXITSTATUS(status) != 0) {
             std::cerr << "[ERROR] Non-zero exit\n";
             exit(EXIT_FAILURE);
         } else {
-            res.status = utils::diff(out, expect) ? WA : AC;
+            res.status = utils::diff(config.out, config.expect) ? WA : AC;
         }
     }
 
@@ -132,23 +128,19 @@ result runner::watch_result(pid_t pid, const resource_limit &limit, const std::s
 /**
  * @brief 创建子进程判题
  * @param args 命令 + 参数
- * @param limit 资源限制
- * @param in 输入数据文件的路径，若没有则使用 "/dev/null"
- * @param out 保存实际输出的文件路径
- * @param expect 输出数据文件的路径
+ * @param config 资源限制
  * @return 判题结果
  */
-result runner::run(char **args, const resource_limit &limit, const std::string &in, const std::string &out,
-                   const std::string &expect) {
+Result Runner::run(char **args, const Config &config) {
     pid_t pid = fork();
 
     if (pid < 0) {
         std::cerr << "[ERROR] Failed to create process\n";
         exit(EXIT_FAILURE);
     } else if (pid == 0) {
-        auto status = run_cmd(args, limit, in, out);
+        auto status = run_cmd(args, config);
         exit(status);
     } else {
-        return watch_result(pid, limit, out, expect);
+        return watch_result(pid, config);
     }
 }

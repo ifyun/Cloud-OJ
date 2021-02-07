@@ -1,7 +1,7 @@
 <template>
   <div class="bottom-area">
     <div class="flex">
-      <span>© Cloud Li</span>
+      <el-link href="https://github.com/imcloudfloating" target="_blank">© Cloud Li</el-link>
       <el-divider direction="vertical"/>
       <el-link target="_blank"
                href="https://raw.githubusercontent.com/imcloudfloating/Cloud-OJ/master/LICENSE">
@@ -9,9 +9,8 @@
       </el-link>
       <el-divider direction="vertical"/>
       <span>
-        <img height="15" align="center" src="@/assets/icons/github.svg" alt="GitHub Link">
-        <el-link style="margin-left: 5px" target="_blank"
-                 href="https://github.com/imcloudfloating/Cloud-OJ">
+        <img height="14" align="center" src="@/assets/icons/github.svg" alt="GitHub Link">
+        <el-link style="margin-left: 5px" href="https://github.com/imcloudfloating/Cloud-OJ" target="_blank">
           GitHub
         </el-link>
       </span>

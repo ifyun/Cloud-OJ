@@ -14,15 +14,16 @@ create table contest
 
 create table problem
 (
-    problem_id  int auto_increment
+    problem_id   int auto_increment
         primary key,
-    title       varchar(64)                          not null,
-    description text                                 not null comment '题目描述',
-    timeout     bigint     default 1000              null comment '时间限制',
-    score       int        default 0                 not null comment '分数',
-    enable      tinyint(1) default 0                 null comment '是否开放',
-    category    varchar(32)                          null comment '分类，多个用逗号分隔',
-    create_at   datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
+    title        varchar(64)                          not null,
+    description  text                                 not null comment '题目描述',
+    timeout      bigint     default 1000              null comment '时间限制',
+    memory_limit int        default 64                not null comment '内存限制',
+    score        int        default 0                 not null comment '分数',
+    enable       tinyint(1) default 0                 null comment '是否开放',
+    category     varchar(32)                          null comment '分类，多个用逗号分隔',
+    create_at    datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
 );
 
 create table `contest-problem`

@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.judge.dao.RuntimeDao">
     <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="group._204.oj.judge.model.Runtime">
         insert into runtime (solution_id)
@@ -14,9 +15,4 @@
             info   = #{info}
         where id = #{id}
     </update>
-    <select id="getTimeout" resultType="java.lang.Long">
-        select timeout
-        from problem
-        where problem_id = #{problemId}
-    </select>
 </mapper>

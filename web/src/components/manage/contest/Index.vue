@@ -3,7 +3,7 @@
     <el-form :inline="true">
       <el-form-item>
         <el-button size="medium" type="primary" icon="el-icon-circle-plus"
-                   @click="addContestClick">
+                   @click="addContest">
           创建新竞赛/作业
         </el-button>
       </el-form-item>
@@ -13,7 +13,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="contests.data" stripe v-loading="loading">
+    <el-table :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="竞赛/作业名称">
@@ -39,13 +39,13 @@
         <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" icon="el-icon-edit"
-                       @click="editClick(scope.$index)">
+                       @click="editContest(scope.$index)">
             </el-button>
-            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblemsClick(scope.$index)">
+            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblems(scope.$index)">
               管理题目
             </el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete"
-                       @click="deleteClick(scope.$index)">
+                       @click="deleteContest(scope.$index)">
             </el-button>
           </el-button-group>
         </template>
@@ -131,7 +131,7 @@ export default {
         endAt: "",
         languages: ""
       },
-      pageSize: 20,
+      pageSize: 15,
       currentPage: 1,
       editorDialog: {
         title: "",
@@ -187,7 +187,7 @@ export default {
             this.loading = false
           })
     },
-    editClick(index) {
+    editContest(index) {
       let i = this.pageSize * (this.currentPage - 1) + index
       this.selectedContest = copyObject(this.contests.data[parseInt(i)])
       this.editorDialog = {
@@ -196,12 +196,15 @@ export default {
         visible: true
       }
     },
-    manageProblemsClick(index) {
+    rowDbClick(row) {
+      this.editContest(row)
+    },
+    manageProblems(index) {
       let i = this.pageSize * (this.currentPage - 1) + index
       this.selectedContest = copyObject(this.contests.data[parseInt(i)])
       this.problemsDialog.visible = true
     },
-    addContestClick() {
+    addContest() {
       this.selectedContest = {}
       this.editorDialog = {
         title: "创建竞赛/作业",
@@ -209,7 +212,7 @@ export default {
         visible: true
       }
     },
-    deleteClick(index) {
+    deleteContest(index) {
       this.deleteDialog.visible = true
       let i = this.pageSize * (this.currentPage - 1) + index
       this.selectedContest = copyObject(this.contests.data[i])

@@ -1,6 +1,6 @@
 <template>
   <el-card>
-    <div style="align-self: flex-start">
+    <div>
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item>
           <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
@@ -27,16 +27,16 @@
         </el-form-item>
         <el-form-item style="float: right">
           <el-button-group>
-            <el-button type="primary" size="medium"
+            <el-button type="primary" size="small"
                        icon="el-icon-circle-plus"
                        @click="addProblemClick()">
               添加题目
             </el-button>
-            <el-button icon="el-icon-upload2" size="medium"
+            <el-button icon="el-icon-upload2" size="small"
                        @click="importDialog.visible = true">
               导入题目
             </el-button>
-            <el-button icon="el-icon-download" size="medium"
+            <el-button icon="el-icon-download" size="small"
                        @click="backupProblems">
               导出题目
             </el-button>
@@ -44,19 +44,15 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="problems.data" stripe v-loading="loading">
-      <el-table-column label="题目名称" width="250px">
+    <el-table :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+      <el-table-column label="题目名称" width="260px">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
           </el-link>
         </template>
       </el-table-column>
-      <el-table-column align="center">
-        <template slot="header">
-          <i class="el-icon-collection-tag el-icon--left"></i>
-          <span>分类</span>
-        </template>
+      <el-table-column label="分类">
         <template slot-scope="scope">
           <div v-if="typeof scope.row.category !== 'undefined' && scope.row.category !== ''">
             <span v-for="tag in scope.row.category.split(',')"
@@ -68,7 +64,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="分值" prop="score" width="60px" align="right">
+      <el-table-column label="分数" prop="score" width="60px" align="right">
       </el-table-column>
       <el-table-column label="开放" width="90px" align="center">
         <template slot-scope="scope">
@@ -78,7 +74,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column width="130px" align="center">
+      <el-table-column width="120px" align="center">
         <template slot="header">
           <i class="el-icon-date el-icon--left"/>
           <span>创建时间</span>
@@ -87,7 +83,7 @@
           {{ formatDate(scope.row["createAt"]) }}
         </template>
       </el-table-column>
-      <el-table-column width="70px" align="center">
+      <el-table-column width="50px" align="center">
         <template slot="header">
           <i class="el-icon-menu"></i>
         </template>
@@ -201,7 +197,7 @@ export default {
         count: 0
       },
       currentPage: 1,
-      pageSize: 20,
+      pageSize: 15,
       editorDialog: {
         title: "",
         create: false,
@@ -315,7 +311,7 @@ export default {
           this.editorDialog = {
             visible: true,
             create: false,
-            title: `${problem.problemId} - ${problem.title}`
+            title: `${problem.problemId}. ${problem.title}`
           }
           break
         case "manage-data":
@@ -325,10 +321,13 @@ export default {
           this.deleteDialog.visible = true
       }
     },
+    rowDbClick(row) {
+      this.operation("edit", row)
+    },
     addProblemClick() {
       this.selectedId = null
       this.editorDialog = {
-        title: "创建新题目",
+        title: "创建题目",
         create: true,
         visible: true
       }
@@ -386,6 +385,7 @@ export default {
 <style scoped>
 .editor {
   max-width: 1450px;
+  min-width: 1150px;
   margin: 0 auto;
 }
 

@@ -2,6 +2,7 @@ package group._204.oj.judge.component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group._204.oj.judge.dao.ProblemDao;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.error.UnsupportedLanguageError;
@@ -26,9 +27,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class Judgement {
-    private static final String MEM_LIMIT = "64";           // 内存限制，单位：MB
-    private static final String MAX_MEM_LIMIT = "512";      // 最大（实际）内存限制，单位：MB
-    private static final String OUTPUT_LIMIT = "8182";      // 输出限制，单位：KB
+    private static final Integer OUTPUT_LIMIT = 16;
+    private static final Integer MAX_MEM_LIMIT = 512;
 
     private static final int AC = 0;
     private static final int TLE = 2;
@@ -51,6 +51,9 @@ public class Judgement {
     private RuntimeDao runtimeDao;
 
     @Resource
+    private ProblemDao problemDao;
+
+    @Resource
     private SolutionDao solutionDao;
 
     private static class RuntimeError extends Exception {
@@ -67,11 +70,11 @@ public class Judgement {
     public void judge(Solution solution) {
         log.info("Judging: solutionId=[{}], user=[{}].", solution.getSolutionId(), solution.getUserId());
 
-        long timeout = runtimeDao.getTimeout(solution.getProblemId());
+        Limit limit = problemDao.getLimit(solution.getProblemId());
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);
 
-        List<RunResult> results = execute(solution, runtime, timeout);
+        List<RunResult> results = execute(solution, runtime, limit);
         calcResult(solution, runtime, results);
     }
 
@@ -135,12 +138,12 @@ public class Judgement {
      *
      * @return List of {@link RunResult}
      */
-    private List<RunResult> execute(Solution solution, Runtime runtime, long timeout) {
+    private List<RunResult> execute(Solution solution, Runtime runtime, Limit limit) {
         List<RunResult> results = null;
 
         try {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
-            ProcessBuilder cmd = buildCommand(solution, String.valueOf(timeout), testDataDir);
+            ProcessBuilder cmd = buildCommand(solution, limit, testDataDir);
             results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
             log.error("Runtime Error: {}", e.getMessage());
@@ -168,14 +171,19 @@ public class Judgement {
         List<RunResult> results;
 
         if (process.waitFor(10, TimeUnit.SECONDS)) {
-            if (process.exitValue() == 0) {
+            int exitValue = process.exitValue();
+            if (exitValue == 0) {
                 String solutionDir = codeDir + solutionId;
                 String resultStr = getResultFromFile(solutionDir + "/result.json");
                 results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
                 });
             } else {
                 String stderr = getOutput(process.getErrorStream());
-                throw new RuntimeError(stderr);
+                if (exitValue == 1) {
+                    throw new RuntimeError(stderr);
+                } else {
+                    throw new InterruptedException(stderr);
+                }
             }
         } else {
             process.destroy();
@@ -210,7 +218,7 @@ public class Judgement {
      * @param solution {@link Solution} Solution object
      * @return {@link ProcessBuilder} Command to run
      */
-    private ProcessBuilder buildCommand(Solution solution, String timeout, String testDataDir)
+    private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
         Language language = Language.get(solution.getLanguage());
 
@@ -232,14 +240,32 @@ public class Judgement {
                 runnerImage, "runner"
         ));
 
+        long timeLimit = limit.getTimeout();
+        int memoryLimit = limit.getMemoryLimit();
+        int maxMemoryLimit = memoryLimit << 2;
+
+        // Java/Kotlin/JS 内存限制按 2 倍计算
         switch (language) {
             case C:
             case CPP:
             case GO:
+                maxMemoryLimit <<= 1;
                 cmd.add("./Solution");
                 break;
             case JAVA:
-                cmd.add(String.format("java@-Xms16m@-Xmx%sm@Solution", MAX_MEM_LIMIT));
+                memoryLimit <<= 1;
+                maxMemoryLimit = memoryLimit << 2;
+                cmd.add(String.format("java@-Xmx%dm@Solution", memoryLimit << 1));
+                break;
+            case KOTLIN:
+                timeLimit <<= 1;
+                memoryLimit <<= 1;
+                maxMemoryLimit = memoryLimit << 2;
+                cmd.add("kotlin@SolutionKt");
+                break;
+            case JAVA_SCRIPT:
+                memoryLimit <<= 1;
+                cmd.add("node@Solution.js");
                 break;
             case PYTHON:
                 cmd.add("python3@Solution.py");
@@ -250,17 +276,22 @@ public class Judgement {
             case C_SHARP:
                 cmd.add("mono@Solution.exe");
                 break;
-            case JAVA_SCRIPT:
-                cmd.add("node@Solution.js");
-                break;
-            case KOTLIN:
-                cmd.add("kotlin@SolutionKt");
-                break;
             default:
                 throw new UnsupportedLanguageError(String.format("Unsupported language: %s.", language));
         }
 
-        cmd.addAll(Arrays.asList(timeout, MEM_LIMIT, MAX_MEM_LIMIT, OUTPUT_LIMIT));
+        if (maxMemoryLimit >= MAX_MEM_LIMIT) {
+            maxMemoryLimit = MAX_MEM_LIMIT;
+        }
+
+        List<String> limits = Arrays.asList(
+                Long.toString(timeLimit),
+                Integer.toString(memoryLimit),
+                Integer.toString(maxMemoryLimit),
+                OUTPUT_LIMIT.toString()
+        );
+
+        cmd.addAll(limits);
         cmd.add(String.format("/%s", dataDirInContainer));
         builder.command(cmd);
 

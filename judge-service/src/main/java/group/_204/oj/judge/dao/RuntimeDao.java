@@ -6,6 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface RuntimeDao {
     int add(Runtime runtime);
-    int update(Runtime runtime);
-    Long getTimeout(int problemId);
+    void update(Runtime runtime);
 }

@@ -22,8 +22,8 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" stripe v-loading="loading">
-        <el-table-column label="题目名称" width="320px">
+      <el-table :data="problems.data" stripe :show-header="false" v-loading="loading">
+        <el-table-column width="320px">
           <template slot-scope="scope">
             <el-link
                 :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
@@ -31,7 +31,7 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column v-if="userInfo != null" label="状态" align="center" width="105px">
+        <el-table-column v-if="userInfo != null" align="center" width="105px">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.result !== undefined" size="small" effect="light"
                     :type="resultTags[scope.row.result].type">
@@ -40,22 +40,16 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null && userInfo != null" width="100px" align="right">
-          <template slot="header">
-            <i class="el-icon-success el-icon--left"/>
-            <span>通过人数</span>
-          </template>
+        <el-table-column v-if="contestId == null && userInfo != null" width="150px" align="right">
           <template slot-scope="scope">
-          <span v-if="scope.row['passed'] !== undefined">
-            {{ scope.row['passed'] }}
+          <span v-if="scope.row['passed'] !== undefined" style="color: #67c23a; font-size: 6px">
+            <span>{{ scope.row['passed'] }} 人通过</span>
+            <i class="el-icon-success el-icon--right"/>
           </span>
           </template>
         </el-table-column>
-        <el-table-column align="center">
-          <template slot="header">
-            <i class="el-icon-collection-tag el-icon--left"/>
-            <span>分类</span>
-          </template>
+        <el-table-column width="50px"/>
+        <el-table-column>
           <template slot-scope="scope">
             <div v-if="contest.contestId == null">
               <div v-if="scope.row.category !== ''">
@@ -72,19 +66,13 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="分数" prop="score" width="70px" align="right">
-        </el-table-column>
-        <el-table-column width="100px" align="right">
-          <template slot="header">
-            <i class="el-icon-date el-icon--left"/>
-            <span>创建时间</span>
-          </template>
+        <el-table-column width="70px" align="right">
           <template slot-scope="scope">
-            {{ formatDate(scope.row["createAt"]) }}
+            {{ scope.row.score }} 分
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+      <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="problems.count"
                      :current-page.sync="currentPage"
                      @size-change="getProblems" @current-change="getProblems">
@@ -98,7 +86,6 @@ import Error from "@/components/Error"
 import {Notice, searchParams, tagColor, toLoginPage, userInfo} from "@/util"
 import {resultTags} from "@/util/data"
 import {ContestApi, ProblemApi} from "@/service"
-import moment from "moment"
 
 export default {
   name: "ProblemList",
@@ -145,9 +132,6 @@ export default {
       if (page != null) {
         this.currentPage = parseInt(page)
       }
-    },
-    formatDate(time) {
-      return moment(time).format("YYYY/MM/DD")
     },
     getContest() {
       // Only logged-in users can view contest problems

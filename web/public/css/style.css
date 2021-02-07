@@ -42,8 +42,8 @@ html, body {
 
 .tag {
     cursor: pointer;
-    border-radius: 12px;
-    padding: 0 10px;
+    border-radius: 5px;
+    padding: 0 8px;
     margin: 2px 2px;
     color: white;
     display: inline-block;
@@ -64,7 +64,7 @@ html, body {
 }
 
 .tag:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.08);
 }
 
 .tag-color-1 {
@@ -137,9 +137,17 @@ html, body {
 }
 
 .result-error {
-    padding: 0 15px;
+    padding: 5px 8px;
     font: inherit;
     white-space: pre-wrap;
     word-break: break-word;
     color: #F56C6C;
+    max-height: 200px;
+    overflow: auto;
+    border-radius: 5px;
+    background-color: #FAFAFA;
+}
+
+.error-info {
+    width: 600px !important;
 }
