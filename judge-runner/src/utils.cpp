@@ -1,12 +1,11 @@
-#include "utils.h"
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <dirent.h>
 #include <algorithm>
 #include <cstring>
+#include "utils.h"
 
 /**
  * @brief 从指定目录获取测试数据文件的路径
@@ -86,18 +85,19 @@ bool utils::diff(const std::string &path1, const std::string &path2) {
 /**
  * @brief 将结果写入文件(result.json)
  */
-void utils::write_result(std::vector<std::string> results) {
+void utils::write_result(std::vector<Result> results) {
     std::string res;
 
     if (results.size() == 1) {
-        res = "[" + results[0] + "]";
+        res = "[" + results[0].to_json() + "]";
     } else {
         res.append("[");
 
         for (auto i = 0; i < results.size(); i++) {
-            res.append(results[i]);
-            if (i < results.size() - 1)
+            res.append(results[i].to_json());
+            if (i < results.size() - 1) {
                 res.append(",");
+            }
         }
 
         res.append("]");

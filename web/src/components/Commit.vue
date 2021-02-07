@@ -19,7 +19,7 @@
                   </el-tag>
                   <el-tag type="info" size="medium">
                     <i class="el-icon-cpu el-icon--left"/>
-                    内存限制: 64 MB
+                    内存限制: {{ problem.memoryLimit }} MB
                   </el-tag>
                 </div>
                 <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
@@ -29,7 +29,7 @@
         </el-col>
         <el-col :span="12">
           <div class="content-editor" :style="{height: contentHeight()}">
-            <div :style="{height: codeHeight()}">
+            <div :style="{height: codeHeight()}" style="position: relative">
               <div class="toolbar">
                 <img class="lang-icon" :src="languageIcons[language].icon"
                      :alt="languageIcons[language].name">
@@ -61,6 +61,10 @@
               </div>
               <codemirror v-model="code" :options="cmOptions">
               </codemirror>
+              <div v-if="code.trim() === ''" id="hint">
+                <Icon class="el-icon--left" name="file-import" scale="1"/>
+                <span>拖入文件可导入代码</span>
+              </div>
             </div>
           </div>
         </el-col>
@@ -79,10 +83,10 @@
                 show-icon :closable="false" :type="result.type"
                 :title="result.title" :description="result.desc">
       </el-alert>
-      <div v-if="result.errorInfo !== undefined">
+      <div v-if="typeof result.errorInfo !== 'undefined' && result.errorInfo.length > 0">
         <pre class="result-error">{{ result.errorInfo }}</pre>
       </div>
-      <el-button style="margin-top: 10px" icon="el-icon-refresh"
+      <el-button style="margin-top: 15px" icon="el-icon-refresh"
                  size="medium" round :disabled="resultDialog.disableRefresh"
                  @click="getResult(solutionId, 1)">
         <span>重试</span>
@@ -114,6 +118,7 @@ import "markdown-it-vue/dist/markdown-it-vue.css"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/play"
 import "vue-awesome/icons/history"
+import "vue-awesome/icons/file-import"
 import {languages} from "@/util/data"
 
 const languageMode = [
@@ -529,6 +534,18 @@ export default {
   padding: 2px;
   border-radius: 4px;
   border: 1px solid #F5F5F5;
+}
+
+#hint {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 14px;
+  color: #6A6A6A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
 .steps {

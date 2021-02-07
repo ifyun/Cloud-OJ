@@ -6,7 +6,7 @@
           <div class="nav">
             <div class="logo-div">
               <a href="/">
-                <img class="logo" :src="logoUrl" alt="logo">
+                <img class="logo" :src="logoUrl" alt="Logo">
               </a>
               <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
             </div>
@@ -166,6 +166,7 @@ export default {
 
 .logo {
   height: 40px;
+  width: 40px;
 }
 
 .account-area {
@@ -176,9 +177,9 @@ export default {
 }
 
 .avatar {
-  height: 36px;
-  width: 36px;
-  border-radius: 18px;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
 }
 
 .el-dropdown-link {

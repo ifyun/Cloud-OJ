@@ -33,7 +33,7 @@ public class TaskReceiver {
 
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
-    public void receiveTask(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
+    public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
         judgementAsync.judge(solution, (Void) -> {
             try {
                 channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), true);
@@ -45,7 +45,7 @@ public class TaskReceiver {
 
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.COMMIT_QUEUE)
-    public void receiveCommit(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
+    public void handleSubmission(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
         commitService.commit(data);
         try {
             channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), true);

@@ -134,7 +134,8 @@ export default {
         const h = this.$createElement
         this.$msgbox({
           title: "错误信息",
-          message: h("pre", {class: "result-error"}, error)
+          message: h("pre", {class: "result-error"}, error),
+          customClass: "error-info"
         })
       }
     },

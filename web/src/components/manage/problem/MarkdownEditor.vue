@@ -195,7 +195,7 @@ export default {
   },
   methods: {
     editorHeight() {
-      const offset = 260
+      const offset = 320
 
       if (this.windowHeight <= 1000) {
         return 1000 - offset

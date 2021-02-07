@@ -5,7 +5,8 @@
 #include <cstdlib>
 #include <cstring>
 #include "utils.h"
-#include "runner.h"
+
+const int JUDGE_ERROR = -1;
 
 void split(char **arr, char *str, const char *del) {
     char *s;
@@ -24,23 +25,23 @@ void split(char **arr, char *str, const char *del) {
  * @note argv[2]: 时间限制(ms)
  * @note argv[3]: 内存限制(MB)
  * @note argv[4]: 实际内存限制(MB)
- * @note argv[5]: 输出限制(KB)
- * @note argv[6]: 测试数据目录路径
+ * @note argv[5]: 输出限制(MB)
+ * @note argv[6]: 测试数据目录
  */
 int main(int argc, char *argv[]) {
     if (argc < 7) {
-        std::cerr << "Args required.\n";
-        exit(EXIT_FAILURE);
+        std::cerr << "Args required\n";
+        exit(JUDGE_ERROR);
     }
 
     char *cmd[32];
     split(cmd, argv[1], "@");
 
-    resource_limit limit = {
+    Config config = {
             .timeout=strtol(argv[2], nullptr, 10),
-            .memory=strtol(argv[3], nullptr, 10) * 1024,
-            .max_memory=strtol(argv[4], nullptr, 10) * 1024,
-            .output_size=strtol(argv[5], nullptr, 10)
+            .memory=strtol(argv[3], nullptr, 10) << 10,
+            .max_memory=strtol(argv[4], nullptr, 10) << 10,
+            .output_size=strtol(argv[5], nullptr, 10) << 10
     };
 
     std::string data_dir = argv[6];
@@ -52,35 +53,45 @@ int main(int argc, char *argv[]) {
         output_files = utils::get_files(data_dir, "out");
     } catch (const std::invalid_argument &error) {
         std::cerr << error.what();
-        exit(EXIT_FAILURE);
+        exit(JUDGE_ERROR);
     }
 
-    std::vector<std::string> results;
+    std::vector<Result> results;
 
     if (!input_files.empty() && !output_files.empty()) {
         if (input_files.size() != output_files.size()) {
-            std::cerr << "[ERROR] The number of input and output files is not equal.";
-            return 1;
+            std::cerr << "[ERROR] The number of input and output files is not equal\n";
+            exit(JUDGE_ERROR);
         }
-        // Run with each input.
         for (auto i = 0; i < input_files.size(); i++) {
-            std::string real_output_file_path = std::to_string(i + 1) + ".out";
-            result res = runner::run(cmd, limit, input_files[i], real_output_file_path, output_files[i]);
+            std::string real_output_file = std::to_string(i + 1) + ".out";
 
-            results.push_back(res.to_json());
+            config.in = input_files[i];
+            config.out = real_output_file;
+            config.expect = output_files[i];
+
+            Result res = Runner::run(cmd, config);
+
+            results.push_back(res);
         }
 
         utils::write_result(results);
     } else if (!output_files.empty()) {
-        // No input files, read first ".out" file.
+        // 没有输出文件，读取第一个 .out 文件
         std::string expect = utils::get_files(data_dir, ".out")[0];
-        result res = runner::run(cmd, limit, "/dev/null", "./1.out", expect);
-        results.push_back(res.to_json());
+
+        config.in = "/dev/null";
+        config.out = "./1.out";
+        config.expect = expect;
+
+        Result res = Runner::run(cmd, config);
+
+        results.push_back(res);
 
         utils::write_result(results);
     } else {
-        std::cerr << "[ERROR] No test data.";
-        return 1;
+        std::cerr << "[ERROR] Test data required\n";
+        exit(JUDGE_ERROR);
     }
 
     return 0;

@@ -40,19 +40,16 @@ public class FileCleaner {
     }
 
     private void delete(File file) {
-        boolean emptyDir = false;
-        File[] files = file.listFiles();
-
-        if (file.isFile() && !file.delete()) {
-            log.warn("Delete file failed: path={}", file.getAbsolutePath());
-        } else if (files != null) {
-            for (File f : files) {
-                emptyDir = f.delete();
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null && files.length != 0) {
+                for (File f : files) {
+                    delete(f);
+                }
             }
         }
-
-        if (emptyDir && !file.delete()) {
-            log.warn("Delete directory failed: path={}", file.getAbsolutePath());
+        if (!file.delete()) {
+            log.warn("Delete failed: path={}", file.getAbsolutePath());
         }
     }
 }

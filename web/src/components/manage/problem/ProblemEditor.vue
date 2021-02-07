@@ -4,22 +4,32 @@
              :model="problem" v-loading="loading"
              :rules="problemRules"
              :status-icon="true">
-      <el-row>
-        <el-col :span="8">
+      <el-row :gutter="15">
+        <el-col :span="12">
           <el-form-item label="题目名称" prop="title">
             <el-input size="medium" v-model="problem.title"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
-          <el-form-item label="分值" prop="score">
+        <el-col :span="6">
+          <el-form-item label="分数" prop="score">
             <el-input size="medium" v-model.number="problem.score">
+              <template slot="append">分</template>
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
-          <el-form-item label="限时" prop="timeout">
+      </el-row>
+      <el-row :gutter="15">
+        <el-col :span="6">
+          <el-form-item label="时间限制" prop="timeout">
             <el-input size="medium" v-model.number="problem.timeout">
-              <template slot="append">ms</template>
+              <template slot="append">毫秒</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="内存限制" prop="memoryLimit">
+            <el-input size="medium" v-model.number="problem.memoryLimit">
+              <template slot="append">MB</template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -53,7 +63,7 @@
           保存
         </el-button>
         <el-popconfirm style="margin-left: 10px" title="确定要重置吗，所有更改都会丢失？"
-                       placement="right-end" @onConfirm="resetForm">
+                       placement="right-end" @confirm="resetForm">
           <el-button slot="reference" type="danger" size="small" icon="el-icon-refresh-left"
                      :disabled="!dataChanged" :loading="loading">
             重置
@@ -113,6 +123,20 @@ export default {
     }
   },
   data() {
+    const checkMemoryLimit = (rule, value, callback) => {
+      if (value < 24 || value > 256) {
+        callback(new Error("请输入 24 ~ 256 之间的数值"))
+      } else {
+        callback()
+      }
+    }
+    const checkTimeLimit = (rule, value, callback) => {
+      if (value < 100 || value > 2000) {
+        callback(new Error("请输入 100 ~ 2000 之间的数值"))
+      } else {
+        callback()
+      }
+    }
     return {
       firstChange: true,
       dataChanged: false,
@@ -122,6 +146,7 @@ export default {
         title: "",
         description: "",
         timeout: "",
+        memoryLimit: "",
         score: ""
       },
       problemRules: {
@@ -132,7 +157,12 @@ export default {
           {required: true, type: "number", message: "请填写分值", trigger: "blur"}
         ],
         timeout: [
-          {required: true, type: "number", message: "请填写运行时间限制", trigger: "blur"}
+          {required: true, type: "number", message: "请填写运行时间限制", trigger: "blur"},
+          {validator: checkTimeLimit, trigger: "blur"}
+        ],
+        memoryLimit: [
+          {required: true, type: "number", message: "请填写内存限制", trigger: "blur"},
+          {validator: checkMemoryLimit, trigger: "blur"}
         ],
         description: [
           {required: true, message: "请输入题目描述", trigger: "blur"}

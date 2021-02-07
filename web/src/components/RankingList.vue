@@ -31,9 +31,7 @@
         </el-table-column>
         <el-table-column width="80px" align="right">
           <template slot-scope="scope">
-            <img class="avatar" align="center" alt="avatar" style="visibility: hidden"
-                 :src="`./api/file/image/avatar/${scope.row.userId}.png`"
-                 onload="this.style.visibility='visible'"
+            <img class="avatar" align="center" alt="Avatar" :src="`/api/file/image/avatar/${scope.row.userId}.png`"
                  onerror="this.src='/icons/no_avatar.png'">
           </template>
         </el-table-column>
@@ -233,6 +231,10 @@ export default {
   height: 42px;
   width: 42px;
   border-radius: 22px;
+}
+
+.avatar:empty {
+  background-color: #F0F0F0;
 }
 
 .ranking-icon {

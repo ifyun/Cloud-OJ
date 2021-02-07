@@ -2,19 +2,22 @@
   <div>
     <el-form :model="user" :rules="rules" ref="userForm"
              label-width="120px">
-      <el-form-item label="ID" prop="userId">
+      <el-form-item>
+        <img class="avatar" Alt="Avatar" :src="`/api/file/image/avatar/${user.userId}.png`"
+             onerror="this.src='/icons/no_avatar.png'">
+      </el-form-item>
+      <el-form-item label="User ID" prop="userId">
         <el-input prefix-icon="el-icon-postcard"
                   :disabled="!create"
                   v-model="user.userId">
         </el-input>
       </el-form-item>
-      <el-form-item label="用户名/昵称" prop="name">
+      <el-form-item label="用户名" prop="name">
         <el-input prefix-icon="el-icon-user"
                   v-model="user.name">
         </el-input>
       </el-form-item>
-      <el-form-item v-if="!create"
-                    label="角色/权限">
+      <el-form-item v-if="!create" label="角色/权限">
         <el-select v-model="user['roleId']">
           <el-option v-for="role in roles"
                      :key="role.value"
@@ -23,35 +26,28 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Email" prop="email">
-        <el-input type="email" prefix-icon="el-icon-message"
-                  auto-complete="off" placeholder="选填"
-                  v-model="user.email">
+      <el-form-item label="邮箱" prop="email">
+        <el-input type="email" prefix-icon="el-icon-message" auto-complete="off"
+                  placeholder="选填" v-model="user.email">
         </el-input>
       </el-form-item>
       <el-form-item v-if="create" label="密码" prop="password">
-        <el-input type="password" prefix-icon="el-icon-lock"
-                  auto-complete="new-password"
-                  v-model="user.password"
-                  placeholder="6 ~ 16位">
+        <el-input type="password" prefix-icon="el-icon-lock" auto-complete="new-password"
+                  v-model="user.password" placeholder="6 ~ 16位">
         </el-input>
       </el-form-item>
       <el-form-item v-else label="设置新密码" prop="newPassword">
-        <el-input type="password" prefix-icon="el-icon-lock"
-                  auto-complete="new-password"
-                  v-model="user.newPassword"
-                  placeholder="6 ~ 16位">
+        <el-input type="password" prefix-icon="el-icon-lock" auto-complete="new-password"
+                  v-model="user.newPassword" placeholder="6 ~ 16位">
         </el-input>
       </el-form-item>
       <el-form-item label="学校/班级/部门">
-        <el-input prefix-icon="el-icon-school" placeholder="选填"
-                  v-model="user.section">
+        <el-input prefix-icon="el-icon-school" placeholder="选填" v-model="user.section">
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="success"
-                   :icon="create ? 'el-icon-plus' : 'el-icon-check'"
-                   @click="onSave">
+        <el-button type="success" size="medium" @click="onSave"
+                   :icon="create ? 'el-icon-plus' : 'el-icon-check'">
           <span>{{ create ? "创建" : "保存" }}</span>
         </el-button>
       </el-form-item>
@@ -147,5 +143,9 @@ export default {
 </script>
 
 <style scoped>
-
+.avatar {
+  height: 160px;
+  width: 160px;
+  border-radius: 80px;
+}
 </style>

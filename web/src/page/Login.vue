@@ -186,6 +186,7 @@ export default {
 }
 
 .recommend {
+  margin-top: 10px;
   font-size: 14px;
   display: flex;
   justify-content: center;

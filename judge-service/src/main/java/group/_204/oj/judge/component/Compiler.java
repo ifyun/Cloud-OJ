@@ -144,7 +144,7 @@ class Compiler {
                 throw new InterruptedException("Compile timeout.");
             }
         } catch (IOException | InterruptedException | CompileError e) {
-            log.error("Compile error: solutionId={}, error={}.", solutionId, e.getMessage());
+            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }

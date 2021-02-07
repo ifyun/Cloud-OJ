@@ -98,6 +98,7 @@ const Notice = {
 }
 
 function SiteSetting() {
+    const DEFAULT_NAME = "Cloud OJ"
     this.name = ""
     this.icp = ""
     this.icpUrl = ""
@@ -113,12 +114,14 @@ function SiteSetting() {
             SettingsApi.get().then((data) => {
                 if (data.siteName !== "") {
                     this.name = data.siteName
-                    this.icp = data.icp
-                    this.icpUrl = data.icpUrl
+                } else {
+                    this.name = DEFAULT_NAME
                 }
+                this.icp = data.icp
+                this.icpUrl = data.icpUrl
                 this.initialized = true
             }).catch(() => {
-                this.name = "Cloud OJ"
+                this.name = DEFAULT_NAME
             }).finally(() => {
                 title != null && setTitle(title)
             })
