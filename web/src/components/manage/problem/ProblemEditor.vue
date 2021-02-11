@@ -203,7 +203,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "获取题目内容失败",
@@ -252,7 +252,7 @@ export default {
             .catch((error) => {
               switch (error.code) {
                 case 401:
-                  toLoginPage()
+                  toLoginPage(this)
                   break
                 default:
                   Notice.notify.error(this, {

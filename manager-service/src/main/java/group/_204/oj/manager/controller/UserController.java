@@ -26,8 +26,8 @@ public class UserController implements CRUDController {
      * 获取所有用户
      */
     @GetMapping(path = "pro")
-    public ResponseEntity<?> getUsers(Integer page, Integer limit) {
-        return buildGETResponse(userService.getUsers(page, limit));
+    public ResponseEntity<?> getUsers(Integer page, Integer limit, String userId, String name) {
+        return buildGETResponse(userService.getUsers(page, limit, userId, name));
     }
 
     /**

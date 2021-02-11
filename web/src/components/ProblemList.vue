@@ -4,15 +4,15 @@
     <el-card v-else style="width: 100%">
       <h3 v-if="contest.contestId != null">{{ contest.contestName }}</h3>
       <div style="align-self: flex-start" v-if="contestId == null">
-        <el-form :inline="true" @submit.native.prevent>
+        <el-form size="medium" :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
+            <el-input style="width: 250px" placeholder="输入关键字" prefix-icon="el-icon-search"
                       v-model="keyword">
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="medium" type="success" icon="el-icon-search"
-                       @click="search(keyword)">搜索
+            <el-button type="success" icon="el-icon-search" @click="search(keyword)">
+              搜索
             </el-button>
           </el-form-item>
           <el-form-item>
@@ -23,10 +23,11 @@
         </el-form>
       </div>
       <el-table :data="problems.data" stripe :show-header="false" v-loading="loading">
-        <el-table-column width="320px">
+        <el-table-column align="center" type="index">
+        </el-table-column>
+        <el-table-column>
           <template slot-scope="scope">
-            <el-link
-                :href="`/commit?problemId=${scope.row.problemId}${scope.row.contestId === undefined? '' : `&contestId=${scope.row.contestId}`}`">
+            <el-link :href="generateLink(scope.row)">
               {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
@@ -40,7 +41,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null && userInfo != null" width="150px" align="right">
+        <el-table-column v-if="contestId == null && userInfo != null" width="120px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined" style="color: #67c23a; font-size: 6px">
             <span>{{ scope.row['passed'] }} 人通过</span>
@@ -51,19 +52,12 @@
         <el-table-column width="50px"/>
         <el-table-column>
           <template slot-scope="scope">
-            <div v-if="contest.contestId == null">
-              <div v-if="scope.row.category !== ''">
-                <span v-for="tag in scope.row.category.split(',')"
-                      v-bind:key="tag.index"
-                      @click="tagClick(tag)"
-                      class="tag" :class="getTagColor(tag)">
+            <div v-if="contest.contestId == null && scope.row.category !== ''">
+              <span v-for="tag in scope.row.category.split(',')" v-bind:key="tag.index"
+                    class="tag" :class="getTagColor(tag)" @click="tagClick(tag)">
                   {{ tag }}
-                </span>
-              </div>
+              </span>
             </div>
-            <span v-else class="contest-tag tag-color-5">
-              {{ contest.contestName }}
-            </span>
           </template>
         </el-table-column>
         <el-table-column width="70px" align="right">
@@ -133,10 +127,15 @@ export default {
         this.currentPage = parseInt(page)
       }
     },
+    generateLink(row) {
+      const contestId = typeof row.contestId === "undefined" ?
+          "" : `&contestId=${row.contestId}`
+      return `/commit?problemId=${row.problemId}${contestId}`
+    },
     getContest() {
       // Only logged-in users can view contest problems
       if (this.contestId != null && userInfo() == null) {
-        toLoginPage()
+        toLoginPage(this)
       }
       ContestApi.get(this.contestId).then((data) => {
         this.siteSetting.setTitle(data.contestName)
@@ -177,7 +176,7 @@ export default {
         this.problems = data
       }).catch((error) => {
         if (error.code === 401) {
-          toLoginPage()
+          toLoginPage(this)
         }
         Notice.notify.error(this, {
           title: "获取题目失败",

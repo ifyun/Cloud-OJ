@@ -22,24 +22,24 @@
       </el-card>
       <h3>系统设置</h3>
       <el-card style="margin-bottom: 35px">
-        <el-row :gutter="20">
-          <el-col :span="16">
+        <el-row type="flex" justify="space-between">
+          <el-col :span="20">
             <h3>隐藏进行中的竞赛排行榜</h3>
             <span class="info">开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）</span>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="4">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
                        v-model="settings.showRankingAfterEnded">
             </el-switch>
           </el-col>
         </el-row>
         <el-divider/>
-        <el-row :gutter="20">
-          <el-col :span="16">
+        <el-row type="flex" justify="space-between">
+          <el-col :span="20">
             <h3>显示未开始的竞赛</h3>
             <span class="info">开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目</span>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="4">
             <el-switch class="switch" active-color="#67C23A" :disabled="loading"
                        v-model="settings.showNotStartedContest">
             </el-switch>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import {Notice, userInfo} from "@/util"
+import {Notice, toLoginPage, userInfo} from "@/util"
 import {ApiPath, SettingsApi} from "@/service"
 import axios from "axios"
 
@@ -93,9 +93,10 @@ const title = "系统设置"
 export default {
   name: "Settings",
   beforeMount() {
+    history.pushState(null, "", "?active=4")
+    this.siteSetting.setTitle(title)
     this.getQueueInfo()
     this.getSettings()
-    this.siteSetting.setTitle(title)
     this.checkLogo()
   },
   data() {
@@ -124,32 +125,31 @@ export default {
   },
   methods: {
     getQueueInfo(refresh) {
-      SettingsApi.getQueueInfo(userInfo())
-          .then((data) => {
-            this.queueInfo = data
-            refresh === true && Notice.message.success(this, "队列信息已刷新")
+      SettingsApi.getQueueInfo(userInfo()).then((data) => {
+        this.queueInfo = data
+        refresh === true && Notice.message.success(this, "队列信息已刷新")
+      }).catch((error) => {
+        if (error.code === 401) {
+          toLoginPage(this)
+        } else {
+          Notice.notify.error(this, {
+            title: "获取队列信息失败",
+            message: `${error.code} ${error.msg}`
           })
-          .catch((error) => {
-            Notice.notify.error(this, {
-              title: "获取队列信息失败",
-              message: `${error.code} ${error.msg}`
-            })
-          })
+        }
+      })
     },
     getSettings() {
-      SettingsApi.get()
-          .then((data) => {
-            this.settings = data
-          })
-          .catch((error) => {
-            Notice.notify.error(this, {
-              title: "获取系统设置失败",
-              message: `${error.code} ${error.msg}`
-            })
-          })
-          .finally(() => {
-            this.loading = false
-          })
+      SettingsApi.get().then((data) => {
+        this.settings = data
+      }).catch((error) => {
+        Notice.notify.error(this, {
+          title: "获取系统设置失败",
+          message: `${error.code} ${error.msg}`
+        })
+      }).finally(() => {
+        this.loading = false
+      })
     },
     saveSettings() {
       SettingsApi.update(this.settings, userInfo())

@@ -2,7 +2,7 @@
   <div>
     <el-form :model="user" :rules="rules" ref="userForm"
              label-width="120px">
-      <el-form-item>
+      <el-form-item v-if="!create">
         <img class="avatar" Alt="Avatar" :src="`/api/file/image/avatar/${user.userId}.png`"
              onerror="this.src='/icons/no_avatar.png'">
       </el-form-item>
@@ -146,6 +146,6 @@ export default {
 .avatar {
   height: 160px;
   width: 160px;
-  border-radius: 80px;
+  border-radius: 10px;
 }
 </style>

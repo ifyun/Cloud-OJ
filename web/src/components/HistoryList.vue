@@ -1,6 +1,22 @@
 <template>
   <div class="content">
     <div style="width: 100%">
+      <el-form style="margin-top: 15px" size="medium" :inline="true" @submit.native.prevent>
+        <el-form-item>
+          <el-input style="width: 350px" v-model="searchOption.value" placeholder="请选择搜索方式"
+                    @keyup.enter.native="getHistories">
+            <el-select style="width: 110px" slot="prepend" v-model="searchOption.type">
+              <el-option label="题目 ID" value="problemId"></el-option>
+              <el-option label="题目名称" value="title"></el-option>
+            </el-select>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" icon="el-icon-search" @click="getHistories">
+            搜索
+          </el-button>
+        </el-form-item>
+      </el-form>
       <el-table :data="histories.data" stripe v-loading="loading">
         <el-table-column label="状态" width="140px">
           <template slot-scope="scope">
@@ -89,7 +105,11 @@ export default {
       languages,
       codeDialogVisible: false,
       code: "",
-      prettyMemory
+      prettyMemory,
+      searchOption: {
+        type: "title",
+        value: "",
+      }
     }
   },
   methods: {
@@ -102,13 +122,19 @@ export default {
     getHistories() {
       history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      UserApi.getCommitHistory(this.currentPage, this.pageSize, userInfo())
+      const type = this.searchOption.type
+      const value = this.searchOption.value
+      const searchParam = {
+        problemId: type === "problemId" && value !== "" ? value : null,
+        title: type === "title" && value !== "" ? value : null
+      }
+      UserApi.getCommitHistory(this.currentPage, this.pageSize, searchParam, userInfo())
           .then((data) => {
             this.histories = data
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "获取提交记录失败",

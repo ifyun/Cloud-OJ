@@ -145,7 +145,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage()
+                toLoginPage(this)
               } else {
                 Notice.notify.error(this, {
                   title: "保存失败",

@@ -1,24 +1,35 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.manager.dao.JudgeResultDao">
     <select id="getHistory" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows solution_id,
-                                   problem_id,
-                                   contest_id,
-                                   title,
-                                   language,
-                                   state - 1  as state,
-                                   result - 1 as result,
-                                   pass_rate,
-                                   user_id,
-                                   submit_time,
-                                   score,
-                                   code,
-                                   time,
-                                   memory,
-                                   error_info
+        select sql_calc_found_rows *,
+                                   state - 1  as state_code,
+                                   result - 1 as result_code
         from judge_result
         where user_id = #{userId}
+        order by submit_time desc
+        limit #{start}, #{limit};
+        select found_rows();
+    </select>
+    <select id="getHistoryByProblemId" resultMap="Map.JudgeResult, Map.Total">
+        select sql_calc_found_rows *,
+                                   state - 1  as state_code,
+                                   result - 1 as result_code
+        from judge_result
+        where user_id = #{userId}
+          and problem_id = #{problemId}
+        order by submit_time desc
+        limit #{start}, #{limit};
+        select found_rows();
+    </select>
+    <select id="getHistoryByTitle" resultMap="Map.JudgeResult, Map.Total">
+        select sql_calc_found_rows *,
+                                   state - 1  as state_code,
+                                   result - 1 as result_code
+        from judge_result
+        where user_id = #{userId}
+          and title like concat('%', #{title}, '%')
         order by submit_time desc
         limit #{start}, #{limit};
         select found_rows();

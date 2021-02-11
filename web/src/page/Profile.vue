@@ -1,9 +1,9 @@
 <template>
   <div v-if="userInfo != null || userId != null">
     <TopNavigation active=""/>
-    <Error v-if="error.code != null" :error="error"/>
-    <el-container v-else class="container">
-      <el-tabs type="border-card" style="width: 100%">
+    <el-container class="container">
+      <Error v-if="error.code != null" :error="error"/>
+      <el-tabs v-else type="border-card" style="width: 100%">
         <el-tab-pane label="概览">
           <el-row :gutter="5">
             <el-col :span="6">

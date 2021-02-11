@@ -17,8 +17,14 @@ public class UserService {
     @Resource
     private UserDao userDao;
 
-    public List<List<?>> getUsers(int page, int limit) {
-        return userDao.getAll((page - 1) * limit, limit);
+    public List<List<?>> getUsers(int page, int limit, String userId, String name) {
+        if (userId != null && !userId.isEmpty()) {
+            return userDao.getAllByUserId((page - 1) * limit, limit, userId);
+        } else if (name != null && !name.isEmpty()) {
+            return userDao.getAllByUserId((page - 1) * limit, limit, name);
+        } else {
+            return userDao.getAll((page - 1) * limit, limit);
+        }
     }
 
     public User getUserInfo(String userId) {
