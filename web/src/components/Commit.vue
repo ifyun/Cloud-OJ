@@ -175,9 +175,11 @@ export default {
   beforeMount() {
     const p = this.siteSetting.preference
     if (p != null) {
-      this.language = p.language
       this.cmOptions.theme = p.highlight
-      this.languageChange()
+      if (this.contestId == null) {
+        this.language = p.language
+        this.languageChange()
+      }
     }
     this.getProblem()
     this.getCachedCode()
@@ -303,7 +305,7 @@ export default {
         this.calcLanguages()
       }).catch((error) => {
         if (error.code === 401) {
-          toLoginPage()
+          toLoginPage(this)
         } else {
           this.error = error
         }
@@ -350,7 +352,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "提交失败",
@@ -405,7 +407,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               this.result = {
                 type: "warning",
@@ -541,7 +543,7 @@ export default {
   bottom: 0;
   width: 100%;
   font-size: 14px;
-  color: #6A6A6A;
+  color: #7A7A7A;
   display: flex;
   align-items: center;
   justify-content: center;

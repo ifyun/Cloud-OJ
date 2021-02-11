@@ -127,7 +127,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: `${title} 移除失败`,

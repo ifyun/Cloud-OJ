@@ -185,7 +185,7 @@ export default {
       }).catch((error) => {
         switch (error.code) {
           case 401:
-            toLoginPage()
+            toLoginPage(this)
             break
           default:
             this.error = error
@@ -206,7 +206,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage()
+                toLoginPage(this)
               }
               Notice.notify.error(this, {
                 title: "获取详细得分失败",

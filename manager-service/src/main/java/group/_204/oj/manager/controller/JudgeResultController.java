@@ -1,6 +1,6 @@
 package group._204.oj.manager.controller;
 
-import group._204.oj.manager.service.CommitHistoryService;
+import group._204.oj.manager.service.JudgeResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,13 +14,14 @@ import javax.annotation.Resource;
 public class JudgeResultController implements CRUDController {
 
     @Resource
-    private CommitHistoryService commitHistoryService;
+    private JudgeResultService judgeResultService;
 
     /**
      * 获取提交记录
      */
     @GetMapping()
-    public ResponseEntity<?> getJudged(@RequestHeader String userId, Integer page, Integer limit) {
-        return buildGETResponse(commitHistoryService.getJudged(userId, page, limit));
+    public ResponseEntity<?> getJudged(@RequestHeader String userId, Integer page, Integer limit,
+                                       Integer problemId, String title) {
+        return buildGETResponse(judgeResultService.getHistories(userId, page, limit, problemId, title));
     }
 }

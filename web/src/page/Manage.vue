@@ -50,7 +50,7 @@ import UserManage from "@/components/manage/user/Index"
 import Settings from "@/components/manage/Settings"
 import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
-import {toLoginPage, userInfo} from "@/util"
+import {searchParams, toLoginPage, userInfo} from "@/util"
 
 let pages = new Map([
   ["1", "ProblemsManage"],
@@ -81,10 +81,11 @@ export default {
     }
   },
   mounted() {
+    const active = searchParams().active
     if (this.userInfo["roleId"] === 1) {
       this.active = "3"
     } else {
-      this.active = "1"
+      active == null ? this.active = "1" : this.active = active
     }
     this.onSelect(this.active)
   },
@@ -141,7 +142,6 @@ export default {
 }
 
 .main {
-  max-width: 1400px;
   margin: 0 auto;
 }
 

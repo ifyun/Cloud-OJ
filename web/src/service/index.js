@@ -80,7 +80,7 @@ const AuthApi = {
 }
 
 const UserApi = {
-    getAll(page, limit, userInfo) {
+    getAll(page, limit, searchParam, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.USER_ADMIN,
@@ -88,7 +88,9 @@ const UserApi = {
                 headers: buildHeaders(userInfo),
                 params: {
                     page,
-                    limit
+                    limit,
+                    userId: searchParam.userId,
+                    name: searchParam.name
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
@@ -169,7 +171,7 @@ const UserApi = {
             })
         })
     },
-    getCommitHistory(page, limit, userInfo) {
+    getCommitHistory(page, limit, searchParam, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
                 url: ApiPath.HISTORY,
@@ -177,7 +179,9 @@ const UserApi = {
                 headers: buildHeaders(userInfo),
                 params: {
                     page,
-                    limit
+                    limit,
+                    problemId: searchParam.problemId,
+                    title: searchParam.title
                 }
             }).then((res) => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})

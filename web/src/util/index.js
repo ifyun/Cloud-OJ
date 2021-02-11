@@ -28,9 +28,17 @@ function searchParams() {
     return qs.parse(location.search.replace("?", ""))
 }
 
-function toLoginPage() {
-    clearToken()
-    window.location.href = "/login"
+function toLoginPage(ctx = null) {
+    if (ctx == null) {
+        clearToken()
+        window.location.href = "/login"
+    }
+    ctx.$confirm("登录已失效，请重新登录", "提示", {
+        type: "warning"
+    }).then(() => {
+        clearToken()
+        window.location.href = "/login"
+    })
 }
 
 function saveToken(value) {

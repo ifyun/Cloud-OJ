@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {copyObject, userInfo, toLoginPage, Notice, searchParams} from "@/util"
+import {copyObject, userInfo, toLoginPage, Notice} from "@/util"
 import ContestProblemsManage from "@/components/manage/contest/ContestProblems"
 import ContestEditor from "@/components/manage/contest/ContestEditor"
 import {ContestApi} from "@/service"
@@ -107,7 +107,6 @@ export default {
   },
   beforeMount() {
     this.siteSetting.setTitle("竞赛/作业管理")
-    this.loadPage()
     this.getContests()
   },
   data() {
@@ -156,17 +155,11 @@ export default {
     }
   },
   methods: {
-    loadPage() {
-      const page = searchParams()["page"]
-      if (page != null) {
-        this.currentPage = parseInt(page)
-      }
-    },
     refresh() {
       this.getContests(true)
     },
     getContests(refresh = false) {
-      history.pushState(null, "", `?page=${this.currentPage}`)
+      history.pushState(null, "", "?active=2")
       this.loading = true
       ContestApi.getAll(this.currentPage, this.pageSize, userInfo())
           .then((data) => {
@@ -175,7 +168,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "获取竞赛/作业失败",
@@ -232,7 +225,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage()
+                toLoginPage(this)
               } else {
                 Notice.notify.error(this, {
                   title: `${this.selectedContest.contestName} 删除失败`,

@@ -45,7 +45,7 @@
       </el-form>
     </div>
     <el-table :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
-      <el-table-column label="题目名称" width="260px">
+      <el-table-column label="题目名称">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
@@ -83,14 +83,15 @@
           {{ formatDate(scope.row["createAt"]) }}
         </template>
       </el-table-column>
-      <el-table-column width="50px" align="center">
+      <el-table-column width="70px" align="center">
         <template slot="header">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-menu el-icon--left"/>
+          <span>操作</span>
         </template>
         <template slot-scope="scope">
           <el-dropdown trigger="click" @command="operation($event, scope.row)">
             <span class="el-dropdown-link">
-              <i class="el-icon-arrow-down"></i>
+              <i class="el-icon-s-unfold"/>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item icon="el-icon-edit" command="edit">
@@ -162,7 +163,7 @@
 </template>
 
 <script>
-import {userInfo, tagColor, toLoginPage, Notice, searchParams} from "@/util"
+import {userInfo, tagColor, toLoginPage, Notice} from "@/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
 import {ApiPath, ProblemApi} from "@/service"
@@ -175,8 +176,8 @@ export default {
     ProblemEditor
   },
   beforeMount() {
+    history.pushState(null, "", "?active=1")
     this.siteSetting.setTitle("题库管理")
-    this.loadPage()
     this.getProblems()
   },
   data() {
@@ -226,12 +227,6 @@ export default {
   },
   methods: {
     getTagColor: tagColor,
-    loadPage() {
-      const page = searchParams()["page"]
-      if (page != null) {
-        this.currentPage = parseInt(page)
-      }
-    },
     formatDate(time) {
       return moment(time).format("YYYY/MM/DD")
     },
@@ -239,7 +234,6 @@ export default {
       this.getProblems(true)
     },
     getProblems(refresh = false) {
-      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       ProblemApi.getAll(this.currentPage, this.pageSize, this.keyword, this.userInfo)
           .then((data) => {
@@ -248,7 +242,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "获取数据失败",
@@ -283,7 +277,7 @@ export default {
           .catch((error) => {
             switch (error.code) {
               case 401:
-                toLoginPage()
+                toLoginPage(this)
                 break
               case 400:
                 Notice.notify.error(this, {
@@ -348,7 +342,7 @@ export default {
             .catch((error) => {
               switch (error.code) {
                 case 401:
-                  toLoginPage()
+                  toLoginPage(this)
                   break
                 case 400:
                   Notice.notify.error(this, {

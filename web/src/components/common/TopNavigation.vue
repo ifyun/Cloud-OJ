@@ -160,7 +160,7 @@ export default {
 
 .top-menu {
   border: none !important;
-  margin-left: 35px;
+  margin-left: 15px;
   background-color: inherit;
 }
 

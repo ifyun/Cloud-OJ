@@ -1,26 +1,40 @@
 <template>
   <el-card>
-    <el-form :inline="true">
+    <el-form size="medium" :inline="true" @submit.native.prevent>
       <el-form-item>
-        <el-button size="medium" icon="el-icon-circle-plus" type="primary"
+        <el-input style="width: 320px" v-model="searchOption.value" placeholder="请选择搜索方式"
+                  @keyup.enter.native="getUsers">
+          <el-select style="width: 100px" slot="prepend" v-model="searchOption.type">
+            <el-option label="用户 ID" value="userId"></el-option>
+            <el-option label="用户名" value="name"></el-option>
+          </el-select>
+        </el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="success" icon="el-icon-search" @click="getUsers">
+          搜索
+        </el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="refresh">
+          刷新
+        </el-button>
+      </el-form-item>
+      <el-form-item style="float: right">
+        <el-button size="small" icon="el-icon-circle-plus" type="primary"
                    @click="addUser">
           创建新用户
         </el-button>
       </el-form-item>
-      <el-form-item>
-        <el-button size="medium" icon="el-icon-refresh" @click="refresh">
-          刷新
-        </el-button>
-      </el-form-item>
     </el-form>
     <el-table :data="users.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
-      <el-table-column prop="userId" width="130px">
+      <el-table-column prop="userId" width="140px">
         <template slot="header">
           <Icon class="el-icon--left" name="id-card"/>
           <span>ID</span>
         </template>
       </el-table-column>
-      <el-table-column prop="name" width="240px">
+      <el-table-column prop="name">
         <template slot="header">
           <i class="el-icon-user-solid el-icon--left"/>
           <span>用户名</span>
@@ -109,7 +123,7 @@
 </template>
 
 <script>
-import {copyObject, Notice, searchParams, toLoginPage, userInfo} from "@/util"
+import {copyObject, Notice, toLoginPage, userInfo} from "@/util"
 import UserEditor from "@/components/manage/user/UserEditor"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/id-card"
@@ -124,8 +138,8 @@ export default {
     Icon
   },
   beforeMount() {
+    history.pushState(null, "", "?active=3")
     this.siteSetting.setTitle("用户管理")
-    this.loadPage()
     this.getUsers()
   },
   data() {
@@ -155,6 +169,10 @@ export default {
         data: [],
         count: 0
       },
+      searchOption: {
+        type: "userId",
+        value: ""
+      },
       deleteDialog: {
         visible: false,
         form: {
@@ -177,26 +195,25 @@ export default {
     }
   },
   methods: {
-    loadPage() {
-      const page = searchParams()["page"]
-      if (page != null) {
-        this.currentPage = parseInt(page)
-      }
-    },
     refresh() {
       this.getUsers(true)
     },
     getUsers(refresh = false) {
-      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
-      UserApi.getAll(this.currentPage, this.pageSize, userInfo())
+      const type = this.searchOption.type
+      const value = this.searchOption.value
+      const searchParam = {
+        userId: type === "userId" && value !== "" ? value : null,
+        name: type === "name" && value !== "" ? value : null
+      }
+      UserApi.getAll(this.currentPage, this.pageSize, searchParam, userInfo())
           .then((data) => {
             this.users = data
             refresh === true && Notice.message.success(this, "用户列表已刷新")
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage()
+              toLoginPage(this)
             } else {
               Notice.notify.error(this, {
                 title: "获取数据失败",
@@ -256,7 +273,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage()
+                toLoginPage(this)
               } else {
                 const msg = error.code === 409 ? "此用户存在做题记录，无法删除" : error.msg
                 Notice.notify.warning(this, {
