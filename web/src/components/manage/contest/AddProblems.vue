@@ -4,15 +4,15 @@
               title="只能添加未开放的题目，点击名称可预览题目内容"
               :closable="false">
     </el-alert>
-    <el-table :data="problems.data" border v-loading="loading">
+    <el-table :data="problems.data" size="small" stripe v-loading="loading">
       <el-table-column label="题目名称">
         <template slot-scope="scope">
-          <el-button slot="reference" size="small" @click="preview(scope.row)">
+          <el-button size="small" type="text" @click="preview(scope.row)">
             {{ scope.row.problemId }} - {{ scope.row.title }}
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="分值" prop="score" width="70px" align="right-end">
+      <el-table-column label="分数" prop="score" width="70px" align="right-end">
       </el-table-column>
       <el-table-column label="操作" width="100px" align="center">
         <template slot-scope="scope">

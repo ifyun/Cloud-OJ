@@ -34,6 +34,7 @@ function toLoginPage(ctx = null) {
         window.location.href = "/login"
     }
     ctx.$confirm("登录已失效，请重新登录", "提示", {
+        confirmButtonText: "去登录",
         type: "warning"
     }).then(() => {
         clearToken()

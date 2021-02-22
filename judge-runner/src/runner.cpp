@@ -106,6 +106,9 @@ Result Runner::watch_result(pid_t pid, const Config &config) {
             case SIGXFSZ:
                 res.status = OLE;
                 break;
+            case SIGKILL:
+                std::cerr << "[ERROR] Killed\n";
+                exit(EXIT_FAILURE);
             default:
                 exit(EXIT_FAILURE);
         }

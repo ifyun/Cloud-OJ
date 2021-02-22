@@ -18,7 +18,7 @@
               title="若需要修改请先下载，编辑完成再上传"
               description="每组数据的名称应该相同（例如1-1.in对应1-1.out），删除文件时，请确保成对删除">
     </el-alert>
-    <el-table size="small" :data="testData" border max-height="600" v-loading="loading"
+    <el-table size="small" :data="testData" stripe max-height="600" v-loading="loading"
               :default-sort="{prop: 'fileName', order: 'ascending'}">
       <el-table-column label="文件名" prop="fileName">
       </el-table-column>

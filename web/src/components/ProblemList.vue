@@ -22,17 +22,17 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" stripe :show-header="false" v-loading="loading">
-        <el-table-column align="center" type="index">
+      <el-table :data="problems.data" stripe v-loading="loading">
+        <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
         </el-table-column>
-        <el-table-column>
+        <el-table-column label="题目名称">
           <template slot-scope="scope">
             <el-link :href="generateLink(scope.row)">
               {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column v-if="userInfo != null" align="center" width="105px">
+        <el-table-column v-if="userInfo != null" label="状态" align="center" width="105px">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.result !== undefined" size="small" effect="light"
                     :type="resultTags[scope.row.result].type">
@@ -41,18 +41,19 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="contestId == null && userInfo != null" width="120px" align="right">
+        <el-table-column v-if="contestId == null && userInfo != null"
+                         label="通过人数" width="120px" align="right">
           <template slot-scope="scope">
           <span v-if="scope.row['passed'] !== undefined" style="color: #67c23a; font-size: 6px">
-            <span>{{ scope.row['passed'] }} 人通过</span>
+            <span>{{ scope.row['passed'] }}</span>
             <i class="el-icon-success el-icon--right"/>
           </span>
           </template>
         </el-table-column>
         <el-table-column width="50px"/>
-        <el-table-column>
+        <el-table-column label="分类" v-if="contest.contestId == null">
           <template slot-scope="scope">
-            <div v-if="contest.contestId == null && scope.row.category !== ''">
+            <div v-if="scope.row.category !== ''">
               <span v-for="tag in scope.row.category.split(',')" v-bind:key="tag.index"
                     class="tag" :class="getTagColor(tag)" @click="tagClick(tag)">
                   {{ tag }}
@@ -60,7 +61,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column width="70px" align="right">
+        <el-table-column label="分数" align="right">
           <template slot-scope="scope">
             {{ scope.row.score }} 分
           </template>

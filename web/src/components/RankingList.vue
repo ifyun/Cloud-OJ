@@ -38,6 +38,10 @@
         <el-table-column>
           <template slot-scope="scope">
             <el-link :href="`/profile?userId=${scope.row.userId}`">{{ scope.row.name }}</el-link>
+            <el-tag v-if="scope.row.userId === userInfo.userId" class="el-icon--right"
+                    type="success" size="mini" effect="dark">
+              你自己
+            </el-tag>
             <br>
             <span class="user-id">{{ scope.row.userId }}</span>
           </template>
@@ -115,6 +119,7 @@ export default {
         data: [],
         count: 0
       },
+      userInfo: userInfo(),
       contestId: searchParams()["contestId"],
       contest: {
         contestId: null,

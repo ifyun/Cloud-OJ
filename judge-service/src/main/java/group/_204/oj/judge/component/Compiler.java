@@ -39,7 +39,7 @@ class Compiler {
      * 初始化
      */
     @PostConstruct
-    public void init() {
+    private void init() {
         File dir = new File(codeDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
@@ -51,7 +51,7 @@ class Compiler {
     }
 
     /**
-     * 编译入口
+     * 编译
      *
      * @param solution {@link Solution}
      * @return {@link Compile} 编译结果
@@ -85,7 +85,7 @@ class Compiler {
      * @param language   {@link Language}
      * @return {@link Compile} 编译结果
      */
-    public Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
+    private Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
 
         if (language == null) {
             throw new UnsupportedLanguageError("Unsupported language: null.");

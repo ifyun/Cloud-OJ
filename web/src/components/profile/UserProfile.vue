@@ -240,7 +240,7 @@ export default {
   height: 200px;
   display: block;
   border-radius: 200px;
-  border: 2px solid #FAFAFA;
+  border: 1px solid #FAFAFA;
   margin: 0 auto 15px;
 }
 
@@ -253,7 +253,7 @@ export default {
 .user-id {
   font-weight: lighter;
   color: #606266;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 </style>
 

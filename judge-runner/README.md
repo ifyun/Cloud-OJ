@@ -17,7 +17,7 @@ runner <cmd> <timeout> <memory> <max_memory> <output_size> <data_dir>
 - `cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
 - `timeout`: 运行时间，单位：毫秒
 - `memory`: 内存限制，此项用于判断是否超限，单位：MB
-- `max_memory`: 此项为实际的内存限制，超出此限制算程序会中断并返回非零值，单位：MB
+- `max_memory`: 此项为实际的内存限制，超出此限制程序会中断并返回非零值，单位：MB
 - `output_size`: 输出限制，单位：KB
 - `data_dir`: 测试数据目录，包含 `*.in`、 `*.out` 文件
 

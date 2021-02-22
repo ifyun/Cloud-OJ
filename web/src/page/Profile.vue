@@ -70,6 +70,5 @@ export default {
   padding: 0 20px;
   flex-direction: column;
   align-items: center;
-  max-width: 1300px !important;
 }
 </style>

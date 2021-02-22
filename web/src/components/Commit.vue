@@ -5,26 +5,43 @@
       <el-row :gutter="5">
         <el-col :span="12">
           <div class="content-problem" style="overflow: auto" :style="{height: contentHeight()}">
-            <div v-if="problem.problemId !== undefined">
-              <h4 id="title">{{ `${problem.problemId}. ${problem.title}` }}</h4>
-              <div>
-                <div class="limits">
-                  <el-tag type="info" size="medium">
-                    <i class="el-icon-question el-icon--left"/>
-                    {{ problem.score }} 分
-                  </el-tag>
-                  <el-tag type="info" size="medium">
-                    <i class="el-icon-time el-icon--left"/>
-                    时间限制: {{ problem.timeout }} ms
-                  </el-tag>
-                  <el-tag type="info" size="medium">
-                    <i class="el-icon-cpu el-icon--left"/>
-                    内存限制: {{ problem.memoryLimit }} MB
-                  </el-tag>
+            <el-tabs>
+              <el-tab-pane>
+                <span slot="label">
+                  <i class="el-icon-tickets el-icon--left"/>
+                  <span>题目描述</span>
+                </span>
+                <div v-if="problem.problemId !== undefined">
+                  <span id="title">{{ `${problem.problemId}. ${problem.title}` }}</span>
+                  <div>
+                    <div class="limits">
+                      <el-tag type="info" effect="dark" size="mini">
+                        <i class="el-icon-question el-icon--left"/>
+                        {{ problem.score }} 分
+                      </el-tag>
+                      <el-tag type="success" effect="dark" size="mini">
+                        <i class="el-icon-time el-icon--left"/>
+                        时间: {{ problem.timeout }} ms
+                      </el-tag>
+                      <el-tag type="primary" effect="dark" size="mini">
+                        <i class="el-icon-cpu el-icon--left"/>
+                        内存: {{ problem.memoryLimit }} MB
+                      </el-tag>
+                    </div>
+                    <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
+                  </div>
                 </div>
-                <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
-              </div>
-            </div>
+              </el-tab-pane>
+              <el-tab-pane>
+                <span slot="label">
+                  <Icon name="history" class="el-icon--left" scale="0.8"/>
+                  <span>提交记录</span>
+                </span>
+                <HistoryList v-if="userInfo != null" :single-mode="true" :problem-id="problemId"
+                             :title="problem.title" @changeCode="setCode"/>
+                <div v-else>请登录</div>
+              </el-tab-pane>
+            </el-tabs>
           </div>
         </el-col>
         <el-col :span="12">
@@ -36,7 +53,7 @@
                 <el-select v-model="language" size="small" style="width: 260px"
                            @change="languageChange">
                   <el-option v-for="lang in enabledLanguages" :key="lang.name"
-                             :label="`编程语言: ${lang.name}`" :value="lang.id">
+                             :label="`语言: ${lang.name}`" :value="lang.id">
                     <span style="float: left">{{ lang.name }}</span>
                     <span style="float: right">{{ lang.version }}</span>
                   </el-option>
@@ -44,25 +61,20 @@
                 <el-select v-model="cmOptions.theme" size=small style="width: 260px"
                            @change="savePreference">
                   <el-option v-for="theme in codeStyle" :key="theme.id"
-                             :label="`代码高亮: ${theme.name}`" :value="theme.id">
+                             :label="`主题: ${theme.name}`" :value="theme.id">
                     <span style="float: left">{{ theme.name }}</span>
                     <span style="float: right">{{ theme.type }}</span>
                   </el-option>
                 </el-select>
                 <el-button size="mini" type="success" :disabled="disableCommit" @click="commitCode">
-                  <Icon name="play" class="el-icon--left" scale="0.89"/>
-                  <span>运行</span>
-                </el-button>
-                <el-button size="mini" type="info" :disabled="disableLastResult"
-                           @click="resultDialog.visible = true">
-                  <Icon name="history" class="el-icon--left" scale="0.89"/>
-                  <span>上次结果</span>
+                  <Icon name="cloud-upload-alt" class="el-icon--left" scale="1"/>
+                  <span>提交运行</span>
                 </el-button>
               </div>
               <codemirror v-model="code" :options="cmOptions">
               </codemirror>
               <div v-if="code.trim() === ''" id="hint">
-                <Icon class="el-icon--left" name="file-import" scale="1"/>
+                <Icon class="el-icon--left" name="file-import"/>
                 <span>拖入文件可导入代码</span>
               </div>
             </div>
@@ -97,6 +109,7 @@
 
 <script>
 import Error from "@/components/Error"
+import HistoryList from "@/components/HistoryList"
 import {Notice, toLoginPage, searchParams, userInfo, prettyMemory} from "@/util"
 import {ContestApi, JudgeApi, ProblemApi} from "@/service"
 import {codemirror} from "vue-codemirror"
@@ -113,10 +126,15 @@ import "codemirror/theme/darcula.css"
 import "codemirror/theme/panda-syntax.css"
 import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/addon/edit/closebrackets.js"
+import "codemirror/addon/fold/foldcode.js"
+import "codemirror/addon/fold/foldgutter.js"
+import "codemirror/addon/fold/brace-fold.js"
+import "codemirror/addon/fold/indent-fold.js"
+import "codemirror/addon/fold/foldgutter.css"
 import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
 import Icon from "vue-awesome/components/Icon"
-import "vue-awesome/icons/play"
+import "vue-awesome/icons/cloud-upload-alt"
 import "vue-awesome/icons/history"
 import "vue-awesome/icons/file-import"
 import {languages} from "@/util/data"
@@ -141,8 +159,8 @@ const languageOptions = [
   {id: 4, name: "Bash"},
   {id: 5, name: "C#", version: "Mono"},
   {id: 6, name: "JavaScript", version: "Node.js"},
-  {id: 7, name: "Kotlin", version: "1.4.10"},
-  {id: 8, name: "Go", version: "1.15.7"}
+  {id: 7, name: "Kotlin"},
+  {id: 8, name: "Go"}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
@@ -150,6 +168,7 @@ const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
 export default {
   name: "CommitCode",
   components: {
+    HistoryList,
     codemirror,
     MarkdownItVue,
     Error,
@@ -158,9 +177,6 @@ export default {
   computed: {
     disableCommit: (vm) => {
       return vm.code.trim().length === 0
-    },
-    disableLastResult: (vm) => {
-      return typeof vm.result.title === "undefined"
     }
   },
   watch: {
@@ -194,6 +210,7 @@ export default {
     return {
       loading: true,
       windowHeight: document.body.clientHeight,
+      userInfo: userInfo(),
       mdOptions: {
         markdownIt: {
           html: true
@@ -222,7 +239,13 @@ export default {
         indentUnit: 4,
         lineNumbers: true,
         matchBrackets: true,
-        autoCloseBrackets: true
+        autoCloseBrackets: true,
+        foldGutter: true,
+        gutters: [
+          "CodeMirror-linenumbers",
+          "CodeMirror-foldgutter",
+          "CodeMirror-lint-markers"
+        ]
       },
       problem: {},
       contest: {},
@@ -236,7 +259,7 @@ export default {
         active: null,
         step: 0,
         steps: [
-          "已提交，等待写入...",
+          "提交成功，等待写入...",
           "在队列中，等待判题...",
           "判题完成"
         ]
@@ -258,19 +281,23 @@ export default {
       const offset = 155
       if (this.windowHeight <= 900) {
         return `${900 - offset}px`
-      } else if (this.windowHeight >= 1200) {
-        return `${1200 - offset}px`
+      } else if (this.windowHeight >= 1300) {
+        return `${1300 - offset}px`
       } else {
         return `${this.windowHeight - offset}px`
       }
+    },
+    setCode(code, lang) {
+      this.code = code
+      this.language = lang
+      this.languageChange()
     },
     getCachedCode() {
       const code = JSON.parse(window.sessionStorage.getItem("code"))
       if (code != null && Number(code.problemId) === Number(this.problemId)) {
         this.code = code.content
         this.language = code.language
-        this.languageChange(this.language)
-        this.$forceUpdate()
+        this.languageChange()
       }
     },
     calcLanguages() {
@@ -379,7 +406,7 @@ export default {
               this.result = {
                 type: "info",
                 title: "未获取到结果",
-                desc: "可能提交人数过多，可手动刷新"
+                desc: "可能提交人数过多，可手动刷新或稍后到提交记录查看"
               }
               this.resultDialog.disableRefresh = false
             } else {
@@ -499,11 +526,12 @@ export default {
 
 #title {
   color: #303133;
-  margin: 0 0 15px 0;
+  margin: 0 0 10px 0;
+  display: inline-block;
 }
 
 .limits {
-  margin-bottom: 20px
+  margin-bottom: 15px;
 }
 
 .limits * {
