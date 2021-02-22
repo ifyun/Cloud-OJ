@@ -143,7 +143,7 @@ export default {
 .egg {
   color: #333333;
   font-family: serif;
-  font-size: 1px;
+  font-size: 12px;
 }
 
 #login-content {

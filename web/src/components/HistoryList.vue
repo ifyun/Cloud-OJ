@@ -1,7 +1,7 @@
 <template>
-  <div class="content">
-    <div style="width: 100%">
-      <el-form style="margin-top: 15px" size="medium" :inline="true" @submit.native.prevent>
+  <div style="width: 100%">
+    <el-form class="toolbar" size="medium" :inline="true" @submit.native.prevent>
+      <div v-if="!singleMode" style="display: inline-block">
         <el-form-item>
           <el-input style="width: 350px" v-model="searchOption.value" placeholder="请选择搜索方式"
                     @keyup.enter.native="getHistories">
@@ -16,73 +16,72 @@
             搜索
           </el-button>
         </el-form-item>
-      </el-form>
-      <el-table :data="histories.data" stripe v-loading="loading">
-        <el-table-column label="状态" width="140px">
-          <template slot-scope="scope">
-            <el-tag class="result-tag" size="small" effect="light"
-                    :type="resultTag(scope.row).type" @click="resultClick(scope.row)">
-              <i class="el-icon--left" :class="resultTag(scope.row).icon"/>
-              <span>{{ resultTag(scope.row).text }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="题目" width="320px">
-          <template slot-scope="scope">
-            <el-link @click="titleClick(scope.row)">
-              {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
-            </el-link>
-          </template>
-        </el-table-column>
-        <el-table-column label="语言">
-          <template slot-scope="scope">
-            <img class="language-icon" :src="languages[scope.row['language']].icon"
-                 align="center" alt="language">
-          </template>
-        </el-table-column>
-        <el-table-column align="right">
-          <template slot="header">
-            <i class="el-icon-time el-icon--left"/>
-            <span>耗时</span>
-          </template>
-          <template slot-scope="scope">
-            <span v-if="scope.row.result <= 4">{{ scope.row['time'] }}&nbsp;ms</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="right">
-          <template slot="header">
-            <i class="el-icon-cpu el-icon--left"/>
-            <span>内存占用</span>
-          </template>
-          <template slot-scope="scope">
-            <span v-if="scope.row.result <= 4">{{ prettyMemory(scope.row['memory']) }}</span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="得分" prop="score" align="right">
-        </el-table-column>
-        <el-table-column width="120px" align="right">
-          <template slot="header">
-            <i class="el-icon-date el-icon--left"/>
-            <span>提交时间</span>
-          </template>
-          <template slot-scope="scope">
-            {{ scope.row['submitTime'] }}
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
-                     :page-size.sync="pageSize" :total="histories.count"
-                     :current-page.sync="currentPage"
-                     @size-change="getHistories" @current-change="getHistories">
-      </el-pagination>
-    </div>
+      </div>
+      <el-form-item v-else>
+        <span style="font-size: 16px">{{ `${problemId}.${title}` }}</span>
+      </el-form-item>
+      <el-form-item style="float: right">
+        <el-button icon="el-icon-refresh" size="mini" type="success" @click="getHistories">
+          刷新
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <el-alert v-if="singleMode && histories.count > 0" show-icon type="info"
+              style="margin-top: 10px" title="双击行可以加载代码到编辑框。"/>
+    <el-table style="margin-top: 10px" stripe v-loading="loading" :data="histories.data"
+              :size="singleMode? 'small':''" @row-dblclick="rowDbClick">
+      <el-table-column label="状态" width="105px">
+        <template slot-scope="scope">
+          <el-tag class="result-tag" size="small" effect="light"
+                  :type="resultTag(scope.row).type" @click="resultClick(scope.row)">
+            <i class="el-icon--left" :class="resultTag(scope.row).icon"/>
+            <span>{{ resultTag(scope.row).text }}</span>
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="!singleMode" label="题目" width="320px">
+        <template slot-scope="scope">
+          <el-link @click="titleClick(scope.row)">
+            {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="语言" align="center">
+        <template slot-scope="scope">
+          <img class="language-icon" :src="languages[scope.row['language']].icon"
+               align="center" alt="language">
+        </template>
+      </el-table-column>
+      <el-table-column label="耗时" align="right">
+        <template slot-scope="scope">
+          <span v-if="scope.row.result <= 4">{{ scope.row['time'] }}&nbsp;ms</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="内存占用" align="right">
+        <template slot-scope="scope">
+          <span v-if="scope.row.result <= 4">{{ prettyMemory(scope.row['memory']) }}</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="得分" prop="score" align="right">
+      </el-table-column>
+      <el-table-column label="提交时间" align="right">
+        <template slot-scope="scope">
+          {{ scope.row['submitTime'] }}
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+                   :page-size.sync="pageSize" :total="histories.count"
+                   :current-page.sync="currentPage"
+                   @size-change="getHistories" @current-change="getHistories">
+    </el-pagination>
   </div>
 </template>
 
 <script>
-import {Notice, prettyMemory, searchParams, toLoginPage, userInfo} from "@/util"
+import {Notice, prettyMemory, toLoginPage, userInfo} from "@/util"
 import {languages, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
 
@@ -90,8 +89,19 @@ export default {
   name: "HistoryList",
   beforeMount() {
     sessionStorage.removeItem("code")
-    this.loadPage()
+    if (this.singleMode) {
+      this.searchOption = {
+        type: "problemId",
+        value: this.problemId
+      }
+    }
     this.getHistories()
+  },
+  props: {
+    /* 单题目模式，仅显示某一题目的记录 */
+    singleMode: Boolean,
+    problemId: String,
+    title: String
   },
   data() {
     return {
@@ -103,8 +113,6 @@ export default {
       currentPage: 1,
       pageSize: 15,
       languages,
-      codeDialogVisible: false,
-      code: "",
       prettyMemory,
       searchOption: {
         type: "title",
@@ -113,14 +121,10 @@ export default {
     }
   },
   methods: {
-    loadPage() {
-      const page = searchParams()["page"]
-      if (page != null) {
-        this.currentPage = parseInt(page)
-      }
+    rowDbClick(row) {
+      this.$emit("changeCode", row.code, row.language)
     },
     getHistories() {
-      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       const type = this.searchOption.type
       const value = this.searchOption.value
@@ -177,13 +181,16 @@ export default {
 </script>
 
 <style scoped>
-.content {
-  width: 100%;
+.language-icon {
+  height: 20px;
+  width: 20px;
 }
 
-.language-icon {
-  height: 22px;
-  width: 22px;
-  margin-right: 5px;
+.toolbar .el-form-item {
+  margin-bottom: 0;
+}
+
+.toolbar *:last-child {
+  margin-right: 0;
 }
 </style>

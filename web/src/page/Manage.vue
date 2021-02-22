@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <TopNavigation active=""/>
-    <div v-if="error.code != null">
+    <div style="margin-top: 75px" v-if="error.code != null">
       <Error :error="error"/>
       <BottomArea class="bottom"/>
     </div>

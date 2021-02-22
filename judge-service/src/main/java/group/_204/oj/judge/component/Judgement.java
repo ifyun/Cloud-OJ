@@ -2,6 +2,7 @@ package group._204.oj.judge.component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group._204.oj.judge.dao.CompileDao;
 import group._204.oj.judge.dao.ProblemDao;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
@@ -15,6 +16,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -51,10 +53,16 @@ public class Judgement {
     private RuntimeDao runtimeDao;
 
     @Resource
+    private CompileDao compileDao;
+
+    @Resource
     private ProblemDao problemDao;
 
     @Resource
     private SolutionDao solutionDao;
+
+    @Resource
+    private Compiler compiler;
 
     private static class RuntimeError extends Exception {
         RuntimeError(String msg) {
@@ -67,15 +75,26 @@ public class Judgement {
      *
      * @param solution {@link Solution}
      */
+    @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
-        log.info("Judging: solutionId=[{}], user=[{}].", solution.getSolutionId(), solution.getUserId());
+        log.info("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
 
-        Limit limit = problemDao.getLimit(solution.getProblemId());
-        Runtime runtime = new Runtime(solution.getSolutionId());
-        runtimeDao.add(runtime);
+        Compile compile = compiler.compile(solution);
+        compileDao.add(compile);
 
-        List<RunResult> results = execute(solution, runtime, limit);
-        calcResult(solution, runtime, results);
+        if (compile.getState() == 0) {
+            Limit limit = problemDao.getLimit(solution.getProblemId());
+            Runtime runtime = new Runtime(solution.getSolutionId());
+            runtimeDao.add(runtime);
+
+            List<RunResult> results = execute(solution, runtime, limit);
+            calcResult(solution, runtime, results);
+        } else {
+            solution.setResult(SolutionResult.CE);
+        }
+
+        solution.setState(SolutionState.JUDGED);
+        solutionDao.update(solution);
     }
 
     /**

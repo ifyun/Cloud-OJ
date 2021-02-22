@@ -4,18 +4,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableAsync
-@EnableScheduling
-public class AsyncConfig implements SchedulingConfigurer {
+public class AsyncConfig {
 
     @Value("${project.core-pool-size:8}")
     private int corePoolSize;
@@ -23,13 +19,8 @@ public class AsyncConfig implements SchedulingConfigurer {
     @Value("${project.max-pool-size:8}")
     private int maxPoolSize;
 
-    @Value("${project.queue-capacity:200}")
+    @Value("${project.queue-capacity:8}")
     private int queueCapacity;
-
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
-        scheduledTaskRegistrar.setScheduler(Executors.newScheduledThreadPool(5));
-    }
 
     @Bean
     public Executor judgeExecutor() {
@@ -38,7 +29,8 @@ public class AsyncConfig implements SchedulingConfigurer {
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setKeepAliveSeconds(100);
+        executor.setKeepAliveSeconds(120);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;
     }

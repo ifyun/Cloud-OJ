@@ -18,4 +18,6 @@ RUN sed -i 's/deb.debian.org/mirrors.163.com/g' /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends gcc g++ python3 mono-devel nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN adduser -u 2000 --disabled-password --gecos "" judge
+USER judge
 COPY ./cmake-build-release/runner /usr/bin/runner

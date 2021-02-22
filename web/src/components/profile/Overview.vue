@@ -2,11 +2,12 @@
   <div style="position:relative">
     <el-row>
       <el-col :span="16">
+        <span class="title">语言偏好</span>
         <ECharts :options="pieOption"/>
         <span v-if="pieOption.series[0].data.length === 0" class="no-record">无做题记录</span>
       </el-col>
       <el-col :span="8">
-        <b style="font-size: 13pt">结果统计({{ resultStatistics.total }}次提交)</b>
+        <span class="title">结果统计({{ resultStatistics.total }}次提交)</span>
         <div style="margin-top: 35px">
           <div class="result-bar" v-for="(key, index) in resultKeys" :key="index">
             <el-row>
@@ -22,6 +23,7 @@
         </div>
       </el-col>
     </el-row>
+    <span class="title">年度提交记录</span>
     <ECharts class="activities" theme="green" :options="activitiesOption"/>
   </div>
 </template>
@@ -84,20 +86,13 @@ export default {
         ["CE", "#909399"]
       ]),
       pieOption: {
-        title: {
-          text: "语言偏好",
-          textStyle: {
-            color: "#303133",
-            fontWeight: "bold"
-          }
-        },
         tooltip: {
           trigger: "item",
           formatter: "{b}<br>{c} ({d}%)"
         },
         legend: {
           left: "left",
-          top: "50",
+          top: "15",
           orient: "vertical",
           data: []
         },
@@ -105,7 +100,7 @@ export default {
           {
             name: "语言偏好",
             type: "pie",
-            center: ["50%", "50%"],
+            center: ["50%", "40%"],
             radius: [35, 125],
             itemStyle: {
               borderRadius: 6
@@ -116,13 +111,6 @@ export default {
         ]
       },
       activitiesOption: {
-        title: {
-          top: 0,
-          text: "年度做题记录",
-          textStyle: {
-            color: "#303133"
-          }
-        },
         tooltip: {
           formatter(params) {
             return `${formatDate(params.data[0])}<br>${params.data[1]} AC`
@@ -138,7 +126,7 @@ export default {
           bottom: 20
         },
         calendar: {
-          top: 80,
+          top: 60,
           right: 0,
           cellSize: ["auto", "14"],
           range: year,
@@ -216,6 +204,11 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  font-size: 13pt;
+  font-weight: bold;
+}
+
 .no-record {
   position: absolute;
   top: 20%;
@@ -228,7 +221,8 @@ export default {
 }
 
 .activities {
-  width: 810px;
+  width: 820px;
   height: 250px;
+  margin: 0 auto;
 }
 </style>

@@ -1,17 +1,17 @@
 <template>
   <div>
-    <el-button type="primary" size="medium" icon="el-icon-circle-plus"
+    <el-button type="primary" size="small" icon="el-icon-circle-plus"
                @click="problemsDialog.visible = true">添加题目
     </el-button>
-    <el-table style="margin-top: 15px" :data="problems.data" border v-loading="loading">
+    <el-table style="margin-top: 15px" size="small" :data="problems.data" stripe v-loading="loading">
       <el-table-column label="题目名称">
         <template slot-scope="scope">
-          <el-button size="small" @click="preview(scope.row)">
+          <el-button size="small" type="text" @click="preview(scope.row)">
             {{ scope.row.problemId }} - {{ scope.row.title }}
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="分值" prop="score" width="70px" align="right">
+      <el-table-column label="分数" prop="score" align="right">
       </el-table-column>
       <el-table-column label="操作" width="100px" align="center">
         <template slot-scope="scope">
@@ -26,11 +26,10 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-        style="margin-top: 15px" small layout="total, prev, pager, next"
-        :page-size.sync="pageSize" :total="problems.count"
-        :current-page.sync="currentPage"
-        @size-change="getProblems" @current-change="getProblems">
+    <el-pagination style="margin-top: 15px" small layout="total, prev, pager, next"
+                   :page-size.sync="pageSize" :total="problems.count"
+                   :current-page.sync="currentPage"
+                   @size-change="getProblems" @current-change="getProblems">
     </el-pagination>
     <el-dialog title="添加题目" append-to-body width="800px"
                :visible.sync="problemsDialog.visible"
