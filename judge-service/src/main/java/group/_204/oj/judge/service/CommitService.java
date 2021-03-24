@@ -39,11 +39,9 @@ public class CommitService {
                 commitData.getLanguage()
         );
 
+        SourceCode sourceCode = new SourceCode(solution.getSolutionId(), commitData.getSourceCode());
+
         solutionDao.add(solution);
-
-        String solutionId = solution.getSolutionId();
-        SourceCode sourceCode = new SourceCode(solutionId, commitData.getSourceCode());
-
         sourceCodeDao.add(sourceCode);
 
         solution.setSourceCode(commitData.getSourceCode());
@@ -51,8 +49,6 @@ public class CommitService {
 
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.update(solution);
-
-        log.debug("加入判题队列: solutionId={}.", solution.getSolutionId());
     }
 
     public JudgeResult getResult(String solutionId) {

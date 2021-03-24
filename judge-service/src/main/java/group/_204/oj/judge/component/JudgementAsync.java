@@ -41,7 +41,7 @@ public class JudgementAsync {
             solutionDao.update(solution);
         } finally {
             callback.accept(null);
-            fileCleaner.deleteTempFile(solution.getSolutionId(), solution.getLanguage());
+            fileCleaner.deleteTempFile(solution.getSolutionId());
         }
     }
 }

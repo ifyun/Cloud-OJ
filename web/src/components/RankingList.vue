@@ -38,8 +38,8 @@
         <el-table-column>
           <template slot-scope="scope">
             <el-link :href="`/profile?userId=${scope.row.userId}`">{{ scope.row.name }}</el-link>
-            <el-tag v-if="scope.row.userId === userInfo.userId" class="el-icon--right"
-                    type="success" size="mini" effect="dark">
+            <el-tag v-if="userInfo != null && scope.row.userId === userInfo.userId" class="el-icon--right"
+                    type="success" size="mini" effect="dark">D
               你自己
             </el-tag>
             <br>

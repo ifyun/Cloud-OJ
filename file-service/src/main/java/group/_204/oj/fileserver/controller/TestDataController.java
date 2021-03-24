@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/test_data")
+@RequestMapping("test_data")
 public class TestDataController {
 
     @Value("${project.file-dir}")
@@ -25,19 +25,14 @@ public class TestDataController {
      */
     @GetMapping(path = "{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable Integer problemId) {
-        String testDataDir = fileDir + "test_data/";
-        File dir = new File(testDataDir + problemId);
-        File[] files = dir.listFiles();
-
+        File[] files = new File(fileDir + "test_data/" + problemId).listFiles();
         List<TestData> testDataList = new ArrayList<>();
-        if (files != null)
+
+        if (files != null) {
             for (File file : files) {
-                TestData testData = new TestData();
-                // 读取文件名称
-                testData.setFileName(file.getName());
-                testData.setSize(file.length());
-                testDataList.add(testData);
+                testDataList.add(new TestData(file.getName(), file.length()));
             }
+        }
 
         return testDataList.size() > 0 ?
                 ResponseEntity.ok(testDataList) :
@@ -50,10 +45,10 @@ public class TestDataController {
     @PostMapping
     public ResponseEntity<?> uploadTestData(@RequestParam Integer problemId,
                                             @RequestParam("file") MultipartFile[] files) {
-        if (files.length == 0)
+        if (files.length == 0) {
             return ResponseEntity.badRequest().body("未选择文件.");
+        }
 
-        // 根据题目 id 创建目录
         String testDataDir = fileDir + "test_data/";
         File dir = new File(testDataDir + problemId);
 
