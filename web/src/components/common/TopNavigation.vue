@@ -147,10 +147,9 @@ export default {
 }
 
 .header-wrapper {
-  border-bottom: solid 1px #e6e6e6;
+  border-bottom: solid 1px #F0F0F0;
   padding: 0 20px;
   background-color: white;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
 .nav {
