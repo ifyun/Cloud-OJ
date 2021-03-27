@@ -24,9 +24,14 @@
                 <Icon name="quote-left" inverse/>
               </el-button>
             </el-tooltip>
-            <el-tooltip placement="top" content="代码块(支持KaTeX公式)">
+            <el-tooltip placement="top" content="代码块">
               <el-button size="mini" @click="code">
                 <Icon name="file-code" inverse/>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip placement="top" content="公式(KaTeX)">
+              <el-button size="mini" @click="katex">
+                <Icon name="square-root-alt" inverse/>
               </el-button>
             </el-tooltip>
             <el-tooltip placement="top" content="链接">
@@ -110,6 +115,7 @@
 <script>
 import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
+import "katex/dist/katex.min.css"
 import {codemirror} from "vue-codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/markdown/markdown.js"
@@ -125,6 +131,7 @@ import "vue-awesome/icons/quote-left"
 import "vue-awesome/icons/link"
 import "vue-awesome/icons/info-circle"
 import "vue-awesome/icons/file-code"
+import "vue-awesome/icons/square-root-alt"
 import {Notice, userInfo} from "@/util"
 import {ApiPath} from "@/service"
 
@@ -297,6 +304,14 @@ export default {
      */
     code() {
       const symbol = "```"
+      let {anchor, head} = this.listSelections()[0]
+      head.line >= anchor.line && head.sticky === "before" && ([head, anchor] = [anchor, head])
+      let content = this.getRange(head, anchor)
+      let str = `${symbol}\n${content}\n${symbol}\n`
+      this.insertBlock(str)
+    },
+    katex() {
+      const symbol = "$$"
       let {anchor, head} = this.listSelections()[0]
       head.line >= anchor.line && head.sticky === "before" && ([head, anchor] = [anchor, head])
       let content = this.getRange(head, anchor)
