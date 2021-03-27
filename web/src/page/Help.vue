@@ -16,6 +16,7 @@ import BottomArea from "@/components/common/BottomArea"
 import axios from "axios"
 import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
+import "katex/dist/katex.min.css"
 
 export default {
   name: "Help",
