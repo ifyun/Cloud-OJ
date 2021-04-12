@@ -43,7 +43,7 @@ mvn-package:
     - cp -r registry/target/*.jar docker/registry/
     - cp -r monitor/target/*.jar docker/monitor/
     - cp -r file-service/target/*.jar docker/file-service/
-    - cp -r manager-service/target/*.jar docker/core-service/
+    - cp -r core-service/target/*.jar docker/core-service/
     - cp -r judge-service/target/*.jar docker/judge-service/
     - du -h docker
   artifacts:
