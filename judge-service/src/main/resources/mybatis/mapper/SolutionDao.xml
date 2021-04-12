@@ -15,13 +15,13 @@
     </select>
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
             parameterType="group._204.oj.judge.model.Solution">
-        insert into solution(solution_id, user_id, problem_id, contest_id, language)
+        insert into solution(solution_id, user_id, problem_id, contest_id, language, type)
         values (#{solutionId}, #{userId}, #{problemId},
         <choose>
             <when test="contestId != null">#{contestId}</when>
             <otherwise>null</otherwise>
         </choose>
-        , #{language})
+        , #{language}, #{type})
     </insert>
     <update id="update" parameterType="group._204.oj.judge.model.Solution">
         update solution

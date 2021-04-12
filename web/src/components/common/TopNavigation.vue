@@ -5,7 +5,7 @@
         <el-col :span="20">
           <div class="nav">
             <div class="logo-div">
-              <a href="/">
+              <a href="/" :style="{display: siteSetting['hideLogo'] === true ? 'none': ''}">
                 <img class="logo" :src="logoUrl" alt="Logo">
               </a>
               <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
@@ -13,19 +13,15 @@
             <!-- Nav Menu -->
             <el-menu class="top-menu" mode="horizontal" :default-active="active" @select="onSelect">
               <el-menu-item index="1">
-                <i class="el-icon-s-grid"></i>
                 <span>题库</span>
               </el-menu-item>
               <el-menu-item index="2">
-                <i class="el-icon-s-flag"></i>
-                <span>竞赛/作业</span>
+                <span>竞赛</span>
               </el-menu-item>
               <el-menu-item index="3">
-                <i class="el-icon-s-data"></i>
                 <span>排行榜</span>
               </el-menu-item>
               <el-menu-item index="4">
-                <i class="el-icon-question"></i>
                 <span>帮助</span>
               </el-menu-item>
             </el-menu>
@@ -147,9 +143,9 @@ export default {
 }
 
 .header-wrapper {
-  border-bottom: solid 1px #F0F0F0;
   padding: 0 20px;
   background-color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08)
 }
 
 .nav {
@@ -164,8 +160,9 @@ export default {
 }
 
 .logo {
-  height: 40px;
-  width: 40px;
+  height: 36px;
+  width: 36px;
+  margin-right: 6px;
 }
 
 .account-area {

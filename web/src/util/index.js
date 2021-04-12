@@ -111,6 +111,7 @@ function SiteSetting() {
     this.name = ""
     this.icp = ""
     this.icpUrl = ""
+    this.hideLogo = true
     this.initialized = false
     this.preference = JSON.parse(localStorage.getItem("preference"))
 
@@ -129,6 +130,7 @@ function SiteSetting() {
                 this.icp = data.icp
                 this.icpUrl = data.icpUrl
                 this.initialized = true
+                this.hideLogo = data.hideLogo
             }).catch(() => {
                 this.name = DEFAULT_NAME
             }).finally(() => {

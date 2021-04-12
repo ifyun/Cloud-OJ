@@ -3,11 +3,15 @@ const languages = {
     1: {name: "C++", icon: "/icons/lang/cpp.svg"},
     2: {name: "Java", icon: "/icons/lang/java.svg"},
     3: {name: "Python", icon: "/icons/lang/python.svg"},
-    4: {name: "Bash", icon: "/icons/lang/bash.svg"},
+    4: {name: "Bash Shell", icon: "/icons/lang/bash.svg"},
     5: {name: "C#", icon: "/icons/lang/csharp.svg"},
     6: {name: "JavaScript", icon: "/icons/lang/js.svg"},
     7: {name: "Kotlin", icon: "/icons/lang/kotlin.svg"},
     8: {name: "Go", icon: "/icons/lang/go.svg"}
+}
+
+const sqlTypes = {
+    0: {name: "SQLite", icon: "/icons/lang/sqlite.svg"}
 }
 
 const stateTags = {
@@ -29,6 +33,7 @@ const resultTags = {
 
 export {
     languages,
+    sqlTypes,
     stateTags,
     resultTags
 }

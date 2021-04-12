@@ -32,11 +32,11 @@
                        @click="addProblemClick()">
               添加题目
             </el-button>
-            <el-button icon="el-icon-upload2" size="small"
+            <el-button icon="el-icon-upload2" size="small" disabled
                        @click="importDialog.visible = true">
               导入题目
             </el-button>
-            <el-button icon="el-icon-download" size="small"
+            <el-button icon="el-icon-download" size="small" disabled
                        @click="backupProblems">
               导出题目
             </el-button>
@@ -45,11 +45,16 @@
       </el-form>
     </div>
     <el-table :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+      <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
+      </el-table-column>
       <el-table-column label="题目名称">
         <template slot-scope="scope">
           <el-link :href="`./commit?problemId=${scope.row.problemId}`">
             {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
           </el-link>
+          <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
+            SQL
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="分类">
@@ -117,22 +122,22 @@
     <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen center
                :close-on-press-escape="false" :close-on-click-modal="false"
                :visible.sync="editorDialog.visible">
-      <ProblemEditor class="editor" :problem-id="selectedId" :create="editorDialog.create"
+      <ProblemEditor class="editor" :problem-id="selected.problemId" :create="editorDialog.create"
                      :dialog-visible.sync="editorDialog.visible"
                      @refresh="getProblems"/>
     </el-dialog>
     <!-- Test Data Manage Dialog -->
-    <el-dialog :title="`${selectedTitle} - 测试数据`"
+    <el-dialog :title="`${selected.title} - 测试数据`"
                :visible.sync="testDataDialog.visible"
                width="850px">
-      <TestDataManage :problem-id="selectedId"
+      <TestDataManage :problem-id="selected.problemId" :sql="selected.type === 1"
                       :dialog-visible.sync="testDataDialog.visible"/>
     </el-dialog>
     <!-- Delete Dialog -->
     <el-dialog title="提示"
                :visible.sync="deleteDialog.visible">
       <el-alert type="warning" show-icon
-                :title="`你正在删除题目：${selectedTitle}`"
+                :title="`你正在删除题目：${selected.title}`"
                 description="与该题目相关的提交记录也会被删除!"
                 :closable="false">
       </el-alert>
@@ -141,11 +146,11 @@
                :rules="deleteDialog.rules"
                @submit.native.prevent>
         <el-form-item label="输入题目名称确认删除" prop="checkTitle">
-          <el-input v-model="deleteDialog.form.checkTitle" :placeholder="selectedTitle">
+          <el-input v-model="deleteDialog.form.checkTitle" :placeholder="selected.title">
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" icon="el-icon-delete" @click="confirmDelete">
+          <el-button type="danger" icon="el-icon-delete" size="medium" @click="confirmDelete">
             删除题目
           </el-button>
         </el-form-item>
@@ -182,7 +187,7 @@ export default {
   },
   data() {
     let validateDelete = (rule, value, callback) => {
-      if (value !== this.selectedTitle) {
+      if (value !== this.selected.title) {
         return callback(new Error("请确认输入正确"))
       }
       callback()
@@ -190,8 +195,7 @@ export default {
     return {
       userInfo: userInfo(),
       keyword: "",
-      selectedId: null,
-      selectedTitle: "",
+      selected: {},
       loading: true,
       problems: {
         data: [],
@@ -297,8 +301,7 @@ export default {
           })
     },
     operation(cmd, problem) {
-      this.selectedId = problem.problemId
-      this.selectedTitle = problem.title
+      this.selected = problem
 
       switch (cmd) {
         case "edit":
@@ -319,7 +322,7 @@ export default {
       this.operation("edit", row)
     },
     addProblemClick() {
-      this.selectedId = null
+      this.selected = null
       this.editorDialog = {
         title: "创建题目",
         create: true,
@@ -331,11 +334,11 @@ export default {
         if (!valid) {
           return false
         }
-        ProblemApi.delete(this.selectedId, this.userInfo)
+        ProblemApi.delete(this.selected.problemId, this.userInfo)
             .then((res) => {
               this.deleteDialog.visible = false
               Notice.notify.info(this, {
-                title: `${this.selectedTitle} 已删除`,
+                title: `${this.selected} 已删除`,
                 message: `${res.status} ${res.statusText}`
               })
             })
@@ -346,13 +349,13 @@ export default {
                   break
                 case 400:
                   Notice.notify.error(this, {
-                    title: `${this.selectedTitle} 删除失败`,
+                    title: `${this.selected.title} 删除失败`,
                     message: `${error.code} ${error.msg}`
                   })
                   break
                 default:
                   Notice.notify.error(this, {
-                    title: `${this.selectedTitle} 删除失败`,
+                    title: `${this.selected.title} 删除失败`,
                     message: `${error.code} ${error.msg}`
                   })
               }

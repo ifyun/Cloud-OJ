@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <TopNavigation active="4"/>
     <el-container class="container">
-      <el-card>
+      <el-card class="borderless">
         <markdown-it-vue :options="mdOptions" :content="helpDoc"/>
       </el-card>
       <BottomArea class="bottom"/>

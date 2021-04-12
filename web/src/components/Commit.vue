@@ -25,7 +25,7 @@
                       </el-tag>
                       <el-tag type="primary" effect="dark" size="mini">
                         <i class="el-icon-cpu el-icon--left"/>
-                        内存: {{ problem.memoryLimit }} MB
+                        内存: {{ problem.type === 0 ? problem.memoryLimit : 0 }} MB
                       </el-tag>
                     </div>
                     <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
@@ -50,7 +50,7 @@
               <div class="toolbar">
                 <img class="lang-icon" :src="languageIcons[language].icon"
                      :alt="languageIcons[language].name">
-                <el-select v-model="language" size="small" style="width: 260px"
+                <el-select v-model="language" size="small" style="flex: 1"
                            @change="languageChange">
                   <el-option v-for="lang in enabledLanguages" :key="lang.name"
                              :label="`语言: ${lang.name}`" :value="lang.id">
@@ -58,7 +58,7 @@
                     <span style="float: right">{{ lang.version }}</span>
                   </el-option>
                 </el-select>
-                <el-select v-model="cmOptions.theme" size=small style="width: 260px"
+                <el-select v-model="cmOptions.theme" size="small" style="flex: 1"
                            @change="savePreference">
                   <el-option v-for="theme in codeStyle" :key="theme.id"
                              :label="`主题: ${theme.name}`" :value="theme.id">
@@ -67,7 +67,7 @@
                   </el-option>
                 </el-select>
                 <el-button size="mini" type="success" :disabled="disableCommit" @click="commitCode">
-                  <Icon name="cloud-upload-alt" class="el-icon--left" scale="1"/>
+                  <Icon name="play" class="el-icon--left" scale="0.85"/>
                   <span>提交运行</span>
                 </el-button>
               </div>
@@ -118,7 +118,8 @@ import "codemirror/mode/clike/clike.js"
 import "codemirror/mode/go/go.js"
 import "codemirror/mode/python/python.js"
 import "codemirror/mode/shell/shell.js"
-import "codemirror/mode/javascript/javascript"
+import "codemirror/mode/javascript/javascript.js"
+import "codemirror/mode/sql/sql.js"
 import "codemirror/theme/eclipse.css"
 import "codemirror/theme/monokai.css"
 import "codemirror/theme/material.css"
@@ -135,10 +136,10 @@ import MarkdownItVue from "markdown-it-vue"
 import "markdown-it-vue/dist/markdown-it-vue.css"
 import "katex/dist/katex.min.css"
 import Icon from "vue-awesome/components/Icon"
-import "vue-awesome/icons/cloud-upload-alt"
+import "vue-awesome/icons/play"
 import "vue-awesome/icons/history"
 import "vue-awesome/icons/file-import"
-import {languages} from "@/util/data"
+import {languages, sqlTypes} from "@/util/data"
 
 const languageMode = [
   "text/x-csrc",
@@ -157,11 +158,15 @@ const languageOptions = [
   {id: 1, name: "C++", version: "g++"},
   {id: 2, name: "Java", version: "1.8"},
   {id: 3, name: "Python", version: "3.5"},
-  {id: 4, name: "Bash"},
+  {id: 4, name: "Bash Shell"},
   {id: 5, name: "C#", version: "Mono"},
   {id: 6, name: "JavaScript", version: "Node.js"},
   {id: 7, name: "Kotlin"},
   {id: 8, name: "Go"}
+]
+
+const sqlOptions = [
+  {id: 0, name: "SQLite", mode: "text/x-mysql"}
 ]
 
 const ACCEPT = 2, IN_QUEUE = 1, JUDGED = 0
@@ -302,6 +307,14 @@ export default {
       }
     },
     calcLanguages() {
+      // SQL mode
+      if (this.problem.type !== 0) {
+        this.languageIcons = sqlTypes
+        this.enabledLanguages = sqlOptions
+        this.language = sqlOptions[0].id
+        return
+      }
+      // Programming mode
       if (this.contestId !== undefined) {
         let languages = this.problem.languages
         // 计算可用的语言
@@ -342,8 +355,12 @@ export default {
       })
     },
     languageChange() {
-      this.cmOptions.mode = languageMode[parseInt(this.language)]
-      this.savePreference()
+      if (this.problem.type === 0) {
+        this.cmOptions.mode = languageMode[parseInt(this.language)]
+        this.savePreference()
+      } else {
+        this.cmOptions.mode = sqlOptions[0].mode
+      }
     },
     savePreference() {
       this.siteSetting.preference = {
@@ -367,7 +384,8 @@ export default {
         userId: userInfo().userId,
         problemId: this.problemId,
         language: this.language,
-        sourceCode: this.code.trim()
+        sourceCode: this.code.trim(),
+        type: this.problem.type
       }
       if (this.contestId !== undefined) {
         data.contestId = this.contestId
@@ -559,9 +577,9 @@ export default {
 }
 
 .lang-icon {
-  height: 24px;
-  width: 24px;
-  min-width: 24px;
+  height: 25px;
+  width: 25px;
+  min-width: 25px;
   padding: 2px;
   border-radius: 4px;
   border: 1px solid #F5F5F5;

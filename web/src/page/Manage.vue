@@ -20,7 +20,7 @@
           </el-menu-item>
           <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-flag"></i>
-            <span slot="title">竞赛/作业管理</span>
+            <span slot="title">竞赛管理</span>
           </el-menu-item>
           <el-menu-item index="3" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-user-solid"></i>

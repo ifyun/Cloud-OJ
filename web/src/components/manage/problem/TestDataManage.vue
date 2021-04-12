@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-alert style="margin-bottom: 20px"
+    <el-alert v-if="sql === false" style="margin-bottom: 15px"
               :closable="false" type="warning" show-icon
               title="文件中的换行符应该为 LF，不可使用 CRLF">
     </el-alert>
     <el-upload ref="upload" :action="uploadUrl" :multiple="true" :auto-upload="false"
                :data="{'problemId': this.problemId}" :headers="headers"
-               :on-success="uploadSuccess" :file-list="fileList" accept=".in,.out">
+               :on-success="uploadSuccess" :file-list="fileList" accept=".in,.out,.db">
       <el-button slot="trigger" size="small" type="primary"
                  icon="el-icon-folder-opened">选取文件
       </el-button>
@@ -14,8 +14,12 @@
                  type="success" @click="uploadClick">上传到服务器
       </el-button>
     </el-upload>
-    <el-alert style="margin: 15px 0" :closable="false" type="info" show-icon
-              title="若需要修改请先下载，编辑完成再上传"
+    <el-alert v-if="sql === true" style="margin: 15px 0" :closable="false" type="info" show-icon
+              title="此题为 SQL，请上传 SQLite 数据库文件（*.db）"
+              description="仅支持一个文件，上传多个只有第一个有效">
+    </el-alert>
+    <el-alert v-else style="margin: 15px 0" :closable="false" type="info" show-icon
+              title="若需要修改请先下载，编辑后再上传"
               description="每组数据的名称应该相同（例如1-1.in对应1-1.out），删除文件时，请确保成对删除">
     </el-alert>
     <el-table size="small" :data="testData" stripe max-height="600" v-loading="loading"
@@ -53,6 +57,7 @@ export default {
   name: "TestDataManage",
   props: {
     problemId: Number,
+    sql: Boolean,
     dialogVisible: Boolean
   },
   watch: {

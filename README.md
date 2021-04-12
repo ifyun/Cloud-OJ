@@ -11,7 +11,7 @@
 
 > 本项目在功能和数据库结构上参考了[HUSTOJ](https://github.com/zhblue/hustoj)。
 
-## 支持语言
+## 语言支持
 
 Language        | Compiler/Interpreter  | Version
 ----------------|-----------------------|---------------------------
@@ -24,6 +24,8 @@ C#              | Mono                  | 4.6.2 (C# 5.0)
 JavaScript      | Node                  | LTS
 Kotlin          | -                     | 1.4.10
 Go              | -                     | 1.15.7
+
+**支持 SQL 判题，使用 SQLite 实现。**
 
 ## 使用
 

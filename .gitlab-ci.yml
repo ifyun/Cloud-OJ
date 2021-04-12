@@ -7,7 +7,7 @@ variables:
   REGISTRY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/registry
   MONITOR: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor
   FILE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-service
-  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/manager-service
+  MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/core-service
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
 cache:
   key: maven
@@ -43,7 +43,7 @@ mvn-package:
     - cp -r registry/target/*.jar docker/registry/
     - cp -r monitor/target/*.jar docker/monitor/
     - cp -r file-service/target/*.jar docker/file-service/
-    - cp -r manager-service/target/*.jar docker/manager-service/
+    - cp -r manager-service/target/*.jar docker/core-service/
     - cp -r judge-service/target/*.jar docker/judge-service/
     - du -h docker
   artifacts:
@@ -61,6 +61,6 @@ docker-build:
     - docker build -t $REGISTRY ./docker/registry/
     - docker build -t $MONITOR ./docker/monitor/
     - docker build -t $FILE_SERVICE ./docker/file-service/
-    - docker build -t $MANAGER_SERVICE ./docker/manager-service/
+    - docker build -t $MANAGER_SERVICE ./docker/core-service/
     - docker build -t $JUDGE_SERVICE ./docker/judge-service/
     - docker rmi $(docker images -q -f dangling=true) || true

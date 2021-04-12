@@ -19,6 +19,9 @@ public class JudgementAsync {
     private Judgement judgement;
 
     @Resource
+    private SqlJudgement sqlJudgement;
+
+    @Resource
     private SolutionDao solutionDao;
 
     @Resource
@@ -33,8 +36,12 @@ public class JudgementAsync {
     @Async("judgeExecutor")
     public void judge(Solution solution, Consumer<Void> callback) {
         try {
-            judgement.judge(solution);
-            log.info("Judged solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
+            if (solution.getType() == 0) {
+                judgement.judge(solution);
+            } else {
+                sqlJudgement.judge(solution);
+            }
+            log.info("Judged: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         } catch (Exception e) {
             log.error(e.getMessage());
             solution.setResult(SolutionResult.IE);

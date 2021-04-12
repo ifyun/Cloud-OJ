@@ -4,7 +4,7 @@
       <el-form-item>
         <el-button size="medium" type="primary" icon="el-icon-circle-plus"
                    @click="addContest">
-          创建新竞赛/作业
+          创建新竞赛
         </el-button>
       </el-form-item>
       <el-form-item>
@@ -16,7 +16,7 @@
     <el-table :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
-      <el-table-column label="竞赛/作业名称">
+      <el-table-column label="竞赛名称">
         <template slot-scope="scope">
           <b>{{ scope.row.contestName }}</b>
         </template>
@@ -69,7 +69,7 @@
                :visible.sync="deleteDialog.visible">
       <el-alert type="warning" show-icon
                 :title="`你正在删除：${this.selectedContest.contestName}`"
-                description="相关提交记录会消失（该竞赛/作业包含的题目不会被删除）"
+                description="相关提交记录会消失（该竞赛包含的题目不会被删除）"
                 :closable="false">
       </el-alert>
       <el-form :model="deleteDialog.form" ref="deleteForm"
@@ -106,7 +106,7 @@ export default {
     ContestProblemsManage
   },
   beforeMount() {
-    this.siteSetting.setTitle("竞赛/作业管理")
+    this.siteSetting.setTitle("竞赛管理")
     this.getContests()
   },
   data() {
@@ -147,7 +147,7 @@ export default {
         },
         rules: {
           checkName: [
-            {required: true, message: "请填写竞赛/作业名称", trigger: "blur"},
+            {required: true, message: "请填写竞赛名称", trigger: "blur"},
             {validator: validateDelete, trigger: "blur"}
           ]
         }
@@ -164,14 +164,14 @@ export default {
       ContestApi.getAll(this.currentPage, this.pageSize, userInfo())
           .then((data) => {
             this.contests = data
-            refresh === true && Notice.message.success(this, "竞赛/作业列表已刷新")
+            refresh === true && Notice.message.success(this, "竞赛列表已刷新")
           })
           .catch((error) => {
             if (error.code === 401) {
               toLoginPage(this)
             } else {
               Notice.notify.error(this, {
-                title: "获取竞赛/作业失败",
+                title: "获取竞赛失败",
                 message: `${error.code} ${error.msg}`
               })
             }
@@ -200,7 +200,7 @@ export default {
     addContest() {
       this.selectedContest = {}
       this.editorDialog = {
-        title: "创建竞赛/作业",
+        title: "创建竞赛",
         create: true,
         visible: true
       }

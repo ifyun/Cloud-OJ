@@ -1,8 +1,8 @@
 <template>
   <div class="content">
-    <el-card style="width: 100%">
+    <el-card class="borderless" style="width: 100%">
       <el-table :data="contests.data" v-loading="loading">
-        <el-table-column label="竞赛/作业名称" prop="contestName">
+        <el-table-column label="竞赛名称" prop="contestName">
           <template slot-scope="scope">
             <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
