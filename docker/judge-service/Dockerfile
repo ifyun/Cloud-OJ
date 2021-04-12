@@ -6,7 +6,7 @@ COPY ./*.yml /app/config/
 COPY ./docker-entrypoint.sh /
 RUN ln -fs /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime \
     && echo ${TIME_ZONE} > /etc/timezone \
-    && libs="libltdl7" \
+    && libs="libltdl7 sqlite3" \
     && apt-get update \
     && apt-get install -y --no-install-recommends $libs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
