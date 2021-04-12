@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <Error v-if="error.code != null" :error="error"/>
-    <el-card v-else style="width: 100%">
+    <el-card v-else class="borderless" style="width: 100%">
       <div v-if="contest.contestId != null" class="head">
         <span style="font-size: 14pt;font-weight: bold;">{{ contest.contestName }}</span>
         <div class="refresh-div">

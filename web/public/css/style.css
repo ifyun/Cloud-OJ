@@ -2,7 +2,7 @@ html, body {
     height: calc(100% - 60px);
     padding: 0;
     margin: 0;
-    background-color: #F7F9FA;
+    background-color: white;
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
 }
 
@@ -19,9 +19,8 @@ html, body {
 }
 
 .app-name {
-    margin-left: 12px;
-    font-weight: bold !important;
-    font-size: 16pt !important;
+    font-weight: bold;
+    font-size: 14pt !important;
     text-decoration: none;
     color: #606266;
 }
@@ -34,6 +33,11 @@ html, body {
 
 .el-card, .el-tabs--border-card {
     box-shadow: none !important;
+}
+
+.borderless {
+    border: none !important;
+    padding: 0 !important;
 }
 
 .el-divider--horizontal {

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="group._204.oj.core.dao.ProblemDao">
+    <select id="getAll" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows p.problem_id,
+                                   p.title,
+                                   p.type,
+                                   p.enable,
+                                   if(c.contest_name is not null,
+                                      concat_ws(',', c.contest_name, p.category),
+                                      p.category) as category,
+                                   p.score,
+                                   p.create_at
+        from problem p
+                 left join `contest-problem` cp on p.problem_id = cp.problem_id
+                 left join contest c on cp.contest_id = c.contest_id
+        where if(#{keyword} is not null,
+                 title like concat(#{keyword}, '%')
+                     or find_in_set(#{keyword}, category)
+                     or c.contest_name like concat(#{keyword}, '%'),
+                 true)
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <select id="getAllEnabled" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows p.problem_id,
+                                   p.title,
+                                   p.type,
+                                   p.enable,
+                                   if(c.contest_name is not null,
+                                      concat_ws(',', c.contest_name, p.category),
+                                      p.category) as category,
+                                   p.score,
+                                   p.create_at
+        from problem p
+                 left join `contest-problem` cp on p.problem_id = cp.problem_id
+                 left join contest c on cp.contest_id = c.contest_id and p.enable = true
+        where if(#{keyword} is not null,
+                 p.enable = true and title like concat(#{keyword}, '%')
+                     or find_in_set(#{keyword}, category)
+                     or c.contest_name like concat(#{keyword}, '%'),
+                 p.enable = true)
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <select id="getWithState" resultMap="Map.Problem, Map.Total">
+        select sql_calc_found_rows p.problem_id,
+                                   p.title,
+                                   p.type,
+                                   p.enable,
+                                   if(c.contest_name is not null,
+                                      concat_ws(',', c.contest_name, p.category),
+                                      p.category) as category,
+                                   p.score,
+                                   p.create_at,
+                                   result,
+                                   passed
+        from problem p
+                 left join `contest-problem` cp on p.problem_id = cp.problem_id
+                 left join contest c on cp.contest_id = c.contest_id and p.enable = true
+                 left join (select user_id, problem_id, min(result - 1) result
+                            from judge_result
+                            where user_id = #{userId}
+                            group by user_id, problem_id) jr
+                           on p.problem_id = jr.problem_id
+                 left join
+             (select problem_id, count(problem_id) as passed
+              from (select problem_id from solution where pass_rate = 1 group by problem_id, user_id) passed
+              group by problem_id) t on p.problem_id = t.problem_id
+        where if(#{keyword} is not null,
+                 p.enable = true and title like concat(#{keyword}, '%')
+                     or find_in_set(#{keyword}, category)
+                     or c.contest_name like concat(#{keyword}, '%'),
+                 p.enable = true)
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <select id="backup" resultMap="Map.Problem">
+        select problem_id,
+               title,
+               type,
+               `sql`,
+               description,
+               timeout,
+               memory_limit,
+               score,
+               category
+        from problem for
+        update
+    </select>
+    <select id="getSingle" resultMap="Map.Problem">
+        select problem_id,
+               title,
+               type,
+               description,
+               <if test="enable == false">
+                   `sql`,
+               </if>
+               timeout,
+               memory_limit,
+               score,
+               category
+        from problem
+        where
+        <if test="enable == true">
+            enable = true and
+        </if>
+        problem_id = #{problemId}
+    </select>
+    <select id="getSingleInContest" resultMap="Map.Problem">
+        select problem_id,
+               title,
+               type,
+               description,
+               timeout,
+               memory_limit,
+               score,
+               category
+        from contest_problem
+        where contest_id = #{contestId}
+          and start_at &lt;= now()
+          and problem_id = #{problemId}
+    </select>
+    <insert id="add" parameterType="group._204.oj.core.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
+            keyProperty="problemId">
+        insert into problem(title, description, type, `sql`, category, score, timeout, memory_limit)
+            value (#{title}, #{description}, #{type}, #{sql}, #{category}, #{score}, #{timeout}, #{memoryLimit})
+    </insert>
+    <update id="update" parameterType="group._204.oj.core.model.Problem">
+        update problem
+        set title        = #{title},
+            description  = #{description},
+            `sql`        = #{sql},
+            score        = #{score},
+            timeout      = #{timeout},
+            memory_limit = #{memoryLimit},
+            category     = #{category}
+        where problem_id = #{problemId}
+    </update>
+    <select id="isInContest" resultType="java.lang.Integer">
+        select contest_id
+        from `contest-problem`
+        where problem_id = #{problemId}
+        limit 1;
+    </select>
+    <delete id="delete">
+        delete
+        from problem
+        where problem_id = #{problemId}
+    </delete>
+    <update id="toggleEnable">
+        update problem
+        set enable = #{enable}
+        where problem_id = #{problemId}
+    </update>
+</mapper>

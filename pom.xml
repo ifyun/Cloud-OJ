@@ -21,7 +21,7 @@
     <modules>
         <module>monitor</module>
         <module>registry</module>
-        <module>manager-service</module>
+        <module>core-service</module>
         <module>file-service</module>
         <module>judge-service</module>
         <module>gateway</module>

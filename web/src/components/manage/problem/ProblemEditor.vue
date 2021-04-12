@@ -1,53 +1,57 @@
 <template>
   <el-card>
-    <el-form label-width="80px" ref="problemForm"
-             :model="problem" v-loading="loading"
-             :rules="problemRules"
-             :status-icon="true">
+    <el-form label-width="80px" ref="problemForm" :model="problem" v-loading="loading"
+             :rules="problemRules" :status-icon="true">
       <el-row :gutter="15">
         <el-col :span="12">
-          <el-form-item label="题目名称" prop="title">
-            <el-input size="medium" v-model="problem.title"></el-input>
+          <el-form-item size="small" label="题目名称" prop="title">
+            <el-input v-model="problem.title"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="分数" prop="score">
-            <el-input size="medium" v-model.number="problem.score">
-              <template slot="append">分</template>
-            </el-input>
+          <el-form-item size="small" label="类型" prop="type">
+            <el-radio-group size="mini" v-model="problem.type" :disabled="!create">
+              <el-radio-button :label="0">程序设计</el-radio-button>
+              <el-radio-button :label="1">SQL (SQLite)</el-radio-button>
+            </el-radio-group>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="15">
         <el-col :span="6">
-          <el-form-item label="时间限制" prop="timeout">
-            <el-input size="medium" v-model.number="problem.timeout">
+          <el-form-item size="small" label="时间限制" prop="timeout">
+            <el-input v-model.number="problem.timeout">
               <template slot="append">毫秒</template>
             </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="内存限制" prop="memoryLimit">
-            <el-input size="medium" v-model.number="problem.memoryLimit">
+          <el-form-item size="small" label="内存限制" prop="memoryLimit">
+            <el-input :disabled="problem.type === 1" v-model.number="problem.memoryLimit">
               <template slot="append">MB</template>
             </el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="5">
+          <el-form-item size="small" label="分数" prop="score">
+            <el-input v-model.number="problem.score">
+              <template slot="append">分</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
-      <el-form-item label="分类/标签" class="tags">
+      <el-form-item size="small" label="分类/标签" class="tags">
         <el-tag :key="tag" effect="dark" type="primary"
                 closable @close="tagClose(tag)"
                 v-for="tag in tags">{{ tag }}
         </el-tag>
-        <el-input class="input-new-tag" ref="tagInput" v-if="newTagVisible"
-                  v-model="newTag" size="small"
-                  @keyup.enter.native="newTagConfirm"
-                  @blur="newTagConfirm">
+        <el-input class="input-new-tag" v-if="newTagVisible" ref="tagInput"
+                  v-model="newTag" @keyup.enter.native="newTagConfirm" @blur="newTagConfirm">
         </el-input>
-        <el-button class="button-new-tag"
-                   v-else size="small"
-                   @click="showTagInput">+ 新分类
-        </el-button>
+        <el-button class="button-new-tag" v-else @click="showTagInput">+ 新分类</el-button>
+      </el-form-item>
+      <el-form-item v-if="problem.type === 1" label="查询语句 " prop="sql">
+        <el-input type="textarea" placeholder="这是一道 SQL 题目，请输入正确的 SQL 语句" v-model="problem.sql"></el-input>
       </el-form-item>
       <MarkdownEditor :data="problem.description" @change="editorChange"/>
       <!-- 用于表单验证 -->
@@ -56,15 +60,15 @@
                   v-model="problem.description">
         </el-input>
       </el-form-item>
-      <el-form-item label-width="0" style="margin-bottom: 0">
-        <el-button type="primary" :disabled="!dataChanged" size="small"
+      <el-form-item size="small" label-width="0" style="margin-bottom: 0">
+        <el-button type="success" :disabled="!dataChanged"
                    :icon="problemId === null ? 'el-icon-plus': 'el-icon-check'"
                    @click="save">
           保存
         </el-button>
         <el-popconfirm style="margin-left: 10px" title="确定要重置吗，所有更改都会丢失？"
                        placement="right-end" @confirm="resetForm">
-          <el-button slot="reference" type="danger" size="small" icon="el-icon-refresh-left"
+          <el-button slot="reference" type="info" icon="el-icon-refresh-left"
                      :disabled="!dataChanged" :loading="loading">
             重置
           </el-button>
@@ -147,6 +151,8 @@ export default {
         description: "",
         timeout: "",
         memoryLimit: "",
+        type: 0,
+        sql: "",
         score: ""
       },
       problemRules: {
@@ -155,6 +161,9 @@ export default {
         ],
         score: [
           {required: true, type: "number", message: "请填写分值", trigger: "blur"}
+        ],
+        type: [
+          {required: true}
         ],
         timeout: [
           {required: true, type: "number", message: "请填写运行时间限制", trigger: "blur"},

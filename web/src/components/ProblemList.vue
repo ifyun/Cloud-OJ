@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <Error v-if="error.code != null" :error="error"/>
-    <el-card v-else style="width: 100%">
+    <el-card v-else class="borderless" style="width: 100%">
       <h3 v-if="contest.contestId != null">{{ contest.contestName }}</h3>
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form size="medium" :inline="true" @submit.native.prevent>
@@ -30,6 +30,9 @@
             <el-link :href="generateLink(scope.row)">
               {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
             </el-link>
+            <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
+              SQL
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column v-if="userInfo != null" label="状态" align="center" width="105px">

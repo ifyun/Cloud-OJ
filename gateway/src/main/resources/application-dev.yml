@@ -42,8 +42,8 @@ eureka:
 zuul:
   routes:
     manager-service:
-      path: /api/manager/**
-      serviceId: manager-service
+      path: /api/core/**
+      serviceId: core-service
     judge-service:
       path: /api/judgement/**
       serviceId: judge-service

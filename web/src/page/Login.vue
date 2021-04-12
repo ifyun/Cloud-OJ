@@ -173,7 +173,8 @@ export default {
 }
 
 .logo {
-  height: 42px;
+  height: 45px;
+  margin-right: 6px;
 }
 
 .app-name {

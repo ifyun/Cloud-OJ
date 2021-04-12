@@ -12,4 +12,5 @@ public class CommitData implements Serializable {
     private Integer contestId;
     private String sourceCode;
     private Integer language;
+    private Integer type;
 }

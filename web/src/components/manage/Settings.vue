@@ -10,14 +10,18 @@
           </el-button>
         </div>
         <div style="margin-top: 20px">
-          <el-tag type="warning" effect="dark">
-            {{ queueInfo.inCommitQueue }}&nbsp;个提交等待写入
-          </el-tag>
-        </div>
-        <div style="margin-top: 10px">
-          <el-tag effect="dark" type="success">
-            {{ queueInfo.inJudgeQueue }}&nbsp;个提交等待判题
-          </el-tag>
+          <div class="queue-info">
+            <span class="count" :style="{color: queueInfo.inCommitQueue === 0 ? '#67C23A' : '#E6A23C'}">{{
+                queueInfo.inCommitQueue
+              }}</span>
+            <span class="info">个提交待写入</span>
+          </div>
+          <div class="queue-info" style="margin-left: 30px">
+            <span class="count" :style="{color: queueInfo.inJudgeQueue === 0 ? '#67C23A' : '#E6A23C'}">{{
+                queueInfo.inJudgeQueue
+              }}</span>
+            <span class="info">个提交待判题</span>
+          </div>
         </div>
       </el-card>
       <h3>系统设置</h3>
@@ -70,6 +74,11 @@
                            @click="deleteLogo">
                   恢复默认图标
                 </el-button>
+              </el-form-item>
+              <el-form-item label="隐藏图标">
+                <el-switch active-color="#67C23A" :disabled="loading" v-model="settings.hideLogo"/>
+                <br/>
+                <span class="info">仅隐藏导航栏图标，favicon 不受影响</span>
               </el-form-item>
             </el-form>
           </el-col>
@@ -216,6 +225,20 @@ export default {
 <style scoped>
 h3 {
   margin-top: 0;
+  color: #606266;
+}
+
+.queue-info {
+  display: inline-block;
+}
+
+.queue-info .count {
+  font-size: 64pt;
+  color: #303133;
+}
+
+.queue-info .info {
+  margin-left: 5px;
   color: #606266;
 }
 

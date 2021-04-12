@@ -48,8 +48,10 @@
       </el-table-column>
       <el-table-column label="语言" align="center">
         <template slot-scope="scope">
-          <img class="language-icon" :src="languages[scope.row['language']].icon"
-               align="center" alt="language">
+          <img v-if="scope.row.type === 0" class="language-icon" align="center"
+               :src="languages[scope.row['language']].icon" :alt="languages[scope.row['language']].name">
+          <img v-else class="language-icon" align="center"
+               :src="sqlTypes[scope.row['language']].icon" :alt=" sqlTypes[scope.row['language']].name">
         </template>
       </el-table-column>
       <el-table-column label="耗时" align="right">
@@ -82,7 +84,7 @@
 
 <script>
 import {Notice, prettyMemory, toLoginPage, userInfo} from "@/util"
-import {languages, resultTags, stateTags} from "@/util/data"
+import {languages, sqlTypes, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
 
 export default {
@@ -113,6 +115,7 @@ export default {
       currentPage: 1,
       pageSize: 15,
       languages,
+      sqlTypes,
       prettyMemory,
       searchOption: {
         type: "title",
