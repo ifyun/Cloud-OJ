@@ -322,7 +322,7 @@ export default {
       this.operation("edit", row)
     },
     addProblemClick() {
-      this.selected = null
+      this.selected = {}
       this.editorDialog = {
         title: "创建题目",
         create: true,
@@ -338,7 +338,7 @@ export default {
             .then((res) => {
               this.deleteDialog.visible = false
               Notice.notify.info(this, {
-                title: `${this.selected} 已删除`,
+                title: `${this.selected.title} 已删除`,
                 message: `${res.status} ${res.statusText}`
               })
             })
