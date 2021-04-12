@@ -73,6 +73,7 @@ create table solution
     problem_id  int                                                                     null,
     contest_id  int                                                                     null,
     language    int                                                                     not null,
+    type        int                                           default 0                 not null,
     state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'        not null,
     result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE')          null,
     pass_rate   double                                        default 0                 not null,
