@@ -21,7 +21,7 @@
         <span style="font-size: 16px">{{ `${problemId}.${title}` }}</span>
       </el-form-item>
       <el-form-item style="float: right">
-        <el-button icon="el-icon-refresh" size="mini" type="success" @click="getHistories">
+        <el-button icon="el-icon-refresh" size="mini" @click="getHistories">
           刷新
         </el-button>
       </el-form-item>
@@ -29,7 +29,7 @@
     <el-alert v-if="singleMode && histories.count > 0" show-icon type="info"
               style="margin-top: 10px" title="双击行可以加载代码到编辑框。"/>
     <el-table style="margin-top: 10px" stripe v-loading="loading" :data="histories.data"
-              :size="singleMode? 'small':''" @row-dblclick="rowDbClick">
+              :size="singleMode ? 'small':''" @row-dblclick="rowDbClick">
       <el-table-column label="状态" width="105px">
         <template slot-scope="scope">
           <el-tag class="result-tag" size="small" effect="light"
@@ -70,7 +70,12 @@
       </el-table-column>
       <el-table-column label="提交时间" align="right">
         <template slot-scope="scope">
-          {{ scope.row['submitTime'] }}
+          <el-tooltip placement="left" :content="formatTime(scope.row['submitTime'])">
+            <el-button type="text" :size="singleMode ? 'small' : 'medium'">{{
+                formatDate(scope.row["submitTime"])
+              }}
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -86,6 +91,7 @@
 import {Notice, prettyMemory, toLoginPage, userInfo} from "@/util"
 import {languages, sqlTypes, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
+import moment from "moment";
 
 export default {
   name: "HistoryList",
@@ -178,6 +184,12 @@ export default {
       } else {
         return stateTags[row.state]
       }
+    },
+    formatDate(time) {
+      return moment(time).format("YYYY-MM-DD")
+    },
+    formatTime(time) {
+      return moment(time).format("HH:mm:ss")
     }
   }
 }
