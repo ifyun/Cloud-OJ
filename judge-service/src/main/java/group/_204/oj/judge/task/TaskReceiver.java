@@ -36,7 +36,7 @@ public class TaskReceiver {
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
         judgementAsync.judge(solution, (Void) -> {
             try {
-                channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), true);
+                channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
             } catch (IOException e) {
                 log.error(e.getMessage());
             }
@@ -48,7 +48,7 @@ public class TaskReceiver {
     public void handleSubmission(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
         commitService.commit(data);
         try {
-            channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), true);
+            channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
