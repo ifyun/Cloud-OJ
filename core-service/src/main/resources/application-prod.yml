@@ -8,7 +8,7 @@ spring:
   application:
     name: core-service
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
     type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
@@ -41,7 +41,7 @@ eureka:
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:
     service-url:
-      defaultZone: http://${EUREKA_SERVER}/eureka/
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1}/eureka/
 
 
 logging:
