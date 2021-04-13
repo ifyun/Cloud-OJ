@@ -30,7 +30,6 @@ logging:
     name: /app/log/file-server.log
   level:
     root: warn
-    group._204: info
 
 project:
   file-dir: /var/lib/cloud_oj/

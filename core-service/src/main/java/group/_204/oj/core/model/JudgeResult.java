@@ -1,8 +1,9 @@
 package group._204.oj.core.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 public class JudgeResult {
@@ -20,5 +21,7 @@ public class JudgeResult {
     private Integer language;
     private Integer state;
     private Integer result;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date submitTime;
 }

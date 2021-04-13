@@ -73,7 +73,6 @@ logging:
     name: /app/log/api-gateway.log
   level:
     root: warn
-    group._204: info
 
 project:
   token-valid-time: ${TOKEN_VALID_TIME:4}

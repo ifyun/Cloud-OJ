@@ -13,6 +13,7 @@
       <el-button style="margin-left: 10px;" size="small" icon="el-icon-upload"
                  type="success" @click="uploadClick">上传到服务器
       </el-button>
+      <el-button style="float: right" icon="el-icon-refresh" size="small" @click="getTestData">刷新</el-button>
     </el-upload>
     <el-alert v-if="sql === true" style="margin: 15px 0" :closable="false" type="info" show-icon
               title="此题为 SQL，请上传 SQLite 数据库文件（*.db）"

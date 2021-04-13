@@ -27,4 +27,3 @@ logging:
     name: /app/log/monitor-service.log
   level:
     root: warn
-    group._204: info
