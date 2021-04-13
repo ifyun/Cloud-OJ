@@ -116,7 +116,8 @@
                timeout,
                memory_limit,
                score,
-               category
+               category,
+               languages
         from contest_problem
         where contest_id = #{contestId}
           and start_at &lt;= now()

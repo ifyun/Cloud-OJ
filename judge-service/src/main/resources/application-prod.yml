@@ -8,7 +8,7 @@ spring:
   application:
     name: judge-service
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://172.16.15.200:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
     type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
@@ -20,7 +20,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   rabbitmq:
-    host: ${RABBIT_URL:172.16.15.200}
+    host: ${RABBIT_URL:127.0.0.1}
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:cloud@oj}
     password: ${RABBIT_PASSWORD:cloud@oj}

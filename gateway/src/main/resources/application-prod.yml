@@ -8,7 +8,7 @@ spring:
   application:
     name: gateway
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://172.16.15.200:3306/cloud_oj?serverTimezone=Asia/Shanghai}
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?serverTimezone=Asia/Shanghai}
     type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}

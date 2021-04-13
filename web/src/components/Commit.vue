@@ -45,7 +45,7 @@
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="content-editor" :style="{height: contentHeight()}">
+          <div v-if="!loading" class="content-editor" :style="{height: contentHeight()}">
             <div :style="{height: codeHeight()}" style="position: relative">
               <div class="toolbar">
                 <img class="lang-icon" :src="languageIcons[language].icon"
@@ -200,7 +200,6 @@ export default {
       this.cmOptions.theme = p.highlight
       if (this.contestId == null) {
         this.language = p.language
-        this.languageChange()
       }
     }
     this.getProblem()
@@ -308,7 +307,7 @@ export default {
     },
     calcLanguages() {
       // SQL mode
-      if (this.problem.type !== 0) {
+      if (this.problem.type === 1) {
         this.languageIcons = sqlTypes
         this.enabledLanguages = sqlOptions
         this.language = sqlOptions[0].id
@@ -328,6 +327,7 @@ export default {
       } else {
         this.enabledLanguages = languageOptions
       }
+      this.languageChange()
     },
     getProblem() {
       let promise
