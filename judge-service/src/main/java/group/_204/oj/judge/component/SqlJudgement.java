@@ -1,5 +1,6 @@
 package group._204.oj.judge.component;
 
+import group._204.oj.judge.dao.DatabaseConfig;
 import group._204.oj.judge.dao.ProblemDao;
 import group._204.oj.judge.dao.RuntimeDao;
 import group._204.oj.judge.dao.SolutionDao;
@@ -40,9 +41,13 @@ class SqlJudgement {
     @Resource
     private SolutionDao solutionDao;
 
+    @Resource
+    private DatabaseConfig dbConfig;
+
     @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
         log.info("Judging: type(SQL), solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
+        dbConfig.disableFKChecks(); // 为当前事务禁用外键约束
 
         String correctSql = problemDao.getSql(solution.getProblemId());
         File[] files = new File(fileDir + "test_data/" + solution.getProblemId())
@@ -51,7 +56,7 @@ class SqlJudgement {
         runtimeDao.add(runtime);
 
         if (files == null) {
-            String err = "Test data required.";
+            String err = "Test data(*.db file) required.";
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(err);
             log.error(err);

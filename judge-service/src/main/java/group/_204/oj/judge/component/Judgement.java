@@ -2,10 +2,7 @@ package group._204.oj.judge.component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group._204.oj.judge.dao.CompileDao;
-import group._204.oj.judge.dao.ProblemDao;
-import group._204.oj.judge.dao.RuntimeDao;
-import group._204.oj.judge.dao.SolutionDao;
+import group._204.oj.judge.dao.*;
 import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.*;
 import group._204.oj.judge.model.Runtime;
@@ -62,6 +59,9 @@ public class Judgement {
     private SolutionDao solutionDao;
 
     @Resource
+    private DatabaseConfig dbConfig;
+
+    @Resource
     private Compiler compiler;
 
     private static class RuntimeError extends Exception {
@@ -78,6 +78,7 @@ public class Judgement {
     @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
         log.info("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
+        dbConfig.disableFKChecks(); // 为当前事务禁用外键约束
 
         Compile compile = compiler.compile(solution);
         compileDao.add(compile);
