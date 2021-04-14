@@ -166,11 +166,11 @@ public class Judgement {
             ProcessBuilder cmd = buildCommand(solution, limit, testDataDir);
             results = run(cmd, solution.getSolutionId());
         } catch (RuntimeError e) {
-            log.error("Runtime Error: {}", e.getMessage());
+            log.warn("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
             runtime.setResult(SolutionResult.RE);
         } catch (InterruptedException | IOException | UnsupportedLanguageError e) {
-            log.error("Judge Error: {}", e.getMessage());
+            log.warn("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
         }
@@ -254,6 +254,7 @@ public class Judgement {
         List<String> cmd = new ArrayList<>(Arrays.asList(
                 "docker", "run", "--rm",
                 "--network", "none",
+                "--cpus", "1",
                 "-v", String.format("%s:/tmp/code", solutionDir),
                 "-v", String.format("%s:/%s:ro", testDataDir, dataDirInContainer),
                 "-w", "/tmp/code",

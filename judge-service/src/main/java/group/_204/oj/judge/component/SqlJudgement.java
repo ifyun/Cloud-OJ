@@ -69,7 +69,7 @@ class SqlJudgement {
                 runtime.setTime(r.time);
                 runtime.setMemory(0L);
             } catch (InterruptedException | IOException e) {
-                log.error(e.getMessage());
+                log.warn(e.getMessage());
                 runtime.setResult(SolutionResult.RE);
                 runtime.setInfo(e.getMessage());
             }
