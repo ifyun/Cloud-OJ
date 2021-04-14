@@ -11,13 +11,13 @@
         </div>
         <div style="margin-top: 20px">
           <div class="queue-info">
-            <span class="count" :style="{color: queueInfo.inCommitQueue === 0 ? '#67C23A' : '#E6A23C'}">{{
+            <span class="count" :style="{color: queueInfo.inCommitQueue === 0 ? '#C0C4CC' : '#67C23A'}">{{
                 queueInfo.inCommitQueue
               }}</span>
             <span class="info">个提交待写入</span>
           </div>
           <div class="queue-info" style="margin-left: 30px">
-            <span class="count" :style="{color: queueInfo.inJudgeQueue === 0 ? '#67C23A' : '#E6A23C'}">{{
+            <span class="count" :style="{color: queueInfo.inJudgeQueue === 0 ? '#C0C4CC' : '#E6A23C'}">{{
                 queueInfo.inJudgeQueue
               }}</span>
             <span class="info">个提交待判题</span>

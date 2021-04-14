@@ -136,7 +136,7 @@ export default {
 .container {
   margin-top: 60px;
   padding: 0;
-  min-width: 1150px !important;
+  min-width: 1100px !important;
   max-width: 100% !important;
   height: calc(100% + 59px);
 }
