@@ -8,7 +8,6 @@
     </select>
 
     <insert id="add" parameterType="group._204.oj.judge.model.Compile">
-        set foreign_key_checks = 0;
         insert into compile (solution_id, state, info)
         values (#{solutionId}, #{state}, #{info});
     </insert>

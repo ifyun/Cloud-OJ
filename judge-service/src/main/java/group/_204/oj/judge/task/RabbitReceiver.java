@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class TaskReceiver {
+public class RabbitReceiver {
 
     @Resource
     private CommitService commitService;

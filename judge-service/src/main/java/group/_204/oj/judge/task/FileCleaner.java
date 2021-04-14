@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 
+/**
+ * 文件清理，删除判题产生的临时代码文件
+ */
 @Slf4j
 @Component
 public class FileCleaner {
