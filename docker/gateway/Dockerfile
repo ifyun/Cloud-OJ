@@ -7,5 +7,5 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 COPY ./gateway-*.jar /app/gateway.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
 CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
