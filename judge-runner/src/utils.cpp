@@ -7,6 +7,8 @@
 #include <cstring>
 #include "utils.h"
 
+const char *status_str[] = {"AC", "WA", "TLE", "MLE", "OLE", "PA"};
+
 /**
  * @brief 从指定目录获取测试数据文件的路径
  * @param path 测试数据目录
@@ -17,7 +19,7 @@ std::vector<std::string> utils::get_files(const std::string &path, const std::st
     DIR *dir = opendir(path.c_str());
 
     if (dir == nullptr) {
-        throw std::invalid_argument("[ERROR] Path of test data does not exists\n");
+        throw std::invalid_argument("[ERROR] Path of test data does not exists.\n");
     }
 
     struct dirent *d_ent;
@@ -51,12 +53,61 @@ std::vector<std::string> utils::get_files(const std::string &path, const std::st
 /**
  * @brief 移除字符串尾部的换行符和空格
  */
-void utils::rtrim(std::string &str) {
-    if (str.empty())
-        return;
+inline void utils::rtrim(std::string &str) {
+    if (str.empty()) { return; }
     str.erase(str.find_last_not_of('\r') + 1);
     str.erase(str.find_last_not_of('\n') + 1);
     str.erase(str.find_last_not_of(' ') + 1);
+}
+
+/**
+ * @brief 计算结果、通过率
+ * @return 判题结果的 JSON 字符串
+ */
+std::string utils::calc_results(const std::vector<Result> &results) {
+    int status;
+    long time = 0, memory = 0;
+    double pass_rate = 0;
+    int status_cnt[] = {0, 0, 0, 0, 0};
+    auto total = results.size();
+
+    for (auto r : results) {
+        status_cnt[r.status]++;
+        if (r.timeUsed > time) time = r.timeUsed;
+        if (r.memUsed > memory) memory = r.memUsed;
+    }
+
+    if (status_cnt[AC] == 0) {
+        status = WA;
+    } else if (status_cnt[AC] < total) {
+        status = PA;
+        pass_rate = (double) status_cnt[AC] / (double) total;
+    } else {
+        pass_rate = 1;
+        status = AC;
+    }
+
+    if (status_cnt[OLE] > 0) {
+        status = OLE;
+    } else if (status_cnt[MLE] > 0) {
+        status = MLE;
+    } else if (status_cnt[TLE] > 0) {
+        status = TLE;
+    }
+
+    std::stringstream ss;
+
+    ss << "{\n"
+       << "\t" << R"("status": )" << status << ",\n"
+       << "\t" << R"("result": ")" << status_str[status] << R"(",)" << "\n"
+       << "\t" << R"("total": )" << total << ",\n"
+       << "\t" << R"("passed": )" << status_cnt[AC] << ",\n"
+       << "\t" << R"("passRate": )" << pass_rate << ",\n"
+       << "\t" << R"("time": )" << time << ",\n"
+       << "\t" << R"("memory": )" << memory << "\n"
+       << "}\n";
+
+    return ss.str();
 }
 
 /**
@@ -85,26 +136,14 @@ bool utils::diff(const std::string &path1, const std::string &path2) {
 /**
  * @brief 将结果写入文件(result.json)
  */
-void utils::write_result(std::vector<Result> results) {
-    std::string res;
-
-    if (results.size() == 1) {
-        res = "[" + results[0].to_json() + "]";
-    } else {
-        res.append("[");
-
-        for (auto i = 0; i < results.size(); i++) {
-            res.append(results[i].to_json());
-            if (i < results.size() - 1) {
-                res.append(",");
-            }
-        }
-
-        res.append("]");
-    }
-
+std::string utils::write_result(const std::vector<Result> &results) {
+    std::string res = calc_results(results);
     std::ofstream of;
-    of.open("./result.json", std::ios_base::out | std::ios_base::trunc);
+
+    of.open("result.json", std::ios_base::out | std::ios_base::trunc);
+
     of << res;
     of.close();
+
+    return res;
 }

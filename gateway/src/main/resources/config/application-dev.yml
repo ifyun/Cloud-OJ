@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 3000
-      maximum-pool-size: 16
+      maximum-pool-size: 10
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
