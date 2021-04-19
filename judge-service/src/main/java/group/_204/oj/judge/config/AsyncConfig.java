@@ -13,23 +13,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Value("${project.core-pool-size:8}")
-    private int corePoolSize;
-
-    @Value("${project.max-pool-size:8}")
-    private int maxPoolSize;
-
-    @Value("${project.queue-capacity:8}")
-    private int queueCapacity;
+    @Value("${project.judge-pool-size:8}")
+    private int poolSize;
 
     @Bean
     public Executor judgeExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("JUDGE-");
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
-        executor.setKeepAliveSeconds(120);
+        executor.setCorePoolSize(poolSize);
+        executor.setMaxPoolSize(poolSize);
+        executor.setQueueCapacity(1);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;

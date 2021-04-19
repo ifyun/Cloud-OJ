@@ -65,7 +65,7 @@ public class ProblemService {
     public Msg update(Problem problem) {
         Integer contestId = problemDao.isInContest(problem.getProblemId());
         if (contestId != null && contestDao.getContest(contestId).isStarted()) {
-            return new Msg(400, "不能修改已开始竞赛/作业中的题目");
+            return new Msg(400, "不能修改已开始竞赛中的题目");
         }
         int status = problemDao.update(problem) == 1 ? 200 : 304;
         return new Msg(status, null);
@@ -76,7 +76,7 @@ public class ProblemService {
         if (enable) {
             Integer contestId = problemDao.isInContest(problemId);
             if (contestId != null && !contestDao.getContest(contestId).isEnded()) {
-                return new Msg(400, "不能开放未结束竞赛/作业中的题目");
+                return new Msg(400, "不能开放未结束竞赛中的题目");
             }
         }
         int status = problemDao.toggleEnable(problemId, enable) == 1 ? 200 : 304;
@@ -108,7 +108,7 @@ public class ProblemService {
 
     public Msg delete(Integer problemId) {
         if (problemDao.isInContest(problemId) != null) {
-            return new Msg(400, "无法删除竞赛/作业中的题目");
+            return new Msg(400, "无法删除竞赛中的题目");
         }
 
         int row = problemDao.delete(problemId);

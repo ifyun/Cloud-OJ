@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RunResult {
     private Integer status;
-    private Long timeUsed;
-    private Long memUsed;
+    private String result;
+    private Integer total;
+    private Integer passed;
+    private Double passRate;
+    private Long time;
+    private Long memory;
 }

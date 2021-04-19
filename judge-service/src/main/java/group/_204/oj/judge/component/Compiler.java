@@ -4,18 +4,14 @@ import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.model.Solution;
 import group._204.oj.judge.type.Language;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -23,9 +19,6 @@ class Compiler {
 
     @Value("${project.code-dir}")
     private String codeDir;
-
-    @Value("${project.runner-image}")
-    private String runnerImage;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
 
@@ -40,6 +33,9 @@ class Compiler {
      */
     @PostConstruct
     private void init() {
+        if (!codeDir.endsWith("/")) {
+            codeDir += '/';
+        }
         File dir = new File(codeDir);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
@@ -93,33 +89,26 @@ class Compiler {
 
         String solutionDir = codeDir + solutionId;
 
-        List<String> cmd = new ArrayList<>(Arrays.asList(
-                "docker", "run", "--rm",
-                "--network", "none",
-                "-v", solutionDir + ":/tmp/code",
-                "-w", "/tmp/code", runnerImage
-        ));
+        String[] cmd;
 
         switch (language) {
             case C:
-                cmd.addAll(Arrays.asList("gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors",
-                        "Solution.c", "-o", "Solution"));
+                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors", "Solution.c", "-o", "Solution"};
                 break;
             case CPP:
-                cmd.addAll(Arrays.asList("g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors",
-                        "Solution.cpp", "-o", "Solution"));
+                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors", "Solution.cpp", "-o", "Solution"};
                 break;
             case JAVA:
-                cmd.addAll(Arrays.asList("javac", "-encoding", "UTF-8", "Solution.java"));
+                cmd = new String[]{"javac", "-encoding", "UTF-8", "Solution.java"};
                 break;
             case C_SHARP:
-                cmd.addAll(Arrays.asList("mcs", "Solution.cs"));
+                cmd = new String[]{"mcs", "Solution.cs"};
                 break;
             case KOTLIN:
-                cmd.addAll(Arrays.asList("kotlinc", "Solution.kt"));
+                cmd = new String[]{"kotlinc", "Solution.kt"};
                 break;
             case GO:
-                cmd.addAll(Arrays.asList("go", "build", "Solution.go"));
+                cmd = new String[]{"go", "build", "Solution.go"};
                 break;
             case PYTHON:
             case BASH:
@@ -131,12 +120,15 @@ class Compiler {
 
         try {
             processBuilder.command(cmd);
+            processBuilder.directory(new File(solutionDir));
+
             Process process = processBuilder.start();
-            if (process.waitFor(10, TimeUnit.SECONDS)) {
+
+            if (process.waitFor(6, TimeUnit.SECONDS)) {
                 if (process.exitValue() == 0) {
                     return new Compile(solutionId, 0, null);
                 } else {
-                    String error = getOutput(process.getErrorStream());
+                    String error = IOUtils.toString(process.getErrorStream());
                     throw new CompileError(error);
                 }
             } else {
@@ -147,20 +139,6 @@ class Compiler {
             log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
-    }
-
-    /**
-     * 从 Process 的输入流或错误流获取输出
-     *
-     * @param inputStream Process 的输入流（stdout or stderr）
-     * @return Process 的输出
-     */
-    @SneakyThrows
-    private String getOutput(InputStream inputStream) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String out = reader.lines().collect(Collectors.joining("\n"));
-        reader.close();
-        return out;
     }
 
     /**

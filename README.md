@@ -29,7 +29,3 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - JavaScript（Node.js LTS）
 - Kotlin（1.4.10）
 - Go（1.15.7）
-
-## 判题方式
-
-判题程序没有直接使用 `ptrace` 和 `seccomp` 来限制系统调用，而是构建一个包含各种语言运行环境的 Docker 镜像，将测试数据和用户的代码挂载到容器进行编译和判题，以此达到沙盒的效果。

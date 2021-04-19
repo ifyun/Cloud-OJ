@@ -1,6 +1,5 @@
 package group._204.oj.judge.component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.judge.dao.*;
 import group._204.oj.judge.error.UnsupportedLanguageError;
@@ -9,19 +8,16 @@ import group._204.oj.judge.model.Runtime;
 import group._204.oj.judge.type.Language;
 import group._204.oj.judge.type.SolutionResult;
 import group._204.oj.judge.type.SolutionState;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -29,19 +25,11 @@ public class Judgement {
     private static final Integer OUTPUT_LIMIT = 16;
     private static final Integer MAX_MEM_LIMIT = 512;
 
-    private static final int AC = 0;
-    private static final int TLE = 2;
-    private static final int MLE = 3;
-    private static final int OLE = 4;
-
     @Value("${project.file-dir}")
     private String fileDir;
 
     @Value("${project.code-dir}")
     private String codeDir;
-
-    @Value("${project.runner-image}")
-    private String runnerImage;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -70,15 +58,26 @@ public class Judgement {
         }
     }
 
+    @PostConstruct
+    private void init() {
+        if (!codeDir.endsWith("/")) {
+            codeDir += '/';
+        }
+        if (!fileDir.endsWith("/")) {
+            fileDir += '/';
+        }
+    }
+
     /**
-     * 判题
+     * 判题入口
      *
      * @param solution {@link Solution}
      */
     @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
         log.info("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
-        dbConfig.disableFKChecks(); // 为当前事务禁用外键约束
+        // 为当前事务禁用外键约束
+        dbConfig.disableFKChecks();
 
         Compile compile = compiler.compile(solution);
         compileDao.add(compile);
@@ -88,8 +87,8 @@ public class Judgement {
             Runtime runtime = new Runtime(solution.getSolutionId());
             runtimeDao.add(runtime);
 
-            List<RunResult> results = execute(solution, runtime, limit);
-            calcResult(solution, runtime, results);
+            RunResult result = execute(solution, runtime, limit);
+            saveResult(solution, runtime, result);
         } else {
             solution.setResult(SolutionResult.CE);
         }
@@ -99,52 +98,20 @@ public class Judgement {
     }
 
     /**
-     * Calculate results
+     * 保存结果
      *
-     * @param results List of {@link RunResult}
+     * @param result {@link RunResult}
      */
-    private void calcResult(Solution solution, Runtime runtime, List<RunResult> results) {
-        if (runtime.getResult() == SolutionResult.IE
-                || runtime.getResult() == SolutionResult.RE) {
+    private void saveResult(Solution solution, Runtime runtime, RunResult result) {
+        if (runtime.getResult() == SolutionResult.IE || runtime.getResult() == SolutionResult.RE) {
             solution.setResult(runtime.getResult());
         } else {
-            long time = 0;
-            long memory = 0;
-            int[] resultCount = {0, 0, 0, 0, 0};
-
-            for (RunResult result : results) {
-                resultCount[result.getStatus()]++;
-                time = result.getTimeUsed() > time ? result.getTimeUsed() : time;
-                memory = result.getMemUsed() > memory ? result.getMemUsed() : memory;
-            }
-
-            int total = results.size();
-            double passRate = 0;
-            SolutionResult result;
-
-            if (resultCount[AC] == 0) {
-                result = SolutionResult.WA;
-            } else if (resultCount[AC] < total) {
-                passRate = (double) resultCount[AC] / total;
-                result = SolutionResult.PA;
-            } else {
-                passRate = 1;
-                result = SolutionResult.AC;
-            }
-
-            if (resultCount[OLE] != 0) {
-                result = SolutionResult.OLE;
-            } else if (resultCount[MLE] != 0) {
-                result = SolutionResult.MLE;
-            } else if (resultCount[TLE] != 0) {
-                result = SolutionResult.TLE;
-            }
-
-            runtime.setTotal(total);
-            runtime.setPassed(resultCount[AC]);
-            runtime.setTime(time);
-            runtime.setMemory(memory);
-            solution.setResult(result);
+            runtime.setTotal(result.getTotal());
+            runtime.setPassed(result.getPassed());
+            runtime.setTime(result.getTime());
+            runtime.setMemory(result.getMemory());
+            solution.setResult(SolutionResult.getByString(result.getResult()));
+            Double passRate = result.getPassRate();
             solution.setPassRate(Double.isNaN(passRate) ? 0 : passRate);
         }
 
@@ -154,17 +121,17 @@ public class Judgement {
     }
 
     /**
-     * Execute the compiled code
+     * 执行用户程序
      *
-     * @return List of {@link RunResult}
+     * @return 运行结果 {@link RunResult}
      */
-    private List<RunResult> execute(Solution solution, Runtime runtime, Limit limit) {
-        List<RunResult> results = null;
+    private RunResult execute(Solution solution, Runtime runtime, Limit limit) {
+        RunResult result = null;
 
         try {
             String testDataDir = fileDir + "test_data/" + solution.getProblemId();
             ProcessBuilder cmd = buildCommand(solution, limit, testDataDir);
-            results = run(cmd, solution.getSolutionId());
+            result = run(cmd);
         } catch (RuntimeError e) {
             log.warn("Runtime Error: {}", e.getMessage());
             runtime.setInfo(e.getMessage());
@@ -176,60 +143,43 @@ public class Judgement {
         }
 
         runtimeDao.update(runtime);
-        return results;
+        return result;
     }
 
     /**
-     * Run command and get result
+     * 调用判题程序执行
      *
-     * @param cmd Command to run
-     * @return {@link RunResult} Contains status and stdout
+     * @param cmd 命令 & 参数
+     * @return 运行结果 {@link RunResult}
      */
-    private List<RunResult> run(ProcessBuilder cmd, String solutionId)
+    private RunResult run(ProcessBuilder cmd)
             throws RuntimeError, IOException, InterruptedException {
+        RunResult result;
         Process process = cmd.start();
-        List<RunResult> results;
 
-        if (process.waitFor(10, TimeUnit.SECONDS)) {
+        if (process.waitFor() == 0) {
             int exitValue = process.exitValue();
+            // 正常退出
             if (exitValue == 0) {
-                String solutionDir = codeDir + solutionId;
-                String resultStr = getResultFromFile(solutionDir + "/result.json");
-                results = objectMapper.readValue(resultStr, new TypeReference<List<RunResult>>() {
-                });
+                String resultStr = IOUtils.toString(process.getInputStream());
+                result = objectMapper.readValue(resultStr, RunResult.class);
             } else {
-                String stderr = getOutput(process.getErrorStream());
+                // 非正常退出
+                String stderr = IOUtils.toString(process.getErrorStream());
                 if (exitValue == 1) {
                     throw new RuntimeError(stderr);
                 } else {
                     throw new InterruptedException(stderr);
                 }
             }
+            process.destroy();
         } else {
+            // 等待超时
             process.destroy();
             throw new InterruptedException("Judge timeout.");
         }
 
-        return results;
-    }
-
-    @SneakyThrows
-    private String getOutput(InputStream inputStream) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String output = reader.lines().collect(Collectors.joining("\n"));
-        reader.close();
-        return output;
-    }
-
-    @SneakyThrows
-    private String getResultFromFile(String filePath) {
-        File file = new File(filePath);
-
-        if (file.exists()) {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        }
-
-        return "";
+        return result;
     }
 
     /**
@@ -247,19 +197,11 @@ public class Judgement {
         }
 
         String solutionDir = codeDir + solution.getSolutionId();
-        String dataDirInContainer = UUID.randomUUID().toString();   // Use UUID for test data directory in container.
 
         ProcessBuilder builder = new ProcessBuilder();
 
-        List<String> cmd = new ArrayList<>(Arrays.asList(
-                "docker", "run", "--rm",
-                "--network", "none",
-                "--cpus", "1",
-                "-v", String.format("%s:/tmp/code", solutionDir),
-                "-v", String.format("%s:/%s:ro", testDataDir, dataDirInContainer),
-                "-w", "/tmp/code",
-                runnerImage, "runner"
-        ));
+        List<String> cmd = new ArrayList<>();
+        cmd.add("/opt/bin/judge-runner");
 
         long timeLimit = limit.getTimeout();
         int memoryLimit = limit.getMemoryLimit();
@@ -305,15 +247,16 @@ public class Judgement {
             maxMemoryLimit = MAX_MEM_LIMIT;
         }
 
-        List<String> limits = Arrays.asList(
+        List<String> config = Arrays.asList(
                 Long.toString(timeLimit),
                 Integer.toString(memoryLimit),
                 Integer.toString(maxMemoryLimit),
-                OUTPUT_LIMIT.toString()
+                OUTPUT_LIMIT.toString(),
+                solutionDir,
+                testDataDir
         );
 
-        cmd.addAll(limits);
-        cmd.add(String.format("/%s", dataDirInContainer));
+        cmd.addAll(config);
         builder.command(cmd);
 
         return builder;

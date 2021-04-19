@@ -40,8 +40,11 @@ public class SystemSettings {
 
     @PostConstruct
     public void init() {
+        if (!fileDir.endsWith("/")) {
+            fileDir += '/';
+        }
+
         loadConfig();
-        log.info("Load system config: {}.", config.toString());
     }
 
     public void loadConfig() {

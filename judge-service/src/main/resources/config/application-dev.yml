@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 6000
-      maximum-pool-size: 16
+      maximum-pool-size: 10
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
@@ -49,9 +49,6 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 
 project:
-  file-dir: E:/cloud_oj/
-  code-dir: E:/cloud_oj/code/
-  runner-image: judge-runner
-  core-pool-size: 8
-  max-pool-size: 8
-  queue-capacity: 8
+  file-dir: /mnt/e/cloud_oj/
+  code-dir: /tmp/code/
+  judge-pool-size: 4

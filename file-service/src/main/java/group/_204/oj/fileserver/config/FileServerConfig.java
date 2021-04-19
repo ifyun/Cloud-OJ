@@ -5,11 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+import javax.annotation.PostConstruct;
+
 @Configuration
 public class FileServerConfig extends WebMvcConfigurationSupport {
 
     @Value(("${project.file-dir}"))
     private String fileDir;
+
+    @PostConstruct
+    private void init() {
+        if (!fileDir.endsWith("/")) {
+            fileDir += '/';
+        }
+    }
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {

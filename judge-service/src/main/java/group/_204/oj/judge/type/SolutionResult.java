@@ -2,6 +2,9 @@ package group._204.oj.judge.type;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * 注意：判题程序和此枚举类型的数值不对应
+ */
 public enum SolutionResult implements BaseEnum {
     AC(1),  // 通过
     TLE(2), // 超时
@@ -17,6 +20,25 @@ public enum SolutionResult implements BaseEnum {
 
     SolutionResult(int value) {
         this.value = value;
+    }
+
+    public static SolutionResult getByString(String str) {
+        switch (str) {
+            case "AC":
+                return AC;
+            case "WA":
+                return WA;
+            case "TLE":
+                return TLE;
+            case "MLE":
+                return MLE;
+            case "OLE":
+                return OLE;
+            case "PA":
+                return PA;
+            default:
+                return IE;
+        }
     }
 
     @Override
