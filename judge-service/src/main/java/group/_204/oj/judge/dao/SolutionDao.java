@@ -6,8 +6,6 @@ import group._204.oj.judge.model.Solution;
 
 @Mapper
 public interface SolutionDao {
-    JudgeResult getResultBySolutionId(String solutionId);
-
     int add(Solution solution);
 
     int update(Solution solution);

@@ -16,7 +16,7 @@ public interface CRUDController {
      * 单条查询
      *
      * @param object 单条数据
-     * @return {@link ResponseEntity}
+     * @return {@link ResponseEntity} 200：成功 404：不存在
      */
     default ResponseEntity<?> buildGETResponse(Object object) {
         return object != null ?
@@ -28,7 +28,7 @@ public interface CRUDController {
      * 多条查询
      *
      * @param data {@link List} 多条数据
-     * @return {@link ResponseEntity}
+     * @return {@link ResponseEntity} 200： 成功 204：无数据
      */
     default ResponseEntity<?> buildGETResponse(List<List<?>> data) {
         return data.get(0).size() > 0 ?

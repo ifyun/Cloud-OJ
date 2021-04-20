@@ -542,7 +542,7 @@ const JudgeApi = {
     getResult(solutionId, userInfo) {
         return new Promise((resolve, reject) => {
             axios({
-                url: ApiPath.COMMIT,
+                url: `${ApiPath.HISTORY}/${solutionId}`,
                 method: "GET",
                 headers: buildHeaders(userInfo),
                 params: {

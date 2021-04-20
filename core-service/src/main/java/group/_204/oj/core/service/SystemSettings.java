@@ -32,7 +32,7 @@ public class SystemSettings {
     public static class Config {
         private boolean showRankingAfterEnded = false;
         private boolean showNotStartedContest = false;
-        private boolean hideLogo = false;
+        private boolean hideLogo = true;
         private String siteName = "";
         private String icp = "";
         private String icpUrl = "";

@@ -2,7 +2,7 @@ package group._204.oj.judge.component;
 
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.Solution;
-import group._204.oj.judge.task.FileCleaner;
+import group._204.oj.judge.utils.FileCleaner;
 import group._204.oj.judge.type.SolutionResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

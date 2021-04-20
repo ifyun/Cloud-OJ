@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/api/core/user/profile").hasRole(Role.USER)
                 .antMatchers("/api/core/user/pro/**").hasRole(Role.UA)
                 .antMatchers("/api/core/problem/pro/**").hasRole(Role.PA)
-                .antMatchers("/api/core/result").hasRole(Role.USER)
+                .antMatchers("/api/core/history/**").hasRole(Role.USER)
                 .antMatchers("/api/core/contest/pro/**").hasRole(Role.PA)
                 .antMatchers("/api/core/contest/problem/**").hasRole(Role.USER)
                 .antMatchers("/api/core/ranking/pro/**").hasRole(Role.PA)
