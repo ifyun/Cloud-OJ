@@ -48,8 +48,4 @@ public class CommitService {
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.update(solution);
     }
-
-    public JudgeResult getResult(String solutionId) {
-        return solutionDao.getResultBySolutionId(solutionId);
-    }
 }

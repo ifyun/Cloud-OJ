@@ -1,4 +1,4 @@
-package group._204.oj.judge.task;
+package group._204.oj.judge.receiver;
 
 import com.rabbitmq.client.Channel;
 import group._204.oj.judge.config.RabbitConfig;

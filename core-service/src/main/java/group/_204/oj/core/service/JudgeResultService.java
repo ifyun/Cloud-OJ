@@ -1,6 +1,7 @@
 package group._204.oj.core.service;
 
 import group._204.oj.core.dao.JudgeResultDao;
+import group._204.oj.core.model.JudgeResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,5 +21,9 @@ public class JudgeResultService {
         } else {
             return judgeResultDao.getHistory(userId, (page - 1) * limit, limit);
         }
+    }
+
+    public JudgeResult getBySolutionId(String solutionId) {
+        return judgeResultDao.getResultBySolutionId(solutionId);
     }
 }

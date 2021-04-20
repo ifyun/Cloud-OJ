@@ -3,7 +3,6 @@ package group._204.oj.judge.controller;
 import group._204.oj.judge.dao.ContestDao;
 import group._204.oj.judge.model.CommitData;
 import group._204.oj.judge.model.Contest;
-import group._204.oj.judge.model.JudgeResult;
 import group._204.oj.judge.model.Msg;
 import group._204.oj.judge.service.CommitService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,15 +57,5 @@ public class CommitController {
         rabbitTemplate.convertAndSend(commitQueue.getName(), data);
 
         return ResponseEntity.accepted().body(data.getSolutionId());
-    }
-
-    /**
-     * 获取判题结果
-     */
-    @GetMapping()
-    public ResponseEntity<?> getResult(String solutionId) {
-        JudgeResult result = commitService.getResult(solutionId);
-        return result == null ?
-                ResponseEntity.noContent().build() : ResponseEntity.ok(result);
     }
 }
