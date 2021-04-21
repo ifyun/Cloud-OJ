@@ -22,6 +22,7 @@ struct Config {
     long memory;        // 内存限制，用于判断是否超出限制(MB)
     long max_memory;    // 实际内存限制，超过此限制程序会中断(MB)
     long output_size;   // 输出限制(MB)
+    int proc_count = 1; // 进程数限制
 
     std::string in;     // 输入文件路径
     std::string out;    // 输出文件路径(实际输出)

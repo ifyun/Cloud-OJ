@@ -8,6 +8,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.dao.SourceCodeDao;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -27,6 +29,7 @@ public class CommitService {
     @Resource
     private Queue judgeQueue;
 
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getSolutionId(),

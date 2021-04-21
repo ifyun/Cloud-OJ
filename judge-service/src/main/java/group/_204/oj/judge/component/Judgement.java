@@ -157,36 +157,28 @@ public class Judgement {
         RunResult result;
         Process process = cmd.start();
 
-        if (process.waitFor() == 0) {
-            int exitValue = process.exitValue();
+        int exitValue = process.waitFor();
+
+        if (exitValue == 0) {
             // 正常退出
-            if (exitValue == 0) {
-                String resultStr = IOUtils.toString(process.getInputStream());
-                result = objectMapper.readValue(resultStr, RunResult.class);
-            } else {
-                // 非正常退出
-                String stderr = IOUtils.toString(process.getErrorStream());
-                if (exitValue == 1) {
-                    throw new RuntimeError(stderr);
-                } else {
-                    throw new InterruptedException(stderr);
-                }
-            }
-            process.destroy();
+            String resultStr = IOUtils.toString(process.getInputStream());
+            result = objectMapper.readValue(resultStr, RunResult.class);
         } else {
-            // 等待超时
-            process.destroy();
-            throw new InterruptedException("Judge timeout.");
+            // 非正常退出
+            String stderr = IOUtils.toString(process.getErrorStream());
+            if (exitValue == 1) {
+                throw new RuntimeError(stderr);
+            } else {
+                throw new InterruptedException(stderr);
+            }
         }
 
+        process.destroy();
         return result;
     }
 
     /**
-     * Build command to run code
-     *
-     * @param solution {@link Solution} Solution object
-     * @return {@link ProcessBuilder} Command to run
+     * Build command to run user program.
      */
     private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
@@ -257,8 +249,12 @@ public class Judgement {
         );
 
         cmd.addAll(config);
-        builder.command(cmd);
 
+        if (language == Language.GO) {
+            cmd.add("8");   // RLIMIT_NPROC
+        }
+
+        builder.command(cmd);
         return builder;
     }
 }

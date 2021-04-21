@@ -9,8 +9,9 @@
  * @param argv[3]: 内存限制(MB)
  * @param argv[4]: 实际内存限制(MB)
  * @param argv[5]: 输出限制(MB)
- * @param argv[7]: 工作目录
- * @param argv[6]: 测试数据目录
+ * @param argv[6]: 工作目录
+ * @param argv[7]: 测试数据目录
+ * @param argv[8]: 进程数量限制(可选)
  */
 int main(int argc, char *argv[]) {
     if (argc < 8) {
