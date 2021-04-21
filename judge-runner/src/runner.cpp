@@ -52,7 +52,7 @@ void Runner::set_limit(const Config &config) {
 
     setrlimit(RLIMIT_FSIZE, &rl);
 
-    rl.rlim_cur = 1;
+    rl.rlim_cur = config.proc_count;
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_NPROC, &rl);
@@ -209,6 +209,10 @@ RTN exec(char *argv[]) {
 
     std::string work_dir = argv[6];
     std::string data_dir = argv[7];
+
+    if (argv[8] != nullptr) {
+        config.proc_count = (int) strtol(argv[8], nullptr, 10);
+    }
 
     if (opendir(work_dir.c_str()) == nullptr) {
         std::cerr << "Work dir does not exist.\n";
