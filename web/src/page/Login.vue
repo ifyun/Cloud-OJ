@@ -12,7 +12,7 @@
     <div class=right>
       <div id="login-content">
         <div class="logo-div">
-          <a href="/">
+          <a href="/" :style="{display: siteSetting['hideLogo'] === true ? 'none': ''}">
             <img class="logo" :src="logoUrl" alt="logo">
           </a>
           <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>

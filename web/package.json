@@ -10,19 +10,18 @@
   "dependencies": {
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
-    "core-js": "^3.9.1",
-    "echarts": "^5.0.0",
+    "core-js": "^3.11.0",
     "element-ui": "^2.15.1",
     "elliptic": "^6.5.4",
     "js-md5": "^0.7.3",
-    "markdown-it-vue": "^1.1.6",
     "moment": "^2.29.1",
     "qs": "^6.10.1",
     "vue": "^2.6.12",
     "vue-awesome": "^4.1.0",
     "vue-codemirror": "^4.0.6",
     "vue-echarts": "^5.0.0-beta.0",
-    "vue-router": "^3.5.1"
+    "vue-router": "^3.5.1",
+    "markdown-it-vue": "^1.1.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.12",
