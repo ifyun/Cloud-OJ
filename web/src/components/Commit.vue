@@ -1,7 +1,7 @@
 <template>
   <Error v-if="error.code != null" :error="error"/>
   <div v-else>
-    <el-card style="width: 100%" v-loading="loading">
+    <el-card class="borderless" style="width: 100%" v-loading="loading">
       <el-row :gutter="5">
         <el-col :span="12">
           <div class="content-problem" style="overflow: auto" :style="{height: contentHeight()}">

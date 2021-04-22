@@ -29,7 +29,7 @@
     <el-alert v-if="singleMode && histories.count > 0" show-icon type="info"
               style="margin-top: 10px" title="双击行可以加载代码到编辑框。"/>
     <el-table style="margin-top: 10px" stripe v-loading="loading" :data="histories.data"
-              :size="singleMode ? 'small':''" @row-dblclick="rowDbClick">
+              :size="singleMode ? 'small' : 'medium'" @row-dblclick="rowDbClick">
       <el-table-column label="状态" width="105px">
         <template slot-scope="scope">
           <el-tag class="result-tag" size="small" effect="light"
@@ -48,8 +48,12 @@
       </el-table-column>
       <el-table-column label="语言" align="center">
         <template slot-scope="scope">
-          <img v-if="scope.row.type === 0" class="language-icon" align="center"
-               :src="languages[scope.row['language']].icon" :alt="languages[scope.row['language']].name">
+          <el-tooltip v-if="scope.row.type === 0" :content="languages[scope.row['language']].name" placement="right">
+            <el-button type="text" size="mini">
+              <img class="language-icon" align="center" :src="languages[scope.row['language']].icon"
+                   :alt="languages[scope.row['language']].name">
+            </el-button>
+          </el-tooltip>
           <img v-else class="language-icon" align="center"
                :src="sqlTypes[scope.row['language']].icon" :alt=" sqlTypes[scope.row['language']].name">
         </template>

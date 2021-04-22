@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -70,10 +71,11 @@ public class Judgement {
 
     /**
      * 判题入口
+     * <p>隔离级别：读提交</p>
      *
      * @param solution {@link Solution}
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void judge(Solution solution) {
         log.info("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         // 为当前事务禁用外键约束
@@ -178,7 +180,7 @@ public class Judgement {
     }
 
     /**
-     * Build command to run user program.
+     * 生成命令
      */
     private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
@@ -198,12 +200,14 @@ public class Judgement {
         long timeLimit = limit.getTimeout();
         int memoryLimit = limit.getMemoryLimit();
         int maxMemoryLimit = memoryLimit << 2;
+        int procLimit = 1;
 
         // Java/Kotlin/JS 内存限制按 2 倍计算
         switch (language) {
             case C:
             case CPP:
             case GO:
+                procLimit = 10;
                 maxMemoryLimit <<= 1;
                 cmd.add("./Solution");
                 break;
@@ -229,6 +233,8 @@ public class Judgement {
                 cmd.add("sh@Solution.sh");
                 break;
             case C_SHARP:
+                procLimit = 3;
+                memoryLimit <<= 1;
                 cmd.add("mono@Solution.exe");
                 break;
             default:
@@ -245,14 +251,11 @@ public class Judgement {
                 Integer.toString(maxMemoryLimit),
                 OUTPUT_LIMIT.toString(),
                 solutionDir,
-                testDataDir
+                testDataDir,
+                Integer.toString(procLimit)
         );
 
         cmd.addAll(config);
-
-        if (language == Language.GO) {
-            cmd.add("8");   // RLIMIT_NPROC
-        }
 
         builder.command(cmd);
         return builder;

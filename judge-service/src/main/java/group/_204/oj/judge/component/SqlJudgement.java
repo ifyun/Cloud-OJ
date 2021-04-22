@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-class SqlJudgement {
+public class SqlJudgement {
 
     @Data
     @AllArgsConstructor

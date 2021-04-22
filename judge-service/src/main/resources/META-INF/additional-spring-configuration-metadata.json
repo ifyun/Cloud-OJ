@@ -14,5 +14,10 @@
       "name": "project.file-dir",
       "type": "java.lang.String",
       "description": "文件存放目录."
+    },
+    {
+      "name": "project.commit-queue-length",
+      "type": "java.lang.String",
+      "description": "提交队列大小."
     }
   ] }

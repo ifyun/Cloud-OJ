@@ -1,8 +1,10 @@
 package group._204.oj.judge.receiver;
 
 import com.rabbitmq.client.Channel;
+import group._204.oj.judge.component.JudgementAsync;
 import group._204.oj.judge.config.RabbitConfig;
 import group._204.oj.judge.model.CommitData;
+import group._204.oj.judge.model.Solution;
 import group._204.oj.judge.service.CommitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -11,8 +13,6 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import group._204.oj.judge.component.JudgementAsync;
-import group._204.oj.judge.model.Solution;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -31,6 +31,9 @@ public class RabbitReceiver {
     @Resource
     private JudgementAsync judgementAsync;
 
+    /**
+     * 监听判题队列
+     */
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
@@ -43,6 +46,9 @@ public class RabbitReceiver {
         });
     }
 
+    /**
+     * 监听提交队列
+     */
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.COMMIT_QUEUE)
     public void handleSubmission(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
