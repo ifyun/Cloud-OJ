@@ -2,6 +2,7 @@ package group._204.oj.judge.component;
 
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.Solution;
+import group._204.oj.judge.type.SolutionState;
 import group._204.oj.judge.utils.FileCleaner;
 import group._204.oj.judge.type.SolutionResult;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,7 @@ public class JudgementAsync {
             log.info("Judged: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         } catch (Exception e) {
             log.error(e.getMessage());
+            solution.setState(SolutionState.JUDGED);
             solution.setResult(SolutionResult.IE);
             solutionDao.update(solution);
         } finally {

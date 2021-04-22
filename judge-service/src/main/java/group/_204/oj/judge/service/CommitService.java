@@ -29,7 +29,11 @@ public class CommitService {
     @Resource
     private Queue judgeQueue;
 
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    /**
+     * 保存提交到数据库
+     * <p>隔离级别：读未提交</p>
+     */
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public void commit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getSolutionId(),

@@ -4,12 +4,14 @@ import group._204.oj.judge.dao.ContestDao;
 import group._204.oj.judge.model.CommitData;
 import group._204.oj.judge.model.Contest;
 import group._204.oj.judge.model.Msg;
-import group._204.oj.judge.service.CommitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.UUID;
@@ -21,9 +23,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/commit")
 public class CommitController {
-
-    @Resource
-    private CommitService commitService;
 
     @Resource
     private ContestDao contestDao;
@@ -41,10 +40,15 @@ public class CommitController {
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         Integer contestId = data.getContestId();
 
+        if (data.getSourceCode().isEmpty()) {
+            return ResponseEntity.badRequest().body(new Msg("代码为空"));
+        }
+
         if (contestId != null) {
             Contest contest = contestDao.getContest(contestId);
-            if (contest.isEnded())
-                return ResponseEntity.status(403).body(new Msg("当前竞赛/作业已结束"));
+            if (contest.isEnded()) {
+                return ResponseEntity.status(403).body(new Msg("当前竞赛已结束"));
+            }
             int lang = data.getLanguage();
             int languages = contest.getLanguages();
 

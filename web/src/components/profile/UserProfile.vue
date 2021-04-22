@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="profile-div" v-if="profileEditor.display">
-      <span>上传新头像:</span>
+      <span style="font-size: 13px">上传新头像:</span>
       <el-upload class="avatar-uploader"
                  :show-file-list="false"
                  :action="uploadUrl"
@@ -258,10 +258,14 @@ export default {
 </style>
 
 <style>
+.avatar-uploader {
+  display: flex;
+}
+
 .avatar-uploader .el-upload {
-  margin-top: 15px;
+  margin: 15px auto 0;
   border: 2px dashed #e0e0e0;
-  border-radius: 6px;
+  border-radius: 90px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -284,6 +288,6 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
-  border-radius: 6px;
+  border-radius: 90px;
 }
 </style>
