@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-stretch
+FROM openjdk:8-jdk-stretch
 ENV TIME_ZONE Asia/Shanghai
 # Install kotlin
 RUN curl -LJO \
