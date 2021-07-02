@@ -14,7 +14,7 @@ const char *status_str[] = {"AC", "WA", "TLE", "MLE", "OLE", "PA"};
  * @param path 测试数据目录
  * @param ext 扩展名(.in | .out)
  */
-std::vector<std::string> utils::get_files(const std::string &path, const std::string &ext) {
+std::vector<std::string> Utils::get_files(const std::string &path, const std::string &ext) {
     std::vector<std::string> files;
     DIR *dir = opendir(path.c_str());
 
@@ -53,7 +53,7 @@ std::vector<std::string> utils::get_files(const std::string &path, const std::st
 /**
  * @brief 移除字符串尾部的换行符和空格
  */
-inline void utils::rtrim(std::string &str) {
+inline void Utils::rtrim(std::string &str) {
     if (str.empty()) { return; }
     str.erase(str.find_last_not_of('\r') + 1);
     str.erase(str.find_last_not_of('\n') + 1);
@@ -64,7 +64,7 @@ inline void utils::rtrim(std::string &str) {
  * @brief 计算结果、通过率
  * @return 判题结果的 JSON 字符串
  */
-std::string utils::calc_results(const std::vector<Result> &results) {
+std::string Utils::calc_results(const std::vector<Result> &results) {
     int status;
     long time = 0, memory = 0;
     double pass_rate = 0;
@@ -113,7 +113,7 @@ std::string utils::calc_results(const std::vector<Result> &results) {
 /**
  * @brief 比较文件
  */
-bool utils::diff(const std::string &path1, const std::string &path2) {
+bool Utils::diff(const std::string &path1, const std::string &path2) {
     std::ifstream file1(path1);
     std::ifstream file2(path2);
 
@@ -136,7 +136,7 @@ bool utils::diff(const std::string &path1, const std::string &path2) {
 /**
  * @brief 将结果写入文件(result.json)
  */
-std::string utils::write_result(const std::vector<Result> &results) {
+std::string Utils::write_result(const std::vector<Result> &results) {
     std::string res = calc_results(results);
     std::ofstream of;
 
