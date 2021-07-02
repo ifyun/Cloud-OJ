@@ -206,39 +206,42 @@ public class Judgement {
         switch (language) {
             case C:
             case CPP:
+                maxMemoryLimit <<= 1;
+                cmd.add("--cmd=./Solution");
+                break;
             case GO:
                 procLimit = 10;
                 maxMemoryLimit <<= 1;
-                cmd.add("./Solution");
+                cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
-                cmd.add(String.format("java@-Xmx%dm@Solution", memoryLimit << 1));
+                cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit << 1));
                 break;
             case KOTLIN:
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
-                cmd.add("kotlin@SolutionKt");
+                cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
                 memoryLimit <<= 1;
-                cmd.add("node@Solution.js");
+                cmd.add("--cmd=node@Solution.js");
                 break;
             case PYTHON:
-                cmd.add("python3@Solution.py");
+                cmd.add("--cmd=python3@Solution.py");
                 break;
             case BASH:
-                cmd.add("sh@Solution.sh");
+                cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
                 procLimit = 3;
                 memoryLimit <<= 1;
-                cmd.add("mono@Solution.exe");
+                cmd.add("--cmd=mono@Solution.exe");
                 break;
             default:
-                throw new UnsupportedLanguageError(String.format("Unsupported language: %s.", language));
+                throw new UnsupportedLanguageError(language.toString());
         }
 
         if (maxMemoryLimit >= MAX_MEM_LIMIT) {
@@ -246,17 +249,16 @@ public class Judgement {
         }
 
         List<String> config = Arrays.asList(
-                Long.toString(timeLimit),
-                Integer.toString(memoryLimit),
-                Integer.toString(maxMemoryLimit),
-                OUTPUT_LIMIT.toString(),
-                solutionDir,
-                testDataDir,
-                Integer.toString(procLimit)
+                "--time=" + timeLimit,
+                "--memory=" + memoryLimit,
+                "--max-memory=" + maxMemoryLimit,
+                "--output-size=" + OUTPUT_LIMIT,
+                "--workdir=" + solutionDir,
+                "--data=" + testDataDir,
+                "--proc=" + procLimit
         );
 
         cmd.addAll(config);
-
         builder.command(cmd);
         return builder;
     }

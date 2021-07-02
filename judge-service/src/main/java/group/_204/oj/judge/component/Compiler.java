@@ -48,9 +48,6 @@ class Compiler {
 
     /**
      * 编译
-     *
-     * @param solution {@link Solution}
-     * @return {@link Compile} 编译结果
      */
     public Compile compile(Solution solution) {
         String solutionId = solution.getSolutionId();
@@ -77,14 +74,12 @@ class Compiler {
     /**
      * 根据语言类型编译源码
      *
-     * @param solutionId 答案 Id
-     * @param language   {@link Language}
      * @return {@link Compile} 编译结果
      */
     private Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
 
         if (language == null) {
-            throw new UnsupportedLanguageError("Unsupported language: null.");
+            throw new UnsupportedLanguageError("null");
         }
 
         String solutionDir = codeDir + solutionId;
@@ -115,7 +110,7 @@ class Compiler {
             case JAVA_SCRIPT:
                 return new Compile(solutionId, 0);
             default:
-                throw new UnsupportedLanguageError(String.format("Unsupported language: %s.", language));
+                throw new UnsupportedLanguageError(language.toString());
         }
 
         try {
@@ -144,9 +139,6 @@ class Compiler {
     /**
      * 将源码写入文件
      *
-     * @param solutionId 答案 Id
-     * @param language   语言 Id
-     * @param source     源码
      * @return 文件路径
      */
     private String writeCode(String solutionId, int language, String source) {

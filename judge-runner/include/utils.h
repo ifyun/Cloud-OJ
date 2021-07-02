@@ -5,7 +5,7 @@
 #include <string>
 #include "runner.h"
 
-class utils {
+class Utils {
 private:
     static void rtrim(std::string &str);
 

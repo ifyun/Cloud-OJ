@@ -57,6 +57,6 @@ public:
                       const std::string &work_dir, const std::string &random_dir);
 };
 
-RTN exec(char *argv[]);
+RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config);
 
 #endif //_RUNNER_H

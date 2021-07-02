@@ -3,7 +3,6 @@
 #include <iostream>
 #include <sys/resource.h>
 #include <sys/wait.h>
-#include <cstring>
 #include <dirent.h>
 #include "runner.h"
 #include "utils.h"
@@ -13,22 +12,10 @@
  * @brief 退出 chroot 并清理环境
  * @param fd 文件描述符，切换到此目录
  */
-void clean_up(const int &fd, const std::string &work_dir, const std::string &random_dir) {
+inline void clean_up(const int &fd, const std::string &work_dir, const std::string &random_dir) {
     fchdir(fd);
     chroot(".");
     end_env(work_dir.c_str(), random_dir.c_str());
-}
-
-void split(char **arr, char *str, const char *del) {
-    char *s;
-    s = strtok(str, del);
-
-    while (s != nullptr) {
-        *arr++ = s;
-        s = strtok(nullptr, del);
-    }
-
-    *arr = nullptr;
 }
 
 /**
@@ -156,7 +143,7 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
             clean_up(root_fd, work_dir, random_dir);
             exit(RUNTIME_ERROR);
         } else {
-            res.status = utils::diff(config.out, config.expect) ? WA : AC;
+            res.status = Utils::diff(config.out, config.expect) ? WA : AC;
         }
     }
 
@@ -188,7 +175,7 @@ Result Runner::run(char **args, const Config &config, int root_fd,
 /**
  * @brief 入口
  */
-RTN exec(char *argv[]) {
+RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
     RTN rtn;
 
     if (getuid() != 0) {
@@ -197,24 +184,7 @@ RTN exec(char *argv[]) {
         return rtn;
     }
 
-    char *cmd[32];
-    split(cmd, argv[1], "@");
-
-    Config config = {
-            .timeout=strtol(argv[2], nullptr, 10),
-            .memory=strtol(argv[3], nullptr, 10) << 10,
-            .max_memory=strtol(argv[4], nullptr, 10) << 10,
-            .output_size=strtol(argv[5], nullptr, 10) << 10
-    };
-
-    std::string work_dir = argv[6];
-    std::string data_dir = argv[7];
-
-    if (argv[8] != nullptr) {
-        config.proc_count = (int) strtol(argv[8], nullptr, 10);
-    }
-
-    if (opendir(work_dir.c_str()) == nullptr) {
+    if (opendir(work_dir) == nullptr) {
         std::cerr << "Work dir does not exist.\n";
         rtn.code = JUDGE_ERROR;
         return rtn;
@@ -230,9 +200,9 @@ RTN exec(char *argv[]) {
     }
 
     // 创建运行环境，random_dir 为测试数据挂载点，根目录(/)变为 work_dir
-    std::string random_dir = setup_env(work_dir.c_str(), data_dir.c_str());
+    std::string random_dir = setup_env(work_dir, data_dir);
 
-    if (chroot(work_dir.c_str()) != 0) {
+    if (chroot(work_dir) != 0) {
         std::cerr << "Chroot failed.\n";
         rtn.code = JUDGE_ERROR;
         clean_up(root_fd, work_dir, random_dir);
@@ -250,8 +220,8 @@ RTN exec(char *argv[]) {
     std::vector<std::string> output_files;
 
     try {
-        input_files = utils::get_files(random_dir, "in");       // 获取输入数据
-        output_files = utils::get_files(random_dir, "out");     // 获取输出数据
+        input_files = Utils::get_files(random_dir, "in");       // 获取输入数据
+        output_files = Utils::get_files(random_dir, "out");     // 获取输出数据
     } catch (const std::invalid_argument &error) {
         std::cerr << error.what();
         rtn.code = JUDGE_ERROR;
@@ -282,7 +252,7 @@ RTN exec(char *argv[]) {
         }
     } else if (!output_files.empty()) {
         // 没有输入数据，读取第一个 .out 文件
-        std::string expect = utils::get_files(random_dir, ".out")[0];
+        std::string expect = Utils::get_files(random_dir, ".out")[0];
 
         config.in = "/dev/null";
         config.out = "1.out";
@@ -297,7 +267,7 @@ RTN exec(char *argv[]) {
     }
 
     if (!results.empty()) {
-        rtn.result = utils::write_result(results);
+        rtn.result = Utils::write_result(results);
     }
 
     clean_up(root_fd, work_dir, random_dir);

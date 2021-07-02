@@ -16,29 +16,42 @@ OJ 判题程序，使用 chroot + setuid 创建沙盒。
 ## 使用
 
 ```bash
-runner <cmd> <timeout> <memory> <max_memory> <output_size> <work_dir> <data_dir>
+judge-runner --options
 ```
 
-- `cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
-- `timeout`: 运行时间，单位：毫秒
-- `memory`: 内存限制，此项用于判断是否超限，单位：MB
-- `max_memory`: 此项为实际的内存限制，超出此限制程序会中断并返回非零值，单位：MB
-- `output_size`: 输出限制，单位：MB
-- `work_dir`：工作目录，用户程序所在目录
-- `data_dir`: 测试数据目录，包含 `*.in`、 `*.out` 文件
+- `--cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
+- `--time`: 运行时间，单位：毫秒
+- `--memory`: 内存限制，此项用于判断是否超限，单位：MB
+- `--max-memory`: 内存最大上限，超出此限制程序会中断并返回非零值，单位：MB
+- `--output-size`: 输出限制，单位：MB
+- `--workdir`: 工作目录，用户程序所在目录
+- `--data`: 测试数据目录，包含 `*.in`、 `*.out` 文件
+- `--proc`: 进程限制，可选参数，默认为 1
 
 ### 示例
 
-Python:
+长参数：
 
 ```bash
-runner python@Solution.py 200 32 32 8 /tmp/userbin /test_data
+judge-runner --cmd=python@Solution.py \
+             --time=200 \
+             --memory=32 \
+             --max-memory=32 \
+             --output-size=8 \
+             --workdir=/tmp/solution \
+             --data=/tmp/test_data
 ```
 
-Java:
+短参数：
 
 ```bash
-runner java@-Xms16m@-Xmx512m@Solution 200 64 512 8 /tmp/userbin /test_data
+judge-runner -c java@-Xms16m@-Xmx512m@Solution \
+             -t 200 \
+             -m 64 \
+             -M 512 \
+             -o 8 \
+             -w /tmp/solution \
+             -d /tmp/test_data
 ```
 
 ### 判题结果
@@ -65,10 +78,10 @@ runner java@-Xms16m@-Xmx512m@Solution 200 64 512 8 /tmp/userbin /test_data
 }
 ```
 
-- `time` 单位为毫秒
-- `memory` 单位为 KB
-- `total` 测试点数量
-- `passed` 通过测试点数量
+- `time`: 运行时间，单位：毫秒
+- `memory`: 内存占用，单位：KB
+- `total`: 测试点数量
+- `passed`: 通过测试点数量
 
 > `time` 和 `memory` 为所有测试点中的最大值。
 
