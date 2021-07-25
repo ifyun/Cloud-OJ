@@ -215,17 +215,20 @@ public class Judgement {
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
+                procLimit = 15;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
                 cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit << 1));
                 break;
             case KOTLIN:
+                procLimit = 20;
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
+                procLimit = 10;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=node@Solution.js");
                 break;
@@ -236,7 +239,7 @@ public class Judgement {
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
-                procLimit = 3;
+                procLimit = 5;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
                 break;

@@ -13,10 +13,6 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - 支持 SQL 判题（SQLite）
 - 代码高亮
 
-![Preview](./.assets/preview.png)
-
-**构建和部署可参考 [Wiki](https://github.com/imcloudfloating/Cloud-OJ/wiki)**
-
 ## 语言支持
 
 - SQLite
@@ -29,3 +25,10 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - JavaScript（Node.js LTS）
 - Kotlin（1.4.10）
 - Go（1.15.7）
+
+**构建和部署可参考[此文档](https://github.com/imcloudfloating/Cloud-OJ/wiki)**
+
+## 预览
+
+![submit](./.assets/preview_1.png)
+![profile](./.assets/preview_2.png)
