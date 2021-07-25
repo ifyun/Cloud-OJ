@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card class="borderless">
     <el-form size="medium" :inline="true" @submit.native.prevent>
       <el-form-item>
         <el-input style="width: 320px" v-model="searchOption.value" placeholder="请选择搜索方式"
@@ -27,7 +27,8 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="users.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+    <el-empty v-if="!loading && users.count === 0"/>
+    <el-table v-else :data="users.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
       <el-table-column prop="userId" width="140px">
         <template slot="header">
           <Icon class="el-icon--left" name="id-card"/>
@@ -41,9 +42,10 @@
         </template>
         <template slot-scope="scope">
           <div style="display: inline-flex; align-items: center">
-            <img class="avatar" Alt="Avatar" :src="`/api/file/image/avatar/${scope.row.userId}.png`"
-                 onerror="this.src='/icons/no_avatar.png'">
-            <el-link :underline="false" :href="`/profile?userId=${scope.row.userId}`">
+            <el-avatar class="el-icon--left" size="small" icon="el-icon-user-solid" alt="user"
+                       :src="`/api/file/image/avatar/${scope.row.userId}.png`">
+            </el-avatar>
+            <el-link :underline="false" @click="usernameClick(scope.row.userId)">
               <b>{{ scope.row.name }}</b>
             </el-link>
             <el-tag v-if="scope.row.userId === userInfo.userId" class="el-icon--right"
@@ -59,8 +61,8 @@
           <span style="margin-left: 5px">角色/权限</span>
         </template>
         <template slot-scope="scope">
-          <el-tag effect="dark" style="width: 80px" size="small"
-                  :type="roleTypes[scope.row['roleId']]">
+          <el-tag style="width: 80px" size="small" :type="roleTypes[scope.row['roleId']]"
+                  :effect="scope.row['roleId'] > 0 ? 'dark' : 'light'">
             <span>{{ roleNames[scope.row["roleId"]] }}</span>
           </el-tag>
         </template>
@@ -96,8 +98,8 @@
                    @size-change="getUsers" @current-change="getUsers">
     </el-pagination>
     <!-- Editor Dialog -->
-    <el-dialog :title="editorDialog.title" :visible.sync="editorDialog.visible" center>
-      <UserEditor :user="selectedUser" :create="editorDialog.create"
+    <el-dialog center :title="editorDialog.title" :visible.sync="editorDialog.visible">
+      <UserEditor :user-data="selectedUser" :create="editorDialog.create"
                   :dialog-visible.sync="editorDialog.visible" @refresh="getUsers"/>
     </el-dialog>
     <!-- Delete Dialog -->
@@ -138,7 +140,6 @@ export default {
     Icon
   },
   beforeMount() {
-    history.pushState(null, "", "?active=3")
     this.siteSetting.setTitle("用户管理")
     this.getUsers()
   },
@@ -197,6 +198,9 @@ export default {
   methods: {
     refresh() {
       this.getUsers(true)
+    },
+    usernameClick(userId) {
+      this.$router.push({path: "/profile", query: {userId}})
     },
     getUsers(refresh = false) {
       this.loading = true
@@ -292,14 +296,4 @@ export default {
 </script>
 
 <style scoped>
-.avatar {
-  margin-right: 5px;
-  height: 22px;
-  width: 22px;
-  border-radius: 11px;
-}
-
-.avatar:empty {
-  background-color: #F0F0F0;
-}
 </style>

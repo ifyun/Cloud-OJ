@@ -1,22 +1,19 @@
 <template>
   <div>
-    <TopNavigation/>
     <el-container class="container">
-      <CommitCode/>
+      <commit-code/>
     </el-container>
-    <BottomArea class="bottom"/>
+    <bottom-area class="bottom"/>
   </div>
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import CommitCode from "@/components/Commit"
 
 export default {
   name: "Commit",
   components: {
-    TopNavigation,
     BottomArea,
     CommitCode
   },

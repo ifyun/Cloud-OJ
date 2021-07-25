@@ -56,14 +56,12 @@
             </el-tooltip>
           </div>
           <div :style="{ height: `${editorHeight()}px` }">
-            <codemirror style="line-height: 1.5" :options="cmOptions"
-                        ref="editor" v-model="content">
-            </codemirror>
+            <textarea style="line-height: 1.5" ref="cm"/>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="preview" :style="{ height: `${editorHeight() + 10}px`}">
-            <markdown-it-vue ref="md" :options="mdOptions" :content="content"/>
+            <markdown-it :content="content"/>
           </div>
         </el-col>
       </el-row>
@@ -113,10 +111,13 @@
 </template>
 
 <script>
-import MarkdownItVue from "markdown-it-vue"
-import "markdown-it-vue/dist/markdown-it-vue.css"
-import "katex/dist/katex.min.css"
-import {codemirror} from "vue-codemirror"
+import MarkdownIt from "@/components/MarkdownIt"
+import codemirror from "codemirror"
+import "codemirror/lib/codemirror.css"
+import "codemirror/mode/markdown/markdown.js"
+import "codemirror/theme/monokai.css"
+import "codemirror/addon/edit/matchbrackets.js"
+import "codemirror/addon/edit/closebrackets.js"
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/markdown/markdown.js"
 import "codemirror/theme/monokai.css"
@@ -135,31 +136,36 @@ import "vue-awesome/icons/square-root-alt"
 import {Notice, userInfo} from "@/util"
 import {ApiPath} from "@/service"
 
+const CodeMirror = window.CodeMirror || codemirror
+
 export default {
   name: "MarkdownEditor",
   components: {
-    MarkdownItVue,
-    codemirror,
+    MarkdownIt,
     Icon
   },
   props: {
-    data: String,
+    str: String,
     height: Number
   },
   watch: {
-    data(val) {
+    str(val) {
       this.content = val
     },
-    content(val) {
-      this.$emit("change", val)
-    }
-  },
-  computed: {
-    cm() {
-      return this.$refs["editor"].codemirror
-    }
+    content: {
+      handler(val) {
+        this.$emit("change", val)
+        if (this.editor.getValue() !== val) {
+          this.editor.setValue(val)
+        }
+      }
+    },
   },
   mounted() {
+    this.editor = CodeMirror.fromTextArea(this.$refs.cm, this.cmOptions)
+    this.editor.on("change", (cm) => {
+      this.content = cm.getValue()
+    })
     const ctx = this
     window.onresize = () => {
       ctx.windowHeight = document.body.clientHeight
@@ -168,7 +174,7 @@ export default {
   data() {
     return {
       windowHeight: document.body.clientHeight,
-      content: "",
+      editor: null,
       cmOptions: {
         mode: "text/x-markdown",
         theme: "monokai",
@@ -182,11 +188,7 @@ export default {
         matchBrackets: true,
         autoCloseBrackets: true
       },
-      mdOptions: {
-        markdownIt: {
-          html: true
-        }
-      },
+      content: "",
       imageDialog: {
         visible: false,
         uploadUrl: ApiPath.PROBLEM_IMAGE,
@@ -213,35 +215,35 @@ export default {
       }
     },
     getCursor() {
-      const cursor = this.cm["getCursor"]()
+      const cursor = this.editor.getCursor()
       return {
         ch: cursor.ch,
         line: cursor.line
       }
     },
     somethingSelected() {
-      return this.cm["somethingSelected"]()
+      return this.editor.somethingSelected()
     },
     listSelections() {
-      return this.cm["listSelections"]()
+      return this.editor.listSelections()
     },
     setSelection(start, end) {
-      return this.cm["setSelection"](start, end)
+      return this.editor.setSelection(start, end)
     },
     getRange(start, end) {
-      return this.cm["getRange"](start, end)
+      return this.editor.getRange(start, end)
     },
     replaceRange(str, start, end) {
-      return this.cm["replaceRange"](str, start, end)
+      return this.editor.replaceRange(str, start, end)
     },
     replaceSelection(str) {
-      return this.cm["replaceSelection"](str)
+      return this.editor.replaceSelection(str)
     },
     setCursor(cursor) {
-      return this.cm["setCursor"](cursor)
+      return this.editor.setCursor(cursor)
     },
     focus() {
-      return this.cm["focus"]()
+      return this.editor.focus()
     },
     heading() {
       this.toggle("#### ", true)

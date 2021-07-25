@@ -1,36 +1,34 @@
 <template>
   <div v-if="userInfo != null || userId != null">
-    <TopNavigation active=""/>
     <el-container class="container">
-      <Error v-if="error.code != null" :error="error"/>
-      <el-tabs v-else type="border-card" style="width: 100%">
+      <error v-if="error.code != null" :error="error"/>
+      <el-tabs class="borderless" v-else type="border-card" style="width: 100%">
         <el-tab-pane label="概览">
           <el-row :gutter="5">
             <el-col :span="6">
-              <UserProfile :user-id="userId" @error="onError"/>
+              <user-profile :user-id="userId" @error="onError"/>
             </el-col>
             <el-col :span="18">
-              <Overview :user-id="userId" @error="onError"/>
+              <overview style="margin-left: 5px" :user-id="userId" @error="onError"/>
             </el-col>
           </el-row>
         </el-tab-pane>
         <el-tab-pane v-if="userId == null" label="提交记录">
-          <HistoryList/>
+          <history-list/>
         </el-tab-pane>
       </el-tabs>
-      <BottomArea class="bottom"/>
+      <bottom-area class="bottom"/>
     </el-container>
   </div>
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation"
 import BottomArea from "@/components/common/BottomArea"
 import UserProfile from "@/components/profile/UserProfile"
 import Overview from "@/components/profile/Overview"
 import HistoryList from "@/components/HistoryList"
 import Error from "@/components/Error"
-import {searchParams, toLoginPage, userInfo} from "@/util"
+import {toLoginPage, userInfo} from "@/util"
 
 export default {
   name: "Profile",
@@ -38,9 +36,9 @@ export default {
     if (this.userInfo == null) {
       toLoginPage()
     }
+    this.userId = this.$route.query.userId
   },
   components: {
-    TopNavigation,
     BottomArea,
     UserProfile,
     Overview,
@@ -54,7 +52,7 @@ export default {
         msg: ""
       },
       userInfo: userInfo(),
-      userId: searchParams()["userId"]
+      userId: ""
     }
   },
   methods: {

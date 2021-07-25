@@ -5,23 +5,25 @@
         <el-col :span="20">
           <div class="nav">
             <div class="logo-div">
-              <a href="/" :style="{display: siteSetting['hideLogo'] === true ? 'none': ''}">
-                <img class="logo" :src="logoUrl" alt="Logo">
+              <a href="/" :style="{display: siteSetting.hideLogo === true ? 'none': ''}">
+                <el-avatar class="logo" shape="square" :src="logoUrl" alt="logo">
+                  <img :src="'/favicon.png'" alt="logo">
+                </el-avatar>
               </a>
               <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
             </div>
-            <!-- Nav Menu -->
-            <el-menu class="top-menu" mode="horizontal" :default-active="active" @select="onSelect">
-              <el-menu-item index="1">
+            <!-- 导航菜单 -->
+            <el-menu class="top-menu" mode="horizontal" :default-active="$route.path" @select="onSelect">
+              <el-menu-item index="/problems">
                 <span>题库</span>
               </el-menu-item>
-              <el-menu-item index="2">
+              <el-menu-item index="/contest">
                 <span>竞赛</span>
               </el-menu-item>
-              <el-menu-item index="3">
+              <el-menu-item index="/ranking">
                 <span>排行榜</span>
               </el-menu-item>
-              <el-menu-item index="4">
+              <el-menu-item index="/help">
                 <span>帮助</span>
               </el-menu-item>
             </el-menu>
@@ -29,9 +31,10 @@
         </el-col>
         <el-col :span="4">
           <div class="account-area">
-            <img v-if="userInfo != null" class="avatar el-icon--left"
-                 :src="`/api/file/image/avatar/${userInfo.userId}.png`"
-                 onerror="this.src='/icons/no_avatar.png'" alt="avatar">
+            <el-avatar v-if="userInfo != null" class="el-icon--left" size="medium"
+                       :src="`/api/file/image/avatar/${userInfo.userId}.png`"
+                       icon="el-icon-user-solid" alt="user">
+            </el-avatar>
             <el-link v-if="userInfo == null" :underline="false" href="/login">
               <Icon class="el-icon--left" name="sign-in-alt" scale="0.85"/>
               <span>登录/注册</span>
@@ -41,6 +44,7 @@
                 <span>{{ userInfo != null ? userInfo.name : '' }}</span>
                 <i class="el-icon-arrow-down el-icon--right"/>
               </span>
+              <!-- 用户菜单 -->
               <el-dropdown-menu>
                 <el-dropdown-item command="profile">
                   <i class="el-icon-user"></i>
@@ -49,7 +53,7 @@
                 <el-dropdown-item v-if="userInfo != null && userInfo['roleId'] > 0"
                                   command="manage">
                   <i class="el-icon-s-management"></i>
-                  <span>后台管理</span>
+                  <span>系统管理</span>
                 </el-dropdown-item>
                 <el-dropdown-item command="exit">
                   <i class="el-icon-switch-button"></i>
@@ -69,7 +73,6 @@ import {siteSetting, toLoginPage, userInfo} from "@/util"
 import {ApiPath, AuthApi} from "@/service"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/sign-in-alt"
-import axios from "axios"
 
 export default {
   name: "TopNavigation",
@@ -79,63 +82,57 @@ export default {
   props: ["active"],
   beforeMount() {
     siteSetting.setTitle()
-    this.checkLogo()
   },
   data() {
     return {
-      logoUrl: "",
+      logoUrl: `${ApiPath.IMAGE}/favicon.png`,
       siteSetting,
-      userInfo: userInfo(),
-      paths: {
-        1: "/",
-        2: "/contest",
-        3: "/ranking",
-        4: "/help"
-      }
+      userInfo: userInfo()
     }
   },
   methods: {
     onSelect(key) {
-      if (key === "2" || key === "3") {
+      if (key === "/contest" || key === "/ranking") {
         window.sessionStorage.removeItem("contest")
       }
-      window.location.href = this.paths[parseInt(key)]
+      this.$router.push(key)
     },
     userMenuClick(command) {
       switch (command) {
         case "profile":
-          window.location.href = "/profile"
+          this.$router.push("/profile")
           break
         case "manage":
-          window.location.href = "/manage"
+          // 检查权限
+          if (userInfo()["roleId"] === 1) {
+            this.$router.push("/manage/user")
+          } else {
+            this.$router.push("manage/problems")
+          }
           break
         case "exit":
+          this.userInfo = null
           this.logoff()
       }
     },
     logoff() {
       AuthApi.logoff(this.userInfo)
           .then(() => {
-            toLoginPage()
+            toLoginPage(this, true)
           })
           .catch(() => {
-            toLoginPage()
+            toLoginPage(this, true)
           })
-    },
-    checkLogo() {
-      const url = `${ApiPath.IMAGE}/favicon.png`
-      axios.head(url).then(() => {
-        this.logoUrl = url
-        this.siteSetting.setFavicon(url)
-      }).catch(() => {
-        this.logoUrl = "/favicon.png"
-      })
     }
   }
 }
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
+
 .header {
   position: absolute;
   top: 0;
@@ -160,9 +157,9 @@ export default {
 }
 
 .logo {
-  height: 36px;
-  width: 36px;
   margin-right: 6px;
+  width: auto !important;
+  background-color: transparent;
 }
 
 .account-area {
@@ -170,12 +167,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.avatar {
-  height: 32px;
-  width: 32px;
-  border-radius: 16px;
 }
 
 .el-dropdown-link {

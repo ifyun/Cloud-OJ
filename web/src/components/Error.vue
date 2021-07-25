@@ -22,7 +22,6 @@ export default {
 
 <style scoped>
 .error {
-  margin-top: 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -31,7 +30,7 @@ export default {
 }
 
 .error-code {
-  font-size: 130pt;
+  font-size: 120pt;
   font-weight: bold;
   opacity: 0.8;
 }

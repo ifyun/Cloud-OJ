@@ -1,169 +1,167 @@
 <template>
-  <el-card>
-    <div>
-      <el-form :inline="true" @submit.native.prevent>
-        <el-form-item>
-          <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
-                    v-model="keyword">
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="medium" type="success" icon="el-icon-search"
-                     @click="search(keyword)">
-            搜索
-          </el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="medium" icon="el-icon-refresh" @click="refresh">
-            刷新
-          </el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-tag type="success"
-                  v-if="keyword !== ''"
-                  closable
-                  @close="tagClose()">{{ keyword }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item style="float: right">
-          <el-button-group>
-            <el-button type="primary" size="small"
-                       icon="el-icon-circle-plus"
-                       @click="addProblemClick()">
-              添加题目
+  <el-card class="borderless">
+    <error :error="error" v-if="!loading && error.code != null" style="margin-bottom: 15px"/>
+    <div v-else>
+      <div>
+        <el-form :inline="true" @submit.native.prevent>
+          <el-form-item>
+            <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
+                      v-model="keyword">
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="medium" type="success" icon="el-icon-search" @click="search(keyword)">
+              搜索
             </el-button>
-            <el-button icon="el-icon-upload2" size="small" disabled
-                       @click="importDialog.visible = true">
-              导入题目
+          </el-form-item>
+          <el-form-item>
+            <el-button size="medium" icon="el-icon-refresh" @click="refresh">
+              刷新
             </el-button>
-            <el-button icon="el-icon-download" size="small" disabled
-                       @click="backupProblems">
-              导出题目
-            </el-button>
-          </el-button-group>
-        </el-form-item>
-      </el-form>
-    </div>
-    <el-table :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
-      <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
-      </el-table-column>
-      <el-table-column label="题目名称">
-        <template slot-scope="scope">
-          <el-link :href="`./commit?problemId=${scope.row.problemId}`">
-            {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
-          </el-link>
-          <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
-            SQL
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="分类">
-        <template slot-scope="scope">
-          <div v-if="typeof scope.row.category !== 'undefined' && scope.row.category !== ''">
+          </el-form-item>
+          <el-form-item>
+            <el-tag type="success" v-if="keywordTag !== ''" closable @close="keywordTagClose()">
+              {{ keywordTag }}
+            </el-tag>
+          </el-form-item>
+          <el-form-item style="float: right">
+            <el-button-group>
+              <el-button type="primary" size="small" icon="el-icon-circle-plus"
+                         @click="addProblemClick()">
+                添加题目
+              </el-button>
+              <el-button icon="el-icon-upload2" size="small" disabled
+                         @click="importDialog.visible = true">
+                导入题目
+              </el-button>
+              <el-button icon="el-icon-download" size="small" disabled
+                         @click="backupProblems">
+                导出题目
+              </el-button>
+            </el-button-group>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-empty v-if="!loading && problems.count === 0"/>
+      <el-table v-else :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+        <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
+        </el-table-column>
+        <el-table-column label="题目名称">
+          <template slot-scope="scope">
+            <el-link @click="titleClick(scope.row.problemId)">
+              {{ scope.row.problemId }}&nbsp;{{ scope.row.title }}
+            </el-link>
+            <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
+              SQL
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="分类">
+          <template slot-scope="scope">
+            <div v-if="typeof scope.row.category !== 'undefined' && scope.row.category !== ''">
             <span v-for="tag in scope.row.category.split(',')"
-                  v-bind:key="tag.index"
-                  @click="tagClick(tag)"
+                  v-bind:key="tag.index" @click="tagClick(tag)"
                   class="tag" :class="getTagColor(tag)">
               {{ tag }}
             </span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="分数" prop="score" width="60px" align="right">
-      </el-table-column>
-      <el-table-column label="开放" width="90px" align="center">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.enable"
-                     active-color="#67C23A"
-                     @change="toggleOpen($event, scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center">
-        <template slot="header">
-          <i class="el-icon-date el-icon--left"/>
-          <span>创建时间</span>
-        </template>
-        <template slot-scope="scope">
-          {{ formatDate(scope.row["createAt"]) }}
-        </template>
-      </el-table-column>
-      <el-table-column width="70px" align="center">
-        <template slot="header">
-          <i class="el-icon-menu el-icon--left"/>
-          <span>操作</span>
-        </template>
-        <template slot-scope="scope">
-          <el-dropdown trigger="click" @command="operation($event, scope.row)">
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="分数" prop="score" width="60px" align="right">
+        </el-table-column>
+        <el-table-column label="开放" width="90px" align="center">
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.enable" active-color="#67C23A"
+                       @change="toggleOpen($event, scope.row)">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column width="120px" align="center">
+          <template slot="header">
+            <i class="el-icon-date el-icon--left"/>
+            <span>创建时间</span>
+          </template>
+          <template slot-scope="scope">
+            {{ formatDate(scope.row["createAt"]) }}
+          </template>
+        </el-table-column>
+        <el-table-column width="70px" align="center">
+          <template slot="header">
+            <i class="el-icon-menu el-icon--left"/>
+            <span>操作</span>
+          </template>
+          <template slot-scope="scope">
+            <el-dropdown trigger="click" @command="operation($event, scope.row)">
             <span class="el-dropdown-link">
               <i class="el-icon-s-unfold"/>
             </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-edit" command="edit">
-                编辑
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-document" command="manage-data">
-                管理测试数据
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" command="delete" style="color: #F56C6C">
-                删除
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
-                   :page-size.sync="pageSize" :total="problems.count"
-                   :current-page.sync="currentPage"
-                   @size-change="getProblems" @current-change="getProblems">
-    </el-pagination>
-    <!-- Editor Dialog -->
-    <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen center
-               :close-on-press-escape="false" :close-on-click-modal="false"
-               :visible.sync="editorDialog.visible">
-      <ProblemEditor class="editor" :problem-id="selected.problemId" :create="editorDialog.create"
-                     :dialog-visible.sync="editorDialog.visible"
-                     @refresh="getProblems"/>
-    </el-dialog>
-    <!-- Test Data Manage Dialog -->
-    <el-dialog :title="`${selected.title} - 测试数据`"
-               :visible.sync="testDataDialog.visible"
-               width="850px">
-      <TestDataManage :problem-id="selected.problemId" :sql="selected.type === 1"
-                      :dialog-visible.sync="testDataDialog.visible"/>
-    </el-dialog>
-    <!-- Delete Dialog -->
-    <el-dialog title="提示"
-               :visible.sync="deleteDialog.visible">
-      <el-alert type="warning" show-icon
-                :title="`你正在删除题目：${selected.title}`"
-                description="与该题目相关的提交记录也会被删除!"
-                :closable="false">
-      </el-alert>
-      <el-form ref="deleteForm"
-               :model="deleteDialog.form"
-               :rules="deleteDialog.rules"
-               @submit.native.prevent>
-        <el-form-item label="输入题目名称确认删除" prop="checkTitle">
-          <el-input v-model="deleteDialog.form.checkTitle" :placeholder="selected.title">
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="danger" icon="el-icon-delete" size="medium" @click="confirmDelete">
-            删除题目
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-    <el-dialog title="导入题目" :visible.sync="importDialog.visible">
-      <el-upload drag :action="importDialog.backupUrl" :headers="{token: userInfo.token}"
-                 :data="{userId: userInfo.userId}" :on-success="importSuccess">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传json文件，导入的题目会自动生成新的ID</div>
-      </el-upload>
-    </el-dialog>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item icon="el-icon-edit" command="edit">
+                  编辑
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-document" command="manage-data">
+                  管理测试数据
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-delete" command="delete" style="color: #F56C6C">
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+                     :page-size.sync="pageSize" :total="problems.count"
+                     :current-page.sync="currentPage"
+                     @size-change="getProblems" @current-change="getProblems">
+      </el-pagination>
+      <!-- Editor Dialog -->
+      <el-dialog :title="editorDialog.title" class="editor-dialog" fullscreen center
+                 :close-on-press-escape="false" :close-on-click-modal="false"
+                 :visible.sync="editorDialog.visible">
+        <ProblemEditor class="editor" :problem-id="selected.problemId" :create="editorDialog.create"
+                       :dialog-visible.sync="editorDialog.visible"
+                       @refresh="getProblems"/>
+      </el-dialog>
+      <!-- Test Data Manage Dialog -->
+      <el-dialog :title="`${selected.title} - 测试数据`"
+                 :visible.sync="testDataDialog.visible"
+                 width="850px">
+        <TestDataManage :problem-id="selected.problemId" :sql="selected.type === 1"
+                        :dialog-visible.sync="testDataDialog.visible"/>
+      </el-dialog>
+      <!-- Delete Dialog -->
+      <el-dialog title="提示"
+                 :visible.sync="deleteDialog.visible">
+        <el-alert type="warning" show-icon
+                  :title="`你正在删除题目：${selected.title}`"
+                  description="与本题目相关的提交记录也会被删除!"
+                  :closable="false">
+        </el-alert>
+        <el-form ref="deleteForm"
+                 :model="deleteDialog.form"
+                 :rules="deleteDialog.rules"
+                 @submit.native.prevent>
+          <el-form-item label="输入题目名称确认删除" prop="checkTitle">
+            <el-input v-model="deleteDialog.form.checkTitle" :placeholder="selected.title">
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" size="medium" @click="confirmDelete">
+              删除题目
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <el-dialog title="导入题目" :visible.sync="importDialog.visible">
+        <el-upload drag :action="importDialog.backupUrl" :headers="{token: userInfo.token}"
+                   :data="{userId: userInfo.userId}" :on-success="importSuccess">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__tip" slot="tip">只能上传json文件，导入的题目会自动生成新的ID</div>
+        </el-upload>
+      </el-dialog>
+    </div>
   </el-card>
 </template>
 
@@ -171,17 +169,18 @@
 import {userInfo, tagColor, toLoginPage, Notice} from "@/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
-import {ApiPath, ProblemApi} from "@/service"
+import Error from "@/components/Error"
 import moment from "moment"
+import {ApiPath, ProblemApi} from "@/service"
 
 export default {
   name: "ProblemManage",
   components: {
+    Error,
     TestDataManage,
     ProblemEditor
   },
   beforeMount() {
-    history.pushState(null, "", "?active=1")
     this.siteSetting.setTitle("题库管理")
     this.getProblems()
   },
@@ -193,8 +192,13 @@ export default {
       callback()
     }
     return {
+      error: {
+        code: null,
+        msg: null
+      },
       userInfo: userInfo(),
       keyword: "",
+      keywordTag: "",
       selected: {},
       loading: true,
       problems: {
@@ -237,6 +241,9 @@ export default {
     refresh() {
       this.getProblems(true)
     },
+    titleClick(problemId) {
+      this.$router.push({path: "/commit", query: {problemId}})
+    },
     getProblems(refresh = false) {
       this.loading = true
       ProblemApi.getAll(this.currentPage, this.pageSize, this.keyword, this.userInfo)
@@ -247,6 +254,11 @@ export default {
           .catch((error) => {
             if (error.code === 401) {
               toLoginPage(this)
+            } else if (error.code === 403) {
+              this.error = {
+                code: 403,
+                msg: "无权限"
+              }
             } else {
               Notice.notify.error(this, {
                 title: "获取数据失败",
@@ -260,10 +272,12 @@ export default {
     },
     search() {
       this.currentPage = 1
+      this.keywordTag = this.keyword
       this.getProblems()
     },
-    tagClose() {
+    keywordTagClose() {
       this.keyword = ""
+      this.keywordTag = ""
       this.getProblems()
     },
     tagClick(tag) {

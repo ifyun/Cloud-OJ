@@ -1,16 +1,19 @@
 <template>
   <div class="content">
-    <el-card class="borderless" style="width: 100%">
+    <div v-if="!loading && contests.count === 0">
+      <el-empty description="什么都没有"/>
+    </div>
+    <el-card v-else class="borderless" style="width: 100%">
       <el-table :data="contests.data" v-loading="loading">
         <el-table-column label="竞赛名称" prop="contestName">
           <template slot-scope="scope">
             <el-link :type="scope.row['ended']? 'info' : scope.row['started'] ? 'success' : 'info'"
                      :disabled="scope.row['ended'] ? false : !scope.row['started']"
                      @click="contestClick(scope.row)">
-              <b v-if="scope.row['ended']">[已结束]</b>
-              <b v-else-if="scope.row['started']">[进行中]</b>
-              <b v-else>[未开始]</b>
-              <b>&nbsp;{{ scope.row.contestName }}</b>
+              <span v-if="scope.row['ended']">[已结束]</span>
+              <span v-else-if="scope.row['started']">[进行中]</span>
+              <span v-else>[未开始]</span>
+              <span>&nbsp;{{ scope.row.contestName }}</span>
             </el-link>
             <div style="margin-top: 10px">题目数量: {{ scope.row['problemCount'] }} 题
             </div>
@@ -69,7 +72,7 @@
 
 <script>
 import {languages} from "@/util/data"
-import {Notice, searchParams} from "@/util"
+import {Notice} from "@/util"
 import moment from "moment"
 import {ContestApi} from "@/service"
 
@@ -93,13 +96,17 @@ export default {
   },
   methods: {
     loadPage() {
-      const page = searchParams()["page"]
+      const page = this.$route.query.page
       if (page != null) {
-        this.currentPage = parseInt(page)
+        this.currentPage = Number(page)
       }
     },
+    pageChange(page) {
+      this.$router.push({
+        query: {page}
+      })
+    },
     getContests() {
-      history.pushState(null, "", `?page=${this.currentPage}`)
       this.loading = true
       ContestApi.getAll(this.currentPage, this.pageSize)
           .then((data) => {
@@ -116,7 +123,12 @@ export default {
           })
     },
     contestClick(row) {
-      window.location.href = `.?contestId=${row.contestId}`
+      this.$router.push({
+        path: "/problems",
+        query: {
+          contestId: row.contestId
+        }
+      })
     },
     formatDate(time) {
       return moment(time).format("YYYY年 MM月DD日")

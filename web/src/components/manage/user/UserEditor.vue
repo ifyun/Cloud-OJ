@@ -1,10 +1,10 @@
 <template>
   <div>
-    <el-form :model="user" :rules="rules" ref="userForm"
-             label-width="120px">
+    <el-form :model="user" :rules="rules" ref="userForm" label-width="120px">
       <el-form-item v-if="!create">
-        <img class="avatar" Alt="Avatar" :src="`/api/file/image/avatar/${user.userId}.png`"
-             onerror="this.src='/icons/no_avatar.png'">
+        <el-avatar :size="160" :src="`/api/file/image/avatar/${userData.userId}.png`" alt="user">
+          <img src="@/assets/icons/no_avatar.png" alt="user">
+        </el-avatar>
       </el-form-item>
       <el-form-item label="User ID" prop="userId">
         <el-input prefix-icon="el-icon-postcard"
@@ -58,25 +58,31 @@
 <script>
 import {Notice, toLoginPage, userInfo} from "@/util"
 import {UserApi} from "@/service"
+import md5 from "crypto-js/md5"
 
 const bcrypt = require("bcryptjs")
 
 export default {
   name: "UserEditor",
   props: {
-    user: Object,
+    userData: Object,
     create: Boolean,
     dialogVisible: Boolean
   },
   watch: {
-    user: {
-      handler() {
-        this.$refs["userForm"].clearValidate()
-      }
+    userData: {
+      handler(val) {
+        this.user = val
+      },
+      immediate: true
+    },
+    user() {
+      this.$refs.userForm.clearValidate()
     }
   },
   data() {
     return {
+      user: {},
       roles: [
         {value: 0, label: "用户"},
         {value: 1, label: "用户管理员"},
@@ -113,9 +119,9 @@ export default {
         }
 
         if (this.create) {
-          this.user.password = bcrypt.hashSync(this.$md5(this.user.password), 10)
+          this.user.password = bcrypt.hashSync(md5(this.user.password).toString(), 10)
         } else if (typeof this.user.newPassword !== "undefined") {
-          this.user.password = bcrypt.hashSync(this.$md5(this.user.newPassword), 10)
+          this.user.password = bcrypt.hashSync(md5(this.user.newPassword).toString(), 10)
         }
 
         UserApi.save(this.user, userInfo(), this.create)
@@ -143,9 +149,4 @@ export default {
 </script>
 
 <style scoped>
-.avatar {
-  height: 160px;
-  width: 160px;
-  border-radius: 10px;
-}
 </style>

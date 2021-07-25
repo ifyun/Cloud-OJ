@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-card v-loading="loading">
+    <el-card class="borderless" v-loading="loading">
       <h3>系统信息</h3>
-      <el-card style="margin-bottom: 35px">
+      <el-card shadow="never" style="margin-bottom: 35px">
         <div><b>RabbitMQ 消息队列：</b>
           <el-button style="float: right" icon="el-icon-refresh" size="mini"
                      @click="getQueueInfo(true)">
@@ -25,7 +25,7 @@
         </div>
       </el-card>
       <h3>系统设置</h3>
-      <el-card style="margin-bottom: 35px">
+      <el-card shadow="never" style="margin-bottom: 35px">
         <el-row type="flex" justify="space-between">
           <el-col :span="20">
             <h3>隐藏进行中的竞赛排行榜</h3>
@@ -102,7 +102,6 @@ const title = "系统设置"
 export default {
   name: "Settings",
   beforeMount() {
-    history.pushState(null, "", "?active=4")
     this.siteSetting.setTitle(title)
     this.getQueueInfo()
     this.getSettings()
@@ -123,7 +122,7 @@ export default {
         icpUrl: ""
       },
       logo: {
-        url: "/favicon.svg",
+        url: "/favicon.png",
         uploadUrl: ApiPath.IMAGE + "/logo",
         uploadHeaders: {
           "token": userInfo().token,
@@ -276,7 +275,7 @@ h3 {
 }
 
 .logo-uploaded {
-  width: 120px;
+  width: auto;
   height: 120px;
   padding: 5px;
   display: block;

@@ -1,51 +1,55 @@
 <template>
-  <Error v-if="error.code != null" :error="error"/>
+  <error v-if="error.code != null" :error="error"/>
   <div v-else>
-    <el-card class="borderless" style="width: 100%" v-loading="loading">
+    <el-card class="borderless" style="width: 100%">
       <el-row :gutter="5">
         <el-col :span="12">
           <div class="content-problem" style="overflow: auto" :style="{height: contentHeight()}">
-            <el-tabs>
+            <el-tabs class="borderless no-shadow" type="border-card">
               <el-tab-pane>
                 <span slot="label">
                   <i class="el-icon-tickets el-icon--left"/>
                   <span>题目描述</span>
                 </span>
-                <div v-if="problem.problemId !== undefined">
-                  <span id="title">{{ `${problem.problemId}. ${problem.title}` }}</span>
-                  <div>
-                    <div class="limits">
-                      <el-tag type="info" effect="dark" size="mini">
-                        <i class="el-icon-question el-icon--left"/>
-                        {{ problem.score }} 分
-                      </el-tag>
-                      <el-tag type="success" effect="dark" size="mini">
-                        <i class="el-icon-time el-icon--left"/>
-                        时间: {{ problem.timeout }} ms
-                      </el-tag>
-                      <el-tag type="primary" effect="dark" size="mini">
-                        <i class="el-icon-cpu el-icon--left"/>
-                        内存: {{ problem.type === 0 ? problem.memoryLimit : 0 }} MB
-                      </el-tag>
+                <el-skeleton :loading="loading" :rows="10" animated>
+                  <template>
+                    <div v-if="problem.problemId !== undefined">
+                      <span id="title">{{ `${problem.problemId}. ${problem.title}` }}</span>
+                      <div>
+                        <div class="limits">
+                          <el-tag type="info" effect="dark" size="mini">
+                            <i class="el-icon-question el-icon--left"/>
+                            {{ problem.score }} 分
+                          </el-tag>
+                          <el-tag type="success" effect="dark" size="mini">
+                            <i class="el-icon-time el-icon--left"/>
+                            时间: {{ problem.timeout }} ms
+                          </el-tag>
+                          <el-tag type="primary" effect="dark" size="mini">
+                            <i class="el-icon-cpu el-icon--left"/>
+                            内存: {{ problem.type === 0 ? problem.memoryLimit : 0 }} MB
+                          </el-tag>
+                        </div>
+                        <markdown-it :content="problem.description"/>
+                      </div>
                     </div>
-                    <markdown-it-vue ref="md" :options="mdOptions" :content="problem.description"/>
-                  </div>
-                </div>
+                  </template>
+                </el-skeleton>
               </el-tab-pane>
               <el-tab-pane>
                 <span slot="label">
                   <Icon name="history" class="el-icon--left" scale="0.8"/>
                   <span>提交记录</span>
                 </span>
-                <HistoryList v-if="userInfo != null" :single-mode="true" :problem-id="problemId"
-                             :title="problem.title" @changeCode="setCode"/>
+                <history-list v-if="userInfo != null" :single-mode="true" :problem-id="problemId"
+                              :title="problem.title" @changeCode="setCode"/>
                 <div v-else>请登录</div>
               </el-tab-pane>
             </el-tabs>
           </div>
         </el-col>
         <el-col :span="12">
-          <div v-if="!loading" class="content-editor" :style="{height: contentHeight()}">
+          <div class="content-editor" :style="{height: contentHeight()}">
             <div :style="{height: codeHeight()}" style="position: relative">
               <div class="toolbar">
                 <img class="lang-icon" :src="languageIcons[language].icon"
@@ -66,13 +70,13 @@
                     <span style="float: right">{{ theme.type }}</span>
                   </el-option>
                 </el-select>
-                <el-button size="mini" type="success" :disabled="disableCommit" @click="commitCode">
+                <el-button size="mini" type="success" style="height: 32px"
+                           :disabled="code.trim().length === 0" @click="commitCode">
                   <Icon name="play" class="el-icon--left" scale="0.85"/>
                   <span>提交运行</span>
                 </el-button>
               </div>
-              <codemirror v-model="code" :options="cmOptions">
-              </codemirror>
+              <textarea id="editor" ref="editor"></textarea>
               <div v-if="code.trim() === ''" id="hint">
                 <Icon class="el-icon--left" name="file-import"/>
                 <span>拖入文件可导入代码</span>
@@ -82,14 +86,13 @@
         </el-col>
       </el-row>
     </el-card>
-    <el-dialog title="获取判题结果" width="600px"
-               :visible.sync="resultDialog.visible"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false">
+    <el-dialog title="获取判题结果" width="600px" :visible.sync="resultDialog.visible"
+               :close-on-click-modal="false" :close-on-press-escape="false">
       <el-steps class="steps" simple :active="resultDialog.active"
                 process-status="process" finish-status="success">
         <el-step :icon="resultDialog.active == null ? 'el-icon-loading': null"
-                 :title="resultDialog.steps[resultDialog.step]"/>
+                 :title="resultDialog.steps[resultDialog.step]">
+        </el-step>
       </el-steps>
       <el-alert v-if="result.title !== undefined" style="margin-top: 15px"
                 show-icon :closable="false" :type="result.type"
@@ -110,9 +113,10 @@
 <script>
 import Error from "@/components/Error"
 import HistoryList from "@/components/HistoryList"
-import {Notice, toLoginPage, searchParams, userInfo, prettyMemory} from "@/util"
+import MarkdownIt from "@/components/MarkdownIt"
+import {Notice, toLoginPage, userInfo, prettyMemory} from "@/util"
 import {ContestApi, JudgeApi, ProblemApi} from "@/service"
-import {codemirror} from "vue-codemirror"
+import codemirror from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/clike/clike.js"
 import "codemirror/mode/go/go.js"
@@ -132,14 +136,13 @@ import "codemirror/addon/fold/foldgutter.js"
 import "codemirror/addon/fold/brace-fold.js"
 import "codemirror/addon/fold/indent-fold.js"
 import "codemirror/addon/fold/foldgutter.css"
-import MarkdownItVue from "markdown-it-vue"
-import "markdown-it-vue/dist/markdown-it-vue.css"
-import "katex/dist/katex.min.css"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/play"
 import "vue-awesome/icons/history"
 import "vue-awesome/icons/file-import"
 import {languages, sqlTypes} from "@/util/data"
+
+const CodeMirror = window.CodeMirror || codemirror
 
 const languageMode = [
   "text/x-csrc",
@@ -175,59 +178,64 @@ export default {
   name: "CommitCode",
   components: {
     HistoryList,
-    codemirror,
-    MarkdownItVue,
     Error,
+    MarkdownIt,
     Icon
-  },
-  computed: {
-    disableCommit: (vm) => {
-      return vm.code.trim().length === 0
-    }
   },
   watch: {
     code(val) {
-      window.sessionStorage.setItem("code", JSON.stringify({
+      window.localStorage.setItem("code", JSON.stringify({
         problemId: this.problemId,
         language: this.language,
         content: val
       }))
+    },
+    cmOptions: {
+      handler(newVal) {
+        this.editor.setOption("mode", newVal.mode)
+        this.editor.setOption("theme", newVal.theme)
+      },
+      deep: true
     }
   },
   beforeMount() {
     const p = this.siteSetting.preference
+
     if (p != null) {
+      // 加载上次使用的语言的高亮主题
       this.cmOptions.theme = p.highlight
       if (this.contestId == null) {
         this.language = p.language
       }
     }
+
     this.getProblem()
-    this.getCachedCode()
   },
   mounted() {
+    this.editor = CodeMirror.fromTextArea(this.$refs.editor, this.cmOptions)
+    // CodeMirror 编辑器改变更新到 code 属性
+    this.editor.on("change", (cm) => {
+      this.code = cm.getValue()
+    })
     const ctx = this
     window.onresize = () => {
       ctx.windowHeight = document.body.clientHeight
     }
+    this.getCachedCode()
   },
   data() {
     return {
       loading: true,
       windowHeight: document.body.clientHeight,
       userInfo: userInfo(),
-      mdOptions: {
-        markdownIt: {
-          html: true
-        }
-      },
       error: {
         code: null,
         msg: ""
       },
-      problemId: searchParams().problemId,
-      contestId: searchParams().contestId,
+      problemId: this.$route.query.problemId,
+      contestId: this.$route.query.contestId,
       code: "",
+      /* 高亮主题选项 */
       codeStyle: [
         {id: "eclipse", name: "Eclipse", type: "Light"},
         {id: "monokai", name: "Monokai", type: "Dark"},
@@ -236,6 +244,8 @@ export default {
         {id: "panda-syntax", name: "Panda", type: "Dark"}
       ],
       languageIcons: languages,
+      editor: null,
+      /* CodeMirror 配置 */
       cmOptions: {
         mode: "text/x-csrc",
         theme: "darcula",
@@ -272,6 +282,7 @@ export default {
     }
   },
   methods: {
+    /* 计算题目内容区域高度 */
     contentHeight() {
       const offset = 120
       if (this.windowHeight <= 900) {
@@ -282,8 +293,9 @@ export default {
         return `${this.windowHeight - offset}px`
       }
     },
+    /* 计算代码编辑器高度 */
     codeHeight() {
-      const offset = 155
+      const offset = 158  // content offset + toolbar height
       if (this.windowHeight <= 900) {
         return `${900 - offset}px`
       } else if (this.windowHeight >= 1300) {
@@ -293,27 +305,26 @@ export default {
       }
     },
     setCode(code, lang) {
-      this.code = code
+      this.editor.setValue(code)
       this.language = lang
       this.languageChange()
     },
+    /* 从 localStorage 获取上一次的代码 */
     getCachedCode() {
-      const code = JSON.parse(window.sessionStorage.getItem("code"))
+      const code = JSON.parse(window.localStorage.getItem("code"))
       if (code != null && Number(code.problemId) === Number(this.problemId)) {
-        this.code = code.content
-        this.language = code.language
-        this.languageChange()
+        this.setCode(code.content, code.language)
       }
     },
     calcLanguages() {
-      // SQL mode
+      // SQL 题目
       if (this.problem.type === 1) {
         this.languageIcons = sqlTypes
         this.enabledLanguages = sqlOptions
         this.language = sqlOptions[0].id
         return
       }
-      // Programming mode
+      // 程序设计题目
       if (this.contestId !== undefined) {
         let languages = this.problem.languages
         // 计算可用的语言
@@ -347,6 +358,11 @@ export default {
       }).catch((error) => {
         if (error.code === 401) {
           toLoginPage(this)
+        } else if (error.code === 404) {
+          this.error = {
+            code: 404,
+            msg: "题目不存在"
+          }
         } else {
           this.error = error
         }
@@ -533,9 +549,15 @@ export default {
 }
 </script>
 
+<style>
+.toolbar .el-input__inner {
+  border: none !important;
+}
+</style>
+
 <style scoped>
 .content-problem {
-  padding-right: 15px;
+  padding-right: 10px;
 }
 
 .content-editor {
@@ -562,10 +584,12 @@ export default {
 }
 
 .toolbar {
-  margin-bottom: 3px;
+  padding: 3px;
+  border-radius: 2px;
   display: flex;
   flex-direction: row;
   align-items: center;
+  background-color: #F5F7FA;
 }
 
 .toolbar * {
@@ -573,7 +597,7 @@ export default {
 }
 
 .toolbar *:first-child {
-  margin-left: 0;
+  padding-left: 4px;
 }
 
 .lang-icon {
@@ -581,13 +605,11 @@ export default {
   width: 25px;
   min-width: 25px;
   padding: 2px;
-  border-radius: 4px;
-  border: 1px solid #F5F5F5;
 }
 
 #hint {
   position: absolute;
-  bottom: 0;
+  bottom: 30px;
   width: 100%;
   font-size: 14px;
   color: #7A7A7A;

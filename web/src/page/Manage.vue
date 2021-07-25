@@ -1,32 +1,31 @@
 <template>
   <div style="height: 100%">
-    <TopNavigation active=""/>
     <div style="margin-top: 75px" v-if="error.code != null">
-      <Error :error="error"/>
-      <BottomArea class="bottom"/>
+      <error :error="error"/>
+      <bottom-area class="bottom"/>
     </div>
     <el-container v-else class="container">
       <el-aside class="aside">
-        <el-menu class="side-nav" mode="vertical" :default-active="active"
+        <el-menu class="side-nav" mode="vertical" :default-active="$route.path"
                  :collapse="collapse" @select="onSelect">
           <el-menu-item v-on:click="toggleCollapse">
             <i v-bind:class="collapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'">
             </i>
             <span>折叠</span>
           </el-menu-item>
-          <el-menu-item index="1" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
+          <el-menu-item index="/manage/problems" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-grid"></i>
             <span slot="title">题库管理</span>
           </el-menu-item>
-          <el-menu-item index="2" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
+          <el-menu-item index="/manage/contest" :disabled="[2, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-s-flag"></i>
             <span slot="title">竞赛管理</span>
           </el-menu-item>
-          <el-menu-item index="3" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
+          <el-menu-item index="/manage/user" :disabled="[1, 3].indexOf(userInfo['roleId']) === -1">
             <i class="el-icon-user-solid"></i>
             <span slot="title">用户管理</span>
           </el-menu-item>
-          <el-menu-item index="4" :disabled="userInfo['roleId'] !== 3">
+          <el-menu-item index="/manage/settings" :disabled="userInfo['roleId'] !== 3">
             <i class="el-icon-s-tools"></i>
             <span slot="title">系统设置</span>
           </el-menu-item>
@@ -34,8 +33,8 @@
       </el-aside>
       <el-main>
         <div class="main">
-          <component :is="currentView"/>
-          <BottomArea style="margin-top: 50px"/>
+          <router-view :key="$route.fullPath"/>
+          <bottom-area style="margin-top: 50px"/>
         </div>
       </el-main>
     </el-container>
@@ -43,30 +42,13 @@
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation"
-import ProblemsManage from "@/components/manage/problem/Index"
-import ContestManage from "@/components/manage/contest/Index"
-import UserManage from "@/components/manage/user/Index"
-import Settings from "@/components/manage/Settings"
 import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
-import {searchParams, toLoginPage, userInfo} from "@/util"
-
-let pages = new Map([
-  ["1", "ProblemsManage"],
-  ["2", "ContestManage"],
-  ["3", "UserManage"],
-  ["4", "Settings"]
-])
+import {toLoginPage, userInfo} from "@/util"
 
 export default {
   name: "Manager",
   components: {
-    TopNavigation,
-    ProblemsManage,
-    ContestManage,
-    UserManage,
-    Settings,
     Error,
     BottomArea
   },
@@ -76,25 +58,14 @@ export default {
     } else if (this.userInfo["roleId"] === 0) {
       this.error = {
         code: 403,
-        msg: "你没有权限访问此页面"
+        msg: "无权限"
       }
     }
-  },
-  mounted() {
-    const active = searchParams().active
-    if (this.userInfo["roleId"] === 1) {
-      this.active = "3"
-    } else {
-      active == null ? this.active = "1" : this.active = active
-    }
-    this.onSelect(this.active)
   },
   data() {
     return {
       userInfo: userInfo(),
       collapse: false,
-      active: "",
-      currentView: "",
       error: {
         code: null,
         msg: ""
@@ -105,11 +76,13 @@ export default {
     toggleCollapse() {
       this.collapse = !this.collapse
     },
+    /**
+     * 左侧菜单选择事件
+     * @param key 路由
+     */
     onSelect(key) {
-      if (key != null) {
-        history.pushState(null, "", "?page=1")
-        this.currentView = pages.get(key)
-      }
+      this.$router.push(key).catch(() => {
+      })
     }
   }
 }
@@ -129,7 +102,7 @@ export default {
   margin-top: 1px;
   height: 100%;
   width: auto !important;
-  border-right: 1px solid #EBEEF5;
+  box-shadow: 2px 0 4px 0 rgba(0, 0, 0, 0.08);
   background-color: white;
 }
 
@@ -143,11 +116,5 @@ export default {
 
 .main {
   margin: 0 auto;
-}
-
-.el-menu-item.is-active {
-  color: #409EFF;
-  background-color: #F5F5F5;
-  box-shadow: inset -2px 0 0 #409EFF;
 }
 </style>

@@ -1,4 +1,3 @@
-import qs from "qs"
 import {SettingsApi} from "@/service"
 
 let colorIndex = 1,
@@ -24,22 +23,25 @@ function clearToken() {
     localStorage.removeItem(TOKEN)
 }
 
-function searchParams() {
-    return qs.parse(location.search.replace("?", ""))
-}
-
-function toLoginPage(ctx = null) {
-    if (ctx == null) {
+/**
+ * 跳转到登录页面
+ * @param ctx Vue 实例
+ * @param logoff 是否为退出操作
+ */
+function toLoginPage(ctx, logoff = false) {
+    if (logoff === true) {
         clearToken()
-        window.location.href = "/login"
+        ctx.$router.push("/login")
+    } else {
+        ctx.$confirm("登录已失效，请重新登录", "提示", {
+            confirmButtonText: "去登录",
+            type: "warning"
+        }).then(() => {
+            clearToken()
+            ctx.$router.push("/login").catch(() => {
+            })
+        })
     }
-    ctx.$confirm("登录已失效，请重新登录", "提示", {
-        confirmButtonText: "去登录",
-        type: "warning"
-    }).then(() => {
-        clearToken()
-        window.location.href = "/login"
-    })
 }
 
 function saveToken(value) {
@@ -119,8 +121,12 @@ function SiteSetting() {
         document.title = `${title} - ${this.name}`
     }
 
+    /**
+     * 设置当前页面标题
+     */
     this.setTitle = (title = null) => {
         if (this.initialized === false) {
+            // 首次调用初始化
             SettingsApi.get().then((data) => {
                 if (data.siteName !== "") {
                     this.name = data.siteName
@@ -161,7 +167,6 @@ const siteSetting = new SiteSetting()
 export {
     tagColor,
     userInfo,
-    searchParams,
     toLoginPage,
     saveToken,
     clearToken,

@@ -1,4 +1,6 @@
 html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     height: calc(100% - 60px);
     padding: 0;
     margin: 0;
@@ -31,13 +33,20 @@ html, body {
     margin: 76px auto 0;
 }
 
-.el-card, .el-tabs--border-card {
-    box-shadow: none !important;
+.el-card + .is-always-shadow, .el-tabs--border-card {
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08) !important
 }
 
 .borderless {
     border: none !important;
-    padding: 0 !important;
+}
+
+.no-shadow {
+    box-shadow: none !important;
+}
+
+.el-tabs__item, .el-tabs--border-card > .el-tabs__header {
+    border: none !important;
 }
 
 .el-divider--horizontal {
@@ -50,6 +59,12 @@ html, body {
 
 .el-table th.is-leaf {
     border-top: 1px solid #EBEEF5;
+}
+
+.el-aside .el-menu-item.is-active {
+    color: #409EFF;
+    background-color: #F5F5F5;
+    box-shadow: inset -3px 0 0 #409EFF;
 }
 
 .tag {
@@ -112,10 +127,15 @@ html, body {
     word-spacing: 0.2em;
     font-size: 12pt;
     font-family: sans-serif !important;
+    border-radius: 2px;
+}
+
+.CodeMirror-gutters {
+    border-right: none !important;
 }
 
 .cm-s-eclipse {
-    border: 1px solid #DDDDDD;
+    border: 1px solid #F5F7FA;
 }
 
 .vue-codemirror {
@@ -149,6 +169,7 @@ html, body {
     height: 0 !important;
 }
 
+/* 判题结果的错误信息样式 */
 .result-error {
     padding: 10px 8px;
     font: inherit;
@@ -163,4 +184,16 @@ html, body {
 
 .error-info {
     width: 600px !important;
+}
+
+.fade-enter-to {
+    opacity: 1;
+    transition: all 500ms ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 500ms ease;
 }

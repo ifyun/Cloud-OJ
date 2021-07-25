@@ -54,6 +54,7 @@
 <script>
 import {copyObject, Notice} from "@/util"
 import {UserApi} from "@/service"
+import md5 from "crypto-js"
 
 const bcrypt = require("bcryptjs")
 
@@ -122,7 +123,7 @@ export default {
         this.loading = true
         let user = copyObject(this.signupForm)
         user.checkPassword = ""
-        user.password = bcrypt.hashSync(this.$md5(user.password), 10)
+        user.password = bcrypt.hashSync(md5(user.password).toString(), 10)
         UserApi.save(user, null, true).then(() => {
           Notice.notify.success(this, {
             offset: 0,

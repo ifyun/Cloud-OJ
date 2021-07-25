@@ -1,13 +1,13 @@
 <template>
   <div style="width: 100%">
-    <Error v-if="error.code != null" :error="error"/>
+    <error v-if="error.code != null" :error="error"/>
     <el-card v-else class="borderless" style="width: 100%">
       <h3 v-if="contest.contestId != null">{{ contest.contestName }}</h3>
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form size="medium" :inline="true" @submit.native.prevent>
           <el-form-item>
             <el-input style="width: 250px" placeholder="输入关键字" prefix-icon="el-icon-search"
-                      v-model="keyword">
+                      v-model="keyword" @keyup.enter.native="search(keyword)">
             </el-input>
           </el-form-item>
           <el-form-item>
@@ -16,19 +16,22 @@
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-tag v-if="keyword !== ''" type="success" size="medium" closable @close="tagClose()">
-              {{ keyword }}
+            <el-tag v-if="keywordTag !== ''" type="success" size="medium" closable @close="keywordTagClose()">
+              {{ keywordTag }}
             </el-tag>
           </el-form-item>
         </el-form>
       </div>
-      <el-table :data="problems.data" stripe v-loading="loading">
+      <div v-if="!loading && problems.count === 0">
+        <el-empty description="什么都没有"/>
+      </div>
+      <el-table v-else :data="problems.data" stripe v-loading="loading">
         <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
         </el-table-column>
         <el-table-column label="题目名称">
           <template slot-scope="scope">
-            <el-link :href="generateLink(scope.row)">
-              {{ scope.row.problemId }}&nbsp;<b>{{ scope.row.title }}</b>
+            <el-link @click="titleClick(scope.row)">
+              {{ scope.row.problemId }}&nbsp;{{ scope.row.title }}
             </el-link>
             <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
               SQL
@@ -73,7 +76,7 @@
       <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="problems.count"
                      :current-page.sync="currentPage"
-                     @size-change="getProblems" @current-change="getProblems">
+                     @size-change="getProblems" @current-change="pageChange">
       </el-pagination>
     </el-card>
   </div>
@@ -81,7 +84,7 @@
 
 <script>
 import Error from "@/components/Error"
-import {Notice, searchParams, tagColor, toLoginPage, userInfo} from "@/util"
+import {Notice, tagColor, toLoginPage, userInfo} from "@/util"
 import {resultTags} from "@/util/data"
 import {ContestApi, ProblemApi} from "@/service"
 
@@ -92,6 +95,7 @@ export default {
   },
   beforeMount() {
     sessionStorage.removeItem("code")
+    this.contestId = this.$route.query.contestId
     this.loadPage()
     if (this.contestId != null) {
       this.getContest()
@@ -107,7 +111,7 @@ export default {
         code: null,
         msg: ""
       },
-      contestId: searchParams().contestId,
+      contestId: null,
       contest: {
         contestId: null,
         contestName: null
@@ -120,25 +124,48 @@ export default {
       pageSize: 15,
       currentPage: 1,
       keyword: "",
+      keywordTag: "",
       resultTags
     }
   },
   methods: {
     getTagColor: tagColor,
     loadPage() {
-      const page = searchParams()["page"]
+      const page = this.$route.query.page
       if (page != null) {
-        this.currentPage = parseInt(page)
+        this.currentPage = Number(page)
       }
     },
-    generateLink(row) {
-      const contestId = typeof row.contestId === "undefined" ?
-          "" : `&contestId=${row.contestId}`
-      return `/commit?problemId=${row.problemId}${contestId}`
+    pageChange(page) {
+      if (this.contestId != null) {
+        this.$router.push({
+          query: {
+            page,
+            contestId: this.contestId
+          }
+        })
+      } else {
+        this.$router.push({
+          query: {
+            page
+          }
+        })
+      }
+    },
+    titleClick(row) {
+      let query = {
+        problemId: row.problemId
+      }
+
+      if (typeof row.contestId !== "undefined") {
+        query.contestId = row.contestId
+      }
+
+      this.$router.push({path: "/commit", query})
     },
     getContest() {
-      // Only logged-in users can view contest problems
       if (this.contestId != null && userInfo() == null) {
+        // 未登录不可查看竞赛题目
         toLoginPage(this)
       }
       ContestApi.get(this.contestId).then((data) => {
@@ -150,16 +177,11 @@ export default {
       })
     },
     getProblems() {
-      let params = `?page=${this.currentPage}`
-      if (this.contestId != null) {
-        params += `&contestId=${this.contestId}`
-      }
-      history.pushState(null, "", params)
       this.loading = true
       let promise
 
       if (this.contest.contestId != null) {
-        // Get problems from contest
+        // 获取竞赛题目
         promise = ContestApi.getProblemsFromStarted(
             this.contestId,
             this.currentPage,
@@ -167,7 +189,7 @@ export default {
             this.userInfo
         )
       } else {
-        // Get all opened problems
+        // 获取开放题目
         promise = ProblemApi.getAllOpened(
             this.currentPage,
             this.pageSize,
@@ -192,10 +214,12 @@ export default {
     },
     search() {
       this.currentPage = 1
+      this.keywordTag = this.keyword
       this.getProblems()
     },
-    tagClose() {
+    keywordTagClose() {
       this.keyword = ""
+      this.keywordTag = ""
       this.getProblems()
     },
     tagClick(tag) {

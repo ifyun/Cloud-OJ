@@ -1,6 +1,9 @@
 <template>
   <div class="content">
-    <Error v-if="error.code != null" :error="error"/>
+    <error v-if="error.code != null" :error="error"/>
+    <div v-else-if="!loading && ranking.count === 0">
+      <el-empty description="什么都没有"/>
+    </div>
     <el-card v-else class="borderless" style="width: 100%">
       <div v-if="contest.contestId != null" class="head">
         <span style="font-size: 14pt;font-weight: bold;">{{ contest.contestName }}</span>
@@ -31,8 +34,9 @@
         </el-table-column>
         <el-table-column width="80px" align="right">
           <template slot-scope="scope">
-            <img class="avatar" align="center" alt="Avatar" :src="`/api/file/image/avatar/${scope.row.userId}.png`"
-                 onerror="this.src='/icons/no_avatar.png'">
+            <el-avatar icon="el-icon-user-solid" size="medium" alt="user"
+                       :src="`/api/file/image/avatar/${scope.row.userId}.png`">
+            </el-avatar>
           </template>
         </el-table-column>
         <el-table-column>
@@ -69,7 +73,7 @@
       <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
                      :page-size.sync="pageSize" :total="ranking.count"
                      :current-page.sync="currentPage"
-                     @size-change="getRankingList" @current-change="getRankingList">
+                     @size-change="getRankingList" @current-change="pageChange">
       </el-pagination>
     </el-card>
     <el-dialog :title="detailDialog.title" :visible.sync="detailDialog.visible" width="700px">
@@ -92,7 +96,7 @@
 </template>
 
 <script>
-import {Notice, searchParams, toLoginPage, userInfo} from "@/util"
+import {Notice, toLoginPage, userInfo} from "@/util"
 import Error from "@/components/Error"
 import {ContestApi, RankingApi} from "@/service"
 
@@ -103,6 +107,7 @@ export default {
   },
   beforeMount() {
     this.loadPage()
+    this.contestId = this.$route.query.contestId
     if (this.contestId != null) {
       this.getContest()
     } else {
@@ -120,7 +125,7 @@ export default {
         count: 0
       },
       userInfo: userInfo(),
-      contestId: searchParams()["contestId"],
+      contestId: null,
       contest: {
         contestId: null,
         contestName: ""
@@ -154,9 +159,25 @@ export default {
       }
     },
     loadPage() {
-      const page = searchParams()["page"]
+      const page = this.$route.query.page
       if (page != null) {
-        this.currentPage = parseInt(page)
+        this.currentPage = Number(page)
+      }
+    },
+    pageChange(page) {
+      if (this.contestId != null) {
+        this.$router.push({
+          query: {
+            page,
+            contestId: this.contestId
+          }
+        })
+      } else {
+        this.$router.push({
+          query: {
+            page
+          }
+        })
       }
     },
     getContest() {
@@ -173,12 +194,6 @@ export default {
     },
     getRankingList(refresh = false) {
       this.loading = true
-      let params = `?page=${this.currentPage}`
-      if (this.contestId != null) {
-        params += `&contestId=${this.contestId}`
-      }
-
-      history.pushState(null, "", params)
 
       const promise = this.contest.contestId == null ?
           RankingApi.getRanking(this.currentPage, this.pageSize) :
@@ -230,16 +245,6 @@ export default {
 <style scoped>
 .content {
   width: 100%;
-}
-
-.avatar {
-  height: 42px;
-  width: 42px;
-  border-radius: 22px;
-}
-
-.avatar:empty {
-  background-color: #F0F0F0;
 }
 
 .ranking-icon {

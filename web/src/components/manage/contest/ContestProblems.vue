@@ -38,23 +38,22 @@
     </el-dialog>
     <el-dialog :title="previewDialog.title" :visible.sync="previewDialog.visible"
                append-to-body width="750px">
-      <markdown-it-vue :options="mdOptions" :content="previewDialog.content"/>
+      <markdown-it :content="previewDialog.content"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import MarkdownItVue from "markdown-it-vue"
-import "markdown-it-vue/dist/markdown-it-vue.css"
 import {userInfo, toLoginPage, Notice} from "@/util"
 import AddProblems from "@/components/manage/contest/AddProblems"
+import MarkdownIt from "@/components/MarkdownIt"
 import {ContestApi} from "@/service"
 
 export default {
   name: "ContestProblemsManage",
   components: {
     AddProblems,
-    MarkdownItVue
+    MarkdownIt
   },
   props: {
     contestId: Number
@@ -85,11 +84,6 @@ export default {
         title: "",
         content: "",
         visible: false
-      },
-      mdOptions: {
-        markdownIt: {
-          html: true
-        }
       }
     }
   },
