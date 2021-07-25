@@ -28,7 +28,8 @@
     </el-form>
     <el-alert v-if="singleMode && histories.count > 0" show-icon type="info"
               style="margin-top: 10px" title="双击行可以加载代码到编辑框。"/>
-    <el-table style="margin-top: 10px" stripe v-loading="loading" :data="histories.data"
+    <el-empty v-if="!loading && histories.count === 0" description="没有记录"/>
+    <el-table v-else style="margin-top: 10px" stripe v-loading="loading" :data="histories.data"
               :size="singleMode ? 'small' : 'medium'" @row-dblclick="rowDbClick">
       <el-table-column label="状态" width="105px">
         <template slot-scope="scope">
@@ -83,7 +84,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+    <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
                    :page-size.sync="pageSize" :total="histories.count"
                    :current-page.sync="currentPage"
                    @size-change="getHistories" @current-change="getHistories">
@@ -95,7 +96,7 @@
 import {Notice, prettyMemory, toLoginPage, userInfo} from "@/util"
 import {languages, sqlTypes, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
-import moment from "moment";
+import moment from "moment"
 
 export default {
   name: "HistoryList",

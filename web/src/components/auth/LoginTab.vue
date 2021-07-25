@@ -27,6 +27,7 @@
 <script>
 import {Notice, saveToken} from "@/util"
 import {AuthApi} from "@/service"
+import md5 from "crypto-js/md5"
 
 export default {
   name: "LoginTab",
@@ -57,7 +58,7 @@ export default {
         if (valid) {
           AuthApi.login({
             username: this.loginForm.username,
-            password: this.$md5(this.loginForm.password)
+            password: md5(this.loginForm.password).toString()
           }).then((data) => {
             saveToken(JSON.stringify(data))
             window.location.href = "/"

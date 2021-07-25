@@ -1,22 +1,19 @@
 <template>
   <div>
-    <TopNavigation active="2"/>
     <el-container class="container">
-      <ContestList/>
-      <BottomArea class="bottom"/>
+      <contest-list/>
+      <bottom-area class="bottom"/>
     </el-container>
   </div>
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation"
 import ContestList from "@/components/ContestList"
 import BottomArea from "@/components/common/BottomArea"
 
 export default {
   name: "Contest",
   components: {
-    TopNavigation,
     ContestList,
     BottomArea
   }

@@ -1,19 +1,28 @@
 <template>
-  <div class="container">
+  <div v-if="display" class="container">
     <div class="left">
-      <div id="words">
-        <h2>
-          <span style="color: #DB6D63">Errors</span>
-          = (<span style="color: #5EAAE8">More Code</span>)<sup>2</sup>
-        </h2>
-        <pre class="egg">{{ egg }}</pre>
+      <div id="text">
+        <h1>
+          <span style="color: #499CD5">SELECT</span>
+          <span style="color: #FFC560">&nbsp;*</span>
+          <br>
+          <span style="color: #499CD5">FROM</span>
+          <span>&nbsp;WORLD</span>
+          <br>
+          <span style="color: #499CD5">WHERE</span>
+          <span>&nbsp;SOMEONE</span>
+          <span style="color: #499CD5">&nbsp;LIKE</span>
+          <span style="color: #FA536F">&nbsp;'YOU'</span>
+        </h1>
       </div>
     </div>
     <div class=right>
       <div id="login-content">
         <div class="logo-div">
           <a href="/" :style="{display: siteSetting['hideLogo'] === true ? 'none': ''}">
-            <img class="logo" :src="logoUrl" alt="logo">
+            <el-avatar class="logo" shape="square" size="large" :src="logoUrl" alt="logo">
+              <img class="logo" :src="'/favicon.png'" alt="logo">
+            </el-avatar>
           </a>
           <a class="app-name" type="success" href="/">{{ siteSetting.name }}</a>
         </div>
@@ -27,9 +36,11 @@
           <span>已有账号？</span>
           <el-link type="primary" @click="login">登录</el-link>
         </div>
-        <component class="login-tab" :is="currentView"/>
+        <transition name="fade" mode="out-in">
+          <component class="login-tab" :is="currentView"/>
+        </transition>
         <el-divider/>
-        <BottomArea/>
+        <bottom-area/>
         <div class="recommend">
           <span style="margin-right: 5px">推荐使用</span>
           <el-link href="https://www.microsoft.com/zh-cn/edge" target="_blank">
@@ -56,8 +67,7 @@ import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/brands/chrome"
 import "vue-awesome/icons/brands/edge"
 import {ApiPath} from "@/service"
-import axios from "axios"
-import {siteSetting} from "@/util"
+import {siteSetting, userInfo} from "@/util"
 
 export default {
   name: "Login",
@@ -69,16 +79,19 @@ export default {
   },
   data() {
     return {
+      display: false,
+      from: "/",
       currentView: "LoginTab",
-      logoUrl: "",
-      siteSetting,
-      egg: "0xE7AE97 0xE6B395 0xE4B88D\n" +
-          "0xE4BC9A 0xE982A3 0xE698AF\n" +
-          "0xE79C9F 0xE4B88D 0xE4BC9A"
+      logoUrl: `${ApiPath.IMAGE}/favicon.png`,
+      siteSetting
     }
   },
   beforeMount() {
-    this.checkLogo()
+    if (userInfo() != null) {
+      this.$router.replace("/")
+    } else {
+      this.display = true
+    }
   },
   methods: {
     login() {
@@ -86,15 +99,6 @@ export default {
     },
     signup() {
       this.currentView = "SignupTab"
-    },
-    checkLogo() {
-      const url = `${ApiPath.IMAGE}/favicon.png`
-      axios.head(url).then(() => {
-        this.logoUrl = url
-        this.siteSetting.setFavicon(url)
-      }).catch(() => {
-        this.logoUrl = "/favicon.png"
-      })
     }
   }
 }
@@ -104,46 +108,46 @@ export default {
 .container {
   height: calc(100% + 60px);
   min-width: 1100px;
+  display: flex;
+  flex-direction: row;
 }
 
 .left {
-  width: 60%;
-  height: calc(100% + 60px);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% + 52px);
   min-height: 700px;
-  display: inline-block;
-  vertical-align: top;
   /* background by SVGBackgrounds.com */
   background-color: #3A3A3A;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cg stroke='%23000' stroke-width='66.7' stroke-opacity='0.05' %3E%3Ccircle fill='%23383838' cx='0' cy='0' r='1800'/%3E%3Ccircle fill='%23363636' cx='0' cy='0' r='1700'/%3E%3Ccircle fill='%23353535' cx='0' cy='0' r='1600'/%3E%3Ccircle fill='%23333333' cx='0' cy='0' r='1500'/%3E%3Ccircle fill='%23313131' cx='0' cy='0' r='1400'/%3E%3Ccircle fill='%232f2f2f' cx='0' cy='0' r='1300'/%3E%3Ccircle fill='%232e2e2e' cx='0' cy='0' r='1200'/%3E%3Ccircle fill='%232c2c2c' cx='0' cy='0' r='1100'/%3E%3Ccircle fill='%232a2a2a' cx='0' cy='0' r='1000'/%3E%3Ccircle fill='%23292929' cx='0' cy='0' r='900'/%3E%3Ccircle fill='%23272727' cx='0' cy='0' r='800'/%3E%3Ccircle fill='%23262626' cx='0' cy='0' r='700'/%3E%3Ccircle fill='%23242424' cx='0' cy='0' r='600'/%3E%3Ccircle fill='%23222222' cx='0' cy='0' r='500'/%3E%3Ccircle fill='%23212121' cx='0' cy='0' r='400'/%3E%3Ccircle fill='%231f1f1f' cx='0' cy='0' r='300'/%3E%3Ccircle fill='%231e1e1e' cx='0' cy='0' r='200'/%3E%3Ccircle fill='%231c1c1c' cx='0' cy='0' r='100'/%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed;
   background-size: cover;
+  border-radius: 8px;
+  margin: 4px;
 }
 
 .right {
-  width: 40%;
+  min-width: 520px;
   height: calc(100% + 60px);
   min-height: 700px;
-  display: inline-block;
-  vertical-align: top;
+  overflow: hidden;
 }
 
-#words {
+#text {
   color: white;
-  height: 100%;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 1;
 }
 
-#words h2 {
+#text h1 {
+  font-size: 26pt;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-}
-
-.egg {
-  color: #333333;
-  font-family: serif;
-  font-size: 12px;
+  font-family: Courier, serif;
 }
 
 #login-content {
@@ -173,8 +177,8 @@ export default {
 }
 
 .logo {
-  height: 45px;
-  margin-right: 6px;
+  background-color: transparent;
+  margin-right: 5px;
 }
 
 .app-name {

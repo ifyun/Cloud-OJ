@@ -1,20 +1,17 @@
 <template>
-  <div>
-    <TopNavigation active=""/>
-    <Error :error="error"/>
-    <BottomArea class="bottom"/>
+  <div style="margin-top: 61px">
+    <error :error="error"/>
+    <bottom-area class="bottom"/>
   </div>
 </template>
 
 <script>
-import TopNavigation from "@/components/common/TopNavigation"
 import Error from "@/components/Error"
 import BottomArea from "@/components/common/BottomArea"
 
 export default {
   name: "Page404",
   components: {
-    TopNavigation,
     Error,
     BottomArea
   },
@@ -25,7 +22,7 @@ export default {
     return {
       error: {
         code: 404,
-        msg: "Page Not Found"
+        msg: "页面找不到了"
       }
     }
   }

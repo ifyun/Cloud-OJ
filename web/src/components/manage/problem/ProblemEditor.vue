@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card shadow="never" class="borderless">
     <el-form label-width="80px" ref="problemForm" :model="problem" v-loading="loading"
              :rules="problemRules" :status-icon="true">
       <el-row :gutter="15">
@@ -53,7 +53,7 @@
       <el-form-item v-if="problem.type === 1" label="查询语句 " prop="sql">
         <el-input type="textarea" placeholder="这是一道 SQL 题目，请输入正确的 SQL 语句" v-model="problem.sql"></el-input>
       </el-form-item>
-      <MarkdownEditor :data="problem.description" @change="editorChange"/>
+      <markdown-editor :str="problem.description" @change="editorChange"/>
       <!-- 用于表单验证 -->
       <el-form-item label-width="0" prop="description">
         <el-input style="display: none" type="textarea"
@@ -207,8 +207,9 @@ export default {
             if (typeof data.category !== "undefined") {
               this.tags = data.category.split(",")
             }
-            if (this.reset)
+            if (this.reset) {
               this.dataChanged = false
+            }
           })
           .catch((error) => {
             if (error.code === 401) {

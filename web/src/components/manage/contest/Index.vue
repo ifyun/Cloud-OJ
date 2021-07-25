@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card class="borderless">
     <el-form :inline="true">
       <el-form-item>
         <el-button size="medium" type="primary" icon="el-icon-circle-plus"
@@ -13,7 +13,8 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+    <el-empty v-if="!loading && contests.count === 0"/>
+    <el-table v-else :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
       <el-table-column label="ID" prop="contestId" width="100px" align="center">
       </el-table-column>
       <el-table-column label="竞赛名称">
@@ -59,7 +60,7 @@
     <!-- Edit Contest Dialog -->
     <el-dialog :title="editorDialog.title" width="650px"
                :visible.sync="editorDialog.visible">
-      <ContestEditor :contest="selectedContest"
+      <ContestEditor :contest-data="selectedContest"
                      :create="editorDialog.create"
                      :dialog-visible.sync="editorDialog.visible"
                      @refresh="getContests"/>
@@ -159,7 +160,6 @@ export default {
       this.getContests(true)
     },
     getContests(refresh = false) {
-      history.pushState(null, "", "?active=2")
       this.loading = true
       ContestApi.getAll(this.currentPage, this.pageSize, userInfo())
           .then((data) => {

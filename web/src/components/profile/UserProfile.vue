@@ -2,15 +2,10 @@
   <div>
     <div class="profile-div" v-if="profileEditor.display">
       <span style="font-size: 13px">上传新头像:</span>
-      <el-upload class="avatar-uploader"
-                 :show-file-list="false"
-                 :action="uploadUrl"
-                 :headers="uploadHeaders"
-                 :before-upload="beforeUpload"
-                 :on-success="uploadSuccess"
-                 :on-error="uploadFailed">
-        <img v-if="avatarUrl" :src="avatarUrl"
-             class="avatar-uploaded" alt="avatar">
+      <el-upload class="avatar-uploader" :show-file-list="false" :action="uploadUrl"
+                 :headers="uploadHeaders" :before-upload="beforeUpload"
+                 :on-success="uploadSuccess" :on-error="uploadFailed">
+        <img v-if="avatarUrl" :src="avatarUrl" class="avatar-uploaded" alt="upload avatar">
         <i v-else class="el-icon-plus avatar-uploader-icon"/>
       </el-upload>
       <el-divider></el-divider>
@@ -44,19 +39,24 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="profile-div" v-else>
-      <img class="avatar" :src="avatarUrl" onerror="this.src='/icons/no_avatar.png'" alt="avatar">
+    <div v-else class="profile-div">
+      <el-avatar class="avatar" :src="avatarUrl" :size="200" alt="avatar">
+        <img src="@/assets/icons/no_avatar.png" alt="user">
+      </el-avatar>
       <span class="name">{{ userProfile.name }}</span>
       <span class="user-id">{{ userProfile.userId }}</span>
-      <span v-if="userProfile.email !== undefined && userProfile.email !== ''"
-            style="margin-top: 15px;">
+      <el-divider/>
+      <span>
         <i class="el-icon-message el-icon--left"/>
-        <span>{{ userProfile.email }}</span>
+        <span v-if="userProfile.email === undefined || userProfile.email === ''"
+              style="color: #606266">此用户未留下邮箱</span>
+        <span v-else>{{ userProfile.email }}</span>
       </span>
-      <span v-if="userProfile.section !== undefined && userProfile.section !== ''"
-            style="margin-top: 5px;">
-        <i class="el-icon-office-building el-icon--left"></i>
-        <span>{{ userProfile.section }}</span>
+      <span style="margin-top: 5px">
+        <i class="el-icon-office-building el-icon--left"/>
+        <span v-if="userProfile.section === undefined || userProfile.section === ''"
+              style="color: #606266">未填写</span>
+        <span v-else>{{ userProfile.section }}</span>
       </span>
       <el-button v-if="userId == null" size="small" style="margin-top: 15px"
                  icon="el-icon-edit-outline" @click="editClick">
@@ -69,7 +69,7 @@
 <script>
 import {Notice, saveToken, toLoginPage, userInfo} from "@/util"
 import {ApiPath, UserApi} from "@/service"
-import axios from "axios"
+import md5 from "crypto-js"
 
 const bcrypt = require("bcryptjs")
 
@@ -78,11 +78,11 @@ export default {
   beforeMount() {
     if (this.userId != null) {
       this.getProfile()
-      this.checkAvatar(this.userId)
+      this.avatarUrl = `${ApiPath.AVATAR}/${this.userId}.png`
     } else {
       this.resetProfileData()
-      this.checkAvatar(userInfo().userId)
       this.siteSetting.setTitle("个人中心")
+      this.avatarUrl = `${ApiPath.AVATAR}/${this.userInfo.userId}.png`
     }
   },
   props: ["userId"],
@@ -121,17 +121,10 @@ export default {
     }
   },
   methods: {
-    checkAvatar(userId) {
-      this.avatarUrl = ""
-      const url = `${ApiPath.AVATAR}/${userId}.png`
-      axios.head(url).then(() => {
-        this.avatarUrl = url
-      })
-    },
     getProfile() {
       UserApi.getProfile(this.userId)
           .then((data) => {
-            this.siteSetting.setTitle(`${data["name"]}`)
+            this.siteSetting.setTitle(`${data.name}`)
             this.userProfile = data
           })
           .catch((error) => {
@@ -153,7 +146,7 @@ export default {
       return isTypeOk && isLt2M
     },
     uploadSuccess() {
-      this.checkAvatar(this.userProfile.userId)
+      this.avatarUrl = `${ApiPath.AVATAR}/${this.userProfile.userId}.png?t=${Math.random()}`
       Notice.message.success(this, "头像已更新")
     },
     uploadFailed(err) {
@@ -177,7 +170,7 @@ export default {
         if (typeof password === "undefined" || password === "") {
           delete this.userProfile.password
         } else {
-          this.userProfile.password = bcrypt.hashSync(this.$md5(password), 10)
+          this.userProfile.password = bcrypt.hashSync(md5(password).toString(), 10)
           passwordChanged = true
         }
 
@@ -236,24 +229,22 @@ export default {
 }
 
 .avatar {
-  width: 200px;
-  height: 200px;
-  display: block;
-  border-radius: 200px;
-  border: 1px solid #FAFAFA;
-  margin: 0 auto 15px;
+  border: 2px solid #F5F7FA;
+  margin-bottom: 15px;
+  align-self: center;
 }
 
 .name {
   font-size: 13pt;
   font-weight: bold;
   color: #303133;
+  align-self: center;
 }
 
 .user-id {
   font-weight: lighter;
   color: #606266;
-  margin-top: 2px;
+  align-self: center;
 }
 </style>
 
@@ -278,16 +269,16 @@ export default {
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
+  width: 170px;
+  height: 170px;
+  line-height: 170px;
   text-align: center;
 }
 
 .avatar-uploaded {
-  width: 178px;
-  height: 178px;
+  width: 170px;
+  height: 170px;
   display: block;
-  border-radius: 90px;
+  border-radius: 85px;
 }
 </style>

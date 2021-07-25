@@ -1,10 +1,7 @@
 <template>
   <div>
-    <el-form label-width="100px"
-             ref="edit-contest"
-             :rules="contestRules"
-             :model="contest"
-             :status-icon="true">
+    <el-form label-width="100px" ref="edit-contest"
+             :rules="contestRules" :model="contest" :status-icon="true">
       <el-form-item label="名称" prop="contestName">
         <el-input v-model="contest.contestName">
         </el-input>
@@ -38,8 +35,6 @@ import moment from "moment"
 import {userInfo, toLoginPage, Notice} from "@/util"
 import {ContestApi} from "@/service"
 
-const MAX_LANG_ID = 7
-
 const languageOptions = [
   {id: 0, name: "C"},
   {id: 1, name: "C++"},
@@ -48,20 +43,22 @@ const languageOptions = [
   {id: 4, name: "Bash Shell"},
   {id: 5, name: "C#"},
   {id: 6, name: "JavaScript"},
-  {id: 7, name: "Kotlin"}
+  {id: 7, name: "Kotlin"},
+  {id: 8, name: "Go"}
 ]
 
 export default {
   name: "ContestEditor",
   props: {
     dialogVisible: Boolean,
-    contest: Object,
+    contestData: Object,
     create: Boolean
   },
   watch: {
-    contest: {
+    contestData: {
       immediate: true,
-      handler() {
+      handler(val) {
+        this.contest = val
         this.listLanguages()
       }
     }
@@ -80,6 +77,7 @@ export default {
       callback()
     }
     return {
+      contest: null,
       contestRules: {
         contestName: [
           {required: true, message: "请输入竞赛/作业名称", trigger: "blur"},
@@ -110,7 +108,7 @@ export default {
       if (Object.keys(this.contest).length > 0) {
         let lang = this.contest.languages
         // 列出语言
-        for (let i = 0; i <= MAX_LANG_ID; i++) {
+        for (let i = 0; i <= languageOptions.length; i++) {
           let t = 1 << i
           if ((lang & t) === t) {
             this.enabledLanguages.push(i)
