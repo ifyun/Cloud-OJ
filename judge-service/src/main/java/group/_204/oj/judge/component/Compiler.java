@@ -119,7 +119,7 @@ class Compiler {
 
             Process process = processBuilder.start();
 
-            if (process.waitFor(6, TimeUnit.SECONDS)) {
+            if (process.waitFor(10, TimeUnit.SECONDS)) {
                 if (process.exitValue() == 0) {
                     return new Compile(solutionId, 0, null);
                 } else {
