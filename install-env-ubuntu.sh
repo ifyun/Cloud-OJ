@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ $(id -u) -ne 0 ]; then
+if [ "$(id -u)" -ne 0 ]; then
   echo "Permission required."
   exit 1
 fi
@@ -9,7 +9,7 @@ fi
 curl -sL https://deb.nodesource.com/setup_lts.x | bash - &&
   libs="sqlite3 gcc g++ python3 openjdk-8-jdk mono-devel nodejs" &&
   apt-get update &&
-  apt-get install -y --no-install-recommends $libs &&
+  apt-get install -y --no-install-recommends "$libs" &&
   apt-get clean
 
 if [ -d "/usr/share/kotlinc" ]; then
