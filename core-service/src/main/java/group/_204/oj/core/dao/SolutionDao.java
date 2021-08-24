@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface JudgeResultDao {
+public interface SolutionDao {
     JudgeResult getResultBySolutionId(String solutionId);
 
     List<List<?>> getHistory(String userId, int start, int limit);

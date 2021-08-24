@@ -9,7 +9,5 @@ public class Ranking {
     private String name;
     private Integer committed;
     private Integer passed;
-    private Double totalScore;
-    private Integer contestId;
-    private String contestName;
+    private Double score;
 }

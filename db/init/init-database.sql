@@ -76,9 +76,10 @@ create table solution
     type        int                                           default 0                 not null,
     state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'        not null,
     result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE')          null,
-    pass_rate   double                                        default 0                 not null,
+    pass_rate   double                                        default 0                 not null comment '通过率',
+    score       double                                        default 0                 not null,
     user_id     varchar(32)                                                             null,
-    submit_time datetime                                      default CURRENT_TIMESTAMP not null,
+    submit_time datetime                                      default CURRENT_TIMESTAMP not null comment '提交时间',
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,
@@ -89,6 +90,38 @@ create table solution
         foreign key (user_id) references user (user_id)
             on update cascade
 );
+
+create index solution_score_index
+    on solution (score);
+
+-- 排名
+create table leaderboard
+(
+    user_id     varchar(32)                         not null
+        primary key,
+    committed   int       default 0                 not null,
+    passed      int       default 0                 not null,
+    score       double    default 0                 not null,
+    update_time timestamp default CURRENT_TIMESTAMP not null
+);
+
+create index leaderboard_index
+    on leaderboard (user_id asc, committed asc, passed asc, score desc, update_time asc);
+
+-- 竞赛排名
+create table leaderboard_contest
+(
+    user_id     varchar(32)                         not null
+        primary key,
+    contest_id  int                                 not null,
+    committed   int       default 0                 not null,
+    passed      int       default 0                 not null,
+    score       int       default 0                 not null,
+    update_time timestamp default CURRENT_TIMESTAMP null
+);
+
+create index leaderboard_contest_update_time_index
+    on leaderboard_contest (update_time);
 
 create table compile
 (
@@ -173,43 +206,6 @@ select `c`.`contest_id`   AS `contest_id`,
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`.`problem_id` = `p`.`problem_id`)))
          join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
-create view contest_ranking_list as
-select `problem_score`.`user_id`                                    AS `user_id`,
-       `problem_score`.`name`                                       AS `name`,
-       sum(`problem_score`.`committed`)                             AS `committed`,
-       count((case when (`problem_score`.`result` = 1) then 1 end)) AS `passed`,
-       truncate(sum(`problem_score`.`score`), 2)                    AS `total_score`,
-       `problem_score`.`contest_id`                                 AS `contest_id`,
-       `problem_score`.`contest_name`                               AS `contest_name`
-from (select `s`.`user_id`                        AS `user_id`,
-             `u`.`name`                           AS `name`,
-             max(`s`.`pass_rate`)                 AS `result`,
-             count(`p`.`problem_id`)              AS `committed`,
-             (max(`s`.`pass_rate`) * `p`.`score`) AS `score`,
-             `s`.`contest_id`                     AS `contest_id`,
-             `c`.`contest_name`                   AS `contest_name`
-      from (((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on (((`s`.`user_id` = `u`.`user_id`) and (`u`.`role_id` = 0)))) join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
-               join `cloud_oj`.`contest` `c` on ((`s`.`contest_id` = `c`.`contest_id`)))
-      group by `s`.`user_id`, `p`.`problem_id`, `s`.`contest_id`) `problem_score`
-group by `problem_score`.`user_id`, `problem_score`.`contest_id`;
-
-create view ranking_list as
-select `problem_score`.`user_id`                                    AS `user_id`,
-       `problem_score`.`name`                                       AS `name`,
-       sum(`problem_score`.`committed`)                             AS `committed`,
-       count((case when (`problem_score`.`result` = 1) then 1 end)) AS `passed`,
-       truncate(sum(`problem_score`.`score`), 2)                    AS `total_score`
-from (select `s`.`user_id`                        AS `user_id`,
-             `u`.`name`                           AS `name`,
-             max(`s`.`pass_rate`)                 AS `result`,
-             count(`p`.`problem_id`)              AS `committed`,
-             (max(`s`.`pass_rate`) * `p`.`score`) AS `score`
-      from ((`cloud_oj`.`solution` `s` join `cloud_oj`.`user` `u` on (((`s`.`user_id` = `u`.`user_id`) and (`u`.`role_id` = 0))))
-               join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`)))
-      where (`s`.`contest_id` is null)
-      group by `s`.`user_id`, `p`.`problem_id`) `problem_score`
-group by `problem_score`.`user_id`;
-
 create view judge_result as
 select `s`.`solution_id`                                      AS `solution_id`,
        `s`.`problem_id`                                       AS `problem_id`,
@@ -222,13 +218,13 @@ select `s`.`solution_id`                                      AS `solution_id`,
        truncate(`s`.`pass_rate`, 2)                           AS `pass_rate`,
        `s`.`user_id`                                          AS `user_id`,
        `s`.`submit_time`                                      AS `submit_time`,
-       truncate((`s`.`pass_rate` * `p`.`score`), 1)           AS `score`,
+       truncate(`s`.`score`, 2)                               AS `score`,
        `sc`.`code`                                            AS `code`,
        `r`.`time`                                             AS `time`,
        `r`.`memory`                                           AS `memory`,
        concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
-from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
-         join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
+from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) left join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
+         left join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
 order by `s`.`submit_time`;
 
 -- 初始化角色/权限表

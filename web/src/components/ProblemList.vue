@@ -33,7 +33,8 @@
             <el-link @click="titleClick(scope.row)">
               {{ scope.row.problemId }}&nbsp;{{ scope.row.title }}
             </el-link>
-            <el-tag v-if="scope.row.type === 1" style="margin-left: 10px" type="info" size="small">
+            <el-tag v-if="scope.row.type === 1" class="el-icon--right"
+                    type="primary" size="mini" effect="dark">
               SQL
             </el-tag>
           </template>

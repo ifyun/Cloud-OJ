@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-top: 61px">
+  <div>
     <error :error="error"/>
     <bottom-area class="bottom"/>
   </div>

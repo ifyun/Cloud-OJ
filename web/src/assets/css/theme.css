@@ -1,7 +1,7 @@
 html, body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    height: calc(100% - 60px);
+    height: 100%;
     padding: 0;
     margin: 0;
     background-color: white;
@@ -28,9 +28,13 @@ html, body {
 }
 
 .el-container {
-    min-width: 1100px !important;
+    min-width: 1080px !important;
     max-width: 1400px;
-    margin: 76px auto 0;
+    margin: 16px auto 0;
+}
+
+.el-drawer__body {
+    padding: 20px;
 }
 
 .el-card + .is-always-shadow, .el-tabs--border-card {

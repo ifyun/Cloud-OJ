@@ -5,8 +5,9 @@
       <el-upload class="avatar-uploader" :show-file-list="false" :action="uploadUrl"
                  :headers="uploadHeaders" :before-upload="beforeUpload"
                  :on-success="uploadSuccess" :on-error="uploadFailed">
-        <img v-if="avatarUrl" :src="avatarUrl" class="avatar-uploaded" alt="upload avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon"/>
+        <el-avatar :src="avatarUrl" class="avatar-uploaded" alt="upload avatar">
+          <img src="@/assets/icons/no_avatar.png" alt="user">
+        </el-avatar>
       </el-upload>
       <el-divider></el-divider>
       <el-form ref="profileForm" :model="userProfile" :rules="rules">

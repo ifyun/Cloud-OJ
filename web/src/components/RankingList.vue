@@ -5,22 +5,8 @@
       <el-empty description="什么都没有"/>
     </div>
     <el-card v-else class="borderless" style="width: 100%">
-      <div v-if="contest.contestId != null" class="head">
-        <span style="font-size: 14pt;font-weight: bold;">{{ contest.contestName }}</span>
-        <div class="refresh-div">
-          <div>
-            <span>自动刷新：</span>
-            <el-switch v-model="autoRefresh" @change="toggleAutoRefresh">
-            </el-switch>
-          </div>
-          <el-button style="margin-left: 20px" icon="el-icon-refresh"
-                     size="mini" round @click="getRankingList(true)">
-            刷新
-          </el-button>
-        </div>
-      </div>
       <el-table :data="ranking.data" v-loading="loading" :show-header="false" stripe
-                :row-style="{height: '55px'}" @row-dblclick="getDetail">
+                :row-style="{height: '55px'}">
         <el-table-column width="60px" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row['rank'] === 1" align="center" class="ranking-icon"
@@ -52,21 +38,21 @@
         </el-table-column>
         <el-table-column width="120px" align="right">
           <template slot-scope="scope">
-            <span>{{ scope.row['committed'] }} 次提交</span>
+            <span>{{ scope.row.committed }} 次提交</span>
             <i class="el-icon-top el-icon--right"/>
           </template>
         </el-table-column>
         <el-table-column width="120px" align="right">
           <template slot-scope="scope">
-            <span class="passed-tag" style="color: #67c23a" @click="getDetail(scope.row)">
-              <span>{{ scope.row['passed'] }} 题通过</span>
+            <span style="color: #67c23a">
+              <span>{{ scope.row.passed }} 题通过</span>
               <i class="el-icon-success el-icon--right"/>
             </span>
           </template>
         </el-table-column>
         <el-table-column width="150px" align="right">
           <template slot-scope="scope">
-            <b style="color: #303133">{{ scope.row["totalScore"] }}</b>
+            <b style="color: #303133">{{ scope.row.score }}</b>
           </template>
         </el-table-column>
       </el-table>
@@ -76,29 +62,13 @@
                      @size-change="getRankingList" @current-change="pageChange">
       </el-pagination>
     </el-card>
-    <el-dialog :title="detailDialog.title" :visible.sync="detailDialog.visible" width="700px">
-      <el-table :data="detailDialog.details" v-loading="detailDialog.loading">
-        <el-table-column label="题目">
-          <template slot-scope="scope">
-            <b>[{{ scope.row.problemId }}]&nbsp;{{ scope.row.title }}</b>
-          </template>
-        </el-table-column>
-        <el-table-column label="通过率" width="100px" align="right">
-          <template slot-scope="scope">
-            <span>{{ scope.row['passRate'] * 100 }}%</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="得分" prop="score" width="100px" align="right">
-        </el-table-column>
-      </el-table>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/util"
+import {userInfo} from "@/util"
 import Error from "@/components/Error"
-import {ContestApi, RankingApi} from "@/service"
+import {RankingApi} from "@/service"
 
 export default {
   name: "RankingList",
@@ -107,37 +77,25 @@ export default {
   },
   beforeMount() {
     this.loadPage()
-    this.contestId = this.$route.query.contestId
-    if (this.contestId != null) {
-      this.getContest()
-    } else {
-      this.siteSetting.setTitle("排行榜")
-    }
+    this.siteSetting.setTitle("排行榜")
     this.getRankingList()
   },
   data() {
     return {
       loading: true,
-      autoRefresh: false,
-      timer: null,
       ranking: {
-        data: [],
+        data: [
+          {
+            committed: 0,
+            passed: 0,
+            score: 0
+          }
+        ],
         count: 0
       },
       userInfo: userInfo(),
-      contestId: null,
-      contest: {
-        contestId: null,
-        contestName: ""
-      },
       currentPage: 1,
       pageSize: 15,
-      detailDialog: {
-        visible: false,
-        title: "",
-        loading: true,
-        details: []
-      },
       error: {
         code: null,
         msg: ""
@@ -145,19 +103,6 @@ export default {
     }
   },
   methods: {
-    toggleAutoRefresh(autoRefresh) {
-      if (autoRefresh) {
-        this.timer = setInterval(this.autoGetRankingList(), 10000)
-      } else {
-        clearInterval(this.timer)
-      }
-    },
-    autoGetRankingList() {
-      let ctx = this
-      return function () {
-        ctx.getRankingList(true)
-      }
-    },
     loadPage() {
       const page = this.$route.query.page
       if (page != null) {
@@ -165,78 +110,25 @@ export default {
       }
     },
     pageChange(page) {
-      if (this.contestId != null) {
-        this.$router.push({
-          query: {
-            page,
-            contestId: this.contestId
-          }
-        })
-      } else {
-        this.$router.push({
-          query: {
-            page
-          }
-        })
-      }
-    },
-    getContest() {
-      if (this.contestId == null) {
-        return
-      }
-      ContestApi.get(this.contestId).then((data) => {
-        this.siteSetting.setTitle(`${data.contestName} - 排行榜`)
-        this.contest = data
-        this.getRankingList()
-      }).catch((error) => {
-        this.error = error
+      this.$router.push({
+        query: {
+          page
+        }
       })
     },
-    getRankingList(refresh = false) {
+    getRankingList() {
       this.loading = true
 
-      const promise = this.contest.contestId == null ?
-          RankingApi.getRanking(this.currentPage, this.pageSize) :
-          RankingApi.getContestRanking(this.contest.contestId, this.currentPage, this.pageSize, userInfo())
-
-      promise.then((data) => {
-        this.ranking = data
-        refresh === true && Notice.message.success(this, "排行榜已刷新")
-      }).catch((error) => {
-        switch (error.code) {
-          case 401:
-            toLoginPage(this)
-            break
-          default:
+      RankingApi.getRanking(this.currentPage, this.pageSize)
+          .then((data) => {
+            this.ranking = data
+          })
+          .catch((error) => {
             this.error = error
-        }
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    getDetail(row) {
-      if (this.contest.contestId != null && userInfo() != null && userInfo()["roleId"] >= 2) {
-        this.detailDialog.loading = true
-        this.detailDialog.visible = true
-        this.detailDialog.title = `${row.name} - 每题得分`
-
-        RankingApi.getDetail(row.contestId, row.userId, userInfo())
-            .then((data) => {
-              this.detailDialog.details = data
-            })
-            .catch((error) => {
-              if (error.code === 401) {
-                toLoginPage(this)
-              }
-              Notice.notify.error(this, {
-                title: "获取详细得分失败",
-                message: `${error.code} ${error.msg}`
-              })
-            })
-            .finally(() => {
-              this.detailDialog.loading = false
-            })
-      }
+          })
+          .finally(() => {
+            this.loading = false
+          })
     }
   }
 }
@@ -251,19 +143,6 @@ export default {
   height: 28px;
 }
 
-.head {
-  margin-bottom: 25px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.refresh-div {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-}
-
 .el-link--inner {
   color: #303133;
 }
@@ -271,9 +150,5 @@ export default {
 .user-id {
   font-size: 6px;
   color: #909399;
-}
-
-.passed-tag {
-  cursor: pointer;
 }
 </style>

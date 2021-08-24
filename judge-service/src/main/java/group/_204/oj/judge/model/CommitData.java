@@ -3,6 +3,7 @@ package group._204.oj.judge.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class CommitData implements Serializable {
@@ -13,4 +14,5 @@ public class CommitData implements Serializable {
     private String sourceCode;
     private Integer language;
     private Integer type;
+    private Date submitTime;
 }

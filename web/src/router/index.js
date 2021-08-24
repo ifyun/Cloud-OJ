@@ -8,6 +8,7 @@ const Problems = () => import("@/page/Problems")
 const Contest = () => import("@/page/Contest")
 const Profile = () => import("@/page/Profile")
 const Ranking = () => import("@/page/Ranking")
+const ContestRanking = () => import("@/page/ContestRanking")
 const Commit = () => import("@/page/Commit")
 const Help = () => import("@/page/Help")
 const Manage = () => import("@/page/Manage")
@@ -24,6 +25,7 @@ const routes = [
     {path: "/contest", component: Contest},
     {path: "/profile", component: Profile},
     {path: "/ranking", component: Ranking},
+    {path: "/contest_ranking/:id", component: ContestRanking},
     {path: "/commit", component: Commit},
     {path: "/help", component: Help},
     {

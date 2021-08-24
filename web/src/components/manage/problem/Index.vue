@@ -110,7 +110,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next"
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next" background
                      :page-size.sync="pageSize" :total="problems.count"
                      :current-page.sync="currentPage"
                      @size-change="getProblems" @current-change="getProblems">

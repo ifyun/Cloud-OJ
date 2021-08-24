@@ -44,6 +44,7 @@ public class JudgementAsync {
             }
             log.info("Judged: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         } catch (Exception e) {
+            // 判题发生异常，将结果设置为内部错误
             log.error(e.getMessage());
             solution.setState(SolutionState.JUDGED);
             solution.setResult(SolutionResult.IE);

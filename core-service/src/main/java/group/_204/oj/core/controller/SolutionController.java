@@ -1,18 +1,21 @@
 package group._204.oj.core.controller;
 
 import group._204.oj.core.model.JudgeResult;
-import group._204.oj.core.service.JudgeResultService;
+import group._204.oj.core.service.SolutionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+/**
+ * 提交记录/判题结果接口
+ */
 @RestController
 @RequestMapping("history")
-public class JudgeResultController implements CRUDController {
+public class SolutionController implements CRUDController {
 
     @Resource
-    private JudgeResultService judgeResultService;
+    private SolutionService solutionService;
 
     /**
      * 获取提交记录
@@ -20,7 +23,7 @@ public class JudgeResultController implements CRUDController {
     @GetMapping()
     public ResponseEntity<?> getJudged(@RequestHeader String userId, Integer page, Integer limit,
                                        Integer problemId, String title) {
-        return buildGETResponse(judgeResultService.getHistories(userId, page, limit, problemId, title));
+        return buildGETResponse(solutionService.getHistories(userId, page, limit, problemId, title));
     }
 
     /**
@@ -28,7 +31,7 @@ public class JudgeResultController implements CRUDController {
      */
     @GetMapping("{solutionId}")
     public ResponseEntity<?> getBySolutionId(@PathVariable String solutionId) {
-        JudgeResult result = judgeResultService.getBySolutionId(solutionId);
+        JudgeResult result = solutionService.getBySolutionId(solutionId);
         return result != null ?
                 ResponseEntity.ok(result) :
                 ResponseEntity.noContent().build();

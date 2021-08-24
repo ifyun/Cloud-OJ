@@ -92,7 +92,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination style="margin-top: 15px" layout="total, prev, pager, next"
+    <el-pagination style="margin-top: 15px" layout="total, prev, pager, next" background
                    :page-size.sync="pageSize" :total="users.count"
                    :current-page.sync="currentPage"
                    @size-change="getUsers" @current-change="getUsers">

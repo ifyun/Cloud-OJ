@@ -18,6 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import javax.annotation.Resource;
 
+/**
+ * SQL 判题
+ * <p>基于 SQLite</p>
+ */
 @Slf4j
 @Component
 public class SqlJudgement {
@@ -47,9 +51,9 @@ public class SqlJudgement {
     @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
         log.info("Judging: type(SQL), solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
-        dbConfig.disableFKChecks(); // 为当前事务禁用外键约束
+        dbConfig.disableFKChecks();
 
-        String correctSql = problemDao.getSql(solution.getProblemId());
+        String correctSql = problemDao.getSql(solution.getProblemId()); // 获取正确的 SQL 语句
         File[] files = new File(fileDir + "test_data/" + solution.getProblemId())
                 .listFiles(file -> file.getName().endsWith(".db"));
         Runtime runtime = new Runtime(solution.getSolutionId());
@@ -81,6 +85,15 @@ public class SqlJudgement {
         solutionDao.update(solution);
     }
 
+    /**
+     * 判题
+     * <p>先后执行正确的语句和用户的语句，对比输出</p>
+     *
+     * @param userSql    用户的 SQL 语句
+     * @param correctSql 正确的 SQL 语句
+     * @param dbFile     数据库文件路径
+     * @return {@link Result} 结果
+     */
     private Result judge(String userSql, String correctSql, String dbFile) throws InterruptedException, IOException {
         InputStream correctOutput = exec(correctSql, dbFile);
         InputStream userOutput = exec(userSql, dbFile);

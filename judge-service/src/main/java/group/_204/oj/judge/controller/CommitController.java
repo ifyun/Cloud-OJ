@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -58,6 +59,7 @@ public class CommitController {
         }
 
         data.setSolutionId(UUID.randomUUID().toString());
+        data.setSubmitTime(new Date());
         rabbitTemplate.convertAndSend(commitQueue.getName(), data);
 
         return ResponseEntity.accepted().body(data.getSolutionId());
