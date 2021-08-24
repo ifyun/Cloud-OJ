@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div style="height: calc(100% - 61px)">
     <div style="margin-top: 75px" v-if="error.code != null">
       <error :error="error"/>
       <bottom-area class="bottom"/>
@@ -99,19 +99,17 @@ export default {
 }
 
 .aside {
-  margin-top: 1px;
   height: 100%;
   width: auto !important;
   box-shadow: 2px 0 4px 0 rgba(0, 0, 0, 0.08);
-  background-color: white;
 }
 
 .container {
-  margin-top: 60px;
+  margin-top: 0 !important;
   padding: 0;
   min-width: 1100px !important;
   max-width: 100% !important;
-  height: calc(100% + 59px);
+  height: 100%;
 }
 
 .main {

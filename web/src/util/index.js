@@ -1,18 +1,22 @@
 import {SettingsApi} from "@/service"
 
-let colorIndex = 1,
-    colorMap = new Map()
-
 const TOKEN = "token"
 
+let colorIndex = 1
+let colorMap = JSON.parse(localStorage.getItem("tag_color"))
+if (colorMap == null) {
+    colorMap = {}
+}
+
 function tagColor(tag) {
-    if (typeof colorMap.get(tag) === "undefined") {
+    if (typeof colorMap[tag] === "undefined") {
         let i = colorIndex % 8
-        colorMap.set(tag, `tag-color-${i === 0 ? 1 : i}`)
+        colorMap[tag] = `tag-color-${i === 0 ? 1 : i}`
         colorIndex++
+        localStorage.setItem("tag_color", JSON.stringify(colorMap))
     }
 
-    return colorMap.get(tag)
+    return colorMap[tag]
 }
 
 function userInfo() {
@@ -31,7 +35,7 @@ function clearToken() {
 function toLoginPage(ctx, logoff = false) {
     if (logoff === true) {
         clearToken()
-        ctx.$router.push("/login")
+        ctx.$router.push("/login").catch()
     } else {
         ctx.$confirm("登录已失效，请重新登录", "提示", {
             confirmButtonText: "去登录",

@@ -4,10 +4,16 @@
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
-        from (select *
-              from ranking_list
-              where total_score &gt; 0
-              order by total_score desc) r,
+        from (select u.user_id,
+                     u.name,
+                     committed,
+                     passed,
+                     score
+              from leaderboard
+                       join user u on leaderboard.user_id = u.user_id
+              where u.role_id = 0
+                and score &gt; 0
+              order by score desc, update_time) r,
              (select @ranking := #{start}) rn
         limit #{start}, #{limit};
         select found_rows();
@@ -15,12 +21,18 @@
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
-        from (select *
-              from contest_ranking_list
-              where total_score &gt; 0
-              order by total_score desc) r,
+        from (select u.user_id,
+                     name,
+                     committed,
+                     passed,
+                     score
+              from leaderboard_contest
+                       join user u on leaderboard_contest.user_id = u.user_id
+              where contest_id = #{contestId}
+                and u.role_id = 0
+                and score &gt; 0
+              order by score desc, update_time) r,
              (select @ranking := #{start}) rn
-        where contest_id = #{contestId}
         limit #{start}, #{limit};
         select found_rows();
     </select>

@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div style="width: 100%">
     <div v-if="!loading && contests.count === 0">
       <el-empty description="什么都没有"/>
     </div>
@@ -156,17 +156,13 @@ export default {
       }
     },
     seeRanking(_, contest) {
-      window.location.href = `/ranking?contestId=${contest.contestId}`
+      window.location.href = `/contest_ranking/${contest.contestId}`
     }
   }
 }
 </script>
 
 <style scoped>
-.content {
-  width: 100%;
-}
-
 .languages {
   color: #606266;
 }

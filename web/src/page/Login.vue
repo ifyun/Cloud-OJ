@@ -106,7 +106,7 @@ export default {
 
 <style scoped>
 .container {
-  height: calc(100% + 60px);
+  height: 100%;
   min-width: 1100px;
   display: flex;
   flex-direction: row;
@@ -118,7 +118,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100% + 52px);
+  height: calc(100% - 8px);
   min-height: 700px;
   /* background by SVGBackgrounds.com */
   background-color: #3A3A3A;
@@ -131,7 +131,7 @@ export default {
 
 .right {
   min-width: 520px;
-  height: calc(100% + 60px);
+  height: 100%;
   min-height: 700px;
   overflow: hidden;
 }

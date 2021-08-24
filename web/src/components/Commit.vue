@@ -21,11 +21,11 @@
                             <i class="el-icon-question el-icon--left"/>
                             {{ problem.score }} 分
                           </el-tag>
-                          <el-tag type="success" effect="dark" size="mini">
+                          <el-tag type="warning" effect="dark" size="mini">
                             <i class="el-icon-time el-icon--left"/>
                             时间: {{ problem.timeout }} ms
                           </el-tag>
-                          <el-tag type="primary" effect="dark" size="mini">
+                          <el-tag type="success" effect="dark" size="mini">
                             <i class="el-icon-cpu el-icon--left"/>
                             内存: {{ problem.type === 0 ? problem.memoryLimit : 0 }} MB
                           </el-tag>
@@ -284,7 +284,7 @@ export default {
   methods: {
     /* 计算题目内容区域高度 */
     contentHeight() {
-      const offset = 120
+      const offset = 180
       if (this.windowHeight <= 900) {
         return `${900 - offset}px`
       } else if (this.windowHeight >= 1300) {
@@ -295,7 +295,7 @@ export default {
     },
     /* 计算代码编辑器高度 */
     codeHeight() {
-      const offset = 158  // content offset + toolbar height
+      const offset = 216  // content offset + toolbar height
       if (this.windowHeight <= 900) {
         return `${900 - offset}px`
       } else if (this.windowHeight >= 1300) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="group._204.oj.core.dao.JudgeResultDao">
+<mapper namespace="group._204.oj.core.dao.SolutionDao">
     <select id="getResultBySolutionId" resultMap="Map.JudgeResult">
         select solution_id,
                state - 1  as state_code,

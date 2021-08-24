@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="group._204.oj.judge.dao.SolutionDao">
+    <select id="getMaxScoreOfUser" resultType="java.lang.Double">
+        select max(score) as score
+        from solution
+        where user_id = #{userId}
+        and problem_id = #{problemId}
+        <choose>
+            <when test="contestId != null">and contest_id = #{contestId}</when>
+            <otherwise>and contest_id is null</otherwise>
+        </choose>
+    </select>
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
             parameterType="group._204.oj.judge.model.Solution">
         insert into solution(solution_id, user_id, problem_id, contest_id, language, type)
@@ -15,7 +25,8 @@
         update solution
         set state     = #{state},
             result    = #{result},
-            pass_rate = #{passRate}
+            pass_rate = #{passRate},
+            score     = #{score}
         where solution_id = #{solutionId}
     </update>
 </mapper>

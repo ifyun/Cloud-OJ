@@ -23,7 +23,11 @@ export default {
   },
   watch: {
     $route(to) {
-      this.displayNav = to.path !== "/login"
+      if (to.path !== "/login" && !to.path.startsWith("/contest_ranking")) {
+        this.displayNav = true
+      } else {
+        this.displayNav = false
+      }
     }
   }
 }
