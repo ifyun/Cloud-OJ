@@ -1,7 +1,8 @@
 <template>
   <div>
-    <el-card class="borderless" v-loading="loading">
-      <h3>系统信息</h3>
+    <error-info :error="error" v-if="!loading && error.code != null"/>
+    <el-card v-else class="borderless" v-loading="loading">
+      <h4>系统信息</h4>
       <el-card shadow="never" style="margin-bottom: 35px">
         <div><b>RabbitMQ 消息队列：</b>
           <el-button style="float: right" icon="el-icon-refresh" size="mini"
@@ -24,11 +25,11 @@
           </div>
         </div>
       </el-card>
-      <h3>系统设置</h3>
-      <el-card shadow="never" style="margin-bottom: 35px">
+      <h4>系统设置</h4>
+      <el-card id="settings" shadow="never" style="margin-bottom: 35px">
         <el-row type="flex" justify="space-between">
           <el-col :span="20">
-            <h3>隐藏进行中的竞赛排行榜</h3>
+            <h4>隐藏进行中的竞赛排行榜</h4>
             <span class="info">开启后，只有当竞赛/作业结束后可以查看排行榜（管理员不受此限制）</span>
           </el-col>
           <el-col :span="4">
@@ -40,7 +41,7 @@
         <el-divider/>
         <el-row type="flex" justify="space-between">
           <el-col :span="20">
-            <h3>显示未开始的竞赛</h3>
+            <h4>显示未开始的竞赛</h4>
             <span class="info">开启后，未开始的竞赛/作业也会显示在列表中，但不可查看题目</span>
           </el-col>
           <el-col :span="4">
@@ -52,7 +53,7 @@
         <el-divider/>
         <el-row>
           <el-col :span="10">
-            <h3>网站设置</h3>
+            <h4>网站设置</h4>
             <el-form label-width="80px" label-position="left" size="medium">
               <el-form-item label="网站名称">
                 <el-input v-model="settings.siteName" placeholder="Cloud OJ"/>
@@ -93,7 +94,8 @@
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/util"
+import ErrorInfo from "@/components/ErrorInfo"
+import {Notice, userInfo} from "@/util"
 import {ApiPath, SettingsApi} from "@/service"
 import axios from "axios"
 
@@ -101,15 +103,17 @@ const title = "系统设置"
 
 export default {
   name: "Settings",
-  beforeMount() {
-    this.siteSetting.setTitle(title)
-    this.getQueueInfo()
-    this.getSettings()
-    this.checkLogo()
+  components: {
+    ErrorInfo
   },
   data() {
     return {
       loading: true,
+      error: {
+        code: null,
+        msg: ""
+      },
+      userInfo: userInfo(),
       queueInfo: {
         inCommitQueue: 0,
         inJudgeQueue: 0
@@ -125,20 +129,49 @@ export default {
         url: "/favicon.png",
         uploadUrl: ApiPath.IMAGE + "/logo",
         uploadHeaders: {
-          "token": userInfo().token,
-          "userId": userInfo().userId
+          userId: "",
+          token: ""
         }
       }
     }
   },
+  created() {
+    this.$siteSetting.setTitle(title)
+
+    if (this.userInfo != null) {
+      this.logo.uploadHeaders = {
+        userId: this.userInfo.userId,
+        token: this.userInfo.token
+      }
+
+      this.getQueueInfo()
+      this.getSettings()
+      this.checkLogo()
+    } else {
+      this.loading = false
+      this.error = {
+        code: 401,
+        msg: "未授权"
+      }
+    }
+  },
   methods: {
+    /**
+     * 获取队列信息
+     */
     getQueueInfo(refresh) {
       SettingsApi.getQueueInfo(userInfo()).then((data) => {
         this.queueInfo = data
         refresh === true && Notice.message.success(this, "队列信息已刷新")
       }).catch((error) => {
+        console.log(this.error)
         if (error.code === 401) {
-          toLoginPage(this)
+          this.$bus.$emit("login")
+        } else if (error.code === 403) {
+          this.error = {
+            code: 403,
+            msg: "无权限访问此页面"
+          }
         } else {
           Notice.notify.error(this, {
             title: "获取队列信息失败",
@@ -166,7 +199,7 @@ export default {
               title: "已保存",
               message: `${res.status} ${res.statusText}`
             })
-            this.siteSetting.reload(title)
+            this.$siteSetting.reload(title)
           })
           .catch((error) => {
             Notice.notify.error(this, {
@@ -204,7 +237,7 @@ export default {
       const url = `${ApiPath.IMAGE}/favicon.png`
       axios.head(url).then(() => {
         this.logo.url = url
-        this.siteSetting.setFavicon(url)
+        this.$siteSetting.setFavicon(url)
       }).catch(() => {
         this.logo.url = "/favicon.png"
       })
@@ -221,48 +254,53 @@ export default {
 }
 </script>
 
-<style scoped>
-h3 {
+<style scoped lang="scss">
+h3, h4 {
   margin-top: 0;
-  color: #606266;
+  color: var(--color-text-normal);
 }
 
 .queue-info {
   display: inline-block;
+
+  .count {
+    font-size: 64pt;
+    color: #303133;
+  }
+
+  .info {
+    margin-left: 5px;
+    color: var(--color-text-normal);
+    font-size: 14px;
+  }
 }
 
-.queue-info .count {
-  font-size: 64pt;
-  color: #303133;
-}
+#settings {
+  .info {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+  }
 
-.queue-info .info {
-  margin-left: 5px;
-  color: #606266;
-}
-
-.info {
-  color: #909399;
-  font-size: 14px;
-}
-
-.switch {
-  margin-top: 5px;
-  margin-left: 50px;
+  .switch {
+    margin-top: 5px;
+    margin-left: 50px;
+  }
 }
 </style>
 
-<style>
-.logo-uploader .el-upload {
-  border: 1px dashed #e0e0e0;
-  border-radius: 5px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
+<style lang="scss">
+.logo-uploader {
+  .el-upload {
+    border: 1px dashed #e0e0e0;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 
-.logo-uploader .el-upload:hover {
-  border-color: #409EFF;
+    &:hover {
+      border-color: #409EFF;
+    }
+  }
 }
 
 .logo-uploader-icon {

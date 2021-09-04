@@ -7,6 +7,9 @@ server:
 spring:
   application:
     name: file-service
+  servlet:
+    multipart:
+      max-file-size: 128MB
 
 management:
   endpoints:

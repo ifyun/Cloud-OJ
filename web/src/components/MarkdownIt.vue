@@ -90,7 +90,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .markdown-it-alter-info {
   border: 1px solid #91d5ff;
   background-color: #e6f7ff;
@@ -145,11 +145,11 @@ export default {
   border-radius: 4px;
   width: 100%;
   margin-bottom: 16px;
-}
 
-.markdown-it-alter p {
-  margin-top: 1px;
-  margin-bottom: 0
+  p {
+    margin-top: 1px;
+    margin-bottom: 0
+  }
 }
 
 .markdown-it-alert-icon {

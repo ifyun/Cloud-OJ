@@ -32,7 +32,7 @@ import md5 from "crypto-js/md5"
 export default {
   name: "LoginTab",
   beforeMount() {
-    this.siteSetting.setTitle("登录")
+    this.$siteSetting.setTitle("登录")
   },
   data() {
     return {
@@ -54,14 +54,14 @@ export default {
   methods: {
     login() {
       this.loading = true
-      this.$refs["loginForm"].validate((valid) => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
           AuthApi.login({
             username: this.loginForm.username,
             password: md5(this.loginForm.password).toString()
           }).then((data) => {
             saveToken(JSON.stringify(data))
-            window.location.href = "/"
+            this.$router.go(0)
           }).catch((error) => {
             if (error.code === 400) {
               Notice.notify.warning(this, {

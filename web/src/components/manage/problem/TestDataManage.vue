@@ -4,6 +4,14 @@
               :closable="false" type="warning" show-icon
               title="文件中的换行符应该为 LF，不可使用 CRLF">
     </el-alert>
+    <el-alert v-if="sql === true" style="margin: 15px 0" :closable="false" type="info" show-icon
+              title="此题为 SQL，请上传 SQLite 数据库文件（*.db）"
+              description="仅支持一个文件，上传多个只有第一个有效">
+    </el-alert>
+    <el-alert v-else style="margin: 15px 0" :closable="false" type="info" show-icon
+              title="若需要修改请先下载，编辑后再上传"
+              description="每组数据的名称应该相同（例如1-1.in对应1-1.out），删除文件时，请确保成对删除">
+    </el-alert>
     <el-upload ref="upload" :action="uploadUrl" :multiple="true" :auto-upload="false"
                :data="{'problemId': this.problemId}" :headers="headers"
                :on-success="uploadSuccess" :file-list="fileList" accept=".in,.out,.db">
@@ -15,16 +23,9 @@
       </el-button>
       <el-button style="float: right" icon="el-icon-refresh" size="small" @click="getTestData">刷新</el-button>
     </el-upload>
-    <el-alert v-if="sql === true" style="margin: 15px 0" :closable="false" type="info" show-icon
-              title="此题为 SQL，请上传 SQLite 数据库文件（*.db）"
-              description="仅支持一个文件，上传多个只有第一个有效">
-    </el-alert>
-    <el-alert v-else style="margin: 15px 0" :closable="false" type="info" show-icon
-              title="若需要修改请先下载，编辑后再上传"
-              description="每组数据的名称应该相同（例如1-1.in对应1-1.out），删除文件时，请确保成对删除">
-    </el-alert>
     <el-table size="small" :data="testData" stripe max-height="600" v-loading="loading"
-              :default-sort="{prop: 'fileName', order: 'ascending'}">
+              :default-sort="{prop: 'fileName', order: 'ascending'}"
+              style="margin-top: 15px">
       <el-table-column label="文件名" prop="fileName">
       </el-table-column>
       <el-table-column label="文件大小" width="200px" align="right">
@@ -51,7 +52,7 @@
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/util"
+import {Notice, userInfo} from "@/util"
 import {ApiPath, TestDataApi} from "@/service"
 
 export default {
@@ -95,7 +96,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: "获取测试数据失败",
@@ -132,7 +133,7 @@ export default {
           .catch((error) => {
             let res = error.response
             if (res.status === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: `${fileName} 删除失败`,
@@ -146,5 +147,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

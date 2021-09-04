@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 public class Limit {
     private long timeout;
     private int memoryLimit;
+    private int outputLimit;
     private int score;
 }

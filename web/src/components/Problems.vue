@@ -1,12 +1,12 @@
 <template>
-  <div style="width: 100%">
-    <error v-if="error.code != null" :error="error"/>
+  <div id="root">
+    <error-info v-if="error.code != null" :error="error"/>
     <el-card v-else class="borderless" style="width: 100%">
       <h3 v-if="contest.contestId != null">{{ contest.contestName }}</h3>
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form size="medium" :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-input style="width: 250px" placeholder="输入关键字" prefix-icon="el-icon-search"
+            <el-input style="width: 300px" placeholder="输入关键字" prefix-icon="el-icon-search"
                       v-model="keyword" @keyup.enter.native="search(keyword)">
             </el-input>
           </el-form-item>
@@ -57,7 +57,7 @@
           </span>
           </template>
         </el-table-column>
-        <el-table-column width="50px"/>
+        <el-table-column width="20px"/>
         <el-table-column label="分类" v-if="contest.contestId == null">
           <template slot-scope="scope">
             <div v-if="scope.row.category !== ''">
@@ -68,7 +68,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="分数" align="right">
+        <el-table-column label="分数" width="100px" align="right">
           <template slot-scope="scope">
             {{ scope.row.score }} 分
           </template>
@@ -84,15 +84,15 @@
 </template>
 
 <script>
-import Error from "@/components/Error"
-import {Notice, tagColor, toLoginPage, userInfo} from "@/util"
+import ErrorInfo from "@/components/ErrorInfo"
+import {Notice, tagColor, userInfo} from "@/util"
 import {resultTags} from "@/util/data"
 import {ContestApi, ProblemApi} from "@/service"
 
 export default {
-  name: "ProblemList",
+  name: "Problems",
   components: {
-    Error
+    ErrorInfo
   },
   beforeMount() {
     sessionStorage.removeItem("code")
@@ -102,7 +102,7 @@ export default {
       this.getContest()
     } else {
       this.getProblems()
-      this.siteSetting.setTitle("题库")
+      this.$siteSetting.setTitle("题库")
     }
   },
   data() {
@@ -167,10 +167,10 @@ export default {
     getContest() {
       if (this.contestId != null && userInfo() == null) {
         // 未登录不可查看竞赛题目
-        toLoginPage(this)
+        this.$bus.$emit("login")
       }
       ContestApi.get(this.contestId).then((data) => {
-        this.siteSetting.setTitle(data.contestName)
+        this.$siteSetting.setTitle(data.contestName)
         this.contest = data
         this.getProblems()
       }).catch((error) => {
@@ -203,7 +203,7 @@ export default {
         this.problems = data
       }).catch((error) => {
         if (error.code === 401) {
-          toLoginPage(this)
+          this.$bus.$emit("login")
         }
         Notice.notify.error(this, {
           title: "获取题目失败",
@@ -232,6 +232,11 @@ export default {
 </script>
 
 <style scoped>
+#root {
+  margin: 0 auto;
+  width: 1100px;
+}
+
 h3 {
   color: #303133;
   margin-top: 0;

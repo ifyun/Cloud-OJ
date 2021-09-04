@@ -1,3 +1,17 @@
+:root {
+    --color-text-primary: #303133;
+    --color-text-normal: #606266;
+    --color-text-secondary: #909399;
+    --color-text-placeholder: #C0C4CC;
+
+    --text-extra-small: 12px;
+    --text-small: 13px;
+    --text-base: 14px;
+    --text-small-title: 16px;
+    --text-title: 18px;
+    --text-large-title: 20px;
+}
+
 html, body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -8,8 +22,13 @@ html, body {
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
 }
 
+.el-container {
+    width: 100%;
+}
+
 .el-header {
-    min-width: 1100px;
+    min-width: 1000px;
+    width: 100%;
     margin: 0 auto;
     padding: 0 !important;
     z-index: 100;
@@ -24,29 +43,16 @@ html, body {
     font-weight: bold;
     font-size: 14pt !important;
     text-decoration: none;
-    color: #606266;
-}
-
-.el-container {
-    min-width: 1080px !important;
-    max-width: 1400px;
-    margin: 16px auto 0;
+    color: var(--color-text-normal);
 }
 
 .el-drawer__body {
     padding: 20px;
 }
 
-.el-card + .is-always-shadow, .el-tabs--border-card {
-    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08) !important
-}
-
-.borderless {
-    border: none !important;
-}
-
-.no-shadow {
-    box-shadow: none !important;
+.el-card.is-always-shadow,
+.el-tabs--border-card {
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08) !important;
 }
 
 .el-tabs__item, .el-tabs--border-card > .el-tabs__header {
@@ -69,6 +75,14 @@ html, body {
     color: #409EFF;
     background-color: #F5F5F5;
     box-shadow: inset -3px 0 0 #409EFF;
+}
+
+.borderless {
+    border: none !important;
+}
+
+.no-shadow {
+    box-shadow: none !important;
 }
 
 .tag {
@@ -180,14 +194,10 @@ html, body {
     white-space: pre-wrap;
     word-break: break-word;
     color: #F56C6C;
-    max-height: 200px;
+    max-height: 320px;
     overflow: auto;
     border-radius: 5px;
-    background-color: #FAFAFA;
-}
-
-.error-info {
-    width: 600px !important;
+    background-color: #F5F7FA;
 }
 
 .fade-enter-to {

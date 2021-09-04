@@ -7,8 +7,6 @@
 
 class Utils {
 private:
-    static void rtrim(std::string &str);
-
     static std::string calc_results(const std::vector<Result> &results);
 
 public:

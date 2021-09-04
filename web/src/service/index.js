@@ -4,6 +4,7 @@ import qs from "qs"
 const ApiPath = {
     LOGIN: "/api/auth/login",
     LOGOFF: "/api/auth/logoff",
+    VERIFY: "/api/auth/verify",
     IMAGE: "/api/file/image",
     AVATAR: "/api/file/image/avatar",
     PROBLEM: "/api/core/problem",
@@ -69,6 +70,19 @@ const AuthApi = {
             axios({
                 url: ApiPath.LOGOFF,
                 method: "DELETE",
+                headers: buildHeaders(userInfo)
+            }).then((res) => {
+                resolve(res)
+            }).catch((error) => {
+                reject(resolveError(error))
+            })
+        })
+    },
+    verify(userInfo) {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: ApiPath.VERIFY,
+                method: "GET",
                 headers: buildHeaders(userInfo)
             }).then((res) => {
                 resolve(res)

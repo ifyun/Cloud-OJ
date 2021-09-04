@@ -1,12 +1,12 @@
 <template>
-  <el-card class="borderless">
-    <error :error="error" v-if="!loading && error.code != null" style="margin-bottom: 15px"/>
-    <div v-else>
+  <div>
+    <error-info :error="error" v-if="!loading && error.code != null"/>
+    <el-card v-else class="borderless">
       <div>
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-input size="medium" placeholder="输入关键字" prefix-icon="el-icon-search"
-                      v-model="keyword">
+            <el-input style="width: 300px" size="medium" placeholder="输入关键字"
+                      prefix-icon="el-icon-search" v-model="keyword">
             </el-input>
           </el-form-item>
           <el-form-item>
@@ -30,21 +30,14 @@
                          @click="addProblemClick()">
                 添加题目
               </el-button>
-              <el-button icon="el-icon-upload2" size="small" disabled
-                         @click="importDialog.visible = true">
-                导入题目
-              </el-button>
-              <el-button icon="el-icon-download" size="small" disabled
-                         @click="backupProblems">
-                导出题目
-              </el-button>
             </el-button-group>
           </el-form-item>
         </el-form>
       </div>
       <el-empty v-if="!loading && problems.count === 0"/>
       <el-table v-else :data="problems.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
-        <el-table-column label="#" align="center" type="index" :index="(currentPage - 1) * pageSize + 1">
+        <el-table-column label="#" align="center" type="index"
+                         :index="(currentPage - 1) * pageSize + 1">
         </el-table-column>
         <el-table-column label="题目名称">
           <template slot-scope="scope">
@@ -138,10 +131,8 @@
                   description="与本题目相关的提交记录也会被删除!"
                   :closable="false">
         </el-alert>
-        <el-form ref="deleteForm"
-                 :model="deleteDialog.form"
-                 :rules="deleteDialog.rules"
-                 @submit.native.prevent>
+        <el-form ref="deleteForm" @submit.native.prevent
+                 :model="deleteDialog.form" :rules="deleteDialog.rules">
           <el-form-item label="输入题目名称确认删除" prop="checkTitle">
             <el-input v-model="deleteDialog.form.checkTitle" :placeholder="selected.title">
             </el-input>
@@ -153,36 +144,24 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-      <el-dialog title="导入题目" :visible.sync="importDialog.visible">
-        <el-upload drag :action="importDialog.backupUrl" :headers="{token: userInfo.token}"
-                   :data="{userId: userInfo.userId}" :on-success="importSuccess">
-          <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">只能上传json文件，导入的题目会自动生成新的ID</div>
-        </el-upload>
-      </el-dialog>
-    </div>
-  </el-card>
+    </el-card>
+  </div>
 </template>
 
 <script>
-import {userInfo, tagColor, toLoginPage, Notice} from "@/util"
+import {userInfo, tagColor, Notice} from "@/util"
 import ProblemEditor from "@/components/manage/problem/ProblemEditor"
 import TestDataManage from "@/components/manage/problem/TestDataManage"
-import Error from "@/components/Error"
+import ErrorInfo from "@/components/ErrorInfo"
 import moment from "moment"
-import {ApiPath, ProblemApi} from "@/service"
+import {ProblemApi} from "@/service"
 
 export default {
   name: "ProblemManage",
   components: {
-    Error,
+    ErrorInfo,
     TestDataManage,
     ProblemEditor
-  },
-  beforeMount() {
-    this.siteSetting.setTitle("题库管理")
-    this.getProblems()
   },
   data() {
     let validateDelete = (rule, value, callback) => {
@@ -192,6 +171,7 @@ export default {
       callback()
     }
     return {
+      loading: true,
       error: {
         code: null,
         msg: null
@@ -200,7 +180,6 @@ export default {
       keyword: "",
       keywordTag: "",
       selected: {},
-      loading: true,
       problems: {
         data: [],
         count: 0
@@ -215,10 +194,6 @@ export default {
       testDataDialog: {
         visible: false
       },
-      importDialog: {
-        visible: false,
-        backupUrl: ApiPath.BACKUP
-      },
       deleteDialog: {
         visible: false,
         form: {
@@ -230,6 +205,19 @@ export default {
             {validator: validateDelete, trigger: "blur"}
           ]
         }
+      }
+    }
+  },
+  created() {
+    this.$siteSetting.setTitle("题库管理")
+
+    if(this.userInfo != null) {
+      this.getProblems()
+    } else {
+      this.loading = false
+      this.error = {
+        code: 401,
+        msg: "未授权"
       }
     }
   },
@@ -253,11 +241,11 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else if (error.code === 403) {
               this.error = {
                 code: 403,
-                msg: "无权限"
+                msg: "无权限访问此页面"
               }
             } else {
               Notice.notify.error(this, {
@@ -295,7 +283,7 @@ export default {
           .catch((error) => {
             switch (error.code) {
               case 401:
-                toLoginPage(this)
+                this.$bus.$emit("login")
                 break
               case 400:
                 Notice.notify.error(this, {
@@ -359,7 +347,7 @@ export default {
             .catch((error) => {
               switch (error.code) {
                 case 401:
-                  toLoginPage(this)
+                  this.$bus.$emit("login")
                   break
                 case 400:
                   Notice.notify.error(this, {
@@ -379,15 +367,6 @@ export default {
             })
       })
       this.deleteDialog.form.checkTitle = ""
-    },
-    backupProblems() {
-      let newWindow = window.open("_blank")
-      newWindow.location.href =
-          `${ApiPath.BACKUP}?userId=${userInfo().userId}&token=${userInfo().token}`
-    },
-    importSuccess() {
-      this.importDialog.visible = false
-      this.getProblems()
     }
   }
 }

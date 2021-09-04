@@ -99,6 +99,7 @@
                </if>
                timeout,
                memory_limit,
+               output_limit,
                score,
                category
         from problem
@@ -125,8 +126,24 @@
     </select>
     <insert id="add" parameterType="group._204.oj.core.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
             keyProperty="problemId">
-        insert into problem(title, description, type, `sql`, category, score, timeout, memory_limit)
-            value (#{title}, #{description}, #{type}, #{sql}, #{category}, #{score}, #{timeout}, #{memoryLimit})
+        insert into problem(title,
+                            description,
+                            type,
+                            `sql`,
+                            category,
+                            score,
+                            timeout,
+                            memory_limit,
+                            output_limit)
+            value (#{title},
+                   #{description},
+                   #{type},
+                   #{sql},
+                   #{category},
+                   #{score},
+                   #{timeout},
+                   #{memoryLimit},
+                   #{outputLimit})
     </insert>
     <update id="update" parameterType="group._204.oj.core.model.Problem">
         update problem
@@ -136,6 +153,7 @@
             score        = #{score},
             timeout      = #{timeout},
             memory_limit = #{memoryLimit},
+            output_limit = #{outputLimit},
             category     = #{category}
         where problem_id = #{problemId}
     </update>

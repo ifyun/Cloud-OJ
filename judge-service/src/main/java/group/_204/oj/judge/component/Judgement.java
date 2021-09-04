@@ -23,8 +23,7 @@ import java.util.*;
 @Slf4j
 @Component
 public class Judgement {
-    private static final Integer OUTPUT_LIMIT = 16;
-    private static final Integer MAX_MEM_LIMIT = 512;
+    private static final Integer MAX_MEM_LIMIT = 512;   // MB
 
     @Value("${project.file-dir}")
     private String fileDir;
@@ -112,38 +111,42 @@ public class Judgement {
     private void saveResult(Solution solution, Runtime runtime, RunResult result, Limit limit) {
         if (runtime.getResult() == SolutionResult.IE || runtime.getResult() == SolutionResult.RE) {
             solution.setResult(runtime.getResult());
-        } else {
-            String userId = solution.getUserId();
-            Integer problemId = solution.getProblemId();
-            Integer contestId = solution.getContestId();
-
-            Double passRate = result.getPassRate();
-
-            if (Double.isNaN(passRate)) {
-                passRate = 0d;
-            }
-
-            // 查询历史提交中的最高分
-            Double maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
-
-            runtime.setTotal(result.getTotal());
-            runtime.setPassed(result.getPassed());
-            runtime.setTime(result.getTime());
-            runtime.setMemory(result.getMemory());
-
-            solution.setResult(SolutionResult.getByString(result.getResult()));
-            solution.setPassRate(passRate);
-            solution.setScore(passRate * limit.getScore());
             solution.setState(SolutionState.JUDGED);
             solutionDao.update(solution);
+            return;
+        }
 
-            // 历史最高分小于本次得分时才更新排名
-            if (maxScore == null || maxScore < solution.getScore()) {
-                if (contestId == null) {
-                    rankingDao.update(userId, solution.getSubmitTime());
-                } else {
-                    rankingDao.updateContest(contestId, userId, solution.getSubmitTime());
-                }
+        String userId = solution.getUserId();
+        Integer problemId = solution.getProblemId();
+        Integer contestId = solution.getContestId();
+
+        Double passRate = result.getPassRate();
+
+        if (Double.isNaN(passRate)) {
+            passRate = 0d;
+        }
+
+        // 查询历史提交中的最高分
+        Double maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
+
+        runtime.setTotal(result.getTotal());
+        runtime.setPassed(result.getPassed());
+        runtime.setTime(result.getTime());
+        runtime.setMemory(result.getMemory());
+
+        solution.setResult(SolutionResult.getByString(result.getResult()));
+        solution.setPassRate(passRate);
+        solution.setScore(passRate * limit.getScore());
+        solution.setState(SolutionState.JUDGED);
+
+        solutionDao.update(solution);
+
+        // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
+        if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
+            if (contestId == null) {
+                rankingDao.update(userId, solution.getSubmitTime());
+            } else {
+                rankingDao.updateContest(contestId, userId, solution.getSubmitTime());
             }
         }
     }
@@ -213,7 +216,7 @@ public class Judgement {
         Language language = Language.get(solution.getLanguage());
 
         if (language == null) {
-            throw new UnsupportedLanguageError("Unsupported language: null.");
+            throw new UnsupportedLanguageError("NULL");
         }
 
         String solutionDir = codeDir + solution.getSolutionId();
@@ -225,6 +228,7 @@ public class Judgement {
 
         long timeLimit = limit.getTimeout();
         int memoryLimit = limit.getMemoryLimit();
+        int outputLimit = limit.getOutputLimit();
         int maxMemoryLimit = memoryLimit << 2;
         int procLimit = 1;
 
@@ -241,7 +245,7 @@ public class Judgement {
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
-                procLimit = 15;
+                procLimit = 20;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
                 cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit << 1));
@@ -254,7 +258,7 @@ public class Judgement {
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
-                procLimit = 10;
+                procLimit = 15;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=node@Solution.js");
                 break;
@@ -265,7 +269,7 @@ public class Judgement {
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
-                procLimit = 5;
+                procLimit = 10;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
                 break;
@@ -281,7 +285,7 @@ public class Judgement {
                 "--time=" + timeLimit,
                 "--memory=" + memoryLimit,
                 "--max-memory=" + maxMemoryLimit,
-                "--output-size=" + OUTPUT_LIMIT,
+                "--output-size=" + outputLimit,
                 "--workdir=" + solutionDir,
                 "--data=" + testDataDir,
                 "--proc=" + procLimit

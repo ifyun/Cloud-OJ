@@ -1,6 +1,6 @@
 <template>
-  <el-header class="header">
-    <div class="header-wrapper">
+  <div id="header">
+    <div id="header-content" :class="headerClass">
       <el-row type="flex" align="middle">
         <el-col :span="20">
           <div class="nav">
@@ -20,7 +20,7 @@
               <el-menu-item index="/contest">
                 <span>竞赛</span>
               </el-menu-item>
-              <el-menu-item index="/ranking">
+              <el-menu-item index="/leaderboard">
                 <span>排行榜</span>
               </el-menu-item>
               <el-menu-item index="/help">
@@ -35,7 +35,8 @@
                        :src="`/api/file/image/avatar/${userInfo.userId}.png`"
                        icon="el-icon-user-solid" alt="user">
             </el-avatar>
-            <el-link v-if="userInfo == null" :underline="false" href="/login">
+            <el-link v-if="userInfo == null" :underline="false"
+                     @click="loginDialog.visible = true">
               <Icon class="el-icon--left" name="sign-in-alt" scale="0.85"/>
               <span>登录/注册</span>
             </el-link>
@@ -65,29 +66,59 @@
         </el-col>
       </el-row>
     </div>
-  </el-header>
+    <!-- 登录/注册窗口 -->
+    <el-dialog width="500px" :visible.sync="loginDialog.visible" :append-to-body="true">
+      <Login/>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-import {siteSetting, toLoginPage, userInfo} from "@/util"
+import {clearToken, userInfo} from "@/util"
 import {ApiPath, AuthApi} from "@/service"
 import Icon from "vue-awesome/components/Icon"
 import "vue-awesome/icons/sign-in-alt"
+import Login from "@/components/Login"
 
 export default {
   name: "TopNavigation",
   components: {
+    Login,
     Icon
   },
-  props: ["active"],
-  beforeMount() {
-    siteSetting.setTitle()
+  props: ["active", "type"],
+  created() {
+    this.verifyToken()
+    this.siteSetting.setTitle()
+
+    this.$bus.$on("login", () => {
+      clearToken()
+      this.loginDialog.visible = true
+    })
+    this.$bus.$on("logoff", () => {
+      this.logoff()
+    })
+  },
+  computed: {
+    headerClass() {
+      switch (this.type) {
+        case "admin":
+          return "header-admin"
+        case "commit":
+          return "header-commit"
+        default:
+          return "header-normal"
+      }
+    }
   },
   data() {
     return {
       logoUrl: `${ApiPath.IMAGE}/favicon.png`,
-      siteSetting,
-      userInfo: userInfo()
+      siteSetting: this.$siteSetting,
+      userInfo: userInfo(),
+      loginDialog: {
+        visible: false
+      }
     }
   },
   methods: {
@@ -107,7 +138,7 @@ export default {
           if (userInfo()["roleId"] === 1) {
             this.$router.push("/manage/user")
           } else {
-            this.$router.push("manage/problems")
+            this.$router.push("/manage/problems")
           }
           break
         case "exit":
@@ -116,48 +147,67 @@ export default {
       }
     },
     logoff() {
-      AuthApi.logoff(this.userInfo)
-          .then(() => {
-            toLoginPage(this, true)
-          })
-          .catch(() => {
-            toLoginPage(this, true)
-          })
+      AuthApi.logoff(this.userInfo).finally(() => {
+        clearToken()
+        this.loginDialog.visible = true
+      })
+    },
+    verifyToken() {
+      if (this.userInfo != null) {
+        AuthApi.verify(this.userInfo).catch(() => {
+          clearToken()
+          this.loginDialog.visible = true
+        })
+      }
     }
   }
 }
 </script>
 
-<style scoped>
-a {
-  text-decoration: none;
-}
-
-.header {
+<style scoped lang="scss">
+#header {
   width: 100%;
-}
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 
-.header-wrapper {
-  padding: 0 20px;
-  background-color: white;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08)
+  #header-content {
+    margin: 0 auto;
+  }
+
+  .header-normal {
+    width: 1100px;
+  }
+
+  .header-commit {
+    padding: 0 20px;
+    min-width: 1100px;
+    max-width: 1280px;
+  }
+
+  .header-admin {
+    padding: 0 20px 0 10px;
+    background-color: white;
+  }
 }
 
 .nav {
   display: flex;
   flex-direction: row;
-}
 
-.top-menu {
-  border: none !important;
-  margin-left: 15px;
-  background-color: inherit;
-}
+  .logo {
+    margin-right: 10px;
+    width: auto !important;
+    background-color: transparent;
+  }
 
-.logo {
-  margin-right: 6px;
-  width: auto !important;
-  background-color: transparent;
+  a {
+    text-decoration: none;
+  }
+
+  .top-menu {
+    border: none !important;
+    margin-left: 15px;
+    background-color: inherit;
+  }
 }
 
 .account-area {
@@ -165,18 +215,18 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.el-dropdown-link {
-  cursor: pointer;
-  color: #409EFF;
-}
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
 
-.el-icon-arrow-down {
-  font-size: 12px;
-}
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
 
-.el-menu-item.is-active i {
-  color: inherit;
+  .el-menu-item.is-active i {
+    color: inherit;
+  }
 }
 </style>

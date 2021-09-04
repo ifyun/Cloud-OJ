@@ -18,7 +18,7 @@
         </el-form-item>
       </div>
       <el-form-item v-else>
-        <span style="font-size: 16px">{{ `${problemId}.${title}` }}</span>
+        <span class="problem-title">{{ `${problemId}.${title}` }}</span>
       </el-form-item>
       <el-form-item style="float: right">
         <el-button icon="el-icon-refresh" size="mini" @click="getHistories">
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import {Notice, prettyMemory, toLoginPage, userInfo} from "@/util"
+import {Notice, prettyMemory, userInfo} from "@/util"
 import {languages, sqlTypes, resultTags, stateTags} from "@/util/data"
 import {UserApi} from "@/service"
 import moment from "moment"
@@ -152,7 +152,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: "获取提交记录失败",
@@ -200,17 +200,30 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+.error-info {
+  width: 520px !important;
+}
+</style>
+
+<style scoped lang="scss">
 .language-icon {
   height: 20px;
   width: 20px;
 }
 
-.toolbar .el-form-item {
-  margin-bottom: 0;
+.toolbar {
+  .el-form-item {
+    margin-bottom: 0;
+  }
+
+  *:last-child {
+    margin-right: 0;
+  }
 }
 
-.toolbar *:last-child {
-  margin-right: 0;
+.problem-title {
+  color: var(--color-text-primary);
+  font-size: var(--text-title);
 }
 </style>

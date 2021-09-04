@@ -7,11 +7,10 @@ OJ 判题程序，使用 chroot + setuid 创建沙盒。
 1. 准备 Linux 环境并安装 cmake、gcc、g++，Ubuntu 可以使用以下命令
 
    ```bash
-   sudo apt-get install cmake build-essential gcc-multilib g++-multilib
+   sudo apt-get install cmake build-essential libboost-iostreams-dev
    ```
 
-2. 运行 `cmake-init.sh` 生成 Makefile
-3. 执行 `cmake-build` 生成可执行文件
+2. 执行 `cmake-build` 生成可执行文件
 
 ## 使用
 

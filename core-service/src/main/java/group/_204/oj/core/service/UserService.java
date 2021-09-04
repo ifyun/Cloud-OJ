@@ -21,7 +21,7 @@ public class UserService {
         if (userId != null && !userId.isEmpty()) {
             return userDao.getAllByUserId((page - 1) * limit, limit, userId);
         } else if (name != null && !name.isEmpty()) {
-            return userDao.getAllByUserId((page - 1) * limit, limit, name);
+            return userDao.getAllByName((page - 1) * limit, limit, name);
         } else {
             return userDao.getAll((page - 1) * limit, limit);
         }

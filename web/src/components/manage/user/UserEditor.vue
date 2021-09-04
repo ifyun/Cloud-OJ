@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import {Notice, toLoginPage, userInfo} from "@/util"
+import {Notice, userInfo} from "@/util"
 import {UserApi} from "@/service"
 import md5 from "crypto-js/md5"
 
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     onSave() {
-      this.$refs["userForm"].validate((valid) => {
+      this.$refs.userForm.validate((valid) => {
         if (!valid) {
           return false
         }
@@ -127,14 +127,13 @@ export default {
         UserApi.save(this.user, userInfo(), this.create)
             .then(() => {
               this.$emit("refresh")
-              this.$emit("update:dialogVisible", false)
               Notice.notify.success(this, {
                 title: this.create ? "已创建" : "已保存",
               })
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage()
+                this.$bus.$emit("login")
               } else {
                 Notice.notify.error(this, {
                   title: this.create ? "创建失败" : "保存失败",

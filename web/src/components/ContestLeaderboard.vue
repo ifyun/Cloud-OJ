@@ -1,5 +1,5 @@
 <template>
-  <div id="contest-ranking-container">
+  <div id="root">
     <div id="main">
       <div id="contest">
         <h2 id="title">{{ contest.contestName }}</h2>
@@ -8,7 +8,8 @@
         </div>
       </div>
       <div id="ranking-wrapper">
-        <transition-group v-if="ranking.count > 0" name="ranking-list" id="ranking-list" tag="div">
+        <transition-group v-if="ranking.count > 0" name="ranking-list"
+                          id="ranking-list" tag="div">
           <div class="ranking-list-item"
                v-for="item in ranking.data"
                v-bind:key="item.userId" @click="getDetail(item)">
@@ -49,8 +50,7 @@
         </transition-group>
         <el-empty v-else/>
       </div>
-      <el-drawer :visible.sync="openDetail" :with-header="false"
-                 size="600px" direction="rtl">
+      <el-drawer :visible.sync="openDetail" :with-header="false" size="600px" direction="rtl">
         <div class="score-detail-title">
           <span>{{ scoreDetail.title }}</span>
         </div>
@@ -79,7 +79,7 @@ import {Notice, toLoginPage, userInfo} from "@/util"
 import moment from "moment"
 
 export default {
-  name: "ContestRanking",
+  name: "ContestLeaderboard",
   data() {
     return {
       contestId: null,
@@ -145,7 +145,7 @@ export default {
     getContest() {
       ContestApi.get(this.contestId)
           .then((data) => {
-            this.siteSetting.setTitle(`${data.contestName} - 排行榜`)
+            this.$siteSetting.setTitle(`${data.contestName} - 排行榜`)
             this.contest = data
             this.getRanking()
 
@@ -185,7 +185,7 @@ export default {
      * 获取详细得分
      */
     getDetail(user) {
-      if (this.userInfo == null || this.userInfo.roleId === 0) {
+      if (this.userInfo == null || this.userInfo["roleId"] === 0) {
         return
       }
       RankingApi.getDetail(this.contest.contestId, user.userId, this.userInfo)
@@ -209,28 +209,18 @@ export default {
 }
 </script>
 
-<style scoped>
-.score-detail-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 25px;
-}
-
-.score-detail-title span {
-  font-size: 14pt;
-  color: #606266;
-}
-
-#contest-ranking-container {
+<style scoped lang="scss">
+#root {
   height: 100%;
+  width: 100%;
   overflow: auto;
-  background-image: linear-gradient(135deg, #222222 10%, #131313 100%);
+  background-color: #111111;
 }
 
 #main {
   max-width: 1080px;
   min-width: 900px;
+  height: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -241,87 +231,99 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
 
-#contest * {
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-}
+  #title {
+    color: white;
+    margin-top: 30px;
+    font-size: 26pt;
+    font-weight: bold;
+    letter-spacing: 6px;
+    text-shadow: 0 0 .1em white, 0 0 .1em white;
+  }
 
-#contest #title {
-  color: white;
-  margin-top: 30px;
-  font-size: 25pt;
-  font-weight: bold;
-  letter-spacing: 5px;
-}
-
-#contest #time-range {
-  color: whitesmoke;
-  font-size: 14pt;
-  font-weight: bold;
+  #time-range {
+    color: white;
+    font-size: 12pt;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  }
 }
 
 #ranking-wrapper {
-  background-color: #00000020;
   margin-top: 20px;
-  border-radius: 15px;
   width: 90%;
+  flex: 1;
   transition: all 0.5s ease;
+  background-color: whitesmoke;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 #ranking-list {
   display: flex;
   flex-direction: column;
   flex-basis: 100%;
-  margin: 20px;
+  margin: 10px;
+  padding: 15px;
   overflow: hidden;
   transition: all 1s ease;
-}
 
-.ranking-list-item {
-  display: flex;
-  align-items: center;
-  margin-top: 6px;
-  padding: 15px;
-  height: 50px;
-  border-radius: 4px;
-  background-color: #00000022;
-}
+  .ranking-list-item {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    padding: 15px;
+    height: 50px;
 
-.ranking-list-item * {
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
-  letter-spacing: 1px;
-}
+    * {
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
+    }
 
-.ranking-list-item:hover {
-  cursor: pointer;
-}
+    &:hover {
+      cursor: pointer;
+    }
 
-.ranking-list-item:nth-child(1) .avatar {
-  border-color: #F8A31D;
-}
+    &:first-child {
+      margin-top: 0;
+    }
 
-.ranking-list-item:nth-child(2) .avatar {
-  border-color: #6A7F94;
-}
+    &:nth-child(1) {
+      .avatar {
+        border-color: #F8A31D !important;
+      }
+    }
 
-.ranking-list-item:nth-child(3) .avatar {
-  border-color: #95734F;
-}
+    &:nth-child(2) {
+      .avatar {
+        border-color: #6A7F94 !important;
+      }
+    }
 
-.ranking-list-item:first-child {
-  margin-top: 0;
-}
+    &:nth-child(3) {
+      .avatar {
+        border-color: #95734F !important;
+      }
+    }
 
-.ranking-list-item:nth-child(even) {
-  background-color: #00000033;
-}
+    .user-info {
+      display: flex;
+      align-items: center;
+      flex: 0 0 60%;
 
-.user-info {
-  display: flex;
-  align-items: center;
-  flex: 0 0 60%;
-  color: whitesmoke;
+      .avatar {
+        width: 45px;
+        height: 45px;
+        border: 3px solid white;
+      }
+
+      .username {
+        color: var(--color-text-normal);
+        font-size: 13pt;
+        font-weight: bold;
+        margin-left: 25px;
+      }
+    }
+  }
 }
 
 .rank {
@@ -329,26 +331,14 @@ export default {
   align-items: center;
   justify-content: center;
   width: 45px;
-  color: #F0F0F0;
+  color: var(--color-text-normal);
   font-weight: bold;
   font-size: 16pt;
   margin-right: 30px;
-}
 
-.rank-icon {
-  height: 35px;
-}
-
-.avatar {
-  width: 45px;
-  height: 45px;
-  border: 3px solid white;
-}
-
-.username {
-  font-size: 13pt;
-  font-weight: bold;
-  margin-left: 25px;
+  .rank-icon {
+    height: 35px;
+  }
 }
 
 .data {
@@ -356,24 +346,37 @@ export default {
   flex: 1;
   display: flex;
   justify-content: space-around;
+
+  .data-item {
+    color: var(--color-text-primary);
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    width: 120px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+    .prop {
+      font-weight: normal;
+      color: var(--color-text-normal);
+    }
+  }
 }
 
-.data-item {
-  color: #F0F0F0;
-  text-align: center;
-  font-size: 12pt;
-  font-weight: bold;
-  width: 120px;
-  height: 50px;
+.score-detail-title {
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
   align-items: center;
-}
+  justify-content: center;
+  margin-bottom: 25px;
 
-.data-item .prop {
-  font-weight: normal;
-  color: whitesmoke;
+  span {
+    font-size: 14pt;
+    font-weight: bold;
+    color: var(--color-text-normal);
+  }
 }
 
 .ranking-list-leave-active {

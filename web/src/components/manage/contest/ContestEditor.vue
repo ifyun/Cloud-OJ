@@ -32,7 +32,7 @@
 
 <script>
 import moment from "moment"
-import {userInfo, toLoginPage, Notice} from "@/util"
+import {userInfo, Notice} from "@/util"
 import {ContestApi} from "@/service"
 
 const languageOptions = [
@@ -143,7 +143,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage(this)
+                this.$bus.$emit("login")
               } else {
                 Notice.notify.error(this, {
                   title: "保存失败",
@@ -158,5 +158,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

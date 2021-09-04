@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ height: `${editorHeight()}px` }">
+  <div :style="{ height: `${height}px` }">
     <div class="editor-wrapper">
       <el-row>
         <el-col :span="12">
@@ -55,12 +55,12 @@
               </el-button>
             </el-tooltip>
           </div>
-          <div :style="{ height: `${editorHeight()}px` }">
+          <div :style="{ height: `${height}px` }">
             <textarea style="line-height: 1.5" ref="cm"/>
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="preview" :style="{ height: `${editorHeight() + 10}px`}">
+          <div class="preview" :style="{ height: `${height + 10}px`}">
             <markdown-it :content="content"/>
           </div>
         </el-col>
@@ -146,7 +146,10 @@ export default {
   },
   props: {
     str: String,
-    height: Number
+    height: {
+      type: Number,
+      default: 600
+    }
   },
   watch: {
     str(val) {
@@ -166,14 +169,9 @@ export default {
     this.editor.on("change", (cm) => {
       this.content = cm.getValue()
     })
-    const ctx = this
-    window.onresize = () => {
-      ctx.windowHeight = document.body.clientHeight
-    }
   },
   data() {
     return {
-      windowHeight: document.body.clientHeight,
       editor: null,
       cmOptions: {
         mode: "text/x-markdown",
@@ -203,17 +201,6 @@ export default {
     }
   },
   methods: {
-    editorHeight() {
-      const offset = 320
-
-      if (this.windowHeight <= 1000) {
-        return 1000 - offset
-      } else if (this.windowHeight >= 1400) {
-        return 1400 - offset
-      } else {
-        return this.windowHeight - offset
-      }
-    },
     getCursor() {
       const cursor = this.editor.getCursor()
       return {
@@ -427,7 +414,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .editor-wrapper {
   background-color: #272822;
   border: 1px solid #F0F0F0;
@@ -436,17 +423,17 @@ export default {
 .toolbar {
   padding: 2px;
   border-bottom: 1px solid #3F3F3F;
-}
 
-.toolbar button {
-  margin-left: 0;
-  border-color: transparent;
-  background-color: #272822;
-  height: 33px;
-}
+  button {
+    margin-left: 0;
+    border-color: transparent;
+    background-color: #272822;
+    height: 33px;
 
-.toolbar button:hover {
-  background-color: #3A3A3A;
+    &:hover {
+      background-color: #3A3A3A;
+    }
+  }
 }
 
 .preview {
