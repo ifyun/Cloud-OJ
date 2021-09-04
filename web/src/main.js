@@ -5,7 +5,21 @@ import ElementUI from "element-ui"
 import "element-ui/lib/theme-chalk/index.css"
 import {siteSetting} from "@/util"
 
-Vue.prototype.siteSetting = siteSetting
+const eventbus = new Vue()
+
+Object.defineProperties(Vue.prototype, {
+    $bus: {
+        get: function () {
+            return eventbus
+        }
+    },
+    $siteSetting: {
+        get: function () {
+            return siteSetting
+        }
+    }
+})
+
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)

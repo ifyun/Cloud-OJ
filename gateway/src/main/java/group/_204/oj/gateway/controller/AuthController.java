@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,6 +37,29 @@ public class AuthController {
                 log.info("User({}) logoff.", userId);
                 SecurityContextHolder.clearContext();
                 return ResponseEntity.ok(new Msg("已退出"));
+            } else {
+                return ResponseEntity.status(403).body(new Msg("JWT Token 与 userId 不匹配"));
+            }
+        } catch (JwtException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * 验证 Token 是否有效
+     * @return <p>200：验证通过，40x：Token 无效</p>
+     */
+    @GetMapping(path = "verify")
+    public ResponseEntity<?> verify(@RequestHeader String userId, @RequestHeader String token) {
+        log.info("Verify token of user: {}", userId);
+        String secret = userDao.getSecret(userId);
+
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+
+            if (claims.getSubject().equals(userId)) {
+                return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.status(403).body(new Msg("JWT Token 与 userId 不匹配"));
             }

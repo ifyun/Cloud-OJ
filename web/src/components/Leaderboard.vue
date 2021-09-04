@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-    <error v-if="error.code != null" :error="error"/>
+  <div id="root">
+    <error-info v-if="error.code != null" :error="error"/>
     <div v-else-if="!loading && ranking.count === 0">
       <el-empty description="什么都没有"/>
     </div>
@@ -67,17 +67,17 @@
 
 <script>
 import {userInfo} from "@/util"
-import Error from "@/components/Error"
+import ErrorInfo from "@/components/ErrorInfo"
 import {RankingApi} from "@/service"
 
 export default {
-  name: "RankingList",
+  name: "Leaderboard",
   components: {
-    Error
+    ErrorInfo
   },
   beforeMount() {
     this.loadPage()
-    this.siteSetting.setTitle("排行榜")
+    this.$siteSetting.setTitle("排行榜")
     this.getRankingList()
   },
   data() {
@@ -135,8 +135,9 @@ export default {
 </script>
 
 <style scoped>
-.content {
-  width: 100%;
+#root {
+  margin: 0 auto;
+  width: 1100px;
 }
 
 .ranking-icon {

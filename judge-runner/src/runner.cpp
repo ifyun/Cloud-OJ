@@ -111,13 +111,13 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
                 if (res.memUsed > config.memory) {
                     res.status = MLE;
                 } else {
-                    std::cerr << "Invalid access\n";
+                    std::cerr << "非法访问.\n";
                     clean_up(root_fd, work_dir, random_dir);
                     exit(RUNTIME_ERROR);
                 }
                 break;
             case SIGALRM:
-                std::cerr << "SIGALRM.\n";
+                std::cerr << "超出最大时间限制.\n";
                 exit(RUNTIME_ERROR);
             case SIGXCPU:
                 res.status = TLE;
@@ -126,7 +126,7 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
                 res.status = OLE;
                 break;
             case SIGKILL:
-                std::cerr << "Killed\n";
+                std::cerr << "进程已被杀死.\n";
                 clean_up(root_fd, work_dir, random_dir);
                 exit(RUNTIME_ERROR);
             default:
@@ -139,7 +139,7 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
         } else if (res.memUsed > config.memory) {
             res.status = MLE;
         } else if (WEXITSTATUS(status) != 0) {
-            std::cerr << "Non-zero exit\n";
+            std::cerr << "非零退出.\n";
             clean_up(root_fd, work_dir, random_dir);
             exit(RUNTIME_ERROR);
         } else {
@@ -159,11 +159,10 @@ Result Runner::run(char **args, const Config &config, int root_fd,
     pid_t pid = vfork();
 
     if (pid < 0) {
-        std::cerr << "Failed to create process\n";
+        std::cerr << "创建判题进程失败.\n";
         exit(JUDGE_ERROR);
     } else if (pid == 0) {
-        // 最长等待 6s，避免 sleep()
-        alarm(6);
+        alarm(15);
         auto status = run_cmd(args, config);
         exit(status);
     } else {
@@ -233,7 +232,7 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
 
     if (!input_files.empty() && !output_files.empty()) {
         if (input_files.size() != output_files.size()) {
-            std::cerr << "The number of input and output files is not equal\n";
+            std::cerr << "测试数据文件数量不一致.\n";
             rtn.code = JUDGE_ERROR;
             clean_up(root_fd, work_dir, random_dir);
             return rtn;
@@ -262,7 +261,7 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
 
         results.push_back(res);
     } else {
-        std::cerr << "Test data required\n";
+        std::cerr << "无测试数据.\n";
         rtn.code = JUDGE_ERROR;
     }
 

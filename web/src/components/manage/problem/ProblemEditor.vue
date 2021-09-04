@@ -8,11 +8,11 @@
             <el-input v-model="problem.title"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-form-item size="small" label="类型" prop="type">
-            <el-radio-group size="mini" v-model="problem.type" :disabled="!create">
+        <el-col :span="8">
+          <el-form-item size="small" label="题目类型" prop="type">
+            <el-radio-group size="small" v-model="problem.type" :disabled="!create">
               <el-radio-button :label="0">程序设计</el-radio-button>
-              <el-radio-button :label="1">SQL (SQLite)</el-radio-button>
+              <el-radio-button :label="1">数据库 (SQLite)</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -32,10 +32,18 @@
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
-          <el-form-item size="small" label="分数" prop="score">
+        <el-col :span="6">
+          <el-form-item size="small" label="输出限制" prop="outputLimit">
+            <el-input v-model.number="problem.outputLimit">
+              <template slot="append">MB</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="15">
+        <el-col :span="6">
+          <el-form-item size="small" label="题目分值" prop="score">
             <el-input v-model.number="problem.score">
-              <template slot="append">分</template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -51,9 +59,9 @@
         <el-button class="button-new-tag" v-else @click="showTagInput">+ 新分类</el-button>
       </el-form-item>
       <el-form-item v-if="problem.type === 1" label="查询语句 " prop="sql">
-        <el-input type="textarea" placeholder="这是一道 SQL 题目，请输入正确的 SQL 语句" v-model="problem.sql"></el-input>
+        <el-input type="textarea" placeholder="这是一道 SQL 题目，请输入正确的 SQL 语句" v-model="problem.sql"/>
       </el-form-item>
-      <markdown-editor :str="problem.description" @change="editorChange"/>
+      <markdown-editor :str="problem.description" :height="850" @change="editorChange"/>
       <!-- 用于表单验证 -->
       <el-form-item label-width="0" prop="description">
         <el-input style="display: none" type="textarea"
@@ -98,18 +106,18 @@ export default {
       immediate: true,
       handler() {
         if (this.dialogVisible) {
-          let formLoaded = typeof this.$refs["problemForm"] !== "undefined"
+          let formLoaded = typeof this.$refs.problemForm !== "undefined"
           this.firstChange = true
           if (this.problemId != null) {
             this.getProblem()
           } else {
             if (formLoaded) {
-              this.$refs["problemForm"].resetFields()
+              this.$refs.problemForm.resetFields()
             }
             this.tags = []
           }
           if (formLoaded) {
-            this.$refs["problemForm"].clearValidate()
+            this.$refs.problemForm.clearValidate()
           }
         }
       }
@@ -135,8 +143,15 @@ export default {
       }
     }
     const checkTimeLimit = (rule, value, callback) => {
-      if (value < 100 || value > 2000) {
-        callback(new Error("请输入 100 ~ 2000 之间的数值"))
+      if (value < 100 || value > 10000) {
+        callback(new Error("请输入 100 ~ 10000 之间的数值"))
+      } else {
+        callback()
+      }
+    }
+    const checkOutputLimit = (rule, value, callback) => {
+      if (value < 1 || value > 128) {
+        callback(new Error("请输入 1 ~ 128 之间的数值"))
       } else {
         callback()
       }
@@ -151,10 +166,12 @@ export default {
         description: "",
         timeout: "",
         memoryLimit: "",
+        outputLimit: "",
         type: 0,
         sql: "",
         score: ""
       },
+      // region 表单验证
       problemRules: {
         title: [
           {required: true, message: "请输入题目名称", trigger: "blur"}
@@ -173,10 +190,15 @@ export default {
           {required: true, type: "number", message: "请填写内存限制", trigger: "blur"},
           {validator: checkMemoryLimit, trigger: "blur"}
         ],
+        outputLimit: [
+          {required: true, type: "number", message: "请填写输出限制", trigger: "blur"},
+          {validator: checkOutputLimit, trigger: "blur"}
+        ],
         description: [
           {required: true, message: "请输入题目描述", trigger: "blur"}
         ]
       },
+      // endregion
       tags: [],
       newTag: "",
       newTagVisible: false,
@@ -193,7 +215,7 @@ export default {
     resetForm() {
       this.reset = true
       if (this.problemId == null) {
-        this.$refs["problemForm"].resetFields()
+        this.$refs.problemForm.resetFields()
         this.tags = []
       } else {
         this.getProblem()
@@ -245,7 +267,7 @@ export default {
       this.newTag = ""
     },
     save() {
-      this.$refs["problemForm"].validate((valid) => {
+      this.$refs.problemForm.validate((valid) => {
         if (!valid) {
           return false
         }
@@ -277,26 +299,28 @@ export default {
 }
 </script>
 
-<style scoped>
-.tags * {
-  margin-left: 10px;
-  vertical-align: middle;
-}
+<style scoped lang="scss">
+.tags {
+  * {
+    margin-left: 10px;
+    vertical-align: middle;
 
-.tags *:first-child {
-  margin-left: 0;
-}
+    &:first-child {
+      margin-left: 0;
+    }
+  }
 
-.button-new-tag {
-  height: 32px;
-  line-height: 30px;
-  padding-top: 0;
-  padding-bottom: 0;
-  vertical-align: middle;
-}
+  .button-new-tag {
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+  }
 
-.input-new-tag {
-  width: 90px;
-  vertical-align: middle;
+  .input-new-tag {
+    width: 90px;
+    vertical-align: middle;
+  }
 }
 </style>

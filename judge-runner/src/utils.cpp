@@ -5,7 +5,10 @@
 #include <dirent.h>
 #include <algorithm>
 #include <cstring>
+#include <boost/iostreams/device/mapped_file.hpp>
 #include "utils.h"
+
+namespace io = boost::iostreams;
 
 const char *status_str[] = {"AC", "WA", "TLE", "MLE", "OLE", "PA"};
 
@@ -19,7 +22,7 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     DIR *dir = opendir(path.c_str());
 
     if (dir == nullptr) {
-        throw std::invalid_argument("[ERROR] Path of test data does not exists.\n");
+        throw std::invalid_argument("[ERROR] 测试数据目录不存在.\n");
     }
 
     struct dirent *d_ent;
@@ -48,16 +51,6 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     std::sort(files.begin(), files.end());
 
     return files;
-}
-
-/**
- * @brief 移除字符串尾部的换行符和空格
- */
-inline void Utils::rtrim(std::string &str) {
-    if (str.empty()) { return; }
-    str.erase(str.find_last_not_of('\r') + 1);
-    str.erase(str.find_last_not_of('\n') + 1);
-    str.erase(str.find_last_not_of(' ') + 1);
 }
 
 /**
@@ -112,24 +105,16 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
 
 /**
  * @brief 比较文件
+ * @return true -> 不同, false -> 相同
  */
 bool Utils::diff(const std::string &path1, const std::string &path2) {
-    std::ifstream file1(path1);
-    std::ifstream file2(path2);
+    io::mapped_file_source file1(path1);
+    io::mapped_file_source file2(path2);
 
-    std::ostringstream oss1, oss2;
-    oss1 << file1.rdbuf();
-    oss2 << file2.rdbuf();
-
-    std::string s1 = oss1.str(), s2 = oss2.str();
-
-    rtrim(s1);
-    rtrim(s2);
-
-    if (s1.length() != s2.length()) {
+    if (file1.size() != file2.size()) {
         return true;
     } else {
-        return s1 != s2;
+        return !std::equal(file1.data(), file1.data() + file1.size(), file2.data());
     }
 }
 

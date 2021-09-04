@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: gateway
+  servlet:
+    multipart:
+      max-file-size: 128MB
   datasource:
     url: jdbc:mysql://localhost:3306/cloud_oj?serverTimezone=Asia/Shanghai
     type: com.zaxxer.hikari.HikariDataSource

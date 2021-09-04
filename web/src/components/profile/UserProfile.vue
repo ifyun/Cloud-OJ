@@ -10,7 +10,7 @@
         </el-avatar>
       </el-upload>
       <el-divider></el-divider>
-      <el-form ref="profileForm" :model="userProfile" :rules="rules">
+      <el-form ref="profileForm" size="small" :model="userProfile" :rules="rules">
         <el-form-item prop="name">
           <el-input prefix-icon="el-icon-user" v-model="userProfile.name"></el-input>
         </el-form-item>
@@ -41,7 +41,7 @@
       </el-form>
     </div>
     <div v-else class="profile-div">
-      <el-avatar class="avatar" :src="avatarUrl" :size="200" alt="avatar">
+      <el-avatar class="avatar" :src="avatarUrl" :size="180" alt="avatar">
         <img src="@/assets/icons/no_avatar.png" alt="user">
       </el-avatar>
       <span class="name">{{ userProfile.name }}</span>
@@ -82,7 +82,7 @@ export default {
       this.avatarUrl = `${ApiPath.AVATAR}/${this.userId}.png`
     } else {
       this.resetProfileData()
-      this.siteSetting.setTitle("个人中心")
+      this.$siteSetting.setTitle("个人中心")
       this.avatarUrl = `${ApiPath.AVATAR}/${this.userInfo.userId}.png`
     }
   },
@@ -125,7 +125,7 @@ export default {
     getProfile() {
       UserApi.getProfile(this.userId)
           .then((data) => {
-            this.siteSetting.setTitle(`${data.name}`)
+            this.$siteSetting.setTitle(`${data.name}`)
             this.userProfile = data
           })
           .catch((error) => {
@@ -218,7 +218,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .profile-div {
   display: flex;
   height: 800px;
@@ -227,53 +227,53 @@ export default {
   margin-top: 5px;
   padding-right: 20px;
   padding-left: 5px;
-}
 
-.avatar {
-  border: 2px solid #F5F7FA;
-  margin-bottom: 15px;
-  align-self: center;
-}
+  .avatar {
+    border: 2px solid #F5F7FA;
+    margin-bottom: 15px;
+    align-self: center;
+  }
 
-.name {
-  font-size: 13pt;
-  font-weight: bold;
-  color: #303133;
-  align-self: center;
-}
+  .name {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #303133;
+    align-self: center;
+  }
 
-.user-id {
-  font-weight: lighter;
-  color: #606266;
-  align-self: center;
+  .user-id {
+    font-weight: lighter;
+    color: #606266;
+    align-self: center;
+  }
 }
 </style>
 
-<style>
+<style lang="scss">
 .avatar-uploader {
   display: flex;
-}
 
-.avatar-uploader .el-upload {
-  margin: 15px auto 0;
-  border: 2px dashed #e0e0e0;
-  border-radius: 90px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
+  .el-upload {
+    margin: 15px auto 0;
+    border: 2px dashed #e0e0e0;
+    border-radius: 90px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
 
-.avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
+  .el-upload:hover {
+    border-color: #409EFF;
+  }
 
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 170px;
-  height: 170px;
-  line-height: 170px;
-  text-align: center;
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 170px;
+    height: 170px;
+    line-height: 170px;
+    text-align: center;
+  }
 }
 
 .avatar-uploaded {

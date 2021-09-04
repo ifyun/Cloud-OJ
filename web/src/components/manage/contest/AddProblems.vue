@@ -36,7 +36,7 @@
 
 <script>
 import MarkdownIt from "@/components/MarkdownIt"
-import {userInfo, toLoginPage, Notice} from "@/util"
+import {userInfo, Notice} from "@/util"
 import {ContestApi} from "@/service"
 
 export default {
@@ -80,7 +80,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: "获取数据失败",
@@ -108,7 +108,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: `${title} 添加失败`,

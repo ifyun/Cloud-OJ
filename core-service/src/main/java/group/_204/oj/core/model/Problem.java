@@ -19,6 +19,7 @@ public class Problem {
     private String category;
     private Long timeout;
     private Integer memoryLimit;
+    private Integer outputLimit;
     private Integer languages;
     private Integer type;
     private Integer score;

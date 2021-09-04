@@ -126,8 +126,8 @@ export default {
           {
             name: "语言偏好",
             type: "pie",
-            center: ["50%", "40%"],
-            radius: ["25%", "50%"],
+            center: ["55%", "40%"],
+            radius: ["25%", "45%"],
             itemStyle: {
               borderRadius: 6,
               borderColor: '#FFFFFF',
@@ -141,12 +141,13 @@ export default {
         title: {
           show: true,
           text: "",
-          left: "center",
+          left: "53%",
           top: "35%",
           textStyle: {
             fontSize: 16,
             lineHeight: 18
-          }
+          },
+          textAlign: "center"
         },
         tooltip: {
           trigger: "item"
@@ -161,8 +162,8 @@ export default {
           {
             name: "结果统计",
             type: "pie",
-            center: ["50%", "40%"],
-            radius: ["30%", "50%"],
+            center: ["55%", "40%"],
+            radius: ["25%", "45%"],
             itemStyle: {
               borderRadius: 6,
               borderColor: '#FFFFFF',
@@ -305,11 +306,11 @@ export default {
 
 .pie-chart {
   height: 400px;
-  width: 500px;
+  width: 420px;
 }
 
 #activities {
-  width: 820px;
+  width: 790px;
   height: 250px;
   margin: 0 auto;
 }

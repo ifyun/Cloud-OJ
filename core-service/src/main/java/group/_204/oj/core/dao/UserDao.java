@@ -13,7 +13,7 @@ public interface UserDao {
 
     List<List<?>> getAllByUserId(Integer start, Integer limit, String userId);
 
-    List<List<?>> getAll(Integer start, Integer limit, String name);
+    List<List<?>> getAllByName(Integer start, Integer limit, String name);
 
     User getSingle(String userId);
 

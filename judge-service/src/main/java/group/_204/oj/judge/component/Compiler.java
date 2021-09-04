@@ -79,7 +79,7 @@ class Compiler {
     private Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
 
         if (language == null) {
-            throw new UnsupportedLanguageError("null");
+            throw new UnsupportedLanguageError("NULL");
         }
 
         String solutionDir = codeDir + solutionId;
@@ -128,9 +128,12 @@ class Compiler {
                 }
             } else {
                 process.destroy();
-                throw new InterruptedException("Compile timeout.");
+                throw new InterruptedException("编译超时(10s).");
             }
-        } catch (IOException | InterruptedException | CompileError e) {
+        } catch (IOException | InterruptedException e) {
+            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
+            return new Compile(solutionId, -1, "内部错误.");
+        } catch (CompileError e) {
             log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }

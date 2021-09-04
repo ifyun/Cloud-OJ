@@ -61,7 +61,7 @@ const bcrypt = require("bcryptjs")
 export default {
   name: "SignupTab",
   beforeMount() {
-    this.siteSetting.setTitle("注册")
+    this.$siteSetting.setTitle("注册")
   },
   data() {
     const validatePassword = (rule, value, callback) => {

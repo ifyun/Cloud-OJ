@@ -1,22 +1,19 @@
 <template>
   <div>
-    <error :error="error"/>
-    <bottom-area class="bottom"/>
+    <error-info :error="error"/>
   </div>
 </template>
 
 <script>
-import Error from "@/components/Error"
-import BottomArea from "@/components/common/BottomArea"
+import ErrorInfo from "@/components/ErrorInfo"
 
 export default {
   name: "Page404",
   components: {
-    Error,
-    BottomArea
+    ErrorInfo
   },
   beforeMount() {
-    this.siteSetting.setTitle("404")
+    this.$siteSetting.setTitle("404")
   },
   data() {
     return {

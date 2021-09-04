@@ -20,6 +20,7 @@ create table problem
     description  text                                 not null comment '题目描述',
     timeout      bigint     default 1000              null comment '时间限制',
     memory_limit int        default 64                not null comment '内存限制',
+    output_limit int        default 128               not null comment '输出限制',
     score        int        default 0                 not null comment '分数',
     type         int        default 0                 not null comment '1 -> SQL',
     `sql`        text                                 null comment '正确的查询语句',

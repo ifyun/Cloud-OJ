@@ -1,114 +1,115 @@
 <template>
-  <el-card class="borderless">
-    <el-form :inline="true">
-      <el-form-item>
-        <el-button size="medium" type="primary" icon="el-icon-circle-plus"
-                   @click="addContest">
-          创建新竞赛
-        </el-button>
-      </el-form-item>
-      <el-form-item>
-        <el-button size="medium" icon="el-icon-refresh" @click="getContests(true)">
-          刷新
-        </el-button>
-      </el-form-item>
-    </el-form>
-    <el-empty v-if="!loading && contests.count === 0"/>
-    <el-table v-else :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
-      <el-table-column label="ID" prop="contestId" width="100px" align="center">
-      </el-table-column>
-      <el-table-column label="竞赛名称">
-        <template slot-scope="scope">
-          <b>{{ scope.row.contestName }}</b>
-        </template>
-      </el-table-column>
-      <el-table-column label="开始时间" width="200px" align="center">
-        <template slot-scope="scope">
-          <i class="el-icon-time"> {{ scope.row.startAt }}</i>
-        </template>
-      </el-table-column>
-      <el-table-column label="结束时间" width="200px" align="center">
-        <template slot-scope="scope">
-          <i class="el-icon-time"> {{ scope.row.endAt }}</i>
-        </template>
-      </el-table-column>
-      <el-table-column width="220px" align="center">
-        <template slot="header">
-          <i class="el-icon-menu el-icon--left"></i>
-          <span>操作</span>
-        </template>
-        <template slot-scope="scope">
-          <el-button-group>
-            <el-button size="mini" icon="el-icon-edit"
-                       @click="editContest(scope.$index)">
-            </el-button>
-            <el-button size="mini" icon="el-icon-s-grid" @click="manageProblems(scope.$index)">
-              管理题目
-            </el-button>
-            <el-button size="mini" type="danger" icon="el-icon-delete"
-                       @click="deleteContest(scope.$index)">
-            </el-button>
-          </el-button-group>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination style="margin-top: 10px" layout="total, prev, pager, next" background
-                   :page-size="pageSize" :total="contests.count"
-                   :current-page.sync="currentPage"
-                   @size-change="getContests" @current-change="getContests">
-    </el-pagination>
-    <!-- Edit Contest Dialog -->
-    <el-dialog :title="editorDialog.title" width="650px"
-               :visible.sync="editorDialog.visible">
-      <ContestEditor :contest-data="selectedContest"
-                     :create="editorDialog.create"
-                     :dialog-visible.sync="editorDialog.visible"
-                     @refresh="getContests"/>
-    </el-dialog>
-    <!-- Delete Confirm Dialog -->
-    <el-dialog title="删除提示" width="650px"
-               :visible.sync="deleteDialog.visible">
-      <el-alert type="warning" show-icon
-                :title="`你正在删除：${this.selectedContest.contestName}`"
-                description="相关提交记录会消失（该竞赛包含的题目不会被删除）"
-                :closable="false">
-      </el-alert>
-      <el-form :model="deleteDialog.form" ref="deleteForm"
-               :rules="deleteDialog.rules"
-               @submit.native.prevent>
-        <el-form-item label="输入名称确认删除" prop="checkName">
-          <el-input v-model="deleteDialog.form.checkName"
-                    :placeholder="selectedContest.contestName">
-          </el-input>
+  <div>
+    <error-info :error="error" v-if="!loading && error.code != null"/>
+    <el-card v-else class="borderless">
+      <el-form :inline="true">
+        <el-form-item>
+          <el-button size="medium" type="primary" icon="el-icon-circle-plus"
+                     @click="addContest">
+            创建新竞赛
+          </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" icon="el-icon-delete" @click="confirmDelete">删除</el-button>
+          <el-button size="medium" icon="el-icon-refresh" @click="getContests(true)">
+            刷新
+          </el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>
-    <!-- Problems Manage Dialog -->
-    <el-dialog :title="selectedContest.contestName" width="1000px"
-               :visible.sync="problemsDialog.visible">
-      <ContestProblemsManage :contest-id="selectedContest.contestId"/>
-    </el-dialog>
-  </el-card>
+      <el-empty v-if="!loading && contests.count === 0"/>
+      <el-table v-else :data="contests.data" stripe v-loading="loading" @row-dblclick="rowDbClick">
+        <el-table-column label="ID" prop="contestId" width="100px" align="center">
+        </el-table-column>
+        <el-table-column label="竞赛名称">
+          <template slot-scope="scope">
+            <b>{{ scope.row.contestName }}</b>
+          </template>
+        </el-table-column>
+        <el-table-column label="开始时间" width="200px" align="center">
+          <template slot-scope="scope">
+            <i class="el-icon-time"> {{ scope.row.startAt }}</i>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束时间" width="200px" align="center">
+          <template slot-scope="scope">
+            <i class="el-icon-time"> {{ scope.row.endAt }}</i>
+          </template>
+        </el-table-column>
+        <el-table-column width="220px" align="center">
+          <template slot="header">
+            <i class="el-icon-menu el-icon--left"></i>
+            <span>操作</span>
+          </template>
+          <template slot-scope="scope">
+            <el-button-group>
+              <el-button size="mini" icon="el-icon-edit"
+                         @click="editContest(scope.$index)">
+              </el-button>
+              <el-button size="mini" icon="el-icon-s-grid" @click="manageProblems(scope.$index)">
+                管理题目
+              </el-button>
+              <el-button size="mini" type="danger" icon="el-icon-delete"
+                         @click="deleteContest(scope.$index)">
+              </el-button>
+            </el-button-group>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination style="margin-top: 10px" layout="total, prev, pager, next" background
+                     :page-size="pageSize" :total="contests.count"
+                     :current-page.sync="currentPage"
+                     @size-change="getContests" @current-change="getContests">
+      </el-pagination>
+      <!-- Edit Contest Dialog -->
+      <el-dialog :title="editorDialog.title" width="650px"
+                 :visible.sync="editorDialog.visible">
+        <ContestEditor :contest-data="selectedContest"
+                       :create="editorDialog.create"
+                       :dialog-visible.sync="editorDialog.visible"
+                       @refresh="getContests"/>
+      </el-dialog>
+      <!-- Delete Confirm Dialog -->
+      <el-dialog title="删除提示" width="650px"
+                 :visible.sync="deleteDialog.visible">
+        <el-alert type="warning" show-icon
+                  :title="`你正在删除：${this.selectedContest.contestName}`"
+                  description="相关提交记录会消失（该竞赛包含的题目不会被删除）"
+                  :closable="false">
+        </el-alert>
+        <el-form :model="deleteDialog.form" ref="deleteForm"
+                 :rules="deleteDialog.rules"
+                 @submit.native.prevent>
+          <el-form-item label="输入名称确认删除" prop="checkName">
+            <el-input v-model="deleteDialog.form.checkName"
+                      :placeholder="selectedContest.contestName">
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="danger" icon="el-icon-delete" @click="confirmDelete">删除</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <!-- Problems Manage Dialog -->
+      <el-dialog :title="selectedContest.contestName" width="1000px"
+                 :visible.sync="problemsDialog.visible">
+        <ContestProblemsManage :contest-id="selectedContest.contestId"/>
+      </el-dialog>
+    </el-card>
+  </div>
 </template>
 
 <script>
-import {copyObject, userInfo, toLoginPage, Notice} from "@/util"
+import {copyObject, userInfo, Notice} from "@/util"
 import ContestProblemsManage from "@/components/manage/contest/ContestProblems"
 import ContestEditor from "@/components/manage/contest/ContestEditor"
+import ErrorInfo from "@/components/ErrorInfo"
 import {ContestApi} from "@/service"
 
 export default {
   name: "ContestManage",
   components: {
     ContestEditor,
-    ContestProblemsManage
-  },
-  beforeMount() {
-    this.siteSetting.setTitle("竞赛管理")
-    this.getContests()
+    ContestProblemsManage,
+    ErrorInfo
   },
   data() {
     let validateDelete = (rule, value, callback) => {
@@ -119,6 +120,10 @@ export default {
     }
     return {
       loading: true,
+      error: {
+        code: null,
+        msg: null
+      },
       contests: {
         data: [],
         count: 0
@@ -155,6 +160,18 @@ export default {
       }
     }
   },
+  created() {
+    this.$siteSetting.setTitle("竞赛管理")
+    if (userInfo() != null) {
+      this.getContests()
+    } else {
+      this.loading = false
+      this.error = {
+        code: 401,
+        msg: "未授权"
+      }
+    }
+  },
   methods: {
     refresh() {
       this.getContests(true)
@@ -168,7 +185,12 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
+            } else if (error.code === 403) {
+              this.error = {
+                code: 403,
+                msg: "无权限访问此页面"
+              }
             } else {
               Notice.notify.error(this, {
                 title: "获取竞赛失败",
@@ -225,7 +247,7 @@ export default {
             })
             .catch((error) => {
               if (error.code === 401) {
-                toLoginPage(this)
+                this.$bus.$emit("login")
               } else {
                 Notice.notify.error(this, {
                   title: `${this.selectedContest.contestName} 删除失败`,
@@ -242,9 +264,10 @@ export default {
 }
 </script>
 
-<style scoped>
-.el-checkbox + .el-checkbox,
-.el-checkbox.is-bordered + .el-checkbox.is-bordered {
-  margin-left: 0;
+<style scoped lang="scss">
+.el-checkbox {
+  & + .el-checkbox, &.is-bordered + .el-checkbox.is-bordered {
+    margin-left: 0;
+  }
 }
 </style>

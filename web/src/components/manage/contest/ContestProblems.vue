@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import {userInfo, toLoginPage, Notice} from "@/util"
+import {userInfo, Notice} from "@/util"
 import AddProblems from "@/components/manage/contest/AddProblems"
 import MarkdownIt from "@/components/MarkdownIt"
 import {ContestApi} from "@/service"
@@ -120,7 +120,7 @@ export default {
           })
           .catch((error) => {
             if (error.code === 401) {
-              toLoginPage(this)
+              this.$bus.$emit("login")
             } else {
               Notice.notify.error(this, {
                 title: `${title} 移除失败`,
