@@ -11,10 +11,11 @@
         <div class="pie-chart" ref="results"/>
       </el-col>
     </el-row>
+    <el-divider/>
     <span class="title">年度做题记录</span>
-    <div style="display: flex; flex-direction: column; align-items: center">
-      <el-date-picker style="margin-top: 10px" size="mini" type="year" format="yyyy 年"
-                      placeholder="选择年" :editable="false" :clearable="false"
+    <div id="data-picker">
+      <el-date-picker size="mini" type="year" format="yyyy 年"
+                      placeholder="选择年份" :editable="false" :clearable="false"
                       v-model="year" @change="changeYear">
       </el-date-picker>
       <div id="activities" ref="activities"/>
@@ -118,18 +119,21 @@ export default {
         },
         legend: {
           left: "left",
-          top: "15",
+          top: "10",
           orient: "vertical",
-          data: []
+          data: [],
+          textStyle: {
+            fontSize: 11
+          }
         },
         series: [
           {
             name: "语言偏好",
             type: "pie",
-            center: ["55%", "40%"],
+            center: ["57%", "40%"],
             radius: ["25%", "45%"],
             itemStyle: {
-              borderRadius: 6,
+              borderRadius: 5,
               borderColor: '#FFFFFF',
               borderWidth: 2
             },
@@ -141,11 +145,11 @@ export default {
         title: {
           show: true,
           text: "",
-          left: "53%",
-          top: "35%",
+          left: "53.5%",
+          top: "34%",
           textStyle: {
             fontSize: 16,
-            lineHeight: 18
+            lineHeight: 20
           },
           textAlign: "center"
         },
@@ -154,9 +158,12 @@ export default {
         },
         legend: {
           left: "left",
-          top: "15",
+          top: "10",
           orient: "vertical",
-          data: resultKeys
+          data: resultKeys,
+          textStyle: {
+            fontSize: 11
+          }
         },
         series: [
           {
@@ -165,7 +172,7 @@ export default {
             center: ["55%", "40%"],
             radius: ["25%", "45%"],
             itemStyle: {
-              borderRadius: 6,
+              borderRadius: 5,
               borderColor: '#FFFFFF',
               borderWidth: 2
             },
@@ -305,13 +312,20 @@ export default {
 }
 
 .pie-chart {
-  height: 400px;
-  width: 420px;
+  height: 360px;
+  width: 425px;
+}
+
+#data-picker {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #activities {
-  width: 790px;
+  width: 800px;
   height: 250px;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 </style>
