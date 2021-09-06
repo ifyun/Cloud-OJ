@@ -88,7 +88,6 @@ export default {
   },
   props: ["active", "type"],
   created() {
-    this.verifyToken()
     this.siteSetting.setTitle()
 
     this.$bus.$on("login", () => {
@@ -98,6 +97,9 @@ export default {
     this.$bus.$on("logoff", () => {
       this.logoff()
     })
+  },
+  mounted() {
+    this.verifyToken()
   },
   computed: {
     headerClass() {
@@ -142,7 +144,6 @@ export default {
           }
           break
         case "exit":
-          this.userInfo = null
           this.logoff()
       }
     },

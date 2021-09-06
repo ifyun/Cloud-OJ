@@ -1,5 +1,4 @@
 import axios from "axios"
-import qs from "qs"
 
 const ApiPath = {
     LOGIN: "/api/auth/login",
@@ -55,9 +54,9 @@ const AuthApi = {
                 url: ApiPath.LOGIN,
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    "Content-Type": "application/json"
                 },
-                data: qs.stringify(user)
+                data: JSON.stringify(user)
             }).then((res) => {
                 resolve(res.data)
             }).catch((error) => {

@@ -4,10 +4,11 @@ import group._204.oj.gateway.dao.UserDao;
 import group._204.oj.gateway.model.Role;
 import group._204.oj.gateway.model.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements ReactiveUserDetailsService {
 
     @Resource
     private UserDao userDao;
@@ -30,8 +31,8 @@ public class UserService implements UserDetailsService {
     };
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        User user = userDao.findUserById(userId);
+    public Mono<UserDetails> findByUsername(String username) {
+        User user = userDao.findUserById(username);
 
         if (user != null) {
             int roleId = user.getRoleId();
@@ -47,9 +48,9 @@ public class UserService implements UserDetailsService {
             }
 
             user.setRoles(roles);
-            return user;
+            return Mono.just(user);
         } else {
-            String error = String.format("User(%s) not found.", userId);
+            String error = String.format("User(%s) not found.", username);
             log.error(error);
             throw new UsernameNotFoundException(error);
         }

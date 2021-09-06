@@ -2,45 +2,83 @@ package group._204.oj.gateway.controller;
 
 import group._204.oj.gateway.dao.UserDao;
 import group._204.oj.gateway.model.Msg;
-import io.jsonwebtoken.Claims;
+import group._204.oj.gateway.model.User;
+import group._204.oj.gateway.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.Date;
 
 @Slf4j
 @RestController
 public class AuthController {
 
+    @Value("${project.token-valid-time:4}")
+    private int tokenValidTime;
+
     @Resource
     private UserDao userDao;
 
     /**
+     * 登录接口
+     * <p>登录验证由过滤器完成，验证成功后此方法被执行，并返回 JWT</p>
+     *
+     * @param authentication 此对象不为 null 说明登录验证成功
+     * @return 登录成功返回 {@link User}，用户名或密码错误返回 401
+     */
+    @PostMapping(path = "login")
+    public ResponseEntity<?> login(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        log.info("Login success, user={}.", authentication.getName());
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        StringBuilder authoritiesString = new StringBuilder();
+
+        for (GrantedAuthority authority : authorities) {
+            authoritiesString.append(authority.getAuthority()).append(",");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        String userId = user.getUserId();
+        // 更新 Secret
+        log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId) == 1);
+        user.setSecret(userDao.getSecret(userId));
+        // 生成 JWT
+        Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
+        String jwt = JwtUtil.createJwt(userId, authoritiesString, expireAt, user.getSecret());
+
+        user.setToken(jwt);
+        user.setExpire(expireAt);
+
+        return ResponseEntity.ok(user);
+    }
+
+    /**
      * 登出
+     * <p>更新用户 secret 使 JWT 失效</p>
      */
     @DeleteMapping(path = "logoff")
-    public ResponseEntity<?> logoff(@RequestHeader String userId, @RequestHeader String token) {
+    public ResponseEntity<?> logoff(@RequestHeader String token) {
+        String userId = JwtUtil.getSubject(token);
         String secret = userDao.getSecret(userId);
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-
-            if (claims.getSubject().equals(userId)) {
-                log.info("Update secret of user({}): {}", userId, userDao.updateSecret(userId) == 1);
-                log.info("User({}) logoff.", userId);
-                SecurityContextHolder.clearContext();
-                return ResponseEntity.ok(new Msg("已退出"));
-            } else {
-                return ResponseEntity.status(403).body(new Msg("JWT Token 与 userId 不匹配"));
-            }
-        } catch (JwtException e) {
+            JwtUtil.getClaims(token, secret);
+            log.info("Logout: user={}.", userId);
+            log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId) == 1);
+            return ResponseEntity.ok(new Msg("用户" + userId + "已退出"));
+        } catch (JwtException | IllegalArgumentException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
@@ -48,24 +86,12 @@ public class AuthController {
 
     /**
      * 验证 Token 是否有效
+     * <p>此接口用于主动验证 JWT，验证操作由过滤器完成</p>
+     *
      * @return <p>200：验证通过，40x：Token 无效</p>
      */
     @GetMapping(path = "verify")
-    public ResponseEntity<?> verify(@RequestHeader String userId, @RequestHeader String token) {
-        log.info("Verify token of user: {}", userId);
-        String secret = userDao.getSecret(userId);
-
-        try {
-            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-
-            if (claims.getSubject().equals(userId)) {
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.status(403).body(new Msg("JWT Token 与 userId 不匹配"));
-            }
-        } catch (JwtException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<?> verify() {
+        return ResponseEntity.ok().build();
     }
 }

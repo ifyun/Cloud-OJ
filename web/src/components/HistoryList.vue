@@ -165,12 +165,17 @@ export default {
           })
     },
     titleClick(solution) {
-      window.sessionStorage.setItem("code", JSON.stringify({
+      window.localStorage.setItem("code", JSON.stringify({
         problemId: solution.problemId,
         language: solution.language,
         content: solution.code
       }))
-      window.location.href = `/commit?problemId=${solution["problemId"]}`
+      this.$router.push({
+        path: "/commit",
+        query: {
+          problemId: solution.problemId
+        }
+      })
     },
     resultClick(row) {
       const error = row["errorInfo"]

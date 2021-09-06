@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: gateway
-  servlet:
-    multipart:
-      max-file-size: 128MB
   datasource:
     url: jdbc:mysql://localhost:3306/cloud_oj?serverTimezone=Asia/Shanghai
     type: com.zaxxer.hikari.HikariDataSource
@@ -19,6 +16,39 @@ spring:
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: core
+          uri: lb://core-service
+          filters:
+            - StripPrefix=2
+          predicates:
+            - Path=/api/core/**
+        - id: judge
+          uri: lb://judge-service
+          filters:
+            - StripPrefix=2
+          predicates:
+            - Path=/api/judgement/**
+        - id: file
+          uri: lb://file-service
+          filters:
+            - StripPrefix=2
+          predicates:
+            - Path=/api/file/**
+        - id: auth
+          uri: lb://gateway
+          filters:
+            - StripPrefix=2
+          predicates:
+            - Path=/api/auth/**
 
 management:
   endpoints:
@@ -41,32 +71,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
-
-zuul:
-  routes:
-    manager-service:
-      path: /api/core/**
-      serviceId: core-service
-    judge-service:
-      path: /api/judgement/**
-      serviceId: judge-service
-    file-server:
-      path: /api/file/**
-      serviceId: file-service
-    auth:
-      path: /api/auth/**
-      serviceId: gateway
-  host:
-    max-per-route-connections: 1000
-    max-total-connections: 1000
-    connect-timeout-millis: 10000
-    socket-timeout-millis: 10000
-  semaphore:
-    max-semaphores: 2000
-
-ribbon:
-  ReadTimeout: 8000
-  ConnectTimeout: 8000
 
 project:
   token-valid-time: 4
