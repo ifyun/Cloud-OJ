@@ -1,15 +1,17 @@
 <template>
   <div id="root">
     <div id="main">
-      <div id="contest">
-        <h2 id="title">{{ contest.contestName }}</h2>
-        <div id="time-range">
-          {{ timeRange }}
+      <div class="ranking-wrapper">
+        <div class="header" :style="{background: headerColor}">
+          <div class="contest">
+            <span class="title">{{ contest.contestName }}</span>
+            <span class="time-range">
+              {{ timeRange }}
+            </span>
+          </div>
         </div>
-      </div>
-      <div id="ranking-wrapper">
-        <transition-group v-if="ranking.count > 0" name="ranking-list"
-                          id="ranking-list" tag="div">
+        <transition-group name="ranking-list" tag="div" class="ranking-list"
+                          v-if="ranking.count > 0">
           <div class="ranking-list-item"
                v-for="item in ranking.data"
                v-bind:key="item.userId" @click="getDetail(item)">
@@ -34,22 +36,31 @@
             </div>
             <div class="data">
               <div class="data-item">
-                <span class="prop">提交</span>
-                <span>{{ item.committed }}</span>
+                <div class="prop">
+                  <i class="el-icon-upload2 el-icon--left"></i>
+                  <span>提交</span>
+                </div>
+                <span class="value">{{ item.committed }}</span>
               </div>
               <div class="data-item">
-                <span class="prop">通过</span>
-                <span>{{ item.passed }}</span>
+                <div class="prop">
+                  <i class="el-icon-success el-icon--left"></i>
+                  <span>通过</span>
+                </div>
+                <div class="value passed">
+                  <span>{{ item.passed }}</span>
+                </div>
               </div>
               <div class="data-item">
-                <span class="prop">分数</span>
-                <span>{{ item.score }}</span>
+                <span class="prop">总分</span>
+                <span class="value score">{{ item.score }}</span>
               </div>
             </div>
           </div>
         </transition-group>
         <el-empty v-else/>
       </div>
+      <!-- 分数详情 -->
       <el-drawer :visible.sync="openDetail" :with-header="false" size="600px" direction="rtl">
         <div class="score-detail-title">
           <span>{{ scoreDetail.title }}</span>
@@ -82,6 +93,7 @@ export default {
   name: "ContestLeaderboard",
   data() {
     return {
+      headerColor: "#73C13B",
       contestId: null,
       contest: {
         contestId: null,
@@ -120,6 +132,10 @@ export default {
       }, 30000)
     }
   },
+  destroyed() {
+    clearInterval(this.timer);
+    this.timer = null;
+  },
   computed: {
     timeRange: function () {
       if (this.contest.contestId != null) {
@@ -151,16 +167,12 @@ export default {
 
             if (this.contest.ended) {
               clearInterval(this.timer)
+              this.timer = null
+              this.headerColor = "#EB6E6F";
             }
           })
           .catch((error) => {
-            let msg = error.msg
-
-            if (error.code === 401) {
-              msg = "请重新登录"
-            }
-
-            Notice.message.error(this, `${error.code} ${msg}`)
+            Notice.message.error(this, `${error.code} ${error.msg}`)
           })
     },
     /**
@@ -172,13 +184,12 @@ export default {
             this.ranking = data
           })
           .catch((error) => {
-            let msg = error.msg
-
             if (error.code === 401) {
-              msg = "请重新登录"
+              Notice.message.error(this, `${error.code} ${error.msg}`)
+            } else if (error.code === 403) {
+              clearInterval(this.timer)
+              this.timer = null
             }
-
-            Notice.message.error(this, `${error.code} ${msg}`)
           })
     },
     /**
@@ -214,154 +225,228 @@ export default {
   height: 100%;
   width: 100%;
   overflow: auto;
-  background-color: #111111;
+  background-image: linear-gradient(180deg, #F5F7FA 10%, #F9FBFF 100%);
 }
 
 #main {
-  max-width: 1080px;
+  max-width: 1000px;
   min-width: 900px;
   height: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
 
-#contest {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  .ranking-wrapper {
+    margin-top: 50px;
+    width: 95%;
+    flex: 1;
+    transition: all 0.5s ease;
+    box-shadow: 0 0 18px 6px rgba(0, 0, 0, 0.05);
+    background-color: white;
 
-  #title {
-    color: white;
-    margin-top: 30px;
-    font-size: 26pt;
-    font-weight: bold;
-    letter-spacing: 6px;
-    text-shadow: 0 0 .1em white, 0 0 .1em white;
-  }
+    .header {
+      transition: all 2s ease;
+      padding: 30px;
 
-  #time-range {
-    color: white;
-    font-size: 12pt;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-  }
-}
+      .contest {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
 
-#ranking-wrapper {
-  margin-top: 20px;
-  width: 90%;
-  flex: 1;
-  transition: all 0.5s ease;
-  background-color: whitesmoke;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-}
+        * {
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.06);
+        }
 
-#ranking-list {
-  display: flex;
-  flex-direction: column;
-  flex-basis: 100%;
-  margin: 10px;
-  padding: 15px;
-  overflow: hidden;
-  transition: all 1s ease;
+        .title {
+          color: white;
+          font-size: 30px;
+          font-weight: bold;
+          letter-spacing: 4px;
+        }
 
-  .ranking-list-item {
-    display: flex;
-    align-items: center;
-    margin-top: 5px;
-    padding: 15px;
-    height: 50px;
-
-    * {
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
-    }
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:nth-child(1) {
-      .avatar {
-        border-color: #F8A31D !important;
+        .time-range {
+          margin-top: 10px;
+          color: white;
+          font-size: var(--text-small-title);
+        }
       }
     }
 
-    &:nth-child(2) {
-      .avatar {
-        border-color: #6A7F94 !important;
-      }
-    }
-
-    &:nth-child(3) {
-      .avatar {
-        border-color: #95734F !important;
-      }
-    }
-
-    .user-info {
+    .ranking-list {
       display: flex;
-      align-items: center;
-      flex: 0 0 60%;
+      flex-direction: column;
+      flex-basis: 100%;
+      overflow: hidden;
+      transition: all 1s ease;
 
-      .avatar {
-        width: 45px;
-        height: 45px;
-        border: 3px solid white;
-      }
+      .ranking-list-item {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        height: 50px;
+        background-image: linear-gradient(180deg, #FAFAFA88 10%, #FFFFFF00 100%);;
 
-      .username {
-        color: var(--color-text-normal);
-        font-size: 13pt;
-        font-weight: bold;
-        margin-left: 25px;
+        * {
+          text-shadow: 0 0 4px rgba(0, 0, 0, 0.06);
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &:nth-child(1) {
+          .avatar {
+            border-color: #F8A31D !important;
+          }
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          flex: 0 0 65%;
+
+          .rank {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            color: var(--color-text-secondary);
+            font-weight: bold;
+            font-size: var(--text-large-title);
+            margin-right: 30px;
+
+            .rank-icon {
+              height: 35px;
+            }
+          }
+
+          .avatar {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #F5F7FA;
+          }
+
+          .username {
+            color: var(--color-text-normal);
+            font-size: var(--text-large-title);
+            font-weight: bold;
+            margin-left: 20px;
+          }
+        }
+
+        .data {
+          flex: 1;
+          width: 200px;
+          height: 100%;
+          display: flex;
+          justify-content: space-around;
+
+          .data-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+
+            * {
+              text-shadow: 0 0 4px rgba(0, 0, 0, 0.06);
+            }
+
+            .prop {
+              font-weight: normal;
+              font-size: var(--text-base);
+              color: var(--color-text-secondary);
+            }
+
+            .value {
+              color: var(--color-success);
+              font-size: var(--text-title);
+              font-weight: bold;
+
+              &.passed {
+                color: var(--color-success);
+              }
+
+              &.score {
+                color: var(--color-success);
+              }
+            }
+          }
+        }
       }
     }
   }
 }
 
-.rank {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  color: var(--color-text-normal);
-  font-weight: bold;
-  font-size: 16pt;
-  margin-right: 30px;
+@media screen and (max-width: 720px) {
+  #main {
+    min-width: 100%;
 
-  .rank-icon {
-    height: 35px;
-  }
-}
+    .ranking-wrapper {
+      margin-top: 0;
+      width: 100%;
 
-.data {
-  width: 200px;
-  flex: 1;
-  display: flex;
-  justify-content: space-around;
+      .header {
+        padding: 1rem .8rem;
 
-  .data-item {
-    color: var(--color-text-primary);
-    text-align: center;
-    font-size: 12pt;
-    font-weight: bold;
-    width: 120px;
-    height: 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
+        .contest {
 
-    .prop {
-      font-weight: normal;
-      color: var(--color-text-normal);
+          .title {
+            font-size: 1.25rem;
+          }
+
+          .time-range {
+            font-size: .8rem;
+          }
+        }
+      }
+
+      .ranking-list {
+        .ranking-list-item {
+          padding: .3rem;
+
+          .user-info {
+            flex: 0 0 60%;
+
+            .rank {
+              width: 2rem;
+              font-size: 1rem;
+              margin-right: .2rem;
+
+              .rank-icon {
+                height: 1.3rem;
+              }
+            }
+
+            .avatar {
+              width: 2.15rem;
+              height: 2.15rem;
+              border-width: .15rem;
+            }
+
+            .username {
+              font-size: .8rem;
+              margin-left: .5rem;
+            }
+          }
+
+          .data {
+            .data-item {
+              .el-icon--left {
+                margin-right: .2rem;
+              }
+
+              .prop {
+                font-size: .6rem;
+              }
+
+              .value {
+                font-size: .8rem;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

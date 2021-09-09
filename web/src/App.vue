@@ -48,6 +48,8 @@ import "@/assets/css/theme.css"
 import TopNavigation from "@/components/common/TopNavigation"
 import Bottom from "@/components/common/Bottom"
 import {userInfo} from "@/util"
+import axios from "axios"
+import {ApiPath} from "@/service"
 
 export default {
   name: "App",
@@ -68,6 +70,14 @@ export default {
       },
       userInfo: userInfo()
     }
+  },
+  created() {
+    axios.head(`${ApiPath.IMAGE}/favicon.png`)
+        .then(() => {
+          this.$siteSetting.setFavicon(`${ApiPath.IMAGE}/favicon.png`)
+        })
+        .catch(() => {
+        })
   },
   watch: {
     $route(to) {

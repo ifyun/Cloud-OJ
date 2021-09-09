@@ -150,6 +150,7 @@ export default {
     logoff() {
       AuthApi.logoff(this.userInfo).finally(() => {
         clearToken()
+        this.userInfo = null
         this.loginDialog.visible = true
       })
     },

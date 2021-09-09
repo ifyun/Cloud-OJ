@@ -70,7 +70,7 @@
 
 <script>
 import {languages} from "@/util/data"
-import {Notice} from "@/util"
+import {Notice, userInfo} from "@/util"
 import moment from "moment"
 import {ContestApi} from "@/service"
 
@@ -121,12 +121,16 @@ export default {
           })
     },
     contestClick(row) {
-      this.$router.push({
-        path: "/problems",
-        query: {
-          contestId: row.contestId
-        }
-      })
+      if (userInfo() == null) {
+        this.$bus.$emit("login")
+      } else {
+        this.$router.push({
+          path: "/problems",
+          query: {
+            contestId: row.contestId
+          }
+        })
+      }
     },
     formatDate(time) {
       return moment(time).format("YYYY年 MM月DD日")
