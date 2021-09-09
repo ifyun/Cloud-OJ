@@ -10,6 +10,11 @@
     --text-small-title: 16px;
     --text-title: 18px;
     --text-large-title: 20px;
+
+    --color-primary: #409EFF;
+    --color-success: #67C23A;
+    --color-warning: #E6A23C;
+    --color-danger: #F56C6C;
 }
 
 html, body {
@@ -85,31 +90,23 @@ html, body {
     box-shadow: none !important;
 }
 
-.tag {
-    cursor: pointer;
-    border-radius: 5px;
-    padding: 0 8px;
-    margin: 2px 2px;
-    color: white;
-    display: inline-block;
-    font-size: 12px;
-    line-height: 24px;
-}
-
 .result-tag {
     cursor: pointer;
 }
 
-.contest-tag {
-    font-weight: bold;
-    border-radius: 20px;
-    padding: 2px 12px;
+.tag {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 0 8px;
+    margin: 2px 2px;
     color: white;
     display: inline-block;
+    font-size: var(--text-extra-small);
+    line-height: 22px;
 }
 
 .tag:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08);
 }
 
 .tag-color-1 {

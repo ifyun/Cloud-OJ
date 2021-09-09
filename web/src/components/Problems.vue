@@ -2,7 +2,7 @@
   <div id="root">
     <error-info v-if="error.code != null" :error="error"/>
     <el-card v-else class="borderless" style="width: 100%">
-      <h3 v-if="contest.contestId != null">{{ contest.contestName }}</h3>
+      <div class="contest-name" v-if="contest.contestId != null">{{ contest.contestName }}</div>
       <div style="align-self: flex-start" v-if="contestId == null">
         <el-form size="medium" :inline="true" @submit.native.prevent>
           <el-form-item>
@@ -166,16 +166,16 @@ export default {
     },
     getContest() {
       if (this.contestId != null && userInfo() == null) {
-        // 未登录不可查看竞赛题目
         this.$bus.$emit("login")
+      } else {
+        ContestApi.get(this.contestId).then((data) => {
+          this.$siteSetting.setTitle(data.contestName)
+          this.contest = data
+          this.getProblems()
+        }).catch((error) => {
+          this.error = error
+        })
       }
-      ContestApi.get(this.contestId).then((data) => {
-        this.$siteSetting.setTitle(data.contestName)
-        this.contest = data
-        this.getProblems()
-      }).catch((error) => {
-        this.error = error
-      })
     },
     getProblems() {
       this.loading = true
@@ -237,8 +237,10 @@ export default {
   width: 1100px;
 }
 
-h3 {
-  color: #303133;
-  margin-top: 0;
+.contest-name {
+  color: var(--color-text-normal);
+  font-size: var(--text-large-title);
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 </style>

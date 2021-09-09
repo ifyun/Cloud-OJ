@@ -18,15 +18,15 @@
                         <span id="title">{{ `${problem.problemId}. ${problem.title}` }}</span>
                         <div>
                           <div class="limits">
-                            <el-tag type="info" effect="plain" size="small">
+                            <el-tag type="info" effect="dark" size="small">
                               <i class="el-icon-question el-icon--left"/>
                               {{ problem.score }} 分
                             </el-tag>
-                            <el-tag type="success" effect="plain" size="small">
+                            <el-tag type="success" effect="dark" size="small">
                               <i class="el-icon-time el-icon--left"/>
                               {{ problem.timeout }} ms
                             </el-tag>
-                            <el-tag type="primary" effect="plain" size="small">
+                            <el-tag type="primary" effect="dark" size="small">
                               <i class="el-icon-cpu el-icon--left"/>
                               {{ problem.type === 0 ? problem.memoryLimit : 0 }} MB
                             </el-tag>

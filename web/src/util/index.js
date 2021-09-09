@@ -3,7 +3,7 @@ import {SettingsApi} from "@/service"
 const TOKEN = "token"
 
 let colorIndex = 1
-let colorMap = JSON.parse(localStorage.getItem("tag_color"))
+let colorMap = JSON.parse(sessionStorage.getItem("tag_color"))
 if (colorMap == null) {
     colorMap = {}
 }
@@ -13,7 +13,7 @@ function tagColor(tag) {
         let i = colorIndex % 8
         colorMap[tag] = `tag-color-${i === 0 ? 1 : i}`
         colorIndex++
-        localStorage.setItem("tag_color", JSON.stringify(colorMap))
+        sessionStorage.setItem("tag_color", JSON.stringify(colorMap))
     }
 
     return colorMap[tag]
