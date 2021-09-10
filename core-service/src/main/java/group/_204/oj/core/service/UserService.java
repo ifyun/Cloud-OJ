@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -16,6 +17,10 @@ public class UserService {
 
     @Resource
     private UserDao userDao;
+
+    private String newUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 
     public List<List<?>> getUsers(int page, int limit, String userId, String name) {
         if (userId != null && !userId.isEmpty()) {
@@ -33,17 +38,28 @@ public class UserService {
 
     public boolean addUser(User user) {
         user.setRoleId(0);
+        user.setSecret(newUUID());
         return userDao.add(user) == 1;
     }
 
     public Msg updateUser(User user) {
+        if (user.getPassword() != null || user.getRoleId() != null) {
+            user.setSecret(newUUID());
+        }
+
         int status = userDao.update(user) == 1 ? 200 : 304;
+
         return new Msg(status, null);
     }
 
     public Msg updateProfile(String userId, User user) {
         user.setRoleId(null);
         user.setUserId(userId);
+
+        if (user.getPassword() != null) {
+            user.setSecret(newUUID());
+        }
+
         return updateUser(user);
     }
 
