@@ -57,7 +57,7 @@ create table user
         primary key,
     name      varchar(16)                         not null,
     password  varchar(100)                        not null,
-    secret    char(8)                             not null comment '秘钥，用于生成 jwt',
+    secret    char(36)                            not null comment '秘钥，用于生成 jwt',
     email     varchar(32)                         null,
     section   varchar(16)                         null,
     role_id   int       default 0                 not null,
@@ -66,6 +66,12 @@ create table user
         foreign key (role_id) references role (role_id)
             on update cascade
 );
+
+create index user_name_index
+    on user (name);
+
+create index user_section_index
+    on user (section);
 
 create table solution
 (
@@ -161,33 +167,6 @@ create table source_code
         foreign key (solution_id) references solution (solution_id)
             on update cascade on delete cascade
 );
-
-create index user_name_index
-    on user (name);
-
-create index user_section_index
-    on user (section);
-
-DELIMITER //
-create trigger tr_user_insert
-    before insert
-    on user
-    for each row
-begin
-    set NEW.secret = LEFT(UUID(), 8);
-end //
-
-create trigger tr_user_update
-    before update
-    on user
-    for each row
-begin
-    if OLD.role_id <> NEW.role_id or OLD.password <> NEW.password
-    then
-        set NEW.secret = LEFT(UUID(), 8);
-    end if;
-end //
-DELIMITER ;
 
 create view contest_problem as
 select `c`.`contest_id`   AS `contest_id`,

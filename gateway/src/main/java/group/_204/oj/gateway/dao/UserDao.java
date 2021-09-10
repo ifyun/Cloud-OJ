@@ -7,5 +7,5 @@ import group._204.oj.gateway.model.User;
 public interface UserDao {
     User findUserById(String userId);
     String getSecret(String userId);
-    int updateSecret(String userId);
+    int updateSecret(String userId, String secret);
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -26,6 +27,10 @@ public class AuthController {
 
     @Resource
     private UserDao userDao;
+
+    private String newUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 
     /**
      * 登录接口
@@ -52,7 +57,7 @@ public class AuthController {
         User user = (User) authentication.getPrincipal();
         String userId = user.getUserId();
         // 更新 Secret
-        log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId) == 1);
+        log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
         user.setSecret(userDao.getSecret(userId));
         // 生成 JWT
         Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
@@ -76,7 +81,7 @@ public class AuthController {
         try {
             JwtUtil.getClaims(token, secret);
             log.info("Logout: user={}.", userId);
-            log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId) == 1);
+            log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
             return ResponseEntity.ok(new Msg("用户" + userId + "已退出"));
         } catch (JwtException | IllegalArgumentException e) {
             log.error(e.getMessage());
