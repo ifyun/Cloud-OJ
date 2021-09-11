@@ -230,48 +230,51 @@ public class Judgement {
         int memoryLimit = limit.getMemoryLimit();
         int outputLimit = limit.getOutputLimit();
         int maxMemoryLimit = memoryLimit << 2;
-        int procLimit = 1;
+        int procLimit;
 
         // Java/Kotlin/JS 内存限制按 2 倍计算
         switch (language) {
             case C:
             case CPP:
-                maxMemoryLimit <<= 1;
-                cmd.add("--cmd=./Solution");
-                break;
-            case GO:
-                procLimit = 10;
+                procLimit = 1;
                 maxMemoryLimit <<= 1;
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
-                procLimit = 20;
+                procLimit = 32;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
                 cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit << 1));
                 break;
             case KOTLIN:
-                procLimit = 20;
+                procLimit = 32;
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
                 maxMemoryLimit = memoryLimit << 2;
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
-                procLimit = 15;
+                procLimit = 32;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=node@Solution.js");
                 break;
             case PYTHON:
+                procLimit = 1;
                 cmd.add("--cmd=python3@Solution.py");
                 break;
             case BASH:
+                procLimit = 1;
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
-                procLimit = 10;
+                procLimit = 16;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
+                break;
+            case GO:
+                procLimit = 64;
+                maxMemoryLimit <<= 1;
+                cmd.add("--cmd=./Solution");
                 break;
             default:
                 throw new UnsupportedLanguageError(language.toString());

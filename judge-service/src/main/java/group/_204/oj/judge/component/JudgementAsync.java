@@ -6,15 +6,20 @@ import group._204.oj.judge.type.SolutionState;
 import group._204.oj.judge.utils.FileCleaner;
 import group._204.oj.judge.type.SolutionResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.function.Consumer;
 
 @Slf4j
 @Component
 public class JudgementAsync {
+
+    @Value("${project.auto-clean-solution:true}")
+    private Boolean autoCleanSolution;
 
     @Resource
     private Judgement judgement;
@@ -27,6 +32,11 @@ public class JudgementAsync {
 
     @Resource
     private FileCleaner fileCleaner;
+
+    @PostConstruct
+    void init() {
+        log.info("AutoCleanSolution: {}", autoCleanSolution);
+    }
 
     /**
      * 异步判题
@@ -51,7 +61,10 @@ public class JudgementAsync {
             solutionDao.update(solution);
         } finally {
             callback.accept(null);
-            fileCleaner.deleteTempFile(solution.getSolutionId());
+
+            if (autoCleanSolution) {
+                fileCleaner.deleteTempFile(solution.getSolutionId());
+            }
         }
     }
 }
