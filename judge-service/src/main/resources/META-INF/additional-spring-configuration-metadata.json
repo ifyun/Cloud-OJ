@@ -14,6 +14,11 @@
       "name": "project.file-dir",
       "type": "java.lang.String",
       "description": "文件存放目录."
+    },
+    {
+      "name": "project.auto-clean-solution",
+      "type": "java.lang.Boolean",
+      "description": "是否自动清理判题产生的代码文件."
     }
   ]
 }

@@ -51,4 +51,5 @@ mybatis:
 project:
   file-dir: /mnt/e/cloud_oj/
   code-dir: /tmp/code/
+  auto-clean-solution: false
   judge-pool-size: 4
