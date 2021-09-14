@@ -76,23 +76,13 @@ const bcrypt = require("bcryptjs")
 
 export default {
   name: "UserProfile",
-  beforeMount() {
-    if (this.userId != null) {
-      this.getProfile()
-      this.avatarUrl = `${ApiPath.AVATAR}/${this.userId}.png`
-    } else {
-      this.resetProfileData()
-      this.$siteSetting.setTitle("个人中心")
-      this.avatarUrl = `${ApiPath.AVATAR}/${this.userInfo.userId}.png`
-    }
-  },
   props: ["userId"],
   data() {
     return {
       uploadUrl: ApiPath.AVATAR,
       uploadHeaders: {
-        "token": userInfo().token,
-        "userId": userInfo().userId
+        userId: null,
+        token: null
       },
       avatarUrl: "",
       userInfo: userInfo(),
@@ -118,6 +108,20 @@ export default {
       profileEditor: {
         display: false,
         loading: false
+      }
+    }
+  },
+  beforeMount() {
+    if (typeof this.userId !== "undefined") {
+      this.getProfile()
+      this.avatarUrl = `${ApiPath.AVATAR}/${this.userId}.png`
+    } else {
+      this.$siteSetting.setTitle("个人中心")
+      this.resetProfileData()
+      this.avatarUrl = `${ApiPath.AVATAR}/${this.userInfo.userId}.png`
+      this.uploadHeaders = {
+        userId: this.userInfo.userId,
+        token: this.userInfo.token
       }
     }
   },
