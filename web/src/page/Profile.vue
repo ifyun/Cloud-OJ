@@ -1,5 +1,5 @@
 <template>
-  <div id="root" v-if="userInfo != null || userId != null">
+  <div id="root">
       <error-info v-if="error.code != null" :error="error"/>
       <el-tabs v-else class="borderless" type="border-card" style="width: 100%">
         <el-tab-pane label="概览">
@@ -28,12 +28,6 @@ import {userInfo} from "@/util"
 
 export default {
   name: "Profile",
-  beforeMount() {
-    if (this.userInfo == null) {
-      this.$bus.$emit("login")
-    }
-    this.userId = this.$route.query.userId
-  },
   components: {
     UserProfile,
     Overview,
@@ -47,7 +41,16 @@ export default {
         msg: ""
       },
       userInfo: userInfo(),
-      userId: ""
+      userId: null
+    }
+  },
+  created() {
+    this.userId = this.$route.query.userId
+    if (typeof this.userId === "undefined" && this.userInfo == null) {
+      this.error = {
+        code: 401,
+        msg: "请登录"
+      }
     }
   },
   methods: {

@@ -145,11 +145,11 @@ export default {
 }
 
 .el-link--inner {
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .user-id {
-  font-size: 6px;
-  color: #909399;
+  font-size: 8px;
+  color: var(--color-text-secondary);
 }
 </style>

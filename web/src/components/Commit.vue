@@ -44,7 +44,8 @@
                 </span>
                   <history-list v-if="userInfo != null" :single-mode="true" :problem-id="problemId"
                                 :title="problem.title" @changeCode="setCode"/>
-                  <div v-else>请登录</div>
+                  <el-result v-else icon="warning" sub-title="请登录后查看">
+                  </el-result>
                 </el-tab-pane>
               </el-tabs>
             </div>

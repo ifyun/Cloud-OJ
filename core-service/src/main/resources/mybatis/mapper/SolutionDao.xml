@@ -4,10 +4,10 @@
 <mapper namespace="group._204.oj.core.dao.SolutionDao">
     <select id="getResultBySolutionId" resultMap="Map.JudgeResult">
         select solution_id,
-               state - 1  as state_code,
-               result - 1 as result_code,
+               state - 1          as state_code,
+               result - 1         as result_code,
                pass_rate,
-               score,
+               truncate(score, 2) as score,
                time,
                memory,
                error_info
