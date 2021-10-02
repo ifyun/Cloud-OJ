@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstring>
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <fcntl.h>
 #include "utils.h"
 
 namespace io = boost::iostreams;
@@ -64,7 +65,7 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
     int status_cnt[] = {0, 0, 0, 0, 0};
     auto total = results.size();
 
-    for (auto r : results) {
+    for (auto r: results) {
         status_cnt[r.status]++;
         if (r.timeUsed > time) time = r.timeUsed;
         if (r.memUsed > memory) memory = r.memUsed;
@@ -104,12 +105,45 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
 }
 
 /**
+ * @brief 返回去除文件末尾所有空格/换行符后的偏移量
+ * @param path 文件路径
+ * @return 偏移量
+ */
+__off_t Utils::get_rtrim_offset(const std::string &path) {
+    int fd;
+    __off_t offset;
+    char buf;
+
+    fd = open(path.c_str(), O_RDONLY);
+    offset = lseek(fd, -2, SEEK_END);
+
+    read(fd, &buf, sizeof(buf));
+
+    while (true) {
+        if (buf != 10 && buf != 32) {
+            offset += 2;
+            break;
+        }
+
+        offset = lseek(fd, -2, SEEK_CUR);
+        read(fd, &buf, sizeof(buf));
+    }
+
+    close(fd);
+
+    return offset;
+}
+
+/**
  * @brief 比较文件
  * @return true -> 不同, false -> 相同
  */
-bool Utils::diff(const std::string &path1, const std::string &path2) {
-    io::mapped_file_source file1(path1);
-    io::mapped_file_source file2(path2);
+bool Utils::diff(const std::string &user_output, const std::string &expect_output) {
+    auto offset1 = get_rtrim_offset(user_output);
+    auto offset2 = get_rtrim_offset(expect_output);
+
+    io::mapped_file_source file1(user_output, offset1);
+    io::mapped_file_source file2(expect_output, offset2);
 
     if (file1.size() != file2.size()) {
         return true;
