@@ -227,8 +227,8 @@ public class Judgement {
         cmd.add("/opt/bin/judge-runner");
 
         long timeLimit = limit.getTimeout();
-        int memoryLimit = limit.getMemoryLimit();
         int outputLimit = limit.getOutputLimit();
+        int memoryLimit = limit.getMemoryLimit();
         int maxMemoryLimit = memoryLimit << 2;
         int procLimit;
 
@@ -237,20 +237,19 @@ public class Judgement {
             case C:
             case CPP:
                 procLimit = 1;
-                maxMemoryLimit <<= 1;
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
                 procLimit = 32;
                 memoryLimit <<= 1;
-                maxMemoryLimit = memoryLimit << 2;
-                cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit << 1));
+                maxMemoryLimit = 1536;
+                cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit));
                 break;
             case KOTLIN:
                 procLimit = 32;
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
-                maxMemoryLimit = memoryLimit << 2;
+                maxMemoryLimit = 1536;
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
@@ -273,15 +272,11 @@ public class Judgement {
                 break;
             case GO:
                 procLimit = 64;
-                maxMemoryLimit <<= 1;
+                maxMemoryLimit = 1536;
                 cmd.add("--cmd=./Solution");
                 break;
             default:
                 throw new UnsupportedLanguageError(language.toString());
-        }
-
-        if (maxMemoryLimit >= MAX_MEM_LIMIT) {
-            maxMemoryLimit = MAX_MEM_LIMIT;
         }
 
         List<String> config = Arrays.asList(
