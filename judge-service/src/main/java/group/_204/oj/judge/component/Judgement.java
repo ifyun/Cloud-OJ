@@ -230,7 +230,7 @@ public class Judgement {
         int outputLimit = limit.getOutputLimit();
         int memoryLimit = limit.getMemoryLimit();
         int maxMemoryLimit = memoryLimit << 2;
-        int procLimit;
+        int procLimit = 0;
 
         // Java/Kotlin/JS 内存限制按 2 倍计算
         switch (language) {
@@ -240,20 +240,17 @@ public class Judgement {
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
-                procLimit = 32;
                 memoryLimit <<= 1;
                 maxMemoryLimit = 1536;
                 cmd.add("--cmd=java@Solution");
                 break;
             case KOTLIN:
-                procLimit = 32;
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
                 maxMemoryLimit = 1536;
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
-                procLimit = 32;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=node@Solution.js");
                 break;
@@ -266,12 +263,10 @@ public class Judgement {
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
-                procLimit = 32;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
                 break;
             case GO:
-                procLimit = 64;
                 maxMemoryLimit = 1536;
                 cmd.add("--cmd=./Solution");
                 break;

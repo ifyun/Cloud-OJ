@@ -49,10 +49,12 @@ void Runner::set_limit(const Config &config) {
 
     setrlimit(RLIMIT_FSIZE, &rl);
 
-    rl.rlim_cur = config.proc_count;
-    rl.rlim_max = rl.rlim_cur;
+    if (config.proc_count > 0) {
+        rl.rlim_cur = config.proc_count;
+        rl.rlim_max = rl.rlim_cur;
 
-    setrlimit(RLIMIT_NPROC, &rl);
+        setrlimit(RLIMIT_NPROC, &rl);
+    }
 }
 
 /**
