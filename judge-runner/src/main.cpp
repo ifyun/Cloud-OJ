@@ -67,7 +67,7 @@ inline void show_help() {
     printf(fmt, "-o, --output-size", "输出限制(MB)");
     printf(fmt, "-w, --workdir", "工作目录");
     printf(fmt, "-d, --data", "测试数据目录");
-    printf(fmt, "-p, --proc", "进程数量限制(可选，默认为 1)");
+    printf(fmt, "-p, --proc", "进程数量限制(可选，默认无限制)");
     printf(fmt, "-h, --help", "显示此信息");
 }
 
