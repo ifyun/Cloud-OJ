@@ -92,13 +92,13 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
     std::stringstream ss;
 
     ss << "{\n"
-       << "\t" << R"("status": )" << status << ",\n"
-       << "\t" << R"("result": ")" << status_str[status] << R"(",)" << "\n"
-       << "\t" << R"("total": )" << total << ",\n"
-       << "\t" << R"("passed": )" << status_cnt[AC] << ",\n"
-       << "\t" << R"("passRate": )" << pass_rate << ",\n"
-       << "\t" << R"("time": )" << time << ",\n"
-       << "\t" << R"("memory": )" << memory << "\n"
+       << "  " << R"("status": )" << status << ",\n"
+       << "  " << R"("result": ")" << status_str[status] << R"(",)" << "\n"
+       << "  " << R"("total": )" << total << ",\n"
+       << "  " << R"("passed": )" << status_cnt[AC] << ",\n"
+       << "  " << R"("passRate": )" << pass_rate << ",\n"
+       << "  " << R"("time": )" << time << ",\n"
+       << "  " << R"("memory": )" << memory << "\n"
        << "}\n";
 
     return ss.str();

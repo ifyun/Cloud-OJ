@@ -8,4 +8,4 @@ COPY ./registry-*.jar /app/registry.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8761
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar registry.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar registry.jar

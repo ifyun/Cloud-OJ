@@ -14,6 +14,11 @@ const int PA = 5;
 const int RUNTIME_ERROR = 1;
 const int JUDGE_ERROR = -1;
 
+const int MAX_WAIT_SECONDS = 60;
+
+const int KILL_MLE = 1;
+const int KILL_TLE = 2;
+
 /**
  * @brief 资源限制
  */
@@ -54,7 +59,7 @@ private:
 
 public:
     static Result run(char *args[], const Config &config, int root_fd,
-                      const std::string &work_dir, const std::string &random_dir);
+                      const std::string &work_dir, const std::string &tmp_data_dir);
 };
 
 RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config);

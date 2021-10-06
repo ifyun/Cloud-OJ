@@ -4,18 +4,28 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <dirent.h>
+#include <sys/ptrace.h>
 #include "runner.h"
 #include "utils.h"
 #include "env_setup.h"
+
+int kill_type = 0;
+
+pid_t child_pid;
 
 /**
  * @brief 退出 chroot 并清理环境
  * @param fd 文件描述符，切换到此目录
  */
-inline void clean_up(const int &fd, const std::string &work_dir, const std::string &random_dir) {
+inline void clean_up(const int &fd, const std::string &work_dir, const std::string &tmp_data_dir) {
     fchdir(fd);
     chroot(".");
-    end_env(work_dir.c_str(), random_dir.c_str());
+    end_env(work_dir.c_str(), tmp_data_dir.c_str());
+}
+
+void kill_child() {
+    kill(child_pid, SIGKILL);
+    kill_type = KILL_TLE;
 }
 
 /**
@@ -67,18 +77,22 @@ int Runner::run_cmd(char **args, const Config &config) {
             return 1;
         }
 
+        ptrace(PTRACE_TRACEME, 0, 0, 0);
+
         if (execvp(args[0], args) == -1) {
-            std::cerr << "Failed to start process\n";
+            perror("无法创建进程: ");
             return 1;
         }
 
         close(new_stdin);
         close(new_stdout);
     } else if (new_stdin == -1) {
-        std::cerr << "Failed to open " << config.in << std::endl;
+        std::string s = "无法打开 " + config.in + ": ";
+        perror(s.c_str());
         return 1;
     } else {
-        std::cerr << "Failed to open " << config.out << std::endl;
+        std::string s = "无法打开 " + config.out + ": ";
+        perror(s.c_str());
         return 1;
     }
 
@@ -86,64 +100,68 @@ int Runner::run_cmd(char **args, const Config &config) {
 }
 
 /**
- * @brief 等待结果，遇到异常直接退出
+ * @brief 等待结果
  */
 Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
                             const std::string &work_dir, const std::string &random_dir) {
     int status;
     struct rusage ru{};
-    struct Result res{};
+    struct Result res{.memUsed = 0};
 
-    if (wait4(pid, &status, 0, &ru) == -1) {
-        std::cerr << "Wait process failed.\n";
-        clean_up(root_fd, work_dir, random_dir);
-        exit(RUNTIME_ERROR);
-    }
-
-    res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
-                   ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
-    res.memUsed = ru.ru_maxrss;
-
-    if (WIFSIGNALED(status)) {
-        auto signal = WTERMSIG(status);
-        switch (signal) {
-            case SIGSEGV:
-                if (res.memUsed > config.memory) {
+    while (wait4(pid, &status, 0, &ru) > 0) {
+        if (WIFSIGNALED(status)) {
+            res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
+                           ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
+            auto signal = WTERMSIG(status);
+            switch (signal) {
+                case SIGSEGV:
                     res.status = MLE;
-                } else {
-                    std::cerr << "非法访问.\n";
+                    break;
+                case SIGALRM:
+                case SIGXCPU:
+                    res.status = TLE;
+                    break;
+                case SIGXFSZ:
+                    res.status = OLE;
+                    break;
+                case SIGKILL:
+                    if (kill_type == KILL_MLE) {
+                        res.status = MLE;
+                    } else if (kill_type == KILL_TLE) {
+                        fprintf(stderr, "进程已被杀死(%ds).\n", MAX_WAIT_SECONDS);
+                        clean_up(root_fd, work_dir, random_dir);
+                        exit(RUNTIME_ERROR);
+                    } else {
+                        fprintf(stderr, "进程已被杀死.\n");
+                        clean_up(root_fd, work_dir, random_dir);
+                        exit(RUNTIME_ERROR);
+                    }
+                    break;
+                default:
                     clean_up(root_fd, work_dir, random_dir);
                     exit(RUNTIME_ERROR);
-                }
-                break;
-            case SIGALRM:
-                std::cerr << "超出最大时间限制.\n";
-                exit(RUNTIME_ERROR);
-            case SIGXCPU:
+            }
+        } else if (WIFEXITED(status)) {
+            res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
+                           ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
+            if (res.timeUsed > config.timeout) {
                 res.status = TLE;
-                break;
-            case SIGXFSZ:
-                res.status = OLE;
-                break;
-            case SIGKILL:
-                std::cerr << "进程已被杀死.\n";
+            } else if (WEXITSTATUS(status) != 0) {
+                std::cerr << "非零退出.\n";
                 clean_up(root_fd, work_dir, random_dir);
                 exit(RUNTIME_ERROR);
-            default:
-                clean_up(root_fd, work_dir, random_dir);
-                exit(RUNTIME_ERROR);
-        }
-    } else {
-        if (res.timeUsed > config.timeout) {
-            res.status = TLE;
-        } else if (res.memUsed > config.memory) {
-            res.status = MLE;
-        } else if (WEXITSTATUS(status) != 0) {
-            std::cerr << "非零退出.\n";
-            clean_up(root_fd, work_dir, random_dir);
-            exit(RUNTIME_ERROR);
+            } else {
+                res.status = Utils::diff(config.out, config.expect) ? WA : AC;
+            }
         } else {
-            res.status = Utils::diff(config.out, config.expect) ? WA : AC;
+            res.memUsed = ru.ru_minflt * getpagesize() / 1024;
+
+            if (res.memUsed > config.memory) {
+                kill(pid, SIGKILL);
+                kill_type = KILL_MLE;
+            }
+
+            ptrace(PTRACE_SYSCALL, pid, 0, 0);
         }
     }
 
@@ -155,18 +173,22 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
  * @param args 命令 + 参数
  */
 Result Runner::run(char **args, const Config &config, int root_fd,
-                   const std::string &work_dir, const std::string &random_dir) {
-    pid_t pid = vfork();
+                   const std::string &work_dir, const std::string &tmp_data_dir) {
+    signal(SIGALRM, (void (*)(int)) kill_child);
+    alarm(MAX_WAIT_SECONDS);
+
+    pid_t pid = fork();
+    child_pid = pid;
 
     if (pid < 0) {
-        std::cerr << "创建判题进程失败.\n";
+        perror("创建进程失败: ");
+        clean_up(root_fd, work_dir, tmp_data_dir);
         exit(JUDGE_ERROR);
     } else if (pid == 0) {
-        alarm(15);
         auto status = run_cmd(args, config);
         exit(status);
     } else {
-        Result result = watch_result(pid, config, root_fd, work_dir, random_dir);
+        Result result = watch_result(pid, config, root_fd, work_dir, tmp_data_dir);
         return result;
     }
 }
@@ -178,13 +200,13 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
     RTN rtn;
 
     if (getuid() != 0) {
-        std::cerr << "Required root permission.\n";
+        std::cerr << "Permission Denied.\n";
         rtn.code = JUDGE_ERROR;
         return rtn;
     }
 
     if (opendir(work_dir) == nullptr) {
-        std::cerr << "Work dir does not exist.\n";
+        std::cerr << "工作目录不存在.\n";
         rtn.code = JUDGE_ERROR;
         return rtn;
     }
@@ -193,38 +215,39 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
     auto root_fd = open("/", O_RDONLY);
 
     if (root_fd == -1) {
-        std::cerr << "Open root failed.\n";
+        std::cerr << "open root dir failed.\n";
         rtn.code = JUDGE_ERROR;
         return rtn;
     }
 
-    // 创建运行环境，random_dir 为测试数据挂载点，根目录(/)变为 work_dir
-    std::string random_dir = setup_env(work_dir, data_dir);
+    // region 创建沙盒环境，根目录(/)变为 work_dir
+    std::string tmp_data_dir = setup_env(work_dir, data_dir);
 
     if (chroot(work_dir) != 0) {
-        std::cerr << "Chroot failed.\n";
+        std::cerr << "chroot failed.\n";
         rtn.code = JUDGE_ERROR;
-        clean_up(root_fd, work_dir, random_dir);
+        clean_up(root_fd, work_dir, tmp_data_dir);
         return rtn;
     }
 
     if (chdir("/") != 0) {
-        std::cerr << "Chroot failed.\n";
+        std::cerr << "chroot failed.\n";
         rtn.code = JUDGE_ERROR;
-        clean_up(root_fd, work_dir, random_dir);
+        clean_up(root_fd, work_dir, tmp_data_dir);
         return rtn;
     }
+    // endregion
 
     std::vector<std::string> input_files;
     std::vector<std::string> output_files;
 
     try {
-        input_files = Utils::get_files(random_dir, "in");       // 获取输入数据
-        output_files = Utils::get_files(random_dir, "out");     // 获取输出数据
+        input_files = Utils::get_files(tmp_data_dir, "in");       // 获取输入数据
+        output_files = Utils::get_files(tmp_data_dir, "out");     // 获取输出数据
     } catch (const std::invalid_argument &error) {
         std::cerr << error.what();
         rtn.code = JUDGE_ERROR;
-        clean_up(root_fd, work_dir, random_dir);
+        clean_up(root_fd, work_dir, tmp_data_dir);
         return rtn;
     }
 
@@ -234,7 +257,7 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
         if (input_files.size() != output_files.size()) {
             std::cerr << "测试数据文件数量不一致.\n";
             rtn.code = JUDGE_ERROR;
-            clean_up(root_fd, work_dir, random_dir);
+            clean_up(root_fd, work_dir, tmp_data_dir);
             return rtn;
         }
 
@@ -245,20 +268,18 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
             config.out = real_output_file;
             config.expect = output_files[i];
 
-            Result res = Runner::run(cmd, config, root_fd, work_dir, random_dir);
-
+            Result res = Runner::run(cmd, config, root_fd, work_dir, tmp_data_dir);
             results.push_back(res);
         }
     } else if (!output_files.empty()) {
         // 没有输入数据，读取第一个 .out 文件
-        std::string expect = Utils::get_files(random_dir, ".out")[0];
+        std::string expect = Utils::get_files(tmp_data_dir, ".out")[0];
 
         config.in = "/dev/null";
         config.out = "1.out";
         config.expect = expect;
 
-        Result res = Runner::run(cmd, config, root_fd, work_dir, random_dir);
-
+        Result res = Runner::run(cmd, config, root_fd, work_dir, tmp_data_dir);
         results.push_back(res);
     } else {
         std::cerr << "无测试数据.\n";
@@ -269,6 +290,6 @@ RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
         rtn.result = Utils::write_result(results);
     }
 
-    clean_up(root_fd, work_dir, random_dir);
+    clean_up(root_fd, work_dir, tmp_data_dir);
     return rtn;
 }
