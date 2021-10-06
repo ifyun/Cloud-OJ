@@ -8,4 +8,4 @@ COPY ./file-service-*.jar /app/file-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8000
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar file-service.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar file-service.jar

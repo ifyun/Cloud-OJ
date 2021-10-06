@@ -136,8 +136,8 @@ export default {
   },
   data() {
     const checkMemoryLimit = (rule, value, callback) => {
-      if (value < 24 || value > 256) {
-        callback(new Error("请输入 24 ~ 256 之间的数值"))
+      if (value < 16 || value > 256) {
+        callback(new Error("请输入 16 ~ 256 之间的数值"))
       } else {
         callback()
       }

@@ -8,4 +8,4 @@ COPY ./core-service-*.jar /app/core-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8001
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar core-service.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core-service.jar

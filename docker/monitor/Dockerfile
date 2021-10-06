@@ -8,4 +8,4 @@ COPY ./monitor-*.jar /app/monitor.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 5000
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar monitor.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar monitor.jar

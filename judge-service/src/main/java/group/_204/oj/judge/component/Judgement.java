@@ -243,7 +243,7 @@ public class Judgement {
                 procLimit = 32;
                 memoryLimit <<= 1;
                 maxMemoryLimit = 1536;
-                cmd.add(String.format("--cmd=java@-Xmx%dm@Solution", memoryLimit));
+                cmd.add("--cmd=java@Solution");
                 break;
             case KOTLIN:
                 procLimit = 32;
@@ -266,7 +266,7 @@ public class Judgement {
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
-                procLimit = 16;
+                procLimit = 32;
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
                 break;

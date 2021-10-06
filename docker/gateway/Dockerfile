@@ -8,4 +8,4 @@ COPY ./gateway-*.jar /app/gateway.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8080
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar

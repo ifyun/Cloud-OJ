@@ -25,4 +25,4 @@ COPY ./judge-service-*.jar /app/judge-service.jar
 COPY ./*.yml /app/config/
 WORKDIR /app
 EXPOSE 8002
-CMD java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar judge-service.jar
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar judge-service.jar
