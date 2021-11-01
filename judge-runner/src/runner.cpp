@@ -14,6 +14,22 @@ int kill_type = 0;
 pid_t child_pid;
 
 /**
+ * 设置当前进程的 CPU
+ * @param cpu CPU 核心 ID
+ */
+inline void set_cpu(int cpu) {
+    cpu_set_t mask;
+
+    CPU_ZERO(&mask);
+    CPU_SET(cpu, &mask);
+
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &mask) == -1) {
+        perror("set affinity:");
+        exit(JUDGE_ERROR);
+    }
+}
+
+/**
  * @brief 退出 chroot 并清理环境
  * @param fd 文件描述符，切换到此目录
  */
@@ -38,11 +54,6 @@ void Runner::set_limit(const Config &config) {
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_CPU, &rl);
-
-    rl.rlim_cur = config.max_memory << 10;
-    rl.rlim_max = rl.rlim_cur;
-
-    setrlimit(RLIMIT_DATA, &rl);
 
     rl.rlim_cur = config.output_size << 10;
     rl.rlim_max = rl.rlim_cur;
@@ -200,6 +211,8 @@ Result Runner::run(char **args, const Config &config, int root_fd,
  */
 RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config) {
     RTN rtn;
+
+    set_cpu(config.cpu);
 
     if (getuid() != 0) {
         std::cerr << "Permission Denied.\n";
