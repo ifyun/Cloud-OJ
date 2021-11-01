@@ -77,21 +77,21 @@ class Compiler {
      * @return {@link Compile} 编译结果
      */
     private Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
-
         if (language == null) {
             throw new UnsupportedLanguageError("NULL");
         }
 
         String solutionDir = codeDir + solutionId;
-
         String[] cmd;
 
         switch (language) {
             case C:
-                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors", "Solution.c", "-o", "Solution"};
+                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors", "-lm",
+                        "Solution.c", "-o", "Solution"};
                 break;
             case CPP:
-                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors", "Solution.cpp", "-o", "Solution"};
+                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors", "-lm",
+                        "Solution.cpp", "-o", "Solution"};
                 break;
             case JAVA:
                 cmd = new String[]{"javac", "-encoding", "UTF-8", "Solution.java"};
@@ -119,7 +119,7 @@ class Compiler {
 
             Process process = processBuilder.start();
 
-            if (process.waitFor(10, TimeUnit.SECONDS)) {
+            if (process.waitFor(20, TimeUnit.SECONDS)) {
                 if (process.exitValue() == 0) {
                     return new Compile(solutionId, 0, null);
                 } else {

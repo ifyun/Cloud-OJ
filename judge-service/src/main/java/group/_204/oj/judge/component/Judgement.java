@@ -23,8 +23,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class Judgement {
-    private static final Integer MAX_MEM_LIMIT = 512;   // MB
-
     @Value("${project.file-dir}")
     private String fileDir;
 
@@ -54,6 +52,9 @@ public class Judgement {
 
     @Resource
     private Compiler compiler;
+
+    @Resource
+    private HashMap<String, Integer> cpus;
 
     private static class RuntimeError extends Exception {
         RuntimeError(String msg) {
@@ -214,25 +215,26 @@ public class Judgement {
     private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
         Language language = Language.get(solution.getLanguage());
-
         if (language == null) {
             throw new UnsupportedLanguageError("NULL");
         }
 
+        Integer cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
+        if (cpu == null) {
+            cpu = 0;
+        }
+
         String solutionDir = codeDir + solution.getSolutionId();
-
         ProcessBuilder builder = new ProcessBuilder();
-
         List<String> cmd = new ArrayList<>();
+
         cmd.add("/opt/bin/judge-runner");
 
         long timeLimit = limit.getTimeout();
         int outputLimit = limit.getOutputLimit();
         int memoryLimit = limit.getMemoryLimit();
-        int maxMemoryLimit = memoryLimit << 2;
         int procLimit = 0;
 
-        // Java/Kotlin/JS 内存限制按 2 倍计算
         switch (language) {
             case C:
             case CPP:
@@ -241,13 +243,11 @@ public class Judgement {
                 break;
             case JAVA:
                 memoryLimit <<= 1;
-                maxMemoryLimit = 1536;
                 cmd.add("--cmd=java@Solution");
                 break;
             case KOTLIN:
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
-                maxMemoryLimit = 1536;
                 cmd.add("--cmd=kotlin@SolutionKt");
                 break;
             case JAVA_SCRIPT:
@@ -267,7 +267,6 @@ public class Judgement {
                 cmd.add("--cmd=mono@Solution.exe");
                 break;
             case GO:
-                maxMemoryLimit = 1536;
                 cmd.add("--cmd=./Solution");
                 break;
             default:
@@ -277,10 +276,10 @@ public class Judgement {
         List<String> config = Arrays.asList(
                 "--time=" + timeLimit,
                 "--memory=" + memoryLimit,
-                "--max-memory=" + maxMemoryLimit,
                 "--output-size=" + outputLimit,
                 "--workdir=" + solutionDir,
                 "--data=" + testDataDir,
+                "--cpu=" + cpu,
                 "--proc=" + procLimit
         );
 

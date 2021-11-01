@@ -15,16 +15,16 @@ option long_options[] = {
         {"cmd",         required_argument, nullptr, 'c'},
         {"time",        required_argument, nullptr, 't'},
         {"memory",      required_argument, nullptr, 'm'},
-        {"max-memory",  required_argument, nullptr, 'M'},
         {"output-size", required_argument, nullptr, 'o'},
         {"workdir",     required_argument, nullptr, 'w'},
         {"data",        required_argument, nullptr, 'd'},
+        {"cpu",         required_argument, nullptr, 'u'},
         {"proc",        required_argument, nullptr, 'p'},
         {"help",        no_argument,       nullptr, 'h'},
         {nullptr,       no_argument,       nullptr, 0}
 };
 
-const char *short_options = "c:t:m:M:o:w:d:p:?h";
+const char *short_options = "c:t:m:M:o:w:d:u:p:?h";
 
 void show_help();
 
@@ -63,7 +63,6 @@ inline void show_help() {
     printf(fmt, "-c, --cmd", "命令(空格用 '@' 表示)");
     printf(fmt, "-t, --time", "时间限制(ms)");
     printf(fmt, "-m, --memory", "内存限制(MB)");
-    printf(fmt, "-M, --max-memory", "内存上限(MB)");
     printf(fmt, "-o, --output-size", "输出限制(MB)");
     printf(fmt, "-w, --workdir", "工作目录");
     printf(fmt, "-d, --data", "测试数据目录");
@@ -91,10 +90,6 @@ void get_args(int argc, char *argv[]) {
                 config.memory = str_to_long(optarg) << 10;
                 cnt++;
                 break;
-            case 'M':
-                config.max_memory = str_to_long(optarg) << 10;
-                cnt++;
-                break;
             case 'o':
                 config.output_size = str_to_long(optarg) << 10;
                 cnt++;
@@ -106,6 +101,9 @@ void get_args(int argc, char *argv[]) {
             case 'd':
                 data_dir = optarg;
                 cnt++;
+                break;
+            case 'u':
+                config.cpu = (int)str_to_long(optarg);
                 break;
             case 'p':
                 config.proc_count = (int) str_to_long(optarg);
@@ -119,7 +117,7 @@ void get_args(int argc, char *argv[]) {
         }
     }
 
-    if (cnt < 7) {
+    if (cnt < 6) {
         fprintf(stderr, "%s: Missing option(s)", argv[0]);
         exit(JUDGE_ERROR);
     }
