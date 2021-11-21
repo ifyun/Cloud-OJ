@@ -12,7 +12,6 @@ services:
       MYSQL_ROOT_HOST: "%"
     volumes:
       - "mysql-data:/var/lib/mysql"
-      - "./config:/etc/mysql/conf.d"
       - "./init:/docker-entrypoint-initdb.d"
 
   rabbitmq:

@@ -25,7 +25,6 @@ const int KILL_TLE = 2;
 struct Config {
     long timeout;       // 运行时间(ms)
     long memory;        // 内存限制，用于判断是否超出限制(MB)
-    long max_memory;    // 实际内存限制，超过此限制程序会中断(MB)
     long output_size;   // 输出限制(MB)
     int cpu = 0;        // CPU 核心 ID，将进程绑定到指定核心减少切换
     int proc_count = 0; // 进程数限制
