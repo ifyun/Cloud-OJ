@@ -9,7 +9,7 @@
       </template>
       <template #title>{{ title }}</template>
       <template #extra>
-        <n-button type="success" size="small" @click="save">
+        <n-button v-if="showSaveButton" type="success" size="small" round @click="save">
           <template #icon>
             <save-icon/>
           </template>
@@ -17,23 +17,30 @@
         </n-button>
       </template>
     </n-page-header>
-    <n-spin :show="loading">
-      <n-form label-placement="left" :model="contest" :rules="rules" ref="contestForm">
-        <n-grid :cols="2" x-gap="12">
-          <n-form-item-grid-item :span="1" label="竞赛名称" path="contestName">
-            <n-input v-model:value="contest.contestName" maxlength="24" show-count clearable/>
-          </n-form-item-grid-item>
-          <n-form-item-grid-item :span="1" label="时间范围" path="timeRange">
-            <n-date-picker type="datetimerange" v-model:value="contest.timeRange" clearable
-                           format="yyyy/MM/dd - HH:mm:ss"/>
-          </n-form-item-grid-item>
-        </n-grid>
-        <n-form-item label="语言限制" path="languages">
-          <n-transfer source-title="不允许的语言" target-title="允许的语言"
-                      :options="languageOptions" v-model:value="languages"/>
-        </n-form-item>
-      </n-form>
-    </n-spin>
+    <n-tabs type="line" default-value="base-info" @update:value="tabChange">
+      <n-tab-pane name="base-info" tab="竞赛设置">
+        <n-spin :show="loading">
+          <n-form label-placement="left" :model="contest" :rules="rules" ref="contestForm">
+            <n-grid :cols="2" x-gap="12">
+              <n-form-item-grid-item :span="1" label="竞赛名称" path="contestName">
+                <n-input v-model:value="contest.contestName" maxlength="24" show-count clearable/>
+              </n-form-item-grid-item>
+              <n-form-item-grid-item :span="1" label="时间范围" path="timeRange">
+                <n-date-picker type="datetimerange" v-model:value="contest.timeRange" clearable
+                               format="yyyy/MM/dd - HH:mm:ss"/>
+              </n-form-item-grid-item>
+            </n-grid>
+            <n-form-item label="语言限制" path="languages">
+              <n-transfer source-title="不允许的语言" target-title="允许的语言"
+                          :options="languageOptions" v-model:value="languages"/>
+            </n-form-item>
+          </n-form>
+        </n-spin>
+      </n-tab-pane>
+      <n-tab-pane v-if="!create" name="problems" tab="题目管理">
+        <problem-manage :contest-id="contest.contestId"/>
+      </n-tab-pane>
+    </n-tabs>
   </div>
 </template>
 
@@ -58,10 +65,13 @@ import {
   NPageHeader,
   NSpace,
   NSpin,
+  NTabPane,
+  NTabs,
   NTransfer,
   useMessage
 } from "naive-ui"
 import {SaveOutlined as SaveIcon} from "@vicons/material"
+import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import {ContestApi} from "@/api/request"
 import {Contest, ErrorMsg, UserInfo} from "@/api/type"
 import {LanguageOption, LanguageOptions} from "@/type"
@@ -70,9 +80,12 @@ import moment from "moment"
 
 @Options({
   components: {
+    ProblemManage,
     NSpace,
     NGrid,
     NSpin,
+    NTabs,
+    NTabPane,
     NForm,
     NFormItem,
     NFormItemGridItem,
@@ -99,6 +112,7 @@ export default class ContestEditor extends Vue {
   private languages: Array<number> = []
   private create: boolean = false
   private loading: boolean = false
+  private currentTab = "base-info"
 
   private rules: FormRules = {
     contestName: {
@@ -136,12 +150,16 @@ export default class ContestEditor extends Vue {
     if (typeof this.contest.contestId === "undefined") {
       return ""
     } else {
-      return `${this.contest.contestId} - ${this.contest.contestName}`
+      return this.contest.contestName
     }
   }
 
   get userInfo(): UserInfo {
     return this.store.state.userInfo
+  }
+
+  get showSaveButton(): boolean {
+    return this.currentTab === "base-info"
   }
 
   $refs!: {
@@ -171,6 +189,10 @@ export default class ContestEditor extends Vue {
       this.loading = true
       this.queryContest(Number(id))
     }
+  }
+
+  tabChange(tab: string) {
+    this.currentTab = tab
   }
 
   queryContest(contestId: number) {
@@ -213,7 +235,6 @@ export default class ContestEditor extends Vue {
 
 <style scoped lang="scss">
 .contest-editor {
-  height: calc(100% - var(--header-height) - 25px);
   width: calc(100% - var(--layout-padding) * 2);
   padding: 0 25px 25px 25px;
   display: flex;
