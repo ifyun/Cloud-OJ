@@ -135,6 +135,65 @@ const ContestApi = {
                 reject(returnError(error))
             })
         })
+    },
+
+    /**
+     * 向竞赛添加题目
+     * @param contestId 竞赛 Id
+     * @param problemId 题目Id
+     * @param userInfo {@link UserInfo}
+     */
+    addProblem(contestId: number, problemId: number, userInfo: UserInfo): Promise<AxiosResponse> {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
+                method: "POST",
+                headers: buildHeaders(userInfo)
+            }).then((res) => {
+                resolve(res)
+            }).catch((error) => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    /**
+     * 从竞赛中删除题目
+     * @param contestId 题目 Id
+     * @param problemId 竞赛 Id
+     * @param userInfo {@link UserInfo}
+     */
+    removeProblem(contestId: number, problemId: number, userInfo: UserInfo) {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
+                method: "DELETE",
+                headers: buildHeaders(userInfo)
+            }).then((res) => {
+                resolve(res)
+            }).catch((error) => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    /**
+     * 删除竞赛
+     * @param contestId 竞赛 Id
+     * @param userInfo {@link UserInfo}
+     */
+    delete(contestId: number, userInfo: UserInfo): Promise<AxiosResponse> {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: `${ApiPath.CONTEST_ADMIN}/${contestId}`,
+                method: "DELETE",
+                headers: buildHeaders(userInfo)
+            }).then((res) => {
+                resolve(res)
+            }).catch((error) => {
+                reject(returnError(error))
+            })
+        })
     }
 }
 
