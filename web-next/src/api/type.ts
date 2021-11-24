@@ -16,8 +16,10 @@ export class User {
     name: string = ""
     password: string = ""
     confirmPassword: string = ""
+    roleId?: number
     email: string = ""
     section: string = ""
+    createAt: string = ""
 }
 
 /**
