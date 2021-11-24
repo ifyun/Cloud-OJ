@@ -41,7 +41,7 @@ export default class SideNavbar extends Vue {
       icon: renderIcon(TrophyIcon)
     },
     {
-      label: "用户管理",
+      label: renderLabel("user_admin", "用户管理"),
       key: "user_admin",
       icon: renderIcon(UsersIcon)
     },

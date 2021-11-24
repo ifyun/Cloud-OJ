@@ -13,6 +13,7 @@ const ProblemAdmin = () => import("@/views/components/Admin/Problem/index.vue")
 const ProblemEditor = () => import("@/views/components/Admin/Problem/Editor.vue")
 const ContestAdmin = () => import("@/views/components/Admin/Contest/index.vue")
 const ContestEditor = () => import("@/views/components/Admin/Contest/Editor.vue")
+const UserAdmin = () => import("@/views/components/Admin/User/index.vue")
 
 const router = createRouter({
     history: createWebHistory(),
@@ -80,6 +81,11 @@ const router = createRouter({
                     path: "/admin/contest/:id",
                     name: "edit_contest",
                     component: ContestEditor
+                },
+                {
+                    path: "/admin/user",
+                    name: "user_admin",
+                    component: UserAdmin
                 }
             ]
         }
