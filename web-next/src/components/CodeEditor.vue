@@ -59,6 +59,7 @@ const Modes = [
 ]
 
 @Options({
+  name: "CodeEditor",
   components: {
     NSpace,
     NInputGroup,

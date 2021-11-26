@@ -74,6 +74,7 @@ import {Building, Envelope as MailIcon, Lock as PasswordIcon, Orcid as UserIdIco
 import {User} from "@/api/type"
 
 @Options({
+  name: "Signup",
   components: {
     NForm,
     NFormItem,

@@ -90,6 +90,7 @@ public class Solution {
 // endregion
 
 @Options({
+  name: "Help",
   components: {
     NH1,
     NH2,

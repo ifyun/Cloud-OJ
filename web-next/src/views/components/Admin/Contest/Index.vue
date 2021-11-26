@@ -47,6 +47,7 @@ type StateTag = {
 }
 
 @Options({
+  name: "ContestAdmin",
   components: {
     NSpace,
     NDataTable,

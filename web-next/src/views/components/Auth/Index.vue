@@ -18,6 +18,7 @@ import Login from "@/views/components/Auth/Login.vue"
 import Signup from "@/views/components/Auth/Signup.vue"
 
 @Options({
+  name: "Auth",
   components: {
     NSpace,
     NH1,

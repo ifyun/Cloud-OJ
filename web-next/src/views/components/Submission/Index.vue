@@ -40,6 +40,7 @@ import {ProblemApi} from "@/api/request"
 import {ErrorMsg, Problem} from "@/api/type"
 
 @Options({
+  name: "Submission",
   components: {
     NGrid,
     NGridItem,

@@ -41,6 +41,7 @@ import MutationType from "@/store/mutation-type"
 const md5 = require("crypto-js/md5")
 
 @Options({
+  name: "Login",
   components: {
     NForm,
     NIcon,

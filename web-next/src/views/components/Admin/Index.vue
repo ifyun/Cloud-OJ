@@ -7,8 +7,11 @@
 </template>
 
 <script lang="ts">
-import {Vue} from "vue-class-component"
+import {Options, Vue} from "vue-class-component"
 
+@Options({
+  name: "Admin"
+})
 export default class Admin extends Vue {
 }
 </script>

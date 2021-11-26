@@ -79,6 +79,7 @@ import {LanguageUtil} from "@/utils"
 import moment from "moment"
 
 @Options({
+  name: "ContestEditor",
   components: {
     ProblemManage,
     NSpace,

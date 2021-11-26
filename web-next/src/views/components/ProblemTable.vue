@@ -41,6 +41,7 @@ import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {setTitle, TagUtil} from "@/utils"
 
 @Options({
+  name: "ProblemTable",
   components: {
     NSpace,
     NInput,
@@ -51,9 +52,6 @@ import {setTitle, TagUtil} from "@/utils"
     NDataTable,
     NPagination,
     SearchIcon
-  },
-  props: {
-    contestId: Number
   }
 })
 export default class ProblemTable extends Vue {

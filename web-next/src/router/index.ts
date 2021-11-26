@@ -3,17 +3,17 @@ import {createRouter, createWebHistory} from "vue-router"
 const ProblemTable = () => import("@/views/components/ProblemTable.vue")
 const ContestTable = () => import("@/views/components/ContestTable.vue")
 const Leaderboard = () => import("@/views/components/Leaderboard.vue")
-const Submission = () => import("@/views/components/Submission/index.vue")
+const Submission = () => import("@/views/components/Submission/Index.vue")
 const Help = () => import("@/views/components/Help.vue")
-const Account = () => import("@/views/components/Account/index.vue")
+const Account = () => import("@/views/components/Account/Index.vue")
 const NotFound = () => import("@/views/components/NotFound.vue")
 
-const Admin = () => import("@/views/components/Admin/index.vue")
-const ProblemAdmin = () => import("@/views/components/Admin/Problem/index.vue")
+const Admin = () => import("@/views/components/Admin/Index.vue")
+const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () => import("@/views/components/Admin/Problem/Editor.vue")
-const ContestAdmin = () => import("@/views/components/Admin/Contest/index.vue")
+const ContestAdmin = () => import("@/views/components/Admin/Contest/Index.vue")
 const ContestEditor = () => import("@/views/components/Admin/Contest/Editor.vue")
-const UserAdmin = () => import("@/views/components/Admin/User/index.vue")
+const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
 
 const router = createRouter({
     history: createWebHistory(),
