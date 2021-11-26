@@ -33,7 +33,7 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component"
 import {NGrid, NGridItem, NH2, NScrollbar, NSpace, NTabPane, NTabs, NTag} from "naive-ui"
-import MarkdownView from "@/components/MarkdownView/index.vue"
+import MarkdownView from "@/components/MarkdownView/Index.vue"
 import CodeEditor from "@/components/CodeEditor.vue"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
 import {ProblemApi} from "@/api/request"

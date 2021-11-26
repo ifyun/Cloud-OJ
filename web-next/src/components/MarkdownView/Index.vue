@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import {useStore} from "vuex"
-import {Vue} from "vue-class-component"
-import {Prop, Watch} from "vue-property-decorator"
+import {Options, Vue} from "vue-class-component"
+import {Prop} from "vue-property-decorator"
 import {KatexPlugin} from "@/components/MarkdownView/markdown-katex"
 import markdownItContainer from "markdown-it-container"
 import highlightJs from "highlight.js"
@@ -73,21 +73,22 @@ md.use(markdownItContainer, "info", {
   }
 })
 
+@Options({
+  name: "MarkdownView"
+})
 export default class MarkdownView extends Vue {
   private store = useStore()
 
   @Prop(String)
-  private content: string = ""
+  private content?: string
 
-  private markdown: string = ""
+  get markdown(): string {
+    console.debug("content: ", this.content)
+    return md.render(this.content)
+  }
 
   get theme(): string {
     return this.store.state.theme != null ? "dark" : "light"
-  }
-
-  @Watch("content", {immediate: true})
-  contentChange(value: string) {
-    this.markdown = md.render(value)
   }
 }
 </script>

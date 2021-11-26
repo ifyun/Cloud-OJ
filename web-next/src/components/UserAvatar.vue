@@ -3,9 +3,15 @@
 </template>
 
 <script lang="ts">
-import {Options, Vue} from "vue-class-component"
+import {Options} from "vue-class-component"
 import {Prop, Watch} from "vue-property-decorator"
 import {NAvatar} from "naive-ui"
+import {VueComponent} from "@/vue-ts-component"
+
+interface Props {
+  userId: string
+  size: string | number
+}
 
 @Options({
   name: "UserAvatar",
@@ -13,12 +19,12 @@ import {NAvatar} from "naive-ui"
     NAvatar
   }
 })
-export default class UserAvatar extends Vue {
-  @Prop(String)
-  private userId?: string
+export default class UserAvatar extends VueComponent<Props> {
+  @Prop()
+  private readonly userId?: string
 
-  @Prop([String, Number])
-  private size: string | number = "medium"
+  @Prop()
+  private readonly size: string | number = "medium"
 
   private url: string = ""
 

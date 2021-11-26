@@ -25,6 +25,7 @@ import "codemirror/mode/markdown/markdown.js"
 import Toolbar from "./Toolbar.vue"
 
 @Options({
+  name: "MarkdownEditor",
   components: {
     Toolbar
   }
@@ -50,7 +51,7 @@ export default class MarkdownEditor extends Vue {
   }
 
   @Prop(String)
-  private modelValue: string = ""
+  private modelValue?: string
 
   @Prop(Boolean)
   private readOnly: boolean = false
@@ -85,7 +86,7 @@ export default class MarkdownEditor extends Vue {
   mounted() {
     this.cmEditor = CodeMirror.fromTextArea(this.$refs.editor as HTMLTextAreaElement, this.cmOptions)
     this.cmEditor = markRaw(this.cmEditor)
-    this.cmEditor.setValue(this.modelValue)
+    this.cmEditor.setValue(this.modelValue!)
     this.cmEditor.on("change", (cm: Editor) => {
       this.updateValue(cm.getValue())
     })

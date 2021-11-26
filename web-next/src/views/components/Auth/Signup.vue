@@ -156,7 +156,7 @@ export default class Signup extends Vue {
     }
   }
 
-  $refs!: {
+  declare $refs: {
     signupForm: HTMLFormElement
   }
 

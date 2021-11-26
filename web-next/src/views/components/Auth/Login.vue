@@ -88,7 +88,7 @@ export default class Login extends Vue {
     }
   }
 
-  $refs!: {
+  declare $refs: {
     loginForm: HTMLFormElement
   }
 
