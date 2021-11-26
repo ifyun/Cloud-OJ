@@ -57,7 +57,8 @@ const roles = [
     NButton,
     NDataTable,
     NPagination,
-    SearchIcon
+    SearchIcon,
+    UserAvatar
   }
 })
 export default class UserAdmin extends Vue {
@@ -170,7 +171,7 @@ export default class UserAdmin extends Vue {
 
   pageChange(page: number) {
     const keyword = this.keyword.trim()
-    const query = {page}
+    const query: any = {page}
     if (keyword.length > 0) {
       query.keyword = keyword
       query.searchType = this.searchType

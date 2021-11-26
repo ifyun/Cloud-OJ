@@ -79,7 +79,7 @@
       </div>
       <div>
         <n-scrollbar style="max-height: 100%">
-          <markdown-view :content="problem.description" style="margin-top: 30px"/>
+          <markdown-view :content="problem.description" style="margin: 30px 0 12px 0"/>
         </n-scrollbar>
       </div>
     </div>
@@ -122,8 +122,8 @@ import {
 } from "naive-ui"
 import {HelpOutlineRound as HelpIcon, SaveOutlined as SaveIcon} from "@vicons/material"
 import markdownHelp from "@/components/MarkdownEditor/markdown-help"
-import MarkdownEditor from "@/components/MarkdownEditor/index.vue"
-import MarkdownView from "@/components/MarkdownView/index.vue"
+import MarkdownEditor from "@/components/MarkdownEditor/Index.vue"
+import MarkdownView from "@/components/MarkdownView/Index.vue"
 import {ErrorMsg, Problem, UserInfo} from "@/api/type"
 import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
@@ -258,7 +258,7 @@ export default class ProblemEditor extends Vue {
     this.problem.category = value.join(",")
   }
 
-  $refs!: {
+  declare $refs: {
     problemForm: HTMLFormElement
   }
 

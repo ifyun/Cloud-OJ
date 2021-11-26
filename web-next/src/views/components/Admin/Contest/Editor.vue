@@ -162,7 +162,7 @@ export default class ContestEditor extends Vue {
     return this.currentTab === "base-info"
   }
 
-  $refs!: {
+  declare $refs: {
     contestForm: HTMLFormElement
   }
 
