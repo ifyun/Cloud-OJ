@@ -43,6 +43,7 @@ import {Options, Vue} from "vue-class-component"
 import {NGrid, NGridItem, NSkeleton, NSpace} from "naive-ui"
 
 @Options({
+  name: "SubmissionSkeleton",
   components: {
     NGrid,
     NGridItem,

@@ -18,6 +18,7 @@ import {ErrorMsg, PagedData, Ranking} from "@/api/type"
 import {setTitle} from "@/utils"
 
 @Options({
+  name: "Leaderboard",
   components: {
     NSpace,
     NDataTable,

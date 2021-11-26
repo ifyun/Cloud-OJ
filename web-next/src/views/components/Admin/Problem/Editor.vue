@@ -129,6 +129,7 @@ import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
 
 @Options({
+  name: "ProblemEditor",
   components: {
     NDrawer,
     NDrawerContent,

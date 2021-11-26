@@ -24,6 +24,7 @@ import {LanguageUtil, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
 
 @Options({
+  name: "ContestTable",
   components: {
     NSpace,
     NDataTable,

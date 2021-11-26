@@ -10,7 +10,7 @@ import {Options, Vue} from "vue-class-component"
 import {setTitle} from "@/utils"
 
 @Options({
-  components: {}
+  name: "Account"
 })
 export default class Account extends Vue {
   beforeMount() {

@@ -7,6 +7,7 @@ import {Options, Vue} from "vue-class-component"
 import ErrorResult from "@/components/ErrorResult.vue"
 
 @Options({
+  name: "NotFound",
   components: {
     ErrorResult
   }

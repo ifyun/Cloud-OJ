@@ -78,6 +78,7 @@ import {ProblemApi} from "@/api/request"
 let selectedId: number | undefined
 
 @Options({
+  name: "ProblemAdmin",
   components: {
     NSpace,
     NGrid,

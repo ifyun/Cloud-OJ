@@ -14,6 +14,7 @@ import {Prop, Watch} from "vue-property-decorator"
 import {ErrorMsg} from "@/api/type"
 
 @Options({
+  name: "ErrorResult",
   components: {
     NResult,
     NButton
