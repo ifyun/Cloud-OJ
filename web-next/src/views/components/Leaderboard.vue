@@ -8,11 +8,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script lang="tsx">
 import {Options, Vue} from "vue-class-component"
 import {useRouter} from "vue-router"
 import {NDataTable, NPagination, NSpace, NText, useMessage} from "naive-ui"
+import UserAvatar from "@/components/UserAvatar.vue"
 import {RankingApi} from "@/api/request"
 import {ErrorMsg, PagedData, Ranking} from "@/api/type"
 import {setTitle} from "@/utils"
@@ -22,8 +22,7 @@ import {setTitle} from "@/utils"
   components: {
     NSpace,
     NDataTable,
-    NPagination,
-    NText
+    NPagination
   }
 })
 export default class Leaderboard extends Vue {
@@ -32,7 +31,7 @@ export default class Leaderboard extends Vue {
 
   private pagination = {
     page: 1,
-    pageSize: 20,
+    pageSize: 15,
     loading: true
   }
 
@@ -45,7 +44,12 @@ export default class Leaderboard extends Vue {
     },
     {
       title: "用户",
-      key: "name"
+      render: (row: Ranking) => (
+          <NSpace align="center" size="small">
+            <UserAvatar size="small" userId={row.userId}/>
+            <NText>{row.name}</NText>
+          </NSpace>
+      )
     },
     {
       title: "提交",
@@ -63,9 +67,7 @@ export default class Leaderboard extends Vue {
       title: "分数",
       width: 100,
       align: "right",
-      render: (row: Ranking) => {
-        return h(NText, {type: "success", strong: true}, {default: () => row.score})
-      }
+      render: (row: Ranking) => <NText type="success" strong>{row.score}</NText>
     }
   ]
 

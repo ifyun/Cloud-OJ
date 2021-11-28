@@ -10,7 +10,7 @@ import {VueComponent} from "@/vue-ts-component"
 
 interface Props {
   userId: string
-  size: string | number
+  size?: string | number
 }
 
 @Options({
@@ -20,11 +20,11 @@ interface Props {
   }
 })
 export default class UserAvatar extends VueComponent<Props> {
-  @Prop()
+  @Prop(String)
   private readonly userId?: string
 
-  @Prop()
-  private readonly size: string | number = "medium"
+  @Prop({type: [String, Number], default: "medium"})
+  private readonly size?: string | number
 
   private url: string = ""
 

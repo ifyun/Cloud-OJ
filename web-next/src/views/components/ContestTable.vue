@@ -12,8 +12,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script lang="tsx">
 import {useRouter} from "vue-router"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
@@ -49,41 +48,30 @@ export default class ContestTable extends Vue {
       title: "#",
       align: "right",
       width: 50,
-      render: (row: Contest, rowIndex: number) => {
-        return (this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1
-      }
+      render: (row: Contest, rowIndex: number) => (
+          <span>{(this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1}</span>
+      )
     },
     {
       title: "竞赛",
-      render: (row: Contest) => {
-        return h(
-            NSpace,
-            {
-              align: "center"
-            },
-            {
-              default: () => [
-                h(NTag, {type: this.contestTagType(row)},
-                    {default: () => this.contestStateText(row)}),
-                h(NButton, {text: true}, {default: () => row.contestName})
-              ]
-            })
-      }
+      render: (row: Contest) => (
+          <NSpace align="center">
+            <NTag type={this.contestTagType(row)}>{this.contestStateText(row)}</NTag>
+            <NButton text>{row.contestName}</NButton>
+          </NSpace>
+      )
     },
     {
       title: "语言限制",
       render: (row: Contest) => {
         if (row.languages === 511) {
-          return "没有限制"
+          return <span>"没有限制"</span>
         }
         const languages: Array<string> = []
         LanguageUtil.toArray(row.languages).forEach((value) => {
           languages.push(LanguageOptions[value].label)
         })
-        return h("span",
-            {style: {wordBreak: "break-word"}},
-            {default: () => languages.join(" / ")}
-        )
+        return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
       }
     },
     {

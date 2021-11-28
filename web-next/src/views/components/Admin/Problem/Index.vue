@@ -48,8 +48,8 @@
               :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
 </template>
 
-<script lang="ts">
-import {h, nextTick} from "vue"
+<script lang="tsx">
+import {nextTick} from "vue"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {RouterLink, useRouter} from "vue-router"
@@ -122,10 +122,13 @@ export default class ProblemAdmin extends Vue {
     y: 0
   }
 
-  /* 表格行右键弹出菜单 */
+  /* 表格行 ContextMenu */
   private rowProps = (row: Problem) => {
     return {
       onContextmenu: (e: PointerEvent) => {
+        if ((e.target as Element).tagName !== "TD") {
+          return
+        }
         e.preventDefault()
         this.showOperations = false
         nextTick().then(() => {
@@ -140,6 +143,7 @@ export default class ProblemAdmin extends Vue {
     }
   }
 
+  /* 操作（右键菜单） */
   private operations = [
     {
       label: "编辑",
@@ -168,47 +172,32 @@ export default class ProblemAdmin extends Vue {
     },
     {
       title: "题目名称",
-      render: (row: Problem) => {
-        return h(NButton,
-            {
-              text: true,
-              onContextmenu: (e: PointerEvent) => {
-                e.stopPropagation()
-              }
-            },
-            {
-              default: () => h(RouterLink,
-                  {to: {name: "submission", query: {problemId: row.problemId}}},
-                  {default: () => row.title})
-            })
-      }
+      key: "title",
+      render: (row: Problem) => (
+          <NButton text>
+            <RouterLink to={{name: "submission", query: {problemId: row.problemId}}}>
+              {row.title}
+            </RouterLink>
+          </NButton>
+      )
     },
     {
-      title: () => h(NSpace, {size: "small", justify: "start", align: "center"}, {
-        default: () => [
-          h(NIcon, {style: {display: "flex"}}, {default: () => h(TagsIcon)}),
-          h("span", {}, {default: () => "分类"})
-        ]
-      }),
+      title: () => (
+          <NSpace size="small" justify="start" align="center">
+            <NIcon style="display: flex">
+              <TagsIcon/>
+            </NIcon>
+            <span>分类</span>
+          </NSpace>
+      ),
       render: (row: Problem) => {
         if (row.category === "") {
           return ""
         }
         const tags = row.category.split(",")
-        return tags.map((tag) => {
-          return h(NTag,
-              {
-                size: "small",
-                class: "tag",
-                color: TagUtil.getColor(tag, this.theme),
-                onContextmenu: (e: PointerEvent) => {
-                  e.stopPropagation()
-                }
-              },
-              {
-                default: () => tag
-              })
-        })
+        return tags.map((tag) => (
+            <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
+        ))
       }
     },
     {
@@ -220,18 +209,11 @@ export default class ProblemAdmin extends Vue {
       title: "是否开放",
       align: "center",
       width: 120,
-      render: (row: Problem) => {
-        return h(NSwitch, {
-              value: row.enable,
-              "onUpdate:value": value => {
-                this.toggleIsEnable(row, value)
-              },
-              onContextmenu: (e: PointerEvent) => {
-                e.stopPropagation()
-              }
-            },
-            {checked: () => "开放", unchecked: () => "关闭"})
-      }
+      render: (row: Problem) => (
+          <NSwitch value={row.enable} onUpdateValue={value => this.toggleIsEnable(row, value)}>
+            {{checked: () => "开放", unchecked: () => "关闭"}}
+          </NSwitch>
+      )
     }
   ]
 

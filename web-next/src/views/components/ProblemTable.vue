@@ -29,8 +29,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script lang="tsx">
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {RouterLink, useRouter} from "vue-router"
@@ -71,9 +70,9 @@ export default class ProblemTable extends Vue {
       title: "#",
       align: "right",
       width: 50,
-      render: (row: Problem, rowIndex: number) => {
-        return (this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1
-      }
+      render: (row: Problem, rowIndex: number) => (
+          <span>{(this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1}</span>
+      )
     },
     {
       title: "ID",
@@ -83,13 +82,13 @@ export default class ProblemTable extends Vue {
     },
     {
       title: "题目名称",
-      render: (row: Problem) => {
-        return h(NButton, {text: true}, {
-          default: () => h(RouterLink,
-              {to: {name: "submission", query: {problemId: row.problemId}}},
-              {default: () => row.title})
-        })
-      }
+      render: (row: Problem) => (
+          <NButton text>
+            <RouterLink to={{name: "submission", query: {problemId: row.problemId}}}>
+              {row.title}
+            </RouterLink>
+          </NButton>
+      )
     },
     {
       title: "分类",
@@ -99,15 +98,7 @@ export default class ProblemTable extends Vue {
         }
         const tags = row.category.split(",")
         return tags.map((tag) => {
-          return h(NTag,
-              {
-                size: "small",
-                class: "tag",
-                color: TagUtil.getColor(tag, this.theme)
-              },
-              {
-                default: () => tag
-              })
+          return <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
         })
       }
     },

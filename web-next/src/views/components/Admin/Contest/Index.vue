@@ -27,8 +27,8 @@
               :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
 </template>
 
-<script lang="ts">
-import {h, nextTick} from "vue"
+<script lang="tsx">
+import {nextTick} from "vue"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {useRouter} from "vue-router"
@@ -78,6 +78,9 @@ export default class ContestAdmin extends Vue {
   private rowProps = (row: Contest) => {
     return {
       onContextmenu: (e: PointerEvent) => {
+        if ((e.target as Element).tagName !== "TD") {
+          return
+        }
         e.preventDefault()
         this.showOperations = false
         nextTick().then(() => {
@@ -113,21 +116,16 @@ export default class ContestAdmin extends Vue {
       width: 120,
       render: (row: Contest) => {
         const tag = this.stateTag(row)
-        return h(NTag, {type: tag.type},
-            {
-              default: () => tag.state
-            })
+        return <NTag type={tag.type}>{tag.state}</NTag>
       }
     },
     {
       title: "竞赛",
-      render: (row: Contest) => {
-        return h(
-            NSpace, {align: "center"},
-            {
-              default: () => h(NButton, {text: true}, {default: () => row.contestName})
-            })
-      }
+      render: (row: Contest) => (
+          <NSpace align="center">
+            <NButton text>{row.contestName}</NButton>
+          </NSpace>
+      )
     },
     {
       title: "语言限制",
@@ -139,10 +137,7 @@ export default class ContestAdmin extends Vue {
         LanguageUtil.toArray(row.languages).forEach((value) => {
           languages.push(LanguageOptions[value].label)
         })
-        return h("span",
-            {style: {wordBreak: "break-word"}},
-            {default: () => languages.join(" / ")}
-        )
+        return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
       }
     },
     {
