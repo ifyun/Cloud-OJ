@@ -9,8 +9,6 @@
 #include "utils.h"
 #include "env_setup.h"
 
-int kill_type = 0;
-
 pid_t child_pid;
 
 /**
@@ -40,8 +38,7 @@ inline void clean_up(const int &fd, const std::string &work_dir, const std::stri
 }
 
 void kill_child() {
-    kill(child_pid, SIGKILL);
-    kill_type = KILL_TLE;
+    kill(child_pid, SIGALRM);
 }
 
 /**
@@ -122,7 +119,26 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
     struct Result res{.memUsed = 0};
 
     while (wait4(pid, &status, 0, &ru) > 0) {
-        if (WIFSIGNALED(status)) {
+        int stop_sig;
+        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGTRAP) {
+            // 子进程收到信号停止(ptrace 会产生 SIGTRAP 信号，忽略它)
+            // 这个分支必须有 return 或 exit，否则会进入死循环
+            switch (stop_sig) {
+                case SIGALRM:
+                    fprintf(stderr, "超出最大时间限制: %ds\n", MAX_WAIT_SECONDS);
+                    clean_up(root_fd, work_dir, random_dir);
+                    exit(RUNTIME_ERROR);
+                case SIGSEGV:
+                    res.status = MLE;
+                    res.memUsed = ru.ru_minflt * getpagesize() / 1024;
+                    return res;
+                default:
+                    fprintf(stderr, "进程已退出(SIG: %d).\n", stop_sig);
+                    clean_up(root_fd, work_dir, random_dir);
+                    exit(RUNTIME_ERROR);
+            }
+        } else if (WIFSIGNALED(status)) {
+            // 子进程收到信号终止
             res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
                            ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
             auto signal = WTERMSIG(status);
@@ -130,7 +146,6 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
                 case SIGSEGV:
                     res.status = MLE;
                     break;
-                case SIGALRM:
                 case SIGXCPU:
                     res.status = TLE;
                     break;
@@ -138,23 +153,13 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
                     res.status = OLE;
                     break;
                 case SIGKILL:
-                    if (kill_type == KILL_MLE) {
-                        res.status = MLE;
-                    } else if (kill_type == KILL_TLE) {
-                        fprintf(stderr, "进程已被杀死(%ds).\n", MAX_WAIT_SECONDS);
-                        clean_up(root_fd, work_dir, random_dir);
-                        exit(RUNTIME_ERROR);
-                    } else {
-                        fprintf(stderr, "进程已被杀死.\n");
-                        clean_up(root_fd, work_dir, random_dir);
-                        exit(RUNTIME_ERROR);
-                    }
-                    break;
                 default:
+                    fprintf(stderr, "进程终止(SIG: %d).\n", signal);
                     clean_up(root_fd, work_dir, random_dir);
                     exit(RUNTIME_ERROR);
             }
         } else if (WIFEXITED(status)) {
+            // 子进程退出
             res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
                            ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
             if (res.timeUsed > config.timeout) {
@@ -170,8 +175,8 @@ Result Runner::watch_result(pid_t pid, const Config &config, int root_fd,
             res.memUsed = ru.ru_minflt * getpagesize() / 1024;
 
             if (res.memUsed > config.memory) {
-                kill(pid, SIGKILL);
-                kill_type = KILL_MLE;
+                // 超出内存限制，发送 SIGSEGV 停止子进程
+                kill(pid, SIGSEGV);
             }
 
             ptrace(PTRACE_SYSCALL, pid, 0, 0);

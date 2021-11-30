@@ -16,9 +16,6 @@ const int JUDGE_ERROR = -1;
 
 const int MAX_WAIT_SECONDS = 30;
 
-const int KILL_MLE = 1;
-const int KILL_TLE = 2;
-
 /**
  * @brief 资源限制
  */
