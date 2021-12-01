@@ -34,13 +34,19 @@ inline long str_to_long(char *str) {
     return strtol(str, nullptr, 10);
 }
 
-inline void split(char **arr, char *str, const char *del) {
+/**
+ * @brief 分割字符串到数组
+ * @param arr 保存结果的数组
+ * @param str 目标字符串
+ * @param separator 分隔符
+ */
+inline void split(char **arr, char *str, const char *separator) {
     char *s;
-    s = strtok(str, del);
+    s = strtok(str, separator);
 
     while (s != nullptr) {
         *arr++ = s;
-        s = strtok(nullptr, del);
+        s = strtok(nullptr, separator);
     }
 
     *arr = nullptr;
@@ -48,7 +54,8 @@ inline void split(char **arr, char *str, const char *del) {
 
 int main(int argc, char *argv[]) {
     get_args(argc, argv);
-    RTN rtn = exec(cmd, work_dir, data_dir, config);
+    Runner runner(cmd, work_dir, data_dir, config);
+    RTN rtn = runner.exec();
 
     if (rtn.code == 0) {
         std::cout << rtn.result;
