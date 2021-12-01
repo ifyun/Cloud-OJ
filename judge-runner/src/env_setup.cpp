@@ -5,7 +5,7 @@
 const char *random_str(const int len) {
     char *str = new char[len];
     std::random_device rd;
-    std::uniform_int_distribution<int> dist(65, 90);
+    std::uniform_int_distribution<int> dist(97, 122);
 
     for (auto i = 0; i < len; i++) {
         str[i] = (char) dist(rd);
@@ -28,7 +28,7 @@ inline int exec_cmd(const char *fmt, ...) {
 
 /**
  * @brief 设置运行环境
- * @return 临时测试数据目录(/dev/shm/XXX)
+ * @return 临时测试数据目录
  */
 const char *setup_env(const char *work_dir, const char *data_dir) {
     const char *tmp_data_dir = random_str(10);

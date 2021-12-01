@@ -14,10 +14,10 @@ const int PA = 5;
 const int RUNTIME_ERROR = 1;
 const int JUDGE_ERROR = -1;
 
-const int MAX_WAIT_SECONDS = 30;
+const int MAX_WAIT_SECONDS = 15;    // ALARM 触发时间
 
 /**
- * @brief 资源限制
+ * @brief 运行配置(资源限制和文件路径)
  */
 struct Config {
     long timeout;       // 运行时间(ms)
@@ -47,18 +47,28 @@ struct RTN {
 
 class Runner {
 private:
-    static void set_limit(const Config &config);
+    char **cmd;
+    char *work_dir;             // 工作目录(用户程序所在目录)
+    char *data_dir;             // 测试数据目录
+    std::string tmp_data_dir;   // 沙盒环境中的测试数据目录
+    Config config;
+private:
+    void set_cpu() const;
 
-    static int run_cmd(char **args, const Config &config);
+    void set_limit() const;
 
-    static Result watch_result(pid_t pid, const Config &config, int root_fd,
-                               const std::string &work_dir, const std::string &random_dir);
+    void clean_up();
+
+    int run_cmd();
+
+    Result watch_result(pid_t pid);
+
+    Result run();
 
 public:
-    static Result run(char *args[], const Config &config, int root_fd,
-                      const std::string &work_dir, const std::string &tmp_data_dir);
-};
+    Runner(char *cmd[], char *work_dir, char *data_dir, Config &config);
 
-RTN exec(char *cmd[], char *work_dir, char *data_dir, Config &config);
+    RTN exec();
+};
 
 #endif //_RUNNER_H
