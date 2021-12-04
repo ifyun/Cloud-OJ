@@ -1,10 +1,10 @@
 #include <fcntl.h>
 #include <unistd.h>
-#include <iostream>
 #include <sys/resource.h>
 #include <sys/wait.h>
-#include <dirent.h>
 #include <sys/ptrace.h>
+#include <dirent.h>
+#include <iostream>
 #include "runner.h"
 #include "utils.h"
 #include "env_setup.h"
@@ -16,15 +16,16 @@ void alarm_child() {
     kill(child_pid, SIGALRM);
 }
 
-Runner::Runner(char **cmd, char *work_dir, char *data_dir, Config &config) {
+Runner::Runner(char **cmd, char *work_dir, char *data_dir, int language, Config &config) {
     this->cmd = cmd;
     this->work_dir = work_dir;
     this->data_dir = data_dir;
+    this->syscall_checker = new SyscallChecker(language);
     this->config = config;
 }
 
 /**
- * 设置当前进程的 CPU 核心
+ * @brief 设置当前进程的 CPU 核心
  */
 inline void Runner::set_cpu() const {
     cpu_set_t mask;
@@ -72,7 +73,7 @@ void Runner::set_limit() const {
 }
 
 /**
- * @brief 使用 execvp 执行命令判题
+ * @brief 使用 execvp 执行命令
  * @return 0 -> 正常返回，1 -> 非正常返回
  */
 int Runner::run_cmd() {
@@ -121,31 +122,50 @@ Result Runner::watch_result(pid_t pid) {
     struct Result res{.memUsed = 0};
 
     while (wait4(pid, &status, 0, &ru) > 0) {
+        // 检查系统调用
+        struct user_regs_struct regs{};
+        ptrace(PTRACE_GETREGS, pid, 0, &regs);
+
+        if (!syscall_checker->check(&regs)) {
+            kill(pid, SIGSYS);
+        }
+
+        res.memUsed = ru.ru_minflt * getpagesize() / 1024;
+
+        if (res.memUsed > config.memory) {
+            kill(pid, SIGUSR1);
+        }
+
+        res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
+                       ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
+
         int stop_sig;
         if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGTRAP) {
-            // 子进程收到信号停止(ptrace 会产生 SIGTRAP 信号，忽略它)
+            // 子进程收到信号停止(忽略 ptrace 产生的 SIGTRAP 信号)
             // 这个分支必须有 return 或 exit，否则会进入死循环
             switch (stop_sig) {
                 case SIGALRM:
-                    fprintf(stderr, "超出最大时间限制: %ds.\n", MAX_WAIT_SECONDS);
+                    fprintf(stderr, "ALARM: %ds(CPU Time: %dms).\n",
+                            MAX_WAIT_SECONDS, (int) res.timeUsed);
                     clean_up();
                     exit(RUNTIME_ERROR);
-                case SIGSEGV:
+                case SIGUSR1:
                     res.status = MLE;
-                    res.memUsed = ru.ru_minflt * getpagesize() / 1024;
                     return res;
+                case SIGSYS:
+                    fprintf(stderr, "非法调用(SYSCALL: %d).\n", syscall_number);
+                    clean_up();
+                    exit(RUNTIME_ERROR);
                 default:
-                    fprintf(stderr, "进程已退出(SIG: %d).\n", stop_sig);
+                    fprintf(stderr, "程序停止(SIG: %d).\n", stop_sig);
                     clean_up();
                     exit(RUNTIME_ERROR);
             }
         } else if (WIFSIGNALED(status)) {
             // 子进程收到信号终止
-            res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
-                           ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
             auto signal = WTERMSIG(status);
             switch (signal) {
-                case SIGSEGV:
+                case SIGUSR1:
                     res.status = MLE;
                     break;
                 case SIGXCPU:
@@ -156,14 +176,12 @@ Result Runner::watch_result(pid_t pid) {
                     break;
                 case SIGKILL:
                 default:
-                    fprintf(stderr, "进程终止(SIG: %d).\n", signal);
+                    fprintf(stderr, "程序终止(SIG: %d).\n", signal);
                     clean_up();
                     exit(RUNTIME_ERROR);
             }
         } else if (WIFEXITED(status)) {
             // 子进程退出
-            res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
-                           ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
             if (res.timeUsed > config.timeout) {
                 res.status = TLE;
             } else if (WEXITSTATUS(status) != 0) {
@@ -174,13 +192,7 @@ Result Runner::watch_result(pid_t pid) {
                 res.status = Utils::diff(config.out, config.expect) ? WA : AC;
             }
         } else {
-            res.memUsed = ru.ru_minflt * getpagesize() / 1024;
-
-            if (res.memUsed > config.memory) {
-                // 超出内存限制，发送 SIGSEGV 停止子进程
-                kill(pid, SIGSEGV);
-            }
-
+            // 跟踪系统调用
             ptrace(PTRACE_SYSCALL, pid, 0, 0);
         }
     }
@@ -278,7 +290,6 @@ RTN Runner::exec() {
             return rtn;
         }
 
-        // 多组数据，逐个运行
         for (auto i = 0; i < input_files.size(); i++) {
             config.in = input_files[i];
             config.out = std::to_string(i + 1) + ".out";

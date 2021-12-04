@@ -1,12 +1,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <dirent.h>
 #include <algorithm>
 #include <cstring>
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <fcntl.h>
+#include <boost/iostreams/device/mapped_file.hpp>
 #include "utils.h"
 
 namespace io = boost::iostreams;
@@ -136,7 +137,7 @@ __off_t Utils::get_rtrim_offset(const std::string &path) {
 
 /**
  * @brief 比较文件
- * @return true -> 不同, false -> 相同
+ * @return @c true - 不同, @c false - 相同
  */
 bool Utils::diff(const std::string &user_output, const std::string &expect_output) {
     auto offset1 = get_rtrim_offset(user_output);

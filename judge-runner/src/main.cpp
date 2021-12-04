@@ -1,13 +1,13 @@
 #include <iostream>
-#include <sstream>
 #include <cstdlib>
 #include <getopt.h>
 #include <cstring>
 #include "runner.h"
 
-char *cmd[16] = {};
+char *cmd[32] = {};
 char *work_dir = nullptr;
 char *data_dir = nullptr;
+int language;
 
 Config config;
 
@@ -19,12 +19,13 @@ option long_options[] = {
         {"workdir",     required_argument, nullptr, 'w'},
         {"data",        required_argument, nullptr, 'd'},
         {"cpu",         required_argument, nullptr, 'u'},
+        {"lang",        required_argument, nullptr, 'l'},
         {"proc",        required_argument, nullptr, 'p'},
         {"help",        no_argument,       nullptr, 'h'},
         {nullptr,       no_argument,       nullptr, 0}
 };
 
-const char *short_options = "c:t:m:M:o:w:d:u:p:?h";
+const char *short_options = "c:t:m:M:o:w:d:u:l:p:?h";
 
 void show_help();
 
@@ -54,7 +55,7 @@ inline void split(char **arr, char *str, const char *separator) {
 
 int main(int argc, char *argv[]) {
     get_args(argc, argv);
-    Runner runner(cmd, work_dir, data_dir, config);
+    Runner runner(cmd, work_dir, data_dir, language, config);
     RTN rtn = runner.exec();
 
     if (rtn.code == 0) {
@@ -73,7 +74,10 @@ inline void show_help() {
     printf(fmt, "-o, --output-size", "输出限制(MB)");
     printf(fmt, "-w, --workdir", "工作目录");
     printf(fmt, "-d, --data", "测试数据目录");
-    printf(fmt, "-p, --proc", "进程数量限制(可选，默认无限制)");
+    printf(fmt, "-l, --lang", "语言，用于调用限制(0 ~ 8)");
+    printf(fmt, " ", "0.C 1.Cpp 2.Java 3.Python 4.Bash 5.C# 6.JS 7.Kotlin 8.Go");
+    printf(fmt, "-u, --cpu", "CPU 核心 ID");
+    printf(fmt, "-p, --proc", "进程数量限制(可选)");
     printf(fmt, "-h, --help", "显示此信息");
 }
 
@@ -110,7 +114,10 @@ void get_args(int argc, char *argv[]) {
                 cnt++;
                 break;
             case 'u':
-                config.cpu = (int)str_to_long(optarg);
+                config.cpu = (int) str_to_long(optarg);
+                break;
+            case 'l':
+                language = (int) str_to_long(optarg);
                 break;
             case 'p':
                 config.proc_count = (int) str_to_long(optarg);

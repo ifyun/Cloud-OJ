@@ -1,8 +1,8 @@
 #ifndef _RUNNER_H
 #define _RUNNER_H 1
 
-#include <sstream>
 #include <string>
+#include "syscall_check.h"
 
 const int AC = 0;
 const int WA = 1;
@@ -52,6 +52,7 @@ private:
     char *data_dir;             // 测试数据目录
     std::string tmp_data_dir;   // 沙盒环境中的测试数据目录
     Config config;
+    SyscallChecker *syscall_checker;
 private:
     void set_cpu() const;
 
@@ -66,7 +67,7 @@ private:
     Result run();
 
 public:
-    Runner(char *cmd[], char *work_dir, char *data_dir, Config &config);
+    Runner(char *cmd[], char *work_dir, char *data_dir, int language, Config &config);
 
     RTN exec();
 };
