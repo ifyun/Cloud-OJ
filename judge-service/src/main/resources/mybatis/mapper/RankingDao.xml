@@ -21,7 +21,7 @@
     </insert>
     <insert id="updateContest">
         replace into leaderboard_contest(user_id, committed, passed, score, update_time)
-        select #{user_id}                                    as user_id,
+        select #{userId}                                     as user_id,
                sum(committed)                                as committed,
                count((case when (pass_rate = 1) then 1 end)) as passed,
                sum(score)                                    as score,
