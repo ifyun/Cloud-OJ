@@ -3,4 +3,3 @@
 *.iml
 build
 cmake-build-*
-test

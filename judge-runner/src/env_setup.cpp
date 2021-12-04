@@ -32,6 +32,7 @@ inline int exec_cmd(const char *fmt, ...) {
  */
 const char *setup_env(const char *work_dir, const char *data_dir) {
     const char *tmp_data_dir = random_str(10);
+    // create files and directories
     exec_cmd("mkdir %s/%s", work_dir, tmp_data_dir);
     exec_cmd("test -d %s/proc || mkdir %s/proc", work_dir, work_dir);
     exec_cmd("test -d %s/etc/alternatives || mkdir -p %s/etc/alternatives", work_dir, work_dir);
@@ -65,7 +66,6 @@ void end_env(const char *work_dir, const char *tmp_data_dir) {
     exec_cmd("mountpoint %s/%s > /dev/null 2>&1 && umount -l %s/%s && rmdir %s/%s",
              work_dir, tmp_data_dir, work_dir, tmp_data_dir, work_dir, tmp_data_dir);
     exec_cmd("test -e %s/dev/null && rm -rf %s/dev/null", work_dir, work_dir);
-    exec_cmd("mountpoint %s/dev/shm > /dev/null 2>&1 && umount -l %s/dev/shm", work_dir, work_dir);
     exec_cmd("mountpoint %s/proc > /dev/null 2>&1 && umount %s/proc && rm -rf %s/proc", work_dir, work_dir, work_dir);
     exec_cmd("mountpoint %s/etc/alternatives > /dev/null 2>&1 && umount %s/etc/alternatives", work_dir, work_dir);
     exec_cmd("mountpoint %s/bin > /dev/null 2>&1 && umount -l %s/bin && rm -rf %s/bin", work_dir, work_dir, work_dir);
