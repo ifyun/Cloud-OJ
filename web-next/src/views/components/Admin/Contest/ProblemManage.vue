@@ -159,11 +159,11 @@ export default class ProblemManage extends Vue {
   }
 
   @Prop(Number)
-  private contestId: number = 0
+  private contestId?: number
 
   @Watch("contestId", {immediate: true})
   contestIdChanged(value: number) {
-    if (value !== 0) {
+    if (typeof value !== "undefined") {
       this.queryProblems()
       this.queryContestProblems()
     }
@@ -175,7 +175,7 @@ export default class ProblemManage extends Vue {
   queryProblems() {
     this.pagination1.loading = true
     ContestApi.getProblemsNotInContest(
-        this.contestId,
+        this.contestId!,
         this.pagination1.page,
         this.pagination1.pageSize,
         this.userInfo
@@ -194,7 +194,7 @@ export default class ProblemManage extends Vue {
   queryContestProblems() {
     this.pagination2.loading = true
     ContestApi.getProblems(
-        this.contestId,
+        this.contestId!,
         this.pagination2.page,
         this.pagination2.pageSize,
         this.userInfo
@@ -217,7 +217,7 @@ export default class ProblemManage extends Vue {
    */
   addToContest(problem: Problem) {
     ContestApi.addProblem(
-        this.contestId,
+        this.contestId!,
         problem.problemId!,
         this.userInfo
     ).then(() => {
@@ -244,7 +244,7 @@ export default class ProblemManage extends Vue {
    */
   remove(problem: Problem) {
     ContestApi.removeProblem(
-        this.contestId,
+        this.contestId!,
         problem.problemId!,
         this.userInfo
     ).then(() => {
