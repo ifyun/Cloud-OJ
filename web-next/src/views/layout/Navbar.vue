@@ -36,7 +36,7 @@
           </n-dropdown>
         </n-space>
         <n-space v-else size="small">
-          <n-button type="primary" ghost size="small" @click="login">
+          <n-button secondary type="primary" size="small" @click="login">
             注册登录
           </n-button>
         </n-space>

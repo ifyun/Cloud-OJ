@@ -96,3 +96,20 @@ export type PagedData<T> = {
     data: T[]
     count: number
 }
+
+export type SubmitData = {
+    userId: string
+    problemId: number
+    language: number
+    sourceCode: string
+    type: number
+}
+
+export class JudgeResult {
+    state?: number
+    result?: number
+    time?: number
+    memory?: number
+    passRate?: number
+    errorInfo?: string
+}

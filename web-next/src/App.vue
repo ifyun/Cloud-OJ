@@ -23,8 +23,8 @@
           </n-layout>
         </n-layout>
         <!-- 登录/注册对话框 -->
-        <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false"
-                 :show-icon="false" style="margin-top: 220px">
+        <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false" :show-icon="false"
+                 transform-origin="center" style="margin-top: 220px">
           <Auth/>
         </n-modal>
       </n-message-provider>
@@ -134,7 +134,7 @@ export default class App extends Vue {
 
     .footer {
       margin-top: auto;
-      width: 100%
+      width: 100%;
     }
   }
 

@@ -8,10 +8,10 @@
             <n-tab-pane name="题目描述">
               <n-h2 style="margin-bottom: 10px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
               <n-space size="small">
-                <n-tag>分数: {{ problem.score }} 分</n-tag>
-                <n-tag type="info">时间限制: {{ problem.timeout }} ms</n-tag>
-                <n-tag type="info">内存限制: {{ problem.memoryLimit }} MB</n-tag>
-                <n-tag type="info">输出限制: {{ problem.outputLimit }} MB</n-tag>
+                <n-tag size="small">分数: {{ problem.score }} 分</n-tag>
+                <n-tag size="small" type="info">时间: {{ problem.timeout }} ms</n-tag>
+                <n-tag size="small" type="info">内存: {{ problem.memoryLimit }} MB</n-tag>
+                <n-tag size="small" type="info">输出: {{ problem.outputLimit }} MB</n-tag>
               </n-space>
               <!-- 题目内容 -->
               <markdown-view :content="problem.description" style="margin-top: 15px"/>
@@ -24,24 +24,31 @@
       </div>
       <!-- 代码编辑器 -->
       <div class="editor">
-        <code-editor v-model="code" @submit="submit"/>
+        <code-editor v-model="code" @submit="submit" :loading="disableSubmit"/>
       </div>
     </div>
   </div>
+  <n-modal v-model:show="showResult" preset="card" :mask-closable="false"
+           style="width: 520px; margin-top: 220px">
+    <result-dialog :solution-id="solutionId"/>
+  </n-modal>
 </template>
 
 <script lang="ts">
+import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {NGrid, NGridItem, NH2, NScrollbar, NSpace, NTabPane, NTabs, NTag} from "naive-ui"
+import {NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
 import MarkdownView from "@/components/MarkdownView/Index.vue"
 import CodeEditor from "@/components/CodeEditor.vue"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
-import {ProblemApi} from "@/api/request"
-import {ErrorMsg, Problem} from "@/api/type"
+import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
+import {JudgeApi, ProblemApi} from "@/api/request"
+import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
 
 @Options({
   name: "Submission",
   components: {
+    ResultDialog,
     NGrid,
     NGridItem,
     NSpace,
@@ -50,18 +57,30 @@ import {ErrorMsg, Problem} from "@/api/type"
     NTabPane,
     NH2,
     NTag,
+    NModal,
     Skeleton,
     MarkdownView,
     CodeEditor
   }
 })
 export default class Submission extends Vue {
-  private loading: boolean = true         // 加载中
-  private error: ErrorMsg | null = null   // 错误信息
+  private store = useStore()
+  private message = useMessage()
+
+  private loading: boolean = true
+  private error: ErrorMsg | null = null
+
+  private showResult: boolean = false
+  private disableSubmit: boolean = false
 
   private problemId: number | null = null
   private problem: Problem = new Problem()
   private code: string = ""
+  private solutionId: string = ""
+
+  get userInfo(): UserInfo {
+    return this.store.state.userInfo
+  }
 
   beforeMount() {
     const problemId = this.$route.query.problemId
@@ -73,6 +92,9 @@ export default class Submission extends Vue {
     this.getProblem()
   }
 
+  /**
+   * 获取题目数据
+   */
   getProblem() {
     if (this.problemId != null) {
       ProblemApi.getSingle(this.problemId)
@@ -88,9 +110,34 @@ export default class Submission extends Vue {
     }
   }
 
+  /**
+   * 提交代码
+   */
   submit(language: number) {
-    console.debug("language:", language)
-    console.debug("code:", this.code)
+    if (this.code.trim().length == 0 || this.disableSubmit) {
+      return
+    }
+
+    this.disableSubmit = true
+    const data: SubmitData = {
+      language,
+      problemId: this.problemId!,
+      sourceCode: this.code,
+      type: 0,
+      userId: this.userInfo.userId!
+    }
+
+    JudgeApi.submit(data, this.userInfo)
+        .then((solutionId) => {
+          this.solutionId = solutionId
+          this.showResult = true
+        })
+        .catch((error: ErrorMsg) => {
+          this.message.error(error.toString())
+        })
+        .finally(() => {
+          this.disableSubmit = false
+        })
   }
 }
 </script>
@@ -99,6 +146,7 @@ export default class Submission extends Vue {
 .submission {
   width: calc(100% - 50px);
   height: calc(100% - var(--header-height) - 50px);
+  min-height: 600px;
   padding: 25px;
   flex: auto;
 

@@ -3,10 +3,10 @@
     <n-input-group>
       <n-input-group-label :style="{width: '110px'}">选择语言</n-input-group-label>
       <n-select v-model:value="language" :options="languageOptions" :render-label="renderLabel"/>
-      <n-button type="primary" @click="submit">
+      <n-button @click="submit" color="#399f58" style="color: white" :loading="loading">
         <template #icon>
           <n-icon>
-            <upload-icon/>
+            <submit-icon/>
           </n-icon>
         </template>
         提交运行
@@ -31,7 +31,7 @@ import {
   NSelect,
   NIcon
 } from "naive-ui"
-import {UploadRound as UploadIcon} from "@vicons/material"
+import {PlayCircleRound as SubmitIcon} from "@vicons/material"
 import {LanguageOption, LanguageOptions} from "@/type"
 import {LanguageUtil} from "@/utils"
 import CodeMirror, {Editor, EditorConfiguration} from "codemirror"
@@ -68,7 +68,7 @@ const Modes = [
     NButton,
     NInput,
     NIcon,
-    UploadIcon
+    SubmitIcon
   }
 })
 export default class CodeEditor extends Vue {
@@ -93,6 +93,9 @@ export default class CodeEditor extends Vue {
 
   private languageOptions: Array<LanguageOption> = LanguageOptions
   private language: number = 0    // 当前选中的语言ID
+
+  @Prop({type: Boolean, default: false})
+  private loading?: boolean
 
   @Prop(String)
   private modelValue: string = ""
