@@ -170,11 +170,13 @@ export default class MarkdownView extends Vue {
 
     p {
       margin: 0;
-
-      code {
-        font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-      }
     }
+  }
+
+  p code {
+    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+    background-color: #F8F8F8;
+    padding: 1px 4px;
   }
 
   pre {
@@ -256,6 +258,10 @@ export default class MarkdownView extends Vue {
       td {
         border-top: 1px solid #18181C;
       }
+    }
+
+    p code {
+      background-color: #18181C;
     }
 
     pre {
