@@ -40,7 +40,7 @@ import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {setTitle, TagUtil} from "@/utils"
 
 @Options({
-  name: "ProblemTable",
+  name: "Problems",
   components: {
     NSpace,
     NInput,

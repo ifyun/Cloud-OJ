@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from "vue-router"
 
-const ProblemTable = () => import("@/views/components/ProblemTable.vue")
-const ContestTable = () => import("@/views/components/ContestTable.vue")
+const ProblemTable = () => import("@/views/components/Problems.vue")
+const ContestTable = () => import("@/views/components/Contests.vue")
 const Leaderboard = () => import("@/views/components/Leaderboard.vue")
 const Submission = () => import("@/views/components/Submission/Index.vue")
 const Help = () => import("@/views/components/Help.vue")
