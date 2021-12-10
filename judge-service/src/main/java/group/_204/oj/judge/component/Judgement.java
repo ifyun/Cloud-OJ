@@ -233,12 +233,11 @@ public class Judgement {
         long timeLimit = limit.getTimeout();
         int outputLimit = limit.getOutputLimit();
         int memoryLimit = limit.getMemoryLimit();
-        int procLimit = 0;
 
         switch (language) {
             case C:
             case CPP:
-                procLimit = 1;
+            case GO:
                 cmd.add("--cmd=./Solution");
                 break;
             case JAVA:
@@ -255,19 +254,14 @@ public class Judgement {
                 cmd.add("--cmd=node@Solution.js");
                 break;
             case PYTHON:
-                procLimit = 1;
                 cmd.add("--cmd=python3@Solution.py");
                 break;
             case BASH:
-                procLimit = 1;
                 cmd.add("--cmd=sh@Solution.sh");
                 break;
             case C_SHARP:
                 memoryLimit <<= 1;
                 cmd.add("--cmd=mono@Solution.exe");
-                break;
-            case GO:
-                cmd.add("--cmd=./Solution");
                 break;
             default:
                 throw new UnsupportedLanguageError(language.toString());
@@ -279,8 +273,7 @@ public class Judgement {
                 "--output-size=" + outputLimit,
                 "--workdir=" + solutionDir,
                 "--data=" + testDataDir,
-                "--cpu=" + cpu,
-                "--proc=" + procLimit
+                "--cpu=" + cpu
         );
 
         cmd.addAll(config);
