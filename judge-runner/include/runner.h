@@ -60,6 +60,8 @@ private:
 
     void clean_up();
 
+    void re_exit();
+
     int run_cmd();
 
     Result watch_result(pid_t pid);
