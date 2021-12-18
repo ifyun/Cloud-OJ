@@ -72,6 +72,11 @@ void Runner::set_limit() const {
     }
 }
 
+void Runner::re_exit() {
+    clean_up();
+    exit(RUNTIME_ERROR);
+}
+
 /**
  * @brief 使用 execvp 执行命令
  * @return 0 -> 正常返回，1 -> 非正常返回
@@ -139,30 +144,29 @@ Result Runner::watch_result(pid_t pid) {
         res.timeUsed = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000 +
                        ru.ru_stime.tv_sec * 1000 + ru.ru_stime.tv_usec / 1000;
 
-        int stop_sig;
-        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGTRAP) {
-            // 子进程收到信号停止(忽略 ptrace 产生的 SIGTRAP 信号)
+        int stop_signal;
+        if (WIFSTOPPED(status) && (stop_signal = WSTOPSIG(status)) != SIGTRAP) {
+            // 子进程暂停(忽略 ptrace 产生的 SIGTRAP 信号)
             // 这个分支必须有 return 或 exit，否则会进入死循环
-            switch (stop_sig) {
-                case SIGALRM:
-                    fprintf(stderr, "ALARM: %ds(CPU Time: %dms).\n",
-                            MAX_WAIT_SECONDS, (int) res.timeUsed);
-                    clean_up();
-                    exit(RUNTIME_ERROR);
+            switch (stop_signal) {
                 case SIGUSR1:
                     res.status = MLE;
                     return res;
+                case SIGALRM:
+                    fprintf(stderr, "ALARM: %ds(CPU Time: %dms).\n", MAX_WAIT_SECONDS, (int) res.timeUsed);
+                    re_exit();
+                case SIGSEGV:
+                    fprintf(stderr, "段错误.\n");
+                    re_exit();
                 case SIGSYS:
                     fprintf(stderr, "非法调用(SYSCALL: %d).\n", syscall_number);
-                    clean_up();
-                    exit(RUNTIME_ERROR);
+                    re_exit();
                 default:
-                    fprintf(stderr, "程序停止(SIG: %d).\n", stop_sig);
-                    clean_up();
-                    exit(RUNTIME_ERROR);
+                    fprintf(stderr, "程序停止(SIGNAL: %d).\n", stop_signal);
+                    re_exit();
             }
         } else if (WIFSIGNALED(status)) {
-            // 子进程收到信号终止
+            // 子进程终止
             auto signal = WTERMSIG(status);
             switch (signal) {
                 case SIGUSR1:
@@ -175,10 +179,14 @@ Result Runner::watch_result(pid_t pid) {
                     res.status = OLE;
                     break;
                 case SIGKILL:
+                    fprintf(stderr, "程序终止(SIGKILL).\n");
+                    re_exit();
+                case SIGSEGV:
+                    fprintf(stderr, "段错误.\n");
+                    re_exit();
                 default:
-                    fprintf(stderr, "程序终止(SIG: %d).\n", signal);
-                    clean_up();
-                    exit(RUNTIME_ERROR);
+                    fprintf(stderr, "程序终止(SIGNAL: %d).\n", signal);
+                    re_exit();
             }
         } else if (WIFEXITED(status)) {
             // 子进程退出
@@ -186,8 +194,7 @@ Result Runner::watch_result(pid_t pid) {
                 res.status = TLE;
             } else if (WEXITSTATUS(status) != 0) {
                 std::cerr << "非零退出.\n";
-                clean_up();
-                exit(RUNTIME_ERROR);
+                re_exit();
             } else {
                 res.status = Utils::diff(config.out, config.expect) ? WA : AC;
             }

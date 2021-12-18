@@ -273,6 +273,7 @@ public class Judgement {
                 "--output-size=" + outputLimit,
                 "--workdir=" + solutionDir,
                 "--data=" + testDataDir,
+                "--lang=" + solution.getLanguage(),
                 "--cpu=" + cpu
         );
 

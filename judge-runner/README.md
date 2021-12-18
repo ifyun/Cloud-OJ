@@ -1,6 +1,6 @@
 # Judge Runner
 
-OJ 判题程序，使用 chroot + setuid 创建沙盒。
+OJ 判题程序。
 
 ## 生成可执行文件
 
@@ -10,7 +10,7 @@ OJ 判题程序，使用 chroot + setuid 创建沙盒。
    sudo apt-get install cmake build-essential libboost-iostreams-dev
    ```
 
-2. 执行 `cmake-build` 生成可执行文件
+2. 执行 `cmake-build.sh` 生成可执行文件
 
 ## 使用
 
@@ -21,11 +21,12 @@ judge-runner --options
 - `--cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
 - `--time`: 运行时间，单位：毫秒
 - `--memory`: 内存限制，此项用于判断是否超限，单位：MB
-- `--max-memory`: 内存最大上限，超出此限制程序会中断并返回非零值，单位：MB
 - `--output-size`: 输出限制，单位：MB
 - `--workdir`: 工作目录，用户程序所在目录
 - `--data`: 测试数据目录，包含 `*.in`、 `*.out` 文件
-- `--proc`: 进程限制，可选参数，默认为 1
+- `--cpu`: CPU 核心编号
+- `--lang`: 语言，用于加载系统调用规则
+- `--help`: 显示帮助
 
 ### 示例
 
@@ -35,7 +36,6 @@ judge-runner --options
 judge-runner --cmd=python@Solution.py \
              --time=200 \
              --memory=32 \
-             --max-memory=32 \
              --output-size=8 \
              --workdir=/tmp/solution \
              --data=/tmp/test_data
@@ -47,7 +47,6 @@ judge-runner --cmd=python@Solution.py \
 judge-runner -c java@-Xms16m@-Xmx512m@Solution \
              -t 200 \
              -m 64 \
-             -M 512 \
              -o 8 \
              -w /tmp/solution \
              -d /tmp/test_data
