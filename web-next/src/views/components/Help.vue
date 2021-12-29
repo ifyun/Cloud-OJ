@@ -53,7 +53,7 @@
 import {Options, Vue} from "vue-class-component"
 import {NAlert, NAnchor, NAnchorLink, NCard, NCode, NConfigProvider, NDataTable, NH1, NH2, NH3, NP} from "naive-ui"
 import {setTitle} from "@/utils"
-import highlightJs from "highlight.js"
+import highlightJs from "highlight.js/lib/core"
 import cpp from "highlight.js/lib/languages/cpp"
 import py from "highlight.js/lib/languages/python"
 import java from "highlight.js/lib/languages/java"

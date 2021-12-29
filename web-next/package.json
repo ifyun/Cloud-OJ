@@ -8,17 +8,17 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
-    "codemirror": "^5.64.0",
-    "core-js": "^3.19.1",
+    "codemirror": "^5.65.0",
+    "core-js": "^3.20.1",
     "crypto-js": "^4.1.1",
     "highlight.js": "^11.3.1",
-    "katex": "^0.13.24",
-    "markdown-it": "^12.2.0",
+    "katex": "^0.15.1",
+    "markdown-it": "^12.3.0",
     "markdown-it-container": "^3.0.0",
     "moment": "^2.29.1",
-    "vue": "^3.2.22",
+    "vue": "^3.2.26",
     "vue-class-component": "^8.0.0-0",
     "vue-property-decorator": "^10.0.0-rc.3",
     "vue-router": "^4.0.12",
@@ -27,43 +27,21 @@
   "devDependencies": {
     "@types/codemirror": "^5.60.5",
     "@types/markdown-it-container": "^2.0.4",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "@vicons/fa": "^0.11.0",
     "@vicons/material": "^0.11.0",
     "@vue/cli-plugin-babel": "^4.5.15",
     "@vue/cli-plugin-eslint": "^4.5.15",
     "@vue/cli-plugin-typescript": "^4.5.15",
     "@vue/cli-service": "^4.5.15",
-    "@vue/compiler-sfc": "^3.2.22",
-    "@vue/eslint-config-typescript": "^7.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.20.0",
-    "naive-ui": "^2.21.1",
-    "sass": "^1.43.5",
+    "@vue/compiler-sfc": "^3.2.26",
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "eslint": "^6.8.0",
+    "naive-ui": "^2.23.2",
+    "sass": "^1.45.1",
     "sass-loader": "^10.2.0",
-    "typescript": "^4.5.2",
+    "typescript": "^4.5.4",
     "vfonts": "^0.1.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended",
-      "@vue/typescript"
-    ],
-    "parserOptions": {
-      "parser": "@typescript-eslint/parser"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  }
 }
