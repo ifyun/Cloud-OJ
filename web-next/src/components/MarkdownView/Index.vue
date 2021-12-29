@@ -8,7 +8,7 @@ import {Options, Vue} from "vue-class-component"
 import {Prop} from "vue-property-decorator"
 import {KatexPlugin} from "@/components/MarkdownView/markdown-katex"
 import markdownItContainer from "markdown-it-container"
-import highlightJs from "highlight.js"
+import highlightJs from "highlight.js/lib/core"
 import markdown from "highlight.js/lib/languages/markdown"
 import c from "highlight.js/lib/languages/c"
 import cpp from "highlight.js/lib/languages/cpp"
@@ -46,7 +46,7 @@ md.use(markdownItContainer, "info", {
     if (tokens[index].nesting === 1) {
       return `<div class="markdown-alert info">`
     } else {
-      return '</div>'
+      return `</div>`
     }
   }
 }).use(markdownItContainer, "warning", {

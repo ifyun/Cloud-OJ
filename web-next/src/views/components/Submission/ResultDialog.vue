@@ -64,7 +64,7 @@ export default class ResultDialog extends Vue {
 
   private error: ErrorMsg | null = null
   private result: Result = {
-    status: '418',
+    status: "418",
     title: "提交成功，正在等待结果"
   }
 
