@@ -26,24 +26,24 @@ npm-build:
     - npm config set registry https://registry.npm.taobao.org/
     - npm install
     - npm run build
-    - cd ../ && cp -r web/dist docker/web/
+    - cd ../ && cp -r web/dist .docker/web/
   artifacts:
     name: "Cloud-OJ_Dockerfile"
     paths:
-      - docker
+      - .docker
 mvn-package:
   only:
     - tags
-  image: maven-aliyun:3.6-jdk-8-alpine
+  image: ghcr.io/imcloudfloating/maven-aliyun:3.8-openjdk-8
   stage: mvn-package
   script:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
-    - cp -r gateway/target/*.jar docker/gateway/
-    - cp -r registry/target/*.jar docker/registry/
-    - cp -r monitor/target/*.jar docker/monitor/
-    - cp -r file-service/target/*.jar docker/file-service/
-    - cp -r core-service/target/*.jar docker/core-service/
-    - cp -r judge-service/target/*.jar docker/judge-service/
+    - cp -r gateway/target/*.jar .docker/gateway/
+    - cp -r registry/target/*.jar .docker/registry/
+    - cp -r monitor/target/*.jar .docker/monitor/
+    - cp -r file-service/target/*.jar .docker/file-service/
+    - cp -r core-service/target/*.jar .docker/core-service/
+    - cp -r judge-service/target/*.jar .docker/judge-service/
     - du -h docker
   artifacts:
     name: "Cloud-OJ_Dockerfile"
@@ -55,11 +55,11 @@ docker-build:
   stage: build-images
   script:
     - docker -v
-    - docker build -t $WEB ./docker/web/
-    - docker build -t $GATEWAY ./docker/gateway/
-    - docker build -t $REGISTRY ./docker/registry/
-    - docker build -t $MONITOR ./docker/monitor/
-    - docker build -t $FILE_SERVICE ./docker/file-service/
-    - docker build -t $MANAGER_SERVICE ./docker/core-service/
-    - docker build -t $JUDGE_SERVICE ./docker/judge-service/
+    - docker build -t $WEB .docker/web/
+    - docker build -t $GATEWAY .docker/gateway/
+    - docker build -t $REGISTRY .docker/registry/
+    - docker build -t $MONITOR .docker/monitor/
+    - docker build -t $FILE_SERVICE .docker/file-service/
+    - docker build -t $MANAGER_SERVICE .docker/core-service/
+    - docker build -t $JUDGE_SERVICE .docker/judge-service/
     - docker rmi $(docker images -q -f dangling=true) || true
