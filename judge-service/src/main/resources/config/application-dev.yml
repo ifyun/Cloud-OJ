@@ -19,8 +19,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username: cloud@oj
-    password: cloud@oj
+    username: admin
+    password: admin
     listener:
       simple:
         acknowledge-mode: manual
