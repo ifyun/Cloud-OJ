@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: registry
+  boot:
+    admin:
+      context-path: /admin
 
 management:
   endpoints:

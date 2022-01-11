@@ -1,12 +1,12 @@
 server:
   port: 8761
-  tomcat:
-    accept-count: ${TOMCAT_ACCEPT_COUNT:2000}
-    max-threads: ${TOMCAT_MAX_THREADS:800}
 
 spring:
   application:
     name: registry
+  boot:
+    admin:
+      context-path: /admin
 
 management:
   endpoints:

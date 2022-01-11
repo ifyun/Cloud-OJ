@@ -17,9 +17,7 @@
     <packaging>pom</packaging>
     <description>Cloud OJ Project</description>
 
-    <!-- 子模块 -->
     <modules>
-        <module>monitor</module>
         <module>registry</module>
         <module>core-service</module>
         <module>file-service</module>
