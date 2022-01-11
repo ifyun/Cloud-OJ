@@ -2,6 +2,8 @@ server:
   port: 8001
 
 spring:
+  main:
+    allow-circular-references: true
   application:
     name: core-service
   datasource:
@@ -40,6 +42,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
-
-project:
-  file-dir: /mnt/e/cloud_oj/

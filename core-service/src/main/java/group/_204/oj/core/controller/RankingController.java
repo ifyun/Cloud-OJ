@@ -37,7 +37,7 @@ public class RankingController implements CRUDController {
      */
     @GetMapping(path = "contest/{contestId}")
     public ResponseEntity<?> getContestRanking(@PathVariable Integer contestId, Integer page, Integer limit) {
-        if (systemSettings.getConfig().isShowRankingAfterEnded() && !contestDao.isContestEnded(contestId)) {
+        if (systemSettings.getSettings().isShowRankingAfterEnded() && !contestDao.isContestEnded(contestId)) {
             return ResponseEntity.status(403).body(new Msg("结束后才可查看"));
         }
 

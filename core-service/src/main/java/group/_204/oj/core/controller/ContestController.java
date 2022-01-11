@@ -25,7 +25,7 @@ public class ContestController implements CRUDController {
      */
     @GetMapping()
     public ResponseEntity<?> contests(Integer page, Integer limit) {
-        if (systemSettings.getConfig().isShowNotStartedContest())
+        if (systemSettings.getSettings().isShowNotStartedContest())
             return buildGETResponse(contestService.getAllContest(page, limit));
         else
             return buildGETResponse(contestService.getStartedContest(page, limit));

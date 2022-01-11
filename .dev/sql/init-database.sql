@@ -221,5 +221,17 @@ VALUES (3, 'ROLE_ROOT');
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
 VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3ZXqbuxLaHVhp05LTi', LEFT(UUID(), 8), 3);
 
+create table settings
+(
+    id                       int                    not null
+        primary key,
+    icp                      varchar(64) default '' not null,
+    icp_url                  varchar(64) default '' not null,
+    site_name                varchar(16) default '' not null,
+    hide_logo                tinyint(1)  default 1  null,
+    show_ranking_after_ended tinyint(1)  default 0  null,
+    show_not_started_contest tinyint(1)  default 0  null
+);
+
 ALTER TABLE problem
-    AUTO_INCREMENT = 1000
+    AUTO_INCREMENT = 1000;

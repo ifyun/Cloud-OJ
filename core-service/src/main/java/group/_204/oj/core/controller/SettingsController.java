@@ -1,5 +1,6 @@
 package group._204.oj.core.controller;
 
+import group._204.oj.core.model.Settings;
 import group._204.oj.core.service.SystemSettings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("settings")
-public class SystemSettingsController {
+public class SettingsController {
 
     @Resource
     private SystemSettings systemSettings;
@@ -18,15 +19,15 @@ public class SystemSettingsController {
      */
     @GetMapping()
     public ResponseEntity<?> getSettings() {
-        return ResponseEntity.ok(systemSettings.getConfig());
+        return ResponseEntity.ok(systemSettings.getSettings());
     }
 
     /**
      * 更新系统设置
      */
     @PutMapping(consumes = "application/json")
-    public ResponseEntity<?> updateSettings(@RequestBody SystemSettings.Config config) {
-        return systemSettings.setConfig(config) ?
+    public ResponseEntity<?> updateSettings(@RequestBody Settings settings) {
+        return systemSettings.setSettings(settings) ?
                 ResponseEntity.ok().build() : ResponseEntity.status(500).build();
     }
 }
