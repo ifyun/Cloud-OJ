@@ -17,9 +17,6 @@ spring:
   jackson:
     default-property-inclusion: non_null
   cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
     gateway:
       discovery:
         locator:
