@@ -4,7 +4,6 @@ variables:
   WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
   GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/gateway
   REGISTRY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/registry
-  MONITOR: registry.cn-hangzhou.aliyuncs.com/cloud_oj/monitor
   FILE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-service
   MANAGER_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/core-service
   JUDGE_SERVICE: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service
@@ -19,7 +18,7 @@ stages:
 npm-build:
   only:
     - tags
-  image: node:14-alpine
+  image: node:16-alpine
   stage: npm-build
   script:
     - cd web && ls
@@ -40,7 +39,6 @@ mvn-package:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
     - cp -r gateway/target/*.jar .docker/gateway/
     - cp -r registry/target/*.jar .docker/registry/
-    - cp -r monitor/target/*.jar .docker/monitor/
     - cp -r file-service/target/*.jar .docker/file-service/
     - cp -r core-service/target/*.jar .docker/core-service/
     - cp -r judge-service/target/*.jar .docker/judge-service/
@@ -58,7 +56,6 @@ docker-build:
     - docker build -t $WEB .docker/web/
     - docker build -t $GATEWAY .docker/gateway/
     - docker build -t $REGISTRY .docker/registry/
-    - docker build -t $MONITOR .docker/monitor/
     - docker build -t $FILE_SERVICE .docker/file-service/
     - docker build -t $MANAGER_SERVICE .docker/core-service/
     - docker build -t $JUDGE_SERVICE .docker/judge-service/

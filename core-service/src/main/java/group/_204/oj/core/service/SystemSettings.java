@@ -1,82 +1,52 @@
 package group._204.oj.core.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import group._204.oj.core.dao.SettingsDao;
+import group._204.oj.core.model.Settings;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 @Slf4j
 @Service
 public class SystemSettings {
-
-    @Value("${project.file-dir}")
-    private String fileDir;
+    private SystemSettings self;
+    private Settings settings;
 
     @Resource
-    private ObjectMapper objectMapper;
+    private SettingsDao settingsDao;
 
-    private Config config = new Config();
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Config {
-        private boolean showRankingAfterEnded = false;
-        private boolean showNotStartedContest = false;
-        private boolean hideLogo = true;
-        private String siteName = "";
-        private String icp = "";
-        private String icpUrl = "";
+    @Autowired
+    public void setSelf(SystemSettings systemSettings) {
+        this.self = systemSettings;
     }
 
     @PostConstruct
     public void init() {
-        if (!fileDir.endsWith("/")) {
-            fileDir += '/';
-        }
-
-        loadConfig();
+        self.check();
     }
 
-    public void loadConfig() {
-        File configFile = new File(fileDir + "config.json");
-
-        if (!configFile.exists()) {
-            return;
+    @Transactional
+    public void check() {
+        if (settingsDao.get() == null) {
+            if (settingsDao.createDefault() == 0) {
+                log.error("Cannot create default system settings.");
+            } else {
+                log.info("Created default system settings.");
+            }
         }
 
-        try {
-            config = objectMapper.readValue(configFile, Config.class);
-        } catch (IOException e) {
-            log.error("Cannot load system config file: {}.", e.getMessage());
-        }
+        settings = settingsDao.get();
     }
 
-    public boolean setConfig(Config config) {
-        this.config = config;
-        log.info("Update system config: {}.", config);
-        File configFile = new File(fileDir + "config.json");
-
-        try {
-            FileWriter writer = new FileWriter(configFile, false);
-            objectMapper.writeValue(writer, config);
-            return true;
-        } catch (IOException e) {
-            log.error("Cannot save system config to file: {}.", e.getMessage());
-            return false;
-        }
+    public boolean setSettings(Settings settings) {
+        return settingsDao.update(settings) > 0;
     }
 
-    public Config getConfig() {
-        return config;
+    public Settings getSettings() {
+        return settings;
     }
 }

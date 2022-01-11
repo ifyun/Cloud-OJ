@@ -2,6 +2,8 @@ server:
   port: 8001
 
 spring:
+  main:
+    allow-circular-references: true
   application:
     name: core-service
   datasource:
@@ -46,6 +48,3 @@ logging:
     name: /app/log/manager-service.log
   level:
     root: warn
-
-project:
-  file-dir: /var/lib/cloud_oj/
