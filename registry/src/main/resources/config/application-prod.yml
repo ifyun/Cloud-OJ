@@ -21,7 +21,7 @@ eureka:
   environment: prod
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
   client:
     fetch-registry: true
     register-with-eureka: true
@@ -30,6 +30,6 @@ eureka:
 
 logging:
   file:
-    name: /app/log/register-center.log
+    name: /var/log/register-center.log
   level:
     root: warn
