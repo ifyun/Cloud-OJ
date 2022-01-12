@@ -37,14 +37,13 @@ mybatis:
 eureka:
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
   client:
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1}/eureka/
 
-
 logging:
   file:
-    name: /app/log/manager-service.log
+    name: /var/log/manager-service.log
   level:
     root: warn
