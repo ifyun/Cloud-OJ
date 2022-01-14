@@ -1,12 +1,12 @@
 package group._204.oj.judge.component;
 
+import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.dao.SolutionDao;
 import group._204.oj.judge.model.Solution;
+import group._204.oj.judge.type.SolutionResult;
 import group._204.oj.judge.type.SolutionState;
 import group._204.oj.judge.utils.FileCleaner;
-import group._204.oj.judge.type.SolutionResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 @Component
 public class JudgementAsync {
 
-    @Value("${project.auto-clean-solution:true}")
-    private Boolean autoCleanSolution;
+    @Resource
+    private AppConfig appConfig;
 
     @Resource
     private Judgement judgement;
@@ -35,7 +35,7 @@ public class JudgementAsync {
 
     @PostConstruct
     void init() {
-        log.info("AutoCleanSolution: {}", autoCleanSolution);
+        log.info("AutoCleanSolution: {}", appConfig.isAutoCleanSolution());
     }
 
     /**
@@ -62,7 +62,7 @@ public class JudgementAsync {
         } finally {
             callback.accept(null);
 
-            if (autoCleanSolution) {
+            if (appConfig.isAutoCleanSolution()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());
             }
         }

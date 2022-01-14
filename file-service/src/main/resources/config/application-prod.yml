@@ -8,6 +8,13 @@ spring:
     multipart:
       max-file-size: 128MB
       max-request-size: 128MB
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    host: ${RABBIT_URL:127.0.0.1}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:cloud@oj}
+    password: ${RABBIT_PASSWORD:cloud@oj}
 
 management:
   endpoints:

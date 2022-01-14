@@ -8,6 +8,13 @@ spring:
     multipart:
       max-file-size: 128MB
       max-request-size: 128MB
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
 
 management:
   endpoints:

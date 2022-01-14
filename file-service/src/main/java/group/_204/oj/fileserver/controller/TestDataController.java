@@ -1,6 +1,9 @@
 package group._204.oj.fileserver.controller;
 
+import group._204.oj.fileserver.model.FileInfo;
 import group._204.oj.fileserver.model.TestData;
+import group._204.oj.fileserver.service.NotifyService;
+import group._204.oj.fileserver.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -8,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,18 @@ public class TestDataController {
 
     @Value("${project.file-dir}")
     private String fileDir;
+
+    @Resource
+    private NotifyService notifyService;
+
+    /**
+     * 获取所有测试数据文件和最后修改时间
+     */
+    @GetMapping(path = "info")
+    public ResponseEntity<?> getTestDataInfo() {
+        List<FileInfo> fileInfos = FileUtil.getFilesInfo(fileDir + "test_data");
+        return fileInfos.size() > 0 ? ResponseEntity.ok(fileInfos) : ResponseEntity.noContent().build();
+    }
 
     /**
      * 获取测试数据列表
@@ -34,9 +51,7 @@ public class TestDataController {
             }
         }
 
-        return testDataList.size() > 0 ?
-                ResponseEntity.ok(testDataList) :
-                ResponseEntity.noContent().build();
+        return testDataList.size() > 0 ? ResponseEntity.ok(testDataList) : ResponseEntity.noContent().build();
     }
 
     /**
@@ -68,6 +83,8 @@ public class TestDataController {
                 log.error("上传文件 {} 失败: {}", dest.getAbsolutePath(), e.getMessage());
                 return ResponseEntity.status(500).build();
             }
+
+            notifyService.notifyTestData(dest, false);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -75,7 +92,7 @@ public class TestDataController {
 
 
     /**
-     * 删除测试数据文件
+     * 删除测试数据
      */
     @DeleteMapping(path = "{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
@@ -85,6 +102,7 @@ public class TestDataController {
         if (file.exists()) {
             if (file.delete()) {
                 log.info("已删除文件 {}", file.getAbsolutePath());
+                notifyService.notifyTestData(file, true);
                 return ResponseEntity.noContent().build();
             } else {
                 log.error("删除文件 {} 失败", file.getAbsolutePath());

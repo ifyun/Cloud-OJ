@@ -1,10 +1,16 @@
 package group._204.oj.fileserver.util;
 
+import group._204.oj.fileserver.model.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FileUtil {
@@ -20,5 +26,21 @@ public class FileUtil {
     public static boolean delFile(String filePath) {
         File file = new File(filePath);
         return !file.exists() || file.delete();
+    }
+
+    public static List<FileInfo> getFilesInfo(String path) {
+        try {
+            return Files.walk(Paths.get(path), Integer.MAX_VALUE)
+                    .filter(p -> p.toFile().isFile())
+                    .map(p -> {
+                        String relativePath = p.toString()
+                                .replaceAll("\\\\", "/")
+                                .replace(path, "");
+                        return new FileInfo(relativePath, p.toFile().lastModified());
+                    }).collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>(0);
+        }
     }
 }

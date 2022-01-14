@@ -1,3 +1,21 @@
 spring:
   profiles:
     active: dev
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: manual
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+    default-enum-type-handler: group._204.oj.judge.type.ValueEnumTypeHandler
+  mapper-locations: classpath:mybatis/mapper/*.xml

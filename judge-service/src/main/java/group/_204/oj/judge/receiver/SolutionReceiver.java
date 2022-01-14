@@ -5,7 +5,7 @@ import group._204.oj.judge.component.JudgementAsync;
 import group._204.oj.judge.config.RabbitConfig;
 import group._204.oj.judge.model.CommitData;
 import group._204.oj.judge.model.Solution;
-import group._204.oj.judge.service.CommitService;
+import group._204.oj.judge.service.SubmitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 消息接收
+ * 消息接收（提交和判题）
  */
 @Slf4j
 @Component
-public class RabbitReceiver {
+public class SolutionReceiver {
 
     @Resource
-    private CommitService commitService;
+    private SubmitService submitService;
 
     @Resource
     private JudgementAsync judgementAsync;
@@ -52,7 +52,7 @@ public class RabbitReceiver {
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.COMMIT_QUEUE)
     public void handleSubmission(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
-        commitService.commit(data);
+        submitService.submit(data);
         try {
             channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
         } catch (IOException e) {

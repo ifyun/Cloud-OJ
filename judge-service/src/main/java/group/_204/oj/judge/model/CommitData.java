@@ -1,12 +1,13 @@
 package group._204.oj.judge.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class CommitData implements Serializable {
+@NoArgsConstructor
+public class CommitData {
     private String solutionId;
     private String userId;
     private Integer problemId;

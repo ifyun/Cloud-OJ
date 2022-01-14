@@ -1,4 +1,4 @@
-package group._204.oj.judge.component;
+package group._204.oj.judge.config;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.core.convert.converter.Converter;

@@ -1,33 +1,34 @@
 package group._204.oj.judge.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.dao.*;
 import group._204.oj.judge.error.UnsupportedLanguageError;
-import group._204.oj.judge.model.*;
 import group._204.oj.judge.model.Runtime;
+import group._204.oj.judge.model.*;
 import group._204.oj.judge.type.Language;
 import group._204.oj.judge.type.SolutionResult;
 import group._204.oj.judge.type.SolutionState;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Component
 public class Judgement {
-    @Value("${project.file-dir}")
-    private String fileDir;
 
-    @Value("${project.code-dir}")
-    private String codeDir;
+    @Resource
+    private AppConfig appConfig;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -59,16 +60,6 @@ public class Judgement {
     private static class RuntimeError extends Exception {
         RuntimeError(String msg) {
             super(msg);
-        }
-    }
-
-    @PostConstruct
-    private void init() {
-        if (!codeDir.endsWith("/")) {
-            codeDir += '/';
-        }
-        if (!fileDir.endsWith("/")) {
-            fileDir += '/';
         }
     }
 
@@ -161,7 +152,7 @@ public class Judgement {
         RunResult result = null;
 
         try {
-            String testDataDir = fileDir + "test_data/" + solution.getProblemId();
+            String testDataDir = appConfig.getFileDir() + "test_data/" + solution.getProblemId();
             ProcessBuilder cmd = buildCommand(solution, limit, testDataDir);
             result = run(cmd);
         } catch (RuntimeError e) {
@@ -193,11 +184,11 @@ public class Judgement {
 
         if (exitValue == 0) {
             // 正常退出
-            String resultStr = IOUtils.toString(process.getInputStream());
+            String resultStr = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
             result = objectMapper.readValue(resultStr, RunResult.class);
         } else {
             // 非正常退出
-            String stderr = IOUtils.toString(process.getErrorStream());
+            String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
             if (exitValue == 1) {
                 throw new RuntimeError(stderr);
             } else {
@@ -215,16 +206,14 @@ public class Judgement {
     private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
         Language language = Language.get(solution.getLanguage());
+
         if (language == null) {
             throw new UnsupportedLanguageError("NULL");
         }
 
         Integer cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
-        if (cpu == null) {
-            cpu = 0;
-        }
 
-        String solutionDir = codeDir + solution.getSolutionId();
+        String solutionDir = appConfig.getFileDir() + solution.getSolutionId();
         ProcessBuilder builder = new ProcessBuilder();
         List<String> cmd = new ArrayList<>();
 
@@ -274,7 +263,7 @@ public class Judgement {
                 "--workdir=" + solutionDir,
                 "--data=" + testDataDir,
                 "--lang=" + solution.getLanguage(),
-                "--cpu=" + cpu
+                "--cpu=" + (cpu == null ? 0 : cpu)
         );
 
         cmd.addAll(config);
