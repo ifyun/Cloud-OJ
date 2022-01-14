@@ -1,48 +1,34 @@
 package group._204.oj.judge.component;
 
+import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.error.UnsupportedLanguageError;
 import group._204.oj.judge.model.Compile;
 import group._204.oj.judge.model.Solution;
 import group._204.oj.judge.type.Language;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 class Compiler {
 
-    @Value("${project.code-dir}")
-    private String codeDir;
+    @Resource
+    private AppConfig appConfig;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
 
     private static class CompileError extends Exception {
         CompileError(String msg) {
             super(msg);
-        }
-    }
-
-    /**
-     * 初始化
-     */
-    @PostConstruct
-    private void init() {
-        if (!codeDir.endsWith("/")) {
-            codeDir += '/';
-        }
-        File dir = new File(codeDir);
-        if (!dir.exists()) {
-            if (dir.mkdirs()) {
-                log.info("Dir {} does not exist, created.", codeDir);
-            } else {
-                log.info("Cannot create dir {}.", codeDir);
-            }
         }
     }
 
@@ -81,7 +67,7 @@ class Compiler {
             throw new UnsupportedLanguageError("NULL");
         }
 
-        String solutionDir = codeDir + solutionId;
+        String solutionDir = appConfig.getCodeDir() + solutionId;
         String[] cmd;
 
         switch (language) {
@@ -123,7 +109,7 @@ class Compiler {
                 if (process.exitValue() == 0) {
                     return new Compile(solutionId, 0, null);
                 } else {
-                    String error = IOUtils.toString(process.getErrorStream());
+                    String error = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
                     throw new CompileError(error);
                 }
             } else {
@@ -146,7 +132,7 @@ class Compiler {
      */
     private String writeCode(String solutionId, int language, String source) {
         File sourceFile;
-        File solutionDir = new File(codeDir + solutionId);
+        File solutionDir = new File(appConfig.getCodeDir() + solutionId);
 
         if (!solutionDir.mkdirs()) {
             log.error("Cannot create dir {}.", solutionDir.getName());

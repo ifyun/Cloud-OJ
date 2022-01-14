@@ -6,16 +6,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 @Slf4j
-@SpringBootApplication
+@EnableFeignClients
 @EnableTransactionManagement
+@SpringBootApplication
 public class JudgeServiceApp {
     /**
      * 提取判题程序到 /opt/bin
@@ -62,7 +67,7 @@ public class JudgeServiceApp {
         }
 
         Process p = Runtime.getRuntime().exec("id -u");
-        String uid = StringUtils.chomp(IOUtils.toString(p.getInputStream()));
+        String uid = StringUtils.chomp(IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8));
 
         if (!uid.equals("0")) {
             log.error("Root permission required.");

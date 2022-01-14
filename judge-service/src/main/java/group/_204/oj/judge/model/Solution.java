@@ -3,12 +3,13 @@ package group._204.oj.judge.model;
 import group._204.oj.judge.type.SolutionResult;
 import group._204.oj.judge.type.SolutionState;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Solution implements Serializable {
+@NoArgsConstructor
+public class Solution {
     private String solutionId;
     private Integer problemId;
     private Integer contestId;

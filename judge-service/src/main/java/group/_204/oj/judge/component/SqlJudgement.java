@@ -1,5 +1,6 @@
 package group._204.oj.judge.component;
 
+import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.dao.DatabaseConfig;
 import group._204.oj.judge.dao.ProblemDao;
 import group._204.oj.judge.dao.RuntimeDao;
@@ -11,12 +12,11 @@ import group._204.oj.judge.type.SolutionState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
 import javax.annotation.Resource;
+import java.io.*;
 
 /**
  * SQL 判题
@@ -33,8 +33,8 @@ public class SqlJudgement {
         long time;
     }
 
-    @Value("${project.file-dir}")
-    private String fileDir;
+    @Resource
+    private AppConfig appConfig;
 
     @Resource
     private ProblemDao problemDao;
@@ -54,7 +54,7 @@ public class SqlJudgement {
         dbConfig.disableFKChecks();
 
         String correctSql = problemDao.getSql(solution.getProblemId()); // 获取正确的 SQL 语句
-        File[] files = new File(fileDir + "test_data/" + solution.getProblemId())
+        File[] files = new File(appConfig.getFileDir() + "test_data/" + solution.getProblemId())
                 .listFiles(file -> file.getName().endsWith(".db"));
         Runtime runtime = new Runtime(solution.getSolutionId());
         runtimeDao.add(runtime);

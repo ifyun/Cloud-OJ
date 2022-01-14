@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Service
-public class CommitService {
+public class SubmitService {
 
     @Resource
     private SolutionDao solutionDao;
@@ -34,7 +34,7 @@ public class CommitService {
      * <p>隔离级别：读未提交</p>
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
-    public void commit(CommitData commitData) {
+    public void submit(CommitData commitData) {
         Solution solution = new Solution(
                 commitData.getSolutionId(),
                 commitData.getUserId(),
@@ -51,9 +51,9 @@ public class CommitService {
         sourceCodeDao.add(sourceCode);
 
         solution.setSourceCode(commitData.getSourceCode());
-        rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
-
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.update(solution);
+
+        rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }
 }
