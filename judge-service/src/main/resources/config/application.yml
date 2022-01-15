@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: dev
+  application:
+    name: judge-service
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -10,6 +12,14 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
 eureka:
   client:
     healthcheck:

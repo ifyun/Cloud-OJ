@@ -1,8 +1,6 @@
 server:
   port: 8002
 spring:
-  application:
-    name: judge-service
   datasource:
     url: jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
@@ -16,14 +14,6 @@ spring:
     port: 5672
     username: admin
     password: admin
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
 eureka:
   instance:
     prefer-ip-address: true

@@ -1,6 +1,11 @@
 {
   "properties": [
     {
+      "name": "app",
+      "type": "group._204.oj.judge.config.AppConfig",
+      "description": "应用程序配置."
+    },
+    {
       "name": "app.code-dir",
       "type": "java.lang.String",
       "description": "代码临时目录."

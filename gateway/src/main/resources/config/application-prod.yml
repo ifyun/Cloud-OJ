@@ -1,26 +1,16 @@
 server:
   port: 8080
-
 spring:
-  application:
-    name: gateway
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?serverTimezone=Asia/Shanghai}
-    type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
-    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 10000
       maximum-pool-size: ${DB_POOL_SIZE:10}
       max-lifetime: 30000
-  jackson:
-    default-property-inclusion: non_null
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
       routes:
         - id: core
           uri: lb://core-service
@@ -46,21 +36,6 @@ spring:
             - StripPrefix=2
           predicates:
             - Path=/api/auth/**
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: on
-  mapper-locations: classpath:mybatis/mapper/*.xml
-
 eureka:
   instance:
     prefer-ip-address: true
@@ -68,12 +43,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
-
 logging:
   file:
     name: /var/log/api-gateway.log
   level:
     root: warn
-
 project:
   token-valid-time: ${TOKEN_VALID_TIME:4}

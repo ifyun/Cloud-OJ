@@ -1,24 +1,6 @@
 server:
   port: 8761
-
-spring:
-  application:
-    name: registry
-  boot:
-    admin:
-      context-path: /admin
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
-
 eureka:
-  environment: prod
   instance:
     prefer-ip-address: true
     instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
@@ -27,9 +9,8 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
-
 logging:
   file:
-    name: /var/log/register-center.log
+    name: /var/log/registry.log
   level:
     root: warn

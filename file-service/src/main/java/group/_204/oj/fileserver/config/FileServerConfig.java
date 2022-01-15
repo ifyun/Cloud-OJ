@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class FileServerConfig extends WebMvcConfigurationSupport {
 
-    @Value(("${project.file-dir}"))
+    @Value(("${app.file-dir}"))
     private String fileDir;
 
     @PostConstruct

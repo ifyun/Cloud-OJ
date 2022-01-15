@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequestMapping("/image")
 public class ImageController {
 
-    @Value("${project.file-dir}")
+    @Value("${app.file-dir}")
     private String fileDir;
 
     /**

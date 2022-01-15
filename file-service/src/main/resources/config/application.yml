@@ -1,3 +1,15 @@
 spring:
   profiles:
     active: dev
+  application:
+    name: file-service
+  jackson:
+    default-property-inclusion: non_null
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

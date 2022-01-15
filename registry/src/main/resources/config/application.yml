@@ -1,3 +1,16 @@
 spring:
   profiles:
     active: dev
+  application:
+    name: registry
+  boot:
+    admin:
+      context-path: /admin
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
