@@ -14,7 +14,7 @@ import java.io.File;
 @Slf4j
 public class NotifyService {
 
-    @Value("${project.file-dir}")
+    @Value("${app.file-dir}")
     private String fileDir;
 
     @Resource

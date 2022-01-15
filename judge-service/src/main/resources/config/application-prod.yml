@@ -1,8 +1,6 @@
 server:
   port: 8002
 spring:
-  application:
-    name: judge-service
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
     username: ${MYSQL_USER:root}
@@ -16,14 +14,6 @@ spring:
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:cloud@oj}
     password: ${RABBIT_PASSWORD:cloud@oj}
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
 eureka:
   instance:
     prefer-ip-address: true
@@ -35,7 +25,7 @@ logging:
   file:
     name: /var/log/judge-service.log
   level:
-    root: warn
+    root: info
 app:
   file-sync: ${FILE_SYNC:false}
   file-dir: /var/lib/cloud_oj/

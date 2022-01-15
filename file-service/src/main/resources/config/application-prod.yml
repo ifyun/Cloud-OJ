@@ -1,30 +1,15 @@
 server:
   port: 8000
-
 spring:
-  application:
-    name: file-service
   servlet:
     multipart:
       max-file-size: 128MB
       max-request-size: 128MB
-  jackson:
-    default-property-inclusion: non_null
   rabbitmq:
     host: ${RABBIT_URL:127.0.0.1}
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:cloud@oj}
     password: ${RABBIT_PASSWORD:cloud@oj}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
 eureka:
   instance:
     prefer-ip-address: true
@@ -32,12 +17,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
-
 logging:
   file:
     name: /var/log/file-server.log
   level:
-    root: warn
-
-project:
+    root: info
+app:
   file-dir: /var/lib/cloud_oj/

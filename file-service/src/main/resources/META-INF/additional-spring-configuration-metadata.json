@@ -1,8 +1,9 @@
 {
   "properties": [
     {
-      "name": "project.file-dir",
+      "name": "app.file-dir",
       "type": "java.lang.String",
       "description": "文件存放目录."
     }
-  ] }
+  ]
+}

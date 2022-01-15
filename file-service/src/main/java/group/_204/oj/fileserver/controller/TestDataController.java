@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("test_data")
 public class TestDataController {
 
-    @Value("${project.file-dir}")
+    @Value("${app.file-dir}")
     private String fileDir;
 
     @Resource

@@ -1,39 +1,14 @@
 server:
   port: 8001
-
 spring:
-  main:
-    allow-circular-references: true
-  application:
-    name: core-service
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
-    type: com.zaxxer.hikari.HikariDataSource
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
-    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 10000
       maximum-pool-size: ${DB_POOL_SIZE:10}
       max-lifetime: 30000
-  jackson:
-    default-property-inclusion: non_null
-    date-format: yyyy-MM-dd HH:mm:ss
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: on
-  mapper-locations: classpath:mybatis/mapper/*.xml
-
 eureka:
   instance:
     prefer-ip-address: true
@@ -41,9 +16,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1}/eureka/
-
 logging:
   file:
     name: /var/log/manager-service.log
   level:
-    root: warn
+    root: info
