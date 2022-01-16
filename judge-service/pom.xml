@@ -5,14 +5,12 @@
     <parent>
         <groupId>group._204.oj</groupId>
         <artifactId>cloud-oj</artifactId>
-        <version>1.0-RELEASE</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>judge-service</artifactId>
-    <version>1.0.0-RELEASE</version>
     <name>Judge Service</name>
     <description>Cloud OJ Judge Service</description>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,7 +37,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -55,7 +52,6 @@
             <version>2.11.0</version>
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <id>prod</id>
@@ -86,5 +82,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

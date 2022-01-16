@@ -5,14 +5,12 @@
     <parent>
         <groupId>group._204.oj</groupId>
         <artifactId>cloud-oj</artifactId>
-        <version>1.0-RELEASE</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>gateway</artifactId>
-    <version>1.0.0-RELEASE</version>
     <name>Gateway</name>
     <description>Cloud OJ API Gateway</description>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -45,7 +43,6 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <id>prod</id>
@@ -65,7 +62,8 @@
                                         <copy overwrite="true"
                                               file="${basedir}/src/main/resources/config/application-prod.yml"
                                               tofile="${basedir}/target/application.yml"/>
-                                        <delete dir="${basedir}/target/classes/config"/>
+                                        <delete file="${basedir}/target/classes/config/application-dev.yml"/>
+                                        <delete file="${basedir}/target/classes/config/application-prod.yml"/>
                                     </target>
                                 </configuration>
                             </execution>
@@ -75,5 +73,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
