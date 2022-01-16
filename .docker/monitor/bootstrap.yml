@@ -1,5 +1,0 @@
-spring:
-  cloud:
-    inetutils:
-      preferredNetworks:
-        - 10.16

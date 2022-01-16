@@ -12,8 +12,8 @@ spring:
   rabbitmq:
     host: ${RABBIT_URL:127.0.0.1}
     port: ${RABBIT_PORT:5672}
-    username: ${RABBIT_USER:cloud@oj}
-    password: ${RABBIT_PASSWORD:cloud@oj}
+    username: ${RABBIT_USER:admin}
+    password: ${RABBIT_PASSWORD:admin}
 eureka:
   instance:
     prefer-ip-address: true
