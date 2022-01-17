@@ -23,7 +23,7 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka/
 app:
   file-sync: true
-  file-dir: /mnt/f/cloud_oj/
+  file-dir: /var/lib/cloud_oj_sync/
   code-dir: /tmp/code/
   auto-clean-solution: false
   judge-pool-size: 4
