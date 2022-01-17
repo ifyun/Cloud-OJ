@@ -15,7 +15,3 @@ import ErrorResult from "@/components/ErrorResult.vue"
 export default class NotFound extends Vue {
 }
 </script>
-
-<style scoped>
-
-</style>

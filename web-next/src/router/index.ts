@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router"
 
+const Front = () => import("@/views/Front.vue")
 const ProblemTable = () => import("@/views/components/Problems.vue")
 const ContestTable = () => import("@/views/components/Contests.vue")
 const Leaderboard = () => import("@/views/components/Leaderboard.vue")
@@ -8,7 +9,7 @@ const Help = () => import("@/views/components/Help.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
 const NotFound = () => import("@/views/components/NotFound.vue")
 
-const Admin = () => import("@/views/components/Admin/Index.vue")
+const Admin = () => import("@/views/Admin.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () => import("@/views/components/Admin/Problem/Editor.vue")
 const ContestAdmin = () => import("@/views/components/Admin/Contest/Index.vue")
@@ -20,42 +21,49 @@ const router = createRouter({
     routes: [
         {
             path: "/",
-            redirect: "/problems"
-        },
-        {
-            path: "/problems",
-            name: "problems",
-            component: ProblemTable
-        },
-        {
-            path: "/contests",
-            name: "contests",
-            component: ContestTable
-        },
-        {
-            path: "/leaderboard",
-            name: "leaderboard",
-            component: Leaderboard
-        },
-        {
-            path: "/submission",
-            name: "submission",
-            component: Submission
-        },
-        {
-            path: "/help",
-            name: "help",
-            component: Help
-        },
-        {
-            path: "/account",
-            name: "account",
-            component: Account
-        },
-        {
-            path: "/:catchAll(.*)",
-            name: "404",
-            component: NotFound
+            name: "index",
+            component: Front,
+            children: [
+                {
+                    path: "/",
+                    redirect: "/problems"
+                },
+                {
+                    path: "/problems",
+                    name: "problems",
+                    component: ProblemTable
+                },
+                {
+                    path: "/contests",
+                    name: "contests",
+                    component: ContestTable
+                },
+                {
+                    path: "/leaderboard",
+                    name: "leaderboard",
+                    component: Leaderboard
+                },
+                {
+                    path: "/submission",
+                    name: "submission",
+                    component: Submission
+                },
+                {
+                    path: "/help",
+                    name: "help",
+                    component: Help
+                },
+                {
+                    path: "/account",
+                    name: "account",
+                    component: Account
+                },
+                {
+                    path: "/:catchAll(.*)",
+                    name: "404",
+                    component: NotFound
+                }
+            ]
         },
         {
             path: "/admin",

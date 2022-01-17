@@ -84,7 +84,7 @@
       </div>
     </div>
   </div>
-  <n-drawer v-model:show="showHelp" :width="750" :native-scrollbar="false" placement="right">
+  <n-drawer v-model:show="showHelp" :width="750" placement="right">
     <n-drawer-content>
       <markdown-view :content="helpDoc" style="padding: 20px"/>
     </n-drawer-content>
@@ -339,9 +339,9 @@ export default class ProblemEditor extends Vue {
 <style scoped lang="scss">
 .problem-editor {
   min-height: 850px;
-  height: calc(100% - var(--header-height) - 25px);
+  height: calc(100% - var(--layout-padding));
   width: calc(100% - var(--layout-padding) * 2);
-  padding: 0 25px 25px 25px;
+  padding: 0 24px 24px 24px;
   display: flex;
   flex-direction: column;
 

@@ -201,6 +201,6 @@ export default class UserAdmin extends Vue {
 <style scoped>
 .user-admin {
   width: calc(100% - var(--layout-padding) * 2);
-  padding: 25px;
+  padding: var(--layout-padding);
 }
 </style>

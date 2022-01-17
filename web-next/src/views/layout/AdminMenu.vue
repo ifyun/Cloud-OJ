@@ -1,7 +1,6 @@
 <template>
   <div class="side-navbar">
-    <n-menu :options="menuOptions" v-model:value="$route.name" :collapsed="true"
-            :collapsed-width="64" :collapsed-icon-size="20">
+    <n-menu :options="menuOptions" v-model:value="$route.name">
     </n-menu>
   </div>
 </template>
@@ -20,6 +19,7 @@ const renderLabel = (routerName: string, label: string) => {
 }
 
 @Options({
+  name: "AdminMenu",
   components: {
     NMenu,
     BookIcon,
@@ -28,7 +28,7 @@ const renderLabel = (routerName: string, label: string) => {
     SettingsIcon
   }
 })
-export default class SideNavbar extends Vue {
+export default class AdminMenu extends Vue {
   private menuOptions = [
     {
       label: renderLabel("problem_admin", "题目管理"),

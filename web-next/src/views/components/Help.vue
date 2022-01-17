@@ -171,7 +171,7 @@ export default class Help extends Vue {
   display: flex;
   flex-direction: column;
   width: 1080px;
-  padding: 25px 0;
+  padding: var(--layout-padding) 0;
   margin: 0 auto;
 
   ul {

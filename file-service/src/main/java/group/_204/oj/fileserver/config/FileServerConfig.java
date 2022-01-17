@@ -1,12 +1,15 @@
 package group._204.oj.fileserver.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 
+@Slf4j
 @Configuration
 public class FileServerConfig extends WebMvcConfigurationSupport {
 
@@ -18,6 +21,12 @@ public class FileServerConfig extends WebMvcConfigurationSupport {
         if (!fileDir.endsWith("/")) {
             fileDir += '/';
         }
+
+       if (new File(fileDir).mkdirs()) {
+           log.info("Create {} successful", fileDir);
+       } else {
+           log.error("Failed to create {}", fileDir);
+       }
     }
 
     @Override

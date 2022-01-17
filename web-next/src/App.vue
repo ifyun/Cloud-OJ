@@ -2,27 +2,11 @@
   <n-config-provider :theme="theme" :locale="locale" :date-locale="dateLocale" abstract>
     <n-dialog-provider>
       <n-message-provider>
-        <n-layout position="absolute">
-          <!-- 顶部导航栏 -->
-          <n-layout-header bordered>
-            <top-nav/>
-          </n-layout-header>
-          <n-layout class="main" position="absolute" :has-sider="true">
-            <!-- 侧边菜单（Admin） -->
-            <n-layout-side v-if="layout.sideNav" bordered collapse-mode="width" :native-scrollbar="false"
-                           :collapsed="true" :width="180" :collapsed-width="64">
-              <side-navbar/>
-            </n-layout-side>
-            <!-- 内容区域 -->
-            <n-layout :native-scrollbar="false" content-style="display: flex; flex-direction: column">
-              <content/>
-              <n-layout-footer class="footer">
-                <Footer/>
-              </n-layout-footer>
-            </n-layout>
-          </n-layout>
-        </n-layout>
-        <!-- 登录/注册对话框 -->
+        <router-view v-slot="{Component}" :key="$route.fullPath">
+          <keep-alive>
+            <component :is="Component"/>
+          </keep-alive>
+        </router-view>
         <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false" :show-icon="false"
                  transform-origin="center" style="margin-top: 220px">
           <Auth/>
@@ -35,32 +19,16 @@
 <script lang="ts">
 import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {Watch} from "vue-property-decorator"
-import {RouteLocationNormalizedLoaded} from "vue-router"
 import {
+  zhCN,
   dateZhCN,
-  NButton,
-  NCard,
   NConfigProvider,
   NDialogProvider,
-  NLayout,
-  NLayoutContent,
-  NLayoutFooter,
-  NLayoutHeader,
-  NLayoutSider as NLayoutSide,
   NMessageProvider,
-  NModal,
-  NSpace,
-  zhCN
+  NModal
 } from "naive-ui"
-import TopNav from "@/views/layout/Navbar.vue"
-import Footer from "@/views/layout/Footer.vue"
-import SideNavbar from "@/views/layout/SideNavbar.vue"
-import Content from "@/views/layout/Content.vue"
 import Auth from "@/views/components/Auth/Index.vue"
 import MutationType from "@/store/mutation-type"
-import {LayoutConfig} from "@/type"
-import "./app.css"
 
 @Options({
   components: {
@@ -69,19 +37,7 @@ import "./app.css"
     NConfigProvider,
     NDialogProvider,
     NMessageProvider,
-    NSpace,
-    NLayout,
-    NLayoutHeader,
-    NLayoutSide,
-    NLayoutContent,
-    NLayoutFooter,
-    NCard,
-    NButton,
     NModal,
-    TopNav,
-    SideNavbar,
-    Content,
-    Footer,
     Auth
   }
 })
@@ -90,10 +46,6 @@ export default class App extends Vue {
 
   private locale = zhCN
   private dateLocale = dateZhCN
-
-  get layout(): LayoutConfig {
-    return this.store.state.layout
-  }
 
   get theme() {
     return this.store.state.theme
@@ -106,19 +58,16 @@ export default class App extends Vue {
   set showAuthDialog(value: boolean) {
     this.store.commit(MutationType.SHOW_AUTH_DIALOG, value)
   }
-
-  @Watch("$route")
-  routeChanged(route: RouteLocationNormalizedLoaded) {
-    if (route.fullPath.startsWith("/admin")) {
-      this.store.commit(MutationType.CHANGE_LAYOUT, {navbar: true, sideNav: true})
-    } else {
-      this.store.commit(MutationType.CHANGE_LAYOUT, {navbar: true, sideNav: false})
-    }
-  }
 }
 </script>
 
 <style lang="scss">
+:root {
+  --layout-padding: 24px;
+  --header-height: 61px;
+  --primary-color: #18A058;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -128,7 +77,7 @@ export default class App extends Vue {
   .main {
     top: var(--header-height);
 
-    .n-layout > .n-scrollbar > .n-scrollbar-container {
+    .n-scrollbar > .n-scrollbar-container {
       display: flex;
     }
 
@@ -138,8 +87,11 @@ export default class App extends Vue {
     }
   }
 
+  .input-prefix-icon {
+    margin-right: 5px;
+  }
+
   .tag {
-    // 题目标签样式
     margin: 1px 3px;
     cursor: pointer;
   }
