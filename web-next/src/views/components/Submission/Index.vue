@@ -144,10 +144,10 @@ export default class Submission extends Vue {
 
 <style scoped lang="scss">
 .submission {
-  width: calc(100% - 50px);
-  height: calc(100% - var(--header-height) - 50px);
+  width: calc(100% - var(--layout-padding) * 2);
+  height: calc(100% - var(--header-height) - var(--layout-padding) * 2);
   min-height: 600px;
-  padding: 25px;
+  padding: var(--layout-padding);
   flex: auto;
 
   .content {

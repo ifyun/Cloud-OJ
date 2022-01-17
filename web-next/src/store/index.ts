@@ -1,7 +1,6 @@
 import {createStore} from "vuex"
 import {darkTheme} from "naive-ui"
 import {UserInfo} from "@/api/type"
-import {LayoutConfig} from "@/type"
 import MutationType from "@/store/mutation-type"
 
 const THEME = "theme"
@@ -13,10 +12,6 @@ const token = localStorage.getItem(TOKEN)
 const store = createStore({
     state: {
         theme: theme === "dark" ? darkTheme : null,
-        layout: {
-            navbar: true,
-            sideNav: false
-        },
         userInfo: token == null ? null : JSON.parse(token) as UserInfo,
         showAuthDialog: false
     },
@@ -29,9 +24,6 @@ const store = createStore({
                 state.theme = null
                 localStorage.removeItem(THEME)
             }
-        },
-        [MutationType.CHANGE_LAYOUT](state: any, value: LayoutConfig) {
-            state.layout = value
         },
         [MutationType.SAVE_TOKEN](state: any, userInfo: UserInfo) {
             localStorage.setItem(TOKEN, JSON.stringify(userInfo))

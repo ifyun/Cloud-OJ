@@ -98,7 +98,7 @@ export default class ProblemTable extends Vue {
         }
         const tags = row.category.split(",")
         return tags.map((tag) => {
-          return <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
+          return <NTag class="tag" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
         })
       }
     },
@@ -183,8 +183,8 @@ export default class ProblemTable extends Vue {
 
 <style scoped lang="scss">
 .problem-table {
-  width: calc(100% - 50px);
-  padding: 25px 0;
+  width: calc(100% - var(--layout-padding) * 2);
+  padding: var(--layout-padding) 0;
   margin: 0 auto;
 }
 </style>

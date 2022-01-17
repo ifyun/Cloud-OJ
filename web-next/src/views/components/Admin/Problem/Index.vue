@@ -196,7 +196,7 @@ export default class ProblemAdmin extends Vue {
         }
         const tags = row.category.split(",")
         return tags.map((tag) => (
-            <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
+            <NTag class="tag" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
         ))
       }
     },
@@ -322,6 +322,6 @@ export default class ProblemAdmin extends Vue {
 <style scoped>
 .problem-table {
   width: calc(100% - var(--layout-padding) * 2);
-  padding: 25px;
+  padding: var(--layout-padding);
 }
 </style>

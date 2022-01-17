@@ -83,7 +83,6 @@ export default class MarkdownView extends Vue {
   private content?: string
 
   get markdown(): string {
-    console.debug("content: ", this.content)
     return md.render(this.content)
   }
 
