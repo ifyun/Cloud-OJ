@@ -81,7 +81,7 @@ export default class Login extends Vue {
       validator(rule: any, value: string): Error | boolean {
         if (!value) {
           return new Error("请输入密码")
-        } else if (value.length < 6) {
+        } else if (value.length < 4) {
           return new Error("这么短不可能是密码")
         }
         return true
@@ -94,9 +94,9 @@ export default class Login extends Vue {
   }
 
   login() {
-    this.loading = true
     this.$refs.loginForm.validate((errors: any) => {
       if (!errors) {
+        this.loading = true
         AuthApi.login({
           username: this.user.username,
           password: md5(this.user.password).toString()
@@ -108,6 +108,8 @@ export default class Login extends Vue {
         }).finally(() => {
           this.loading = false
         })
+      } else {
+        this.message.error("请检查你的输入")
       }
     })
   }

@@ -18,4 +18,4 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka/
 app:
-  file-dir: /mnt/e/cloud_oj/
+  file-dir: /var/lib/cloud_oj/

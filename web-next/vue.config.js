@@ -1,9 +1,9 @@
 module.exports = {
     devServer: {
-        port: 80,
+        port: 8081,
         proxy: {
             "/api": {
-                target: "https://cloudoj.204.group",
+                target: "http://localhost:8080",
                 changeOrigin: true
             }
         }
