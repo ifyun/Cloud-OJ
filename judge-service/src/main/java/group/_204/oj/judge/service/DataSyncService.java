@@ -55,6 +55,11 @@ public class DataSyncService {
     public void syncAllFiles() {
         try {
             List<FileInfo> remoteFiles = fileService.dataList();
+
+            if (remoteFiles == null) {
+                return;
+            }
+
             Collections.sort(remoteFiles);
 
             List<FileInfo> localFiles = getLocalFiles();
