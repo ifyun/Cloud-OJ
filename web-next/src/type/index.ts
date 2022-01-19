@@ -4,11 +4,6 @@ export type LanguageOption = {
     version: string
 }
 
-export type LayoutConfig = {
-    navbar: boolean,
-    sideNav: boolean
-}
-
 export const LanguageOptions: Array<LanguageOption> = [
     {value: 0, label: "C", version: ""},
     {value: 1, label: "C++", version: ""},

@@ -1,48 +1,50 @@
 <!-- Problem Admin -->
 <template>
   <div class="problem-table">
-    <n-space vertical size="large">
-      <n-space align="center" justify="space-between">
-        <n-space align="center">
-          <n-input-group>
-            <n-input maxlength="10" show-count clearable size="large"
-                     placeholder="输入题目名称、分类" v-model:value="keyword">
-              <template #prefix>
-                <n-icon class="input-prefix-icon">
-                  <search-icon/>
-                </n-icon>
-              </template>
-            </n-input>
-            <n-button type="primary" @click="search" size="large">
-              搜索题目
-            </n-button>
-          </n-input-group>
-          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{ keywordTag }}</n-tag>
+    <n-card :bordered="false">
+      <n-space vertical size="large">
+        <n-space align="center" justify="space-between">
+          <n-space align="center">
+            <n-input-group>
+              <n-input maxlength="10" show-count clearable size="large"
+                       placeholder="输入题目名称、分类" v-model:value="keyword">
+                <template #prefix>
+                  <n-icon class="input-prefix-icon">
+                    <search-icon/>
+                  </n-icon>
+                </template>
+              </n-input>
+              <n-button type="primary" @click="search" size="large">
+                搜索题目
+              </n-button>
+            </n-input-group>
+            <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{ keywordTag }}</n-tag>
+          </n-space>
+          <n-space align="center" justify="end">
+            <n-button-group>
+              <n-button type="primary">
+                <template #icon>
+                  <n-icon>
+                    <add-icon/>
+                  </n-icon>
+                </template>
+                <router-link :to="{name: 'edit_problem', params: {id: 'new'}}">
+                  创建题目
+                </router-link>
+              </n-button>
+            </n-button-group>
+          </n-space>
         </n-space>
-        <n-space align="center" justify="end">
-          <n-button-group>
-            <n-button type="primary">
-              <template #icon>
-                <n-icon>
-                  <add-icon/>
-                </n-icon>
-              </template>
-              <router-link :to="{name: 'edit_problem', params: {id: 'new'}}">
-                创建题目
-              </router-link>
-            </n-button>
-          </n-button-group>
-        </n-space>
+        <n-data-table :row-props="rowProps" :columns="problemColumns" :data="problems.data"
+                      :loading="pagination.loading"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="problems.count" @update:page="pageChange">
+          <template #prefix="{itemCount}">
+            共 {{ itemCount }} 项
+          </template>
+        </n-pagination>
       </n-space>
-      <n-data-table :row-props="rowProps" :columns="problemColumns" :data="problems.data"
-                    :loading="pagination.loading"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="problems.count" @update:page="pageChange">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
-      </n-pagination>
-    </n-space>
+    </n-card>
   </div>
   <n-dropdown trigger="manual" :show-arrow="true" :x="point.x" :y="point.y" :options="operations"
               :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
@@ -54,8 +56,11 @@ import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {RouterLink, useRouter} from "vue-router"
 import {
+  NBreadcrumb,
+  NBreadcrumbItem,
   NButton,
   NButtonGroup,
+  NCard,
   NDataTable,
   NDropdown,
   NGrid,
@@ -74,12 +79,14 @@ import {DeleteForeverRound as DelIcon, EditNoteRound as EditIcon, PostAddRound a
 import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {renderIcon, setTitle, TagUtil} from "@/utils"
 import {ProblemApi} from "@/api/request"
+import MutationType from "@/store/mutation-type";
 
 let selectedId: number | undefined
 
 @Options({
   name: "ProblemAdmin",
   components: {
+    NCard,
     NSpace,
     NGrid,
     NGridItem,
@@ -229,6 +236,9 @@ export default class ProblemAdmin extends Vue {
 
   beforeMount() {
     setTitle("题目管理")
+    this.store.commit(MutationType.SET_BREADCRUMB, <NBreadcrumb>
+      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
+    </NBreadcrumb>)
 
     if ("page" in this.$route.query) {
       this.pagination.page = Number(this.$route.query.page)
@@ -308,7 +318,8 @@ export default class ProblemAdmin extends Vue {
   toggleIsEnable(p: Problem, value: boolean) {
     ProblemApi.changeState(
         p.problemId!,
-        value, this.userInfo
+        value,
+        this.userInfo
     ).then(() => {
       p.enable = value
       this.message.info(`${p.title} 已${value ? "开放" : "关闭"}`)

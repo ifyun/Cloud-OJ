@@ -1,31 +1,33 @@
 <template>
   <div class="problem-table">
-    <n-space vertical size="large">
-      <n-space align="center">
-        <n-input-group>
-          <n-input size="large" maxlength="10" show-count clearable
-                   placeholder="输入题目名称、分类" v-model:value="keyword">
-            <template #prefix>
-              <n-icon>
-                <search-icon/>
-              </n-icon>
-            </template>
-          </n-input>
-          <n-button size="large" type="primary" @click="search">
-            搜索题目
-          </n-button>
-        </n-input-group>
-        <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{ keywordTag }}</n-tag>
+    <n-card :bordered="false">
+      <n-space vertical size="large">
+        <n-space align="center">
+          <n-input-group>
+            <n-input size="large" maxlength="10" show-count clearable
+                     placeholder="输入题目名称、分类" v-model:value="keyword">
+              <template #prefix>
+                <n-icon>
+                  <search-icon/>
+                </n-icon>
+              </template>
+            </n-input>
+            <n-button size="large" type="primary" @click="search">
+              搜索题目
+            </n-button>
+          </n-input-group>
+          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{ keywordTag }}</n-tag>
+        </n-space>
+        <n-data-table :columns="problemColumns" :data="problems.data"
+                      :loading="pagination.loading"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="problems.count" @update:page="pageChange">
+          <template #prefix="{itemCount}">
+            共 {{ itemCount }} 项
+          </template>
+        </n-pagination>
       </n-space>
-      <n-data-table :columns="problemColumns" :data="problems.data"
-                    :loading="pagination.loading"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="problems.count" @update:page="pageChange">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
-      </n-pagination>
-    </n-space>
+    </n-card>
   </div>
 </template>
 
@@ -33,7 +35,7 @@
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {RouterLink, useRouter} from "vue-router"
-import {NButton, NDataTable, NIcon, NInput, NInputGroup, NPagination, NSpace, NTag, useMessage} from "naive-ui"
+import {NButton, NCard, NDataTable, NIcon, NInput, NInputGroup, NPagination, NSpace, NTag, useMessage} from "naive-ui"
 import {Search as SearchIcon} from "@vicons/fa"
 import {ProblemApi} from "@/api/request"
 import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
@@ -42,6 +44,7 @@ import {setTitle, TagUtil} from "@/utils"
 @Options({
   name: "Problems",
   components: {
+    NCard,
     NSpace,
     NInput,
     NInputGroup,

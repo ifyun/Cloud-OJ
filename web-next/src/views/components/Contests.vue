@@ -1,14 +1,16 @@
 <template>
   <div class="contest-table">
-    <n-space vertical size="large">
-      <n-data-table :loading="pagination.loading" :columns="contestColumns" :data="contests.data"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="contests.count" @update:page="pageChange">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
-      </n-pagination>
-    </n-space>
+    <n-card :bordered="false">
+      <n-space vertical size="large">
+        <n-data-table :loading="pagination.loading" :columns="contestColumns" :data="contests.data"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="contests.count" @update:page="pageChange">
+          <template #prefix="{itemCount}">
+            共 {{ itemCount }} 项
+          </template>
+        </n-pagination>
+      </n-space>
+    </n-card>
   </div>
 </template>
 
@@ -16,7 +18,7 @@
 import {useRouter} from "vue-router"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
-import {NButton, NDataTable, NPagination, NSpace, NTag, useMessage} from "naive-ui"
+import {NButton, NCard, NDataTable, NPagination, NSpace, NTag, useMessage} from "naive-ui"
 import {ContestApi} from "@/api/request"
 import {Contest, ErrorMsg, PagedData} from "@/api/type"
 import {LanguageUtil, setTitle} from "@/utils"
@@ -25,6 +27,7 @@ import {LanguageOptions} from "@/type"
 @Options({
   name: "Contests",
   components: {
+    NCard,
     NSpace,
     NDataTable,
     NPagination,

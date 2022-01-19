@@ -1,32 +1,34 @@
 <template>
   <div class="submission">
-    <Skeleton v-if="loading"/>
-    <div v-else class="content">
-      <div>
-        <n-scrollbar style="height: 100%">
-          <n-tabs type="line">
-            <n-tab-pane name="题目描述">
-              <n-h2 style="margin-bottom: 10px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
-              <n-space size="small">
-                <n-tag size="small">分数: {{ problem.score }} 分</n-tag>
-                <n-tag size="small" type="info">时间: {{ problem.timeout }} ms</n-tag>
-                <n-tag size="small" type="info">内存: {{ problem.memoryLimit }} MB</n-tag>
-                <n-tag size="small" type="info">输出: {{ problem.outputLimit }} MB</n-tag>
-              </n-space>
-              <!-- 题目内容 -->
-              <markdown-view :content="problem.description" style="margin-top: 15px"/>
-            </n-tab-pane>
-            <n-tab-pane name="提交记录">
-              还没有做
-            </n-tab-pane>
-          </n-tabs>
-        </n-scrollbar>
+    <n-card :bordered="false" style="height: 100%">
+      <Skeleton v-if="loading"/>
+      <div v-else class="content">
+        <div>
+          <n-scrollbar style="height: 100%">
+            <n-tabs type="line">
+              <n-tab-pane name="题目描述">
+                <n-h2 style="margin-bottom: 10px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
+                <n-space size="small">
+                  <n-tag size="small">分数: {{ problem.score }} 分</n-tag>
+                  <n-tag size="small" type="info">时间: {{ problem.timeout }} ms</n-tag>
+                  <n-tag size="small" type="info">内存: {{ problem.memoryLimit }} MB</n-tag>
+                  <n-tag size="small" type="info">输出: {{ problem.outputLimit }} MB</n-tag>
+                </n-space>
+                <!-- 题目内容 -->
+                <markdown-view :content="problem.description" style="margin-top: 15px"/>
+              </n-tab-pane>
+              <n-tab-pane name="提交记录">
+                还没有做
+              </n-tab-pane>
+            </n-tabs>
+          </n-scrollbar>
+        </div>
+        <!-- 代码编辑器 -->
+        <div class="editor">
+          <code-editor v-model="code" @submit="submit" :loading="disableSubmit"/>
+        </div>
       </div>
-      <!-- 代码编辑器 -->
-      <div class="editor">
-        <code-editor v-model="code" @submit="submit" :loading="disableSubmit"/>
-      </div>
-    </div>
+    </n-card>
   </div>
   <n-modal v-model:show="showResult" preset="card" :mask-closable="false"
            style="width: 520px; margin-top: 220px">
@@ -37,7 +39,7 @@
 <script lang="ts">
 import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
+import {NCard, NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
 import MarkdownView from "@/components/MarkdownView/Index.vue"
 import CodeEditor from "@/components/CodeEditor.vue"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
@@ -51,6 +53,7 @@ import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
     ResultDialog,
     NGrid,
     NGridItem,
+    NCard,
     NSpace,
     NScrollbar,
     NTabs,
