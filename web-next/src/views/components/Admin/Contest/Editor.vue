@@ -1,59 +1,56 @@
 <template>
   <div class="contest-editor">
-    <n-page-header class="page-header" :subtitle="subtitle" @back="router.back()">
-      <template #header>
-        <n-breadcrumb>
-          <n-breadcrumb-item>竞赛管理</n-breadcrumb-item>
-          <n-breadcrumb-item>{{ title }}</n-breadcrumb-item>
-        </n-breadcrumb>
-      </template>
-      <template #title>{{ title }}</template>
-      <template #extra>
-        <n-button v-if="showSaveButton" type="success" size="small" round @click="save">
-          <template #icon>
-            <save-icon/>
-          </template>
-          保存
-        </n-button>
-      </template>
-    </n-page-header>
-    <n-tabs type="line" default-value="base-info" @update:value="tabChange">
-      <n-tab-pane name="base-info" tab="竞赛设置">
-        <n-spin :show="loading">
-          <n-form label-placement="left" :model="contest" :rules="rules" ref="contestForm">
-            <n-grid :cols="2" x-gap="12">
-              <n-form-item-grid-item :span="1" label="竞赛名称" path="contestName">
-                <n-input v-model:value="contest.contestName" maxlength="24" show-count clearable/>
-              </n-form-item-grid-item>
-              <n-form-item-grid-item :span="1" label="时间范围" path="timeRange">
-                <n-date-picker type="datetimerange" v-model:value="contest.timeRange" clearable
-                               format="yyyy/MM/dd - HH:mm:ss"/>
-              </n-form-item-grid-item>
-            </n-grid>
-            <n-form-item label="语言限制" path="languages">
-              <n-transfer source-title="不允许的语言" target-title="允许的语言"
-                          :options="languageOptions" v-model:value="languages"/>
-            </n-form-item>
-          </n-form>
-        </n-spin>
-      </n-tab-pane>
-      <n-tab-pane v-if="!create" name="problems" tab="题目管理">
-        <problem-manage :contest-id="contest.contestId"/>
-      </n-tab-pane>
-    </n-tabs>
+    <n-card :bordered="false">
+      <n-page-header class="page-header" :subtitle="subtitle" @back="router.back()">
+        <template #title>{{ title }}</template>
+        <template #extra>
+          <n-button v-if="showSaveButton" type="success" size="small" round @click="save">
+            <template #icon>
+              <save-icon/>
+            </template>
+            保存
+          </n-button>
+        </template>
+      </n-page-header>
+      <n-tabs type="line" default-value="base-info" @update:value="tabChange">
+        <n-tab-pane name="base-info" tab="竞赛设置">
+          <n-spin :show="loading">
+            <n-form label-placement="left" :model="contest" :rules="rules" ref="contestForm">
+              <n-grid :cols="2" x-gap="12">
+                <n-form-item-grid-item :span="1" label="竞赛名称" path="contestName">
+                  <n-input v-model:value="contest.contestName" maxlength="24" show-count clearable/>
+                </n-form-item-grid-item>
+                <n-form-item-grid-item :span="1" label="时间范围" path="timeRange">
+                  <n-date-picker type="datetimerange" v-model:value="contest.timeRange" clearable
+                                 format="yyyy/MM/dd - HH:mm:ss"/>
+                </n-form-item-grid-item>
+              </n-grid>
+              <n-form-item label="语言限制" path="languages">
+                <n-transfer source-title="不允许的语言" target-title="允许的语言"
+                            :options="languageOptions" v-model:value="languages"/>
+              </n-form-item>
+            </n-form>
+          </n-spin>
+        </n-tab-pane>
+        <n-tab-pane v-if="!create" name="problems" tab="题目管理">
+          <problem-manage :contest-id="contest.contestId"/>
+        </n-tab-pane>
+      </n-tabs>
+    </n-card>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="tsx">
+import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
 import {Watch} from "vue-property-decorator"
 import {useRoute, useRouter} from "vue-router"
-import {useStore} from "vuex"
 import {
   FormRules,
   NBreadcrumb,
   NBreadcrumbItem,
   NButton,
+  NCard,
   NCheckbox,
   NCheckboxGroup,
   NDatePicker,
@@ -72,16 +69,17 @@ import {
 } from "naive-ui"
 import {SaveOutlined as SaveIcon} from "@vicons/material"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
+import moment from "moment"
 import {ContestApi} from "@/api/request"
 import {Contest, ErrorMsg, UserInfo} from "@/api/type"
 import {LanguageOption, LanguageOptions} from "@/type"
 import {LanguageUtil} from "@/utils"
-import moment from "moment"
+import MutationType from "@/store/mutation-type"
 
 @Options({
   name: "ContestEditor",
   components: {
-    ProblemManage,
+    NCard,
     NSpace,
     NGrid,
     NSpin,
@@ -99,7 +97,8 @@ import moment from "moment"
     NBreadcrumb,
     NBreadcrumbItem,
     NDatePicker,
-    SaveIcon
+    SaveIcon,
+    ProblemManage
   }
 })
 export default class ContestEditor extends Vue {
@@ -190,6 +189,17 @@ export default class ContestEditor extends Vue {
       this.loading = true
       this.queryContest(Number(id))
     }
+
+    this.setBreadcrumb()
+  }
+
+  setBreadcrumb() {
+    const vNode =
+        (<NBreadcrumb>
+          <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+          <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
+        </NBreadcrumb>)
+    this.store.commit(MutationType.SET_BREADCRUMB, vNode)
   }
 
   tabChange(tab: string) {
@@ -237,12 +247,12 @@ export default class ContestEditor extends Vue {
 <style scoped lang="scss">
 .contest-editor {
   width: calc(100% - var(--layout-padding) * 2);
-  padding: 0 25px 25px 25px;
+  padding: var(--layout-padding);
   display: flex;
   flex-direction: column;
 
   .page-header {
-    margin: 20px 0 20px 0;
+    margin-bottom: 12px;
   }
 }
 </style>

@@ -1,3 +1,4 @@
+import {VNode} from "vue"
 import {createStore} from "vuex"
 import {darkTheme} from "naive-ui"
 import {UserInfo} from "@/api/type"
@@ -13,7 +14,8 @@ const store = createStore({
     state: {
         theme: theme === "dark" ? darkTheme : null,
         userInfo: token == null ? null : JSON.parse(token) as UserInfo,
-        showAuthDialog: false
+        showAuthDialog: false,
+        breadcrumb: null
     },
     mutations: {
         [MutationType.CHANGE_THEME](state: any, value: string) {
@@ -35,6 +37,9 @@ const store = createStore({
         },
         [MutationType.SHOW_AUTH_DIALOG](state: any, value: boolean) {
             state.showAuthDialog = value
+        },
+        [MutationType.SET_BREADCRUMB](state: any, value: VNode) {
+            state.breadcrumb = value
         }
     },
     getters: {

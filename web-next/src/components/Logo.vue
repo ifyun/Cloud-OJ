@@ -17,7 +17,7 @@ export default class Logo extends Vue {
 <style scoped lang="scss">
 .text-logo {
   font-weight: bold;
-  font-size: 28px;
+  font-size: 26px;
   display: flex;
   flex-direction: row;
   align-items: center;

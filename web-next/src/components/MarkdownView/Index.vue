@@ -233,14 +233,13 @@ export default class MarkdownView extends Vue {
     margin-top: 12px;
   }
 
-  // 暗色主题
   &.dark {
     @import "~highlight.js/scss/github-dark";
 
-    background-color: #101014;
+    background-color: #18181C;
 
     h1, h2, h3 {
-      border-bottom: 1px solid #18181C;
+      border-bottom: 1px solid #101014;
     }
 
     blockquote {
@@ -248,23 +247,23 @@ export default class MarkdownView extends Vue {
     }
 
     table {
-      border: 1px solid #18181C;
+      border: 1px solid #101014;
 
       thead {
-        background-color: #18181C;
+        background-color: #101014;
       }
 
       td {
-        border-top: 1px solid #18181C;
+        border-top: 1px solid #101014;
       }
     }
 
     p code {
-      background-color: #18181C;
+      background-color: #101014;
     }
 
     pre {
-      background-color: #18181C;
+      background-color: #101014;
 
       &.math-block {
         background-color: transparent;
@@ -276,7 +275,7 @@ export default class MarkdownView extends Vue {
     }
 
     .markdown-alert {
-      background-color: #18181C;
+      background-color: #101014;
     }
   }
 }

@@ -9,7 +9,7 @@
         </router-view>
         <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false" :show-icon="false"
                  transform-origin="center" style="margin-top: 220px">
-          <Auth/>
+          <auth/>
         </n-modal>
       </n-message-provider>
     </n-dialog-provider>
@@ -63,8 +63,8 @@ export default class App extends Vue {
 
 <style lang="scss">
 :root {
-  --layout-padding: 24px;
-  --header-height: 61px;
+  --layout-padding: 12px;
+  --header-height: 60px;
   --primary-color: #18A058;
 }
 
@@ -73,6 +73,14 @@ export default class App extends Vue {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
+
+  .header {
+    box-shadow: 0 1px 4px #00152914;
+  }
+
+  .aside {
+    box-shadow: 2px 0 8px #1D23290D;
+  }
 
   .main {
     top: var(--header-height);

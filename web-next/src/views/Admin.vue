@@ -1,14 +1,15 @@
 <template>
   <n-layout position="absolute" :has-sider="true">
-    <n-layout-sider bordered collapse-mode="width" :native-scrollbar="false" width="200">
+    <n-layout-sider class="aside" collapse-mode="width" :native-scrollbar="false" width="200">
       <div>
         <logo style="height: 60px"/>
         <admin-menu/>
       </div>
     </n-layout-sider>
     <n-layout :native-scrollbar="false">
-      <n-layout-header bordered>
+      <n-layout-header class="header">
         <div class="admin-nav">
+          <v-node-renderer :v-node="breadcrumb"/>
           <div style="margin-left: auto">
             <n-space size="large" align="center">
               <theme-switch/>
@@ -17,7 +18,7 @@
           </div>
         </div>
       </n-layout-header>
-      <n-layout-content class="main" position="absolute" :native-scrollbar="false"
+      <n-layout-content class="main" position="absolute" :embedded="true" :native-scrollbar="false"
                         content-style="display: flex; flex-direction: column">
         <router-view v-slot="{Component}" :key="$route.fullPath">
           <keep-alive>
@@ -30,16 +31,18 @@
 </template>
 
 <script lang="ts">
+import {VNode} from "vue"
+import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
 import {NLayout, NLayoutContent, NLayoutHeader, NLayoutSider, NSpace} from "naive-ui"
+import {AdminMenu, ThemeSwitch, UserMenu} from "@/views/layout"
 import Logo from "@/components/Logo.vue"
-import AdminMenu from "@/views/layout/AdminMenu.vue"
-import ThemeSwitch from "@/views/components/ThemeSwitch.vue"
-import UserMenu from "@/views/components/UserMenu.vue"
+import VNodeRenderer from "@/components/VNodeRenderer.vue"
 
 @Options({
   name: "Admin",
   components: {
+    VNodeRenderer,
     NLayout,
     NLayoutHeader,
     NLayoutContent,
@@ -52,6 +55,11 @@ import UserMenu from "@/views/components/UserMenu.vue"
   }
 })
 export default class Admin extends Vue {
+  private store = useStore()
+
+  get breadcrumb(): VNode {
+    return this.store.state.breadcrumb
+  }
 }
 </script>
 

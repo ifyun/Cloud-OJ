@@ -1,17 +1,19 @@
 <template>
   <div class="leaderboard">
-    <n-space vertical>
-      <n-data-table :loading="pagination.loading" :columns="rankingColumns" :data="rankings.data"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="rankings.count" @update:page="pageChange"/>
-    </n-space>
+    <n-card :bordered="false">
+      <n-space vertical>
+        <n-data-table :loading="pagination.loading" :columns="rankingColumns" :data="rankings.data"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="rankings.count" @update:page="pageChange"/>
+      </n-space>
+    </n-card>
   </div>
 </template>
 
 <script lang="tsx">
 import {Options, Vue} from "vue-class-component"
 import {useRouter} from "vue-router"
-import {NDataTable, NPagination, NSpace, NText, useMessage} from "naive-ui"
+import {NCard, NDataTable, NPagination, NSpace, NText, useMessage} from "naive-ui"
 import UserAvatar from "@/components/UserAvatar.vue"
 import {RankingApi} from "@/api/request"
 import {ErrorMsg, PagedData, Ranking} from "@/api/type"
@@ -20,6 +22,7 @@ import {setTitle} from "@/utils"
 @Options({
   name: "Leaderboard",
   components: {
+    NCard,
     NSpace,
     NDataTable,
     NPagination

@@ -1,27 +1,29 @@
 <template>
   <div class="contest-table">
-    <n-space vertical size="large">
-      <n-space>
-        <n-button type="primary">
-          <template #icon>
-            <n-icon>
-              <add-icon/>
-            </n-icon>
+    <n-card :bordered="false">
+      <n-space vertical size="large">
+        <n-space>
+          <n-button type="primary">
+            <template #icon>
+              <n-icon>
+                <add-icon/>
+              </n-icon>
+            </template>
+            <router-link :to="{name: 'edit_contest', params: {id: 'new'}}">
+              创建竞赛
+            </router-link>
+          </n-button>
+        </n-space>
+        <n-data-table :row-props="rowProps" :columns="contestColumns" :data="contests.data"
+                      :loading="pagination.loading"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="contests.count" @update:page="pageChange">
+          <template #prefix="{itemCount}">
+            共 {{ itemCount }} 项
           </template>
-          <router-link :to="{name: 'edit_contest', params: {id: 'new'}}">
-            创建竞赛
-          </router-link>
-        </n-button>
+        </n-pagination>
       </n-space>
-      <n-data-table :row-props="rowProps" :columns="contestColumns" :data="contests.data"
-                    :loading="pagination.loading"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="contests.count" @update:page="pageChange">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
-      </n-pagination>
-    </n-space>
+    </n-card>
   </div>
   <n-dropdown trigger="manual" :show-arrow="true" :x="point.x" :y="point.y" :options="operations"
               :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
@@ -32,8 +34,8 @@ import {nextTick} from "vue"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {useRouter} from "vue-router"
-import {NButton, NDataTable, NDropdown, NIcon, NPagination, NSpace, NTag, useMessage} from "naive-ui"
-import {PlaylistAddRound as AddIcon, DeleteForeverRound as DelIcon, EditNoteRound as EditIcon} from "@vicons/material"
+import {NButton, NCard, NDataTable, NDropdown, NIcon, NPagination, NSpace, NTag, useMessage} from "naive-ui"
+import {DeleteForeverRound as DelIcon, EditNoteRound as EditIcon, PlaylistAddRound as AddIcon} from "@vicons/material"
 import {Contest, ErrorMsg, PagedData, UserInfo} from "@/api/type"
 import {LanguageUtil, renderIcon, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
@@ -49,6 +51,7 @@ type StateTag = {
 @Options({
   name: "ContestAdmin",
   components: {
+    NCard,
     NSpace,
     NDataTable,
     NPagination,

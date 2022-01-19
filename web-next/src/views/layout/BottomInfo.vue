@@ -23,6 +23,7 @@ import {NButton, NDivider, NIcon} from "naive-ui"
 import {Github as GithubIcon} from "@vicons/fa"
 
 @Options({
+  name: "BottomInfo",
   components: {
     NDivider,
     NIcon,
@@ -30,7 +31,7 @@ import {Github as GithubIcon} from "@vicons/fa"
     GithubIcon
   }
 })
-export default class Footer extends Vue {
+export default class BottomInfo extends Vue {
 }
 </script>
 

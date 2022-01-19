@@ -20,8 +20,8 @@ import {Options, Vue} from "vue-class-component"
 import {RouterLink} from "vue-router"
 import {NMenu, NSpace} from "naive-ui"
 import Logo from "@/components/Logo.vue"
-import ThemeSwitch from "@/views/components/ThemeSwitch.vue"
-import UserMenu from "@/views/components/UserMenu.vue"
+import ThemeSwitch from "@/views/layout/ThemeSwitch.vue"
+import UserMenu from "@/views/layout/UserMenu.vue"
 
 @Options({
   name: "Navbar",

@@ -1,28 +1,30 @@
 <template>
   <div class="user-admin">
-    <n-space vertical size="large">
-      <n-space>
-        <n-input-group>
-          <n-select v-model:value="searchType" :options="searchTypes" style="width: 150px"/>
-          <n-input clearable show-count maxlength="15" v-model:value="keyword"/>
-          <n-button type="success" @click="search">
-            <template #icon>
-              <n-icon>
-                <search-icon/>
-              </n-icon>
-            </template>
-            搜索
-          </n-button>
-        </n-input-group>
+    <n-card :bordered="false">
+      <n-space vertical size="large">
+        <n-space>
+          <n-input-group>
+            <n-select v-model:value="searchType" :options="searchTypes" style="width: 150px"/>
+            <n-input clearable show-count maxlength="15" v-model:value="keyword"/>
+            <n-button type="success" @click="search">
+              <template #icon>
+                <n-icon>
+                  <search-icon/>
+                </n-icon>
+              </template>
+              搜索
+            </n-button>
+          </n-input-group>
+        </n-space>
+        <n-data-table :columns="columns" :data="users.data" :loading="pagination.loading"/>
+        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
+                      :item-count="users.count" @update:page="pageChange">
+          <template #prefix="{itemCount}">
+            共 {{ itemCount }} 项
+          </template>
+        </n-pagination>
       </n-space>
-      <n-data-table :columns="columns" :data="users.data" :loading="pagination.loading"/>
-      <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                    :item-count="users.count" @update:page="pageChange">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
-      </n-pagination>
-    </n-space>
+    </n-card>
   </div>
 </template>
 
@@ -30,7 +32,19 @@
 import {useStore} from "vuex"
 import {useRouter} from "vue-router"
 import {Options, Vue} from "vue-class-component"
-import {NButton, NDataTable, NIcon, NInput, NInputGroup, NPagination, NSelect, NSpace, NTag, useMessage} from "naive-ui"
+import {
+  NButton,
+  NCard,
+  NDataTable,
+  NIcon,
+  NInput,
+  NInputGroup,
+  NPagination,
+  NSelect,
+  NSpace,
+  NTag,
+  useMessage
+} from "naive-ui"
 import {CalendarCheck as DateIcon, UserShield as RoleIcon, UserTag as UserIcon} from "@vicons/fa"
 import {PersonSearchRound as SearchIcon} from "@vicons/material"
 import UserAvatar from "@/components/UserAvatar.vue"
@@ -49,6 +63,7 @@ const roles = [
 @Options({
   name: "UserAdmin",
   components: {
+    NCard,
     NSpace,
     NIcon,
     NInputGroup,
