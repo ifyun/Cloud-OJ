@@ -34,12 +34,25 @@ import {nextTick} from "vue"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
 import {useRouter} from "vue-router"
-import {NButton, NCard, NDataTable, NDropdown, NIcon, NPagination, NSpace, NTag, useMessage} from "naive-ui"
+import {
+  NBreadcrumb,
+  NBreadcrumbItem,
+  NButton,
+  NCard,
+  NDataTable,
+  NDropdown,
+  NIcon,
+  NPagination,
+  NSpace,
+  NTag,
+  useMessage
+} from "naive-ui"
 import {DeleteForeverRound as DelIcon, EditNoteRound as EditIcon, PlaylistAddRound as AddIcon} from "@vicons/material"
 import {Contest, ErrorMsg, PagedData, UserInfo} from "@/api/type"
 import {LanguageUtil, renderIcon, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
 import {ContestApi} from "@/api/request"
+import MutationType from "@/store/mutation-type";
 
 let selectedId: number | undefined
 
@@ -53,6 +66,8 @@ type StateTag = {
   components: {
     NCard,
     NSpace,
+    NBreadcrumb,
+    NBreadcrumbItem,
     NDataTable,
     NPagination,
     NDropdown,
@@ -165,6 +180,11 @@ export default class ContestAdmin extends Vue {
 
   beforeMount() {
     setTitle("竞赛管理")
+    this.store.commit(MutationType.SET_BREADCRUMB,
+        <NBreadcrumb>
+          <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+        </NBreadcrumb>
+    )
     this.queryContests()
   }
 

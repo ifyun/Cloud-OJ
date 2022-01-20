@@ -33,6 +33,8 @@ import {useStore} from "vuex"
 import {useRouter} from "vue-router"
 import {Options, Vue} from "vue-class-component"
 import {
+  NBreadcrumb,
+  NBreadcrumbItem,
   NButton,
   NCard,
   NDataTable,
@@ -52,6 +54,7 @@ import {ErrorMsg, PagedData, User, UserInfo} from "@/api/type"
 import {UserApi} from "@/api/request"
 import {setTitle} from "@/utils"
 import moment from "moment"
+import MutationType from "@/store/mutation-type";
 
 const roles = [
   {text: "用户", type: "info"},
@@ -65,6 +68,8 @@ const roles = [
   components: {
     NCard,
     NSpace,
+    NBreadcrumb,
+    NBreadcrumbItem,
     NIcon,
     NInputGroup,
     NSelect,
@@ -164,6 +169,11 @@ export default class UserAdmin extends Vue {
 
   beforeMount() {
     setTitle("用户管理")
+    this.store.commit(MutationType.SET_BREADCRUMB,
+        <NBreadcrumb>
+          <NBreadcrumbItem>用户管理</NBreadcrumbItem>
+        </NBreadcrumb>
+    )
     const query = this.$route.query
     console.debug(query)
     if ("page" in query) {

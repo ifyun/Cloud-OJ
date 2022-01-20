@@ -5,18 +5,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script lang="tsx">
 import {Options, Vue} from "vue-class-component"
 import {RouterLink} from "vue-router"
 import {NMenu} from "naive-ui"
 import {Book as BookIcon, Trophy as TrophyIcon, Users as UsersIcon} from "@vicons/fa"
 import {SettingsRound as SettingsIcon} from "@vicons/material"
 import {renderIcon} from "@/utils"
-
-const renderLabel = (routerName: string, label: string) => {
-  return () => h(RouterLink, {to: {name: routerName}}, {default: () => label})
-}
 
 @Options({
   name: "AdminMenu",
@@ -31,17 +26,17 @@ const renderLabel = (routerName: string, label: string) => {
 export default class AdminMenu extends Vue {
   private menuOptions = [
     {
-      label: renderLabel("problem_admin", "题目管理"),
+      label: () => <RouterLink to={{name: "problem_admin"}}>题目管理</RouterLink>,
       key: "problem_admin",
       icon: renderIcon(BookIcon)
     },
     {
-      label: renderLabel("contest_admin", "竞赛管理"),
+      label: () => <RouterLink to={{name: "contest_admin"}}>竞赛管理</RouterLink>,
       key: "contest_admin",
       icon: renderIcon(TrophyIcon)
     },
     {
-      label: renderLabel("user_admin", "用户管理"),
+      label: () => <RouterLink to={{name: "user_admin"}}>用户管理</RouterLink>,
       key: "user_admin",
       icon: renderIcon(UsersIcon)
     },

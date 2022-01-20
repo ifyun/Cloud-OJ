@@ -1,6 +1,6 @@
 <template>
   <n-layout position="absolute">
-    <n-layout-header class="header">
+    <n-layout-header class="header" position="absolute">
       <navbar/>
     </n-layout-header>
     <n-layout-content class="main" position="absolute" :embedded="true" :native-scrollbar="false"

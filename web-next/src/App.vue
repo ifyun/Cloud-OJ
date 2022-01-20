@@ -76,10 +76,12 @@ export default class App extends Vue {
 
   .header {
     box-shadow: 0 1px 4px #00152914;
+    z-index: 1;
   }
 
   .aside {
     box-shadow: 2px 0 8px #1D23290D;
+    z-index: 2;
   }
 
   .main {

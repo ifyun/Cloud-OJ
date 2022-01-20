@@ -239,7 +239,7 @@ export default class MarkdownView extends Vue {
     background-color: #18181C;
 
     h1, h2, h3 {
-      border-bottom: 1px solid #101014;
+      border-bottom: 1px solid #303033;
     }
 
     blockquote {
@@ -247,23 +247,23 @@ export default class MarkdownView extends Vue {
     }
 
     table {
-      border: 1px solid #101014;
+      border: 1px solid #303033;
 
       thead {
-        background-color: #101014;
+        background-color: #303033;
       }
 
       td {
-        border-top: 1px solid #101014;
+        border-top: 1px solid #303033;
       }
     }
 
     p code {
-      background-color: #101014;
+      background-color: #303033;
     }
 
     pre {
-      background-color: #101014;
+      background-color: #303033;
 
       &.math-block {
         background-color: transparent;
@@ -275,7 +275,7 @@ export default class MarkdownView extends Vue {
     }
 
     .markdown-alert {
-      background-color: #101014;
+      background-color: #303033;
     }
   }
 }
