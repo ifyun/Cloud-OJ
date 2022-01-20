@@ -246,18 +246,19 @@ export default class MarkdownEditor extends Vue {
 .markdown-editor {
   height: 100%;
 
-  .cm-s-elegant {
-    border-right: 1px solid #F7F7F7;
-
-    .CodeMirror-gutters {
-      border-right: none;
-    }
-  }
-
   .CodeMirror {
     font-size: 14px;
     font-family: Consolas, Monaco, monospace;
     height: calc(100% - 30px);
+
+    &.cm-s-elegant {
+      border-right: 1px solid #F7F7F7;
+      border-top: 1px solid #F7F7F7;
+
+      .CodeMirror-gutters {
+        border-right: none;
+      }
+    }
 
     &.cm-s-ayu-dark {
       .CodeMirror-scrollbar-filler {

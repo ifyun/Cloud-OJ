@@ -6,15 +6,14 @@
         <n-space align="center" justify="space-between">
           <n-space align="center">
             <n-input-group>
-              <n-input maxlength="10" show-count clearable size="large"
-                       placeholder="输入题目名称、分类" v-model:value="keyword">
+              <n-input v-model:value="keyword" maxlength="10" show-count clearable placeholder="输入题目名称、分类">
                 <template #prefix>
                   <n-icon class="input-prefix-icon">
                     <search-icon/>
                   </n-icon>
                 </template>
               </n-input>
-              <n-button type="primary" @click="search" size="large">
+              <n-button type="primary" @click="search">
                 搜索题目
               </n-button>
             </n-input-group>
@@ -63,6 +62,7 @@ import {
   NCard,
   NDataTable,
   NDropdown,
+  NFormItem,
   NGrid,
   NGridItem,
   NIcon,
@@ -72,6 +72,7 @@ import {
   NSpace,
   NSwitch,
   NTag,
+  useDialog,
   useMessage
 } from "naive-ui"
 import {FileArchive as FileIcon, Search as SearchIcon, Tags as TagsIcon} from "@vicons/fa"
@@ -82,6 +83,7 @@ import {ProblemApi} from "@/api/request"
 import MutationType from "@/store/mutation-type";
 
 let selectedId: number | undefined
+let selectedTitle: string | undefined
 
 @Options({
   name: "ProblemAdmin",
@@ -90,6 +92,7 @@ let selectedId: number | undefined
     NSpace,
     NGrid,
     NGridItem,
+    NFormItem,
     NInputGroup,
     NButtonGroup,
     NInput,
@@ -108,6 +111,7 @@ export default class ProblemAdmin extends Vue {
   private store = useStore()
   private router = useRouter()
   private message = useMessage()
+  private dialog = useDialog()
 
   private pagination = {
     page: 1,
@@ -122,6 +126,7 @@ export default class ProblemAdmin extends Vue {
 
   private keyword: string = ""
   private keywordTag: string | null = null
+  private confirmDelete: string = ""
 
   private showOperations: boolean = false
   private point = {
@@ -140,6 +145,7 @@ export default class ProblemAdmin extends Vue {
         this.showOperations = false
         nextTick().then(() => {
           selectedId = row.problemId
+          selectedTitle = row.title
           this.showOperations = true
           this.point = {
             x: e.clientX,
@@ -203,7 +209,7 @@ export default class ProblemAdmin extends Vue {
         }
         const tags = row.category.split(",")
         return tags.map((tag) => (
-            <NTag class="tag" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
+            <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
         ))
       }
     },
@@ -236,9 +242,11 @@ export default class ProblemAdmin extends Vue {
 
   beforeMount() {
     setTitle("题目管理")
-    this.store.commit(MutationType.SET_BREADCRUMB, <NBreadcrumb>
-      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-    </NBreadcrumb>)
+    this.store.commit(MutationType.SET_BREADCRUMB,
+        <NBreadcrumb>
+          <NBreadcrumbItem>题目管理</NBreadcrumbItem>
+        </NBreadcrumb>
+    )
 
     if ("page" in this.$route.query) {
       this.pagination.page = Number(this.$route.query.page)
@@ -268,6 +276,9 @@ export default class ProblemAdmin extends Vue {
       case "edit":
         this.router.push({name: "edit_problem", params: {id: selectedId}})
         break;
+      case "del":
+        this.deleteProblem()
+        break
       default:
         return
     }
@@ -291,6 +302,42 @@ export default class ProblemAdmin extends Vue {
         query: {keyword: this.keyword}
       })
     }
+  }
+
+  deleteProblem() {
+    const d = this.dialog.error({
+      title: "删除题目",
+      showIcon: false,
+      content: () => (
+          <NFormItem label="输入题目名称确认" style="margin-top: 24px">
+            <NInput placeholder={selectedTitle} value={this.confirmDelete}
+                    onUpdateValue={value => this.confirmDelete = value}/>
+          </NFormItem>
+      ),
+      negativeText: "取消",
+      positiveText: "删除",
+      onPositiveClick: () => {
+        if (this.confirmDelete !== selectedTitle) {
+          this.message.error("请输入题目名称")
+          return false
+        }
+        d.loading = true
+        ProblemApi
+            .delete(selectedId!, this.userInfo)
+            .then(() => {
+              this.message.warning(`${selectedTitle} 已删除！`)
+              this.queryProblems()
+              return true
+            })
+            .catch((error: ErrorMsg) => {
+              this.message.error(error.toString())
+              return false
+            })
+            .finally(() => {
+              d.loading = false
+            })
+      }
+    })
   }
 
   /**

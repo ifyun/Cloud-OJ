@@ -82,8 +82,8 @@
     </n-card>
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
-    <n-drawer-content>
-      <markdown-view :content="helpDoc" style="padding: 20px"/>
+    <n-drawer-content :native-scrollbar="false" body-content-style="padding: 0">
+      <markdown-view :content="helpDoc" style="padding: 24px"/>
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -125,7 +125,7 @@ import MarkdownView from "@/components/MarkdownView/Index.vue"
 import {ErrorMsg, Problem, UserInfo} from "@/api/type"
 import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
-import MutationType from "@/store/mutation-type";
+import MutationType from "@/store/mutation-type"
 
 @Options({
   name: "ProblemEditor",
@@ -336,6 +336,7 @@ export default class ProblemEditor extends Vue {
         this.create
     ).then(() => {
       this.message.success(`${this.problem.title} 保存成功`)
+      this.create && this.back()
     }).catch((error: ErrorMsg) => {
       this.message.error(`${error.code}: ${error.msg}`)
     }).finally(() => {

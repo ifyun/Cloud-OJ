@@ -7,7 +7,7 @@
       </div>
     </n-layout-sider>
     <n-layout :native-scrollbar="false">
-      <n-layout-header class="header">
+      <n-layout-header class="header" position="absolute">
         <div class="admin-nav">
           <v-node-renderer :v-node="breadcrumb"/>
           <div style="margin-left: auto">

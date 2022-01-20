@@ -101,7 +101,7 @@ export default class ProblemTable extends Vue {
         }
         const tags = row.category.split(",")
         return tags.map((tag) => {
-          return <NTag class="tag" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
+          return <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
         })
       }
     },
