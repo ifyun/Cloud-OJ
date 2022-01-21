@@ -6,7 +6,7 @@
         <template #title>{{ title }}</template>
         <template #extra>
           <n-space size="small">
-            <n-button type="success" size="small" @click="handleSave">
+            <n-button type="primary" size="small" @click="handleSave">
               <template #icon>
                 <save-icon/>
               </template>

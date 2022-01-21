@@ -3,7 +3,7 @@
     <n-input-group>
       <n-input-group-label :style="{width: '110px'}">选择语言</n-input-group-label>
       <n-select v-model:value="language" :options="languageOptions" :render-label="renderLabel"/>
-      <n-button @click="submit" color="#399f58" style="color: white" :loading="loading">
+      <n-button type="primary" @click="submit" :loading="loading">
         <template #icon>
           <n-icon>
             <submit-icon/>
