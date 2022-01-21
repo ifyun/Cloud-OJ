@@ -4,7 +4,7 @@
       <n-page-header class="page-header" :subtitle="subtitle" @back="router.back()">
         <template #title>{{ title }}</template>
         <template #extra>
-          <n-button v-if="showSaveButton" type="success" size="small" round @click="save">
+          <n-button v-if="showSaveButton" type="primary" size="small" round @click="save">
             <template #icon>
               <save-icon/>
             </template>

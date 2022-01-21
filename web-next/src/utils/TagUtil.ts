@@ -22,12 +22,12 @@ class Color {
 
 const mainColors = [
     "#01AAED",
-    "#F2C97D",
+    "#FFB300",
     "#F17C67",
-    "#5FB878",
+    "#4EAA25",
     "#8C63A0",
     "#3AB2A6",
-    "#73C13B"
+    "#67C23A"
 ]
 
 /**

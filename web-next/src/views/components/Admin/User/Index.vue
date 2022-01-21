@@ -6,7 +6,7 @@
           <n-input-group>
             <n-select v-model:value="searchType" :options="searchTypes" style="width: 150px"/>
             <n-input clearable show-count maxlength="15" v-model:value="keyword"/>
-            <n-button type="success" @click="search">
+            <n-button type="primary" @click="search">
               <template #icon>
                 <n-icon>
                   <search-icon/>

@@ -1,5 +1,6 @@
 <template>
-  <n-config-provider :theme="theme" :locale="locale" :date-locale="dateLocale" abstract>
+  <n-config-provider :theme="theme" :theme-overrides="themeOverrides" :locale="locale" :date-locale="dateLocale"
+                     abstract>
     <n-dialog-provider>
       <n-message-provider>
         <router-view v-slot="{Component}" :key="$route.fullPath">
@@ -27,6 +28,7 @@ import {
   NMessageProvider,
   NModal
 } from "naive-ui"
+import themeOverrides from "@/theme"
 import Auth from "@/views/components/Auth/Index.vue"
 import MutationType from "@/store/mutation-type"
 
@@ -49,6 +51,10 @@ export default class App extends Vue {
 
   get theme() {
     return this.store.state.theme
+  }
+
+  get themeOverrides() {
+    return themeOverrides
   }
 
   get showAuthDialog(): boolean {
