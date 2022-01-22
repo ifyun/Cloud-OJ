@@ -17,8 +17,8 @@ import CodeMirror, {
 } from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ayu-dark.css"
-import "codemirror/theme/darcula.css"
-import "codemirror/theme/elegant.css"
+import "codemirror/theme/material-darker.css"
+import "codemirror/theme/juejin.css"
 import "codemirror/addon/scroll/simplescrollbars.css"
 import "codemirror/addon/scroll/simplescrollbars"
 import "codemirror/mode/markdown/markdown.js"
@@ -64,7 +64,7 @@ export default class MarkdownEditor extends Vue {
   @Watch("theme")
   themeChange(value: any) {
     if (value == null) {
-      this.cmEditor?.setOption("theme", "elegant")
+      this.cmEditor?.setOption("theme", "juejin")
     } else {
       this.cmEditor?.setOption("theme", "ayu-dark")
     }
@@ -253,7 +253,6 @@ export default class MarkdownEditor extends Vue {
 
     &.cm-s-elegant {
       border-right: 1px solid #F7F7F7;
-      border-top: 1px solid #F7F7F7;
 
       .CodeMirror-gutters {
         border-right: none;

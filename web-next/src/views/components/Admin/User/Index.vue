@@ -54,7 +54,7 @@ import {ErrorMsg, PagedData, User, UserInfo} from "@/api/type"
 import {UserApi} from "@/api/request"
 import {setTitle} from "@/utils"
 import moment from "moment"
-import MutationType from "@/store/mutation-type";
+import Mutations from "@/store/mutations";
 
 const roles = [
   {text: "用户", type: "info"},
@@ -169,7 +169,7 @@ export default class UserAdmin extends Vue {
 
   beforeMount() {
     setTitle("用户管理")
-    this.store.commit(MutationType.SET_BREADCRUMB,
+    this.store.commit(Mutations.SET_BREADCRUMB,
         <NBreadcrumb>
           <NBreadcrumbItem>用户管理</NBreadcrumbItem>
         </NBreadcrumb>

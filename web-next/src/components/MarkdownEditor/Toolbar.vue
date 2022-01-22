@@ -1,47 +1,47 @@
 <template>
   <n-button-group size="small">
-    <n-button @click="click('italic')">
+    <n-button quaternary @click="click('italic')">
       <n-icon :size="iconSize">
         <italic-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('bold')">
+    <n-button quaternary @click="click('bold')">
       <n-icon :size="iconSize">
         <bold-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('quote')">
+    <n-button quaternary @click="click('quote')">
       <n-icon :size="iconSize">
         <quote-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('info')">
+    <n-button quaternary @click="click('info')">
       <n-icon :size="iconSize">
         <info-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('warning')">
+    <n-button quaternary @click="click('warning')">
       <n-icon :size="iconSize">
         <warning-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('code')">
+    <n-button quaternary @click="click('code')">
       <n-icon :size="iconSize">
         <code-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('ul')">
+    <n-button quaternary @click="click('ul')">
       <n-icon :size="iconSize">
         <list-ul-icon/>
       </n-icon>
     </n-button>
-    <n-button @click="click('ol')">
+    <n-button quaternary @click="click('ol')">
       <n-icon :size="iconSize">
         <list-ol-icon/>
       </n-icon>
     </n-button>
     <n-dropdown placement="bottom-start" :show-arrow="true" :options="tableOptions">
-      <n-button>
+      <n-button quaternary>
         <n-icon :size="iconSize">
           <table-icon/>
         </n-icon>
@@ -49,7 +49,7 @@
     </n-dropdown>
     <n-dropdown placement="bottom-start" size="small" :show-arrow="true"
                 :options="imgOptions" @select="click">
-      <n-button>
+      <n-button quaternary>
         <n-icon :size="iconSize">
           <image-icon/>
         </n-icon>
@@ -58,8 +58,7 @@
   </n-button-group>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script lang="tsx">
 import {Options, Vue} from "vue-class-component"
 import {Emit} from "vue-property-decorator"
 import {
@@ -121,28 +120,17 @@ export default class Toolbar extends Vue {
     {
       key: "header",
       type: "render",
-      render: () => h(NSpace,
-          {vertical: true, style: "padding: 0 5px"},
-          {
-            default: () => [
-              h(NInputNumber, {
-                style: "width: 120px", value: this.cols,
-                "onUpdate:value": (value: any) => {
-                  this.cols = value as number
-                }
-              }, {suffix: () => "列"}),
-              h(NInputNumber, {
-                style: "width: 120px", value: this.rows,
-                "onUpdate:value": (value: any) => {
-                  this.rows = value as number
-                }
-              }, {suffix: () => "行"}),
-              h(NButton, {
-                style: "width: 100%", type: "success",
-                onClick: () => self.insertTable()
-              }, {default: () => "插入表格"})
-            ]
-          })
+      render: () => (
+          <NSpace vertical={true} style="padding: 0 5px">
+            <NInputNumber value={this.cols} onUpdateValue={value => this.cols = value as number} style="width: 120px">
+              {{suffix: () => "列"}}
+            </NInputNumber>
+            <NInputNumber value={this.rows} onUpdateValue={value => this.rows = value as number} style="width: 120px">
+              {{suffix: () => "行"}}
+            </NInputNumber>
+            <NButton type="primary" onClick={() => self.insertTable()} style="width: 100%">插入表格</NButton>
+          </NSpace>
+      )
     }
   ]
   // endregion

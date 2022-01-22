@@ -1,6 +1,5 @@
 <template>
-  <n-form ref="loginForm" size="large" label-placement="left" :model="user"
-          :rules="loginRules" style="margin-top: 10px">
+  <n-form ref="loginForm" size="large" label-placement="left" :model="user" :rules="loginRules">
     <input type="password" hidden autocomplete="new-password">
     <n-form-item path="username">
       <n-input placeholder="输入你的ID" v-model:value="user.username">
@@ -22,7 +21,7 @@
       </n-input>
     </n-form-item>
     <n-form-item>
-      <n-button style="width: 100%" type="success" :loading="loading" :disabled="loading" @click="login">
+      <n-button style="width: 100%" type="primary" :loading="loading" :disabled="loading" @click="login">
         登 录
       </n-button>
     </n-form-item>
@@ -36,7 +35,7 @@ import {FormRules, NButton, NForm, NFormItem, NIcon, NInput, useMessage} from "n
 import {Lock, Orcid} from "@vicons/fa"
 import {AuthApi} from "@/api/request"
 import {UsernamePassword} from "@/api/type"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 const md5 = require("crypto-js/md5")
 
@@ -68,7 +67,7 @@ export default class Login extends Vue {
       trigger: ["blur", "input"],
       validator(rule: any, value: string): Error | boolean {
         if (!value) {
-          return new Error("请输入用户ID！")
+          return new Error("请输入用户ID")
         } else if (value.length < 4) {
           return new Error("这么短不可能是ID")
         }
@@ -101,8 +100,8 @@ export default class Login extends Vue {
           username: this.user.username,
           password: md5(this.user.password).toString()
         }).then((data) => {
-          this.store.commit(MutationType.SAVE_TOKEN, data)
-          this.store.commit(MutationType.SHOW_AUTH_DIALOG, false)
+          this.store.commit(Mutations.SAVE_TOKEN, data)
+          this.store.commit(Mutations.SHOW_AUTH_DIALOG, false)
         }).catch((error) => {
           this.message.error(`${error.code}: ${error.msg}`)
         }).finally(() => {

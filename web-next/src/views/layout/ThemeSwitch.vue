@@ -18,7 +18,7 @@ import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
 import {NIcon, NSwitch} from "naive-ui"
 import {DarkModeRound as DarkIcon} from "@vicons/material"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 @Options({
   name: "ThemeSwitch",
@@ -36,7 +36,7 @@ export default class ThemeSwitch extends Vue {
   }
 
   set isDarkTheme(value: boolean) {
-    this.store.commit(MutationType.CHANGE_THEME, value ? "dark" : "light")
+    this.store.commit(Mutations.CHANGE_THEME, value ? "dark" : "light")
   }
 }
 </script>

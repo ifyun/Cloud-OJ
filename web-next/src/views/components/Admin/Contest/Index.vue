@@ -52,7 +52,7 @@ import {Contest, ErrorMsg, PagedData, UserInfo} from "@/api/type"
 import {LanguageUtil, renderIcon, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
 import {ContestApi} from "@/api/request"
-import MutationType from "@/store/mutation-type";
+import Mutations from "@/store/mutations";
 
 let selectedId: number | undefined
 
@@ -180,7 +180,7 @@ export default class ContestAdmin extends Vue {
 
   beforeMount() {
     setTitle("竞赛管理")
-    this.store.commit(MutationType.SET_BREADCRUMB,
+    this.store.commit(Mutations.SET_BREADCRUMB,
         <NBreadcrumb>
           <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
         </NBreadcrumb>

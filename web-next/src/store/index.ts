@@ -2,7 +2,7 @@ import {VNode} from "vue"
 import {createStore} from "vuex"
 import {darkTheme} from "naive-ui"
 import {UserInfo} from "@/api/type"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 const THEME = "theme"
 const TOKEN = "userToken"
@@ -15,10 +15,11 @@ const store = createStore({
         theme: theme === "dark" ? darkTheme : null,
         userInfo: token == null ? null : JSON.parse(token) as UserInfo,
         showAuthDialog: false,
+        reload: false,
         breadcrumb: null
     },
     mutations: {
-        [MutationType.CHANGE_THEME](state: any, value: string) {
+        [Mutations.CHANGE_THEME](state: any, value: string) {
             if (value === "dark") {
                 state.theme = darkTheme
                 localStorage.setItem(THEME, "dark")
@@ -27,18 +28,21 @@ const store = createStore({
                 localStorage.removeItem(THEME)
             }
         },
-        [MutationType.SAVE_TOKEN](state: any, userInfo: UserInfo) {
+        [Mutations.SAVE_TOKEN](state: any, userInfo: UserInfo) {
             localStorage.setItem(TOKEN, JSON.stringify(userInfo))
             state.userInfo = userInfo
         },
-        [MutationType.CLEAR_TOKEN](state: any) {
+        [Mutations.CLEAR_TOKEN](state: any) {
             localStorage.removeItem(TOKEN)
             state.userInfo = null
         },
-        [MutationType.SHOW_AUTH_DIALOG](state: any, value: boolean) {
+        [Mutations.SHOW_AUTH_DIALOG](state: any, value: boolean) {
             state.showAuthDialog = value
         },
-        [MutationType.SET_BREADCRUMB](state: any, value: VNode) {
+        [Mutations.SET_RELOAD](state: any, value: boolean) {
+            state.reload = value
+        },
+        [Mutations.SET_BREADCRUMB](state: any, value: VNode) {
             state.breadcrumb = value
         }
     },

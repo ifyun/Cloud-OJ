@@ -14,6 +14,11 @@
                 </template>
               </n-input>
               <n-button type="primary" @click="search">
+                <template #icon>
+                  <n-icon>
+                    <manage-search-round/>
+                  </n-icon>
+                </template>
                 搜索题目
               </n-button>
             </n-input-group>
@@ -76,11 +81,16 @@ import {
   useMessage
 } from "naive-ui"
 import {FileArchive as FileIcon, Search as SearchIcon, Tags as TagsIcon} from "@vicons/fa"
-import {DeleteForeverRound as DelIcon, EditNoteRound as EditIcon, PostAddRound as AddIcon} from "@vicons/material"
+import {
+  ManageSearchRound,
+  DeleteForeverRound as DelIcon,
+  EditNoteRound as EditIcon,
+  PostAddRound as AddIcon
+} from "@vicons/material"
 import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {renderIcon, setTitle, TagUtil} from "@/utils"
 import {ProblemApi} from "@/api/request"
-import MutationType from "@/store/mutation-type";
+import Mutations from "@/store/mutations";
 
 let selectedId: number | undefined
 let selectedTitle: string | undefined
@@ -103,6 +113,7 @@ let selectedTitle: string | undefined
     NPagination,
     NDropdown,
     SearchIcon,
+    ManageSearchRound,
     TagsIcon,
     AddIcon
   }
@@ -242,7 +253,7 @@ export default class ProblemAdmin extends Vue {
 
   beforeMount() {
     setTitle("题目管理")
-    this.store.commit(MutationType.SET_BREADCRUMB,
+    this.store.commit(Mutations.SET_BREADCRUMB,
         <NBreadcrumb>
           <NBreadcrumbItem>题目管理</NBreadcrumbItem>
         </NBreadcrumb>
