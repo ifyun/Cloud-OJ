@@ -3,7 +3,8 @@
                      abstract>
     <n-dialog-provider>
       <n-message-provider>
-        <router-view v-slot="{Component}" :key="$route.fullPath">
+        <n-global-style/>
+        <router-view v-if="!reload" v-slot="{Component}" :key="$route.fullPath">
           <keep-alive>
             <component :is="Component"/>
           </keep-alive>
@@ -20,17 +21,10 @@
 <script lang="ts">
 import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {
-  zhCN,
-  dateZhCN,
-  NConfigProvider,
-  NDialogProvider,
-  NMessageProvider,
-  NModal
-} from "naive-ui"
+import {dateZhCN, NConfigProvider, NDialogProvider, NGlobalStyle, NMessageProvider, NModal, zhCN} from "naive-ui"
 import themeOverrides from "@/theme"
 import Auth from "@/views/components/Auth/Index.vue"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 @Options({
   components: {
@@ -39,6 +33,7 @@ import MutationType from "@/store/mutation-type"
     NConfigProvider,
     NDialogProvider,
     NMessageProvider,
+    NGlobalStyle,
     NModal,
     Auth
   }
@@ -62,7 +57,11 @@ export default class App extends Vue {
   }
 
   set showAuthDialog(value: boolean) {
-    this.store.commit(MutationType.SHOW_AUTH_DIALOG, value)
+    this.store.commit(Mutations.SHOW_AUTH_DIALOG, value)
+  }
+
+  get reload() {
+    return this.store.state.reload
   }
 }
 </script>
@@ -104,7 +103,7 @@ export default class App extends Vue {
   }
 
   .input-prefix-icon {
-    margin-right: 5px;
+    margin-right: 4px;
   }
 
   .tag {

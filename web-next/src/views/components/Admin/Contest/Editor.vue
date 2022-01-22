@@ -74,7 +74,7 @@ import {ContestApi} from "@/api/request"
 import {Contest, ErrorMsg, UserInfo} from "@/api/type"
 import {LanguageOption, LanguageOptions} from "@/type"
 import {LanguageUtil} from "@/utils"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 @Options({
   name: "ContestEditor",
@@ -199,7 +199,7 @@ export default class ContestEditor extends Vue {
           <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
           <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
         </NBreadcrumb>)
-    this.store.commit(MutationType.SET_BREADCRUMB, vNode)
+    this.store.commit(Mutations.SET_BREADCRUMB, vNode)
   }
 
   tabChange(tab: string) {

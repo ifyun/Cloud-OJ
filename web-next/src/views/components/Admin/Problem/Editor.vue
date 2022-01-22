@@ -63,7 +63,7 @@
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="分类/标签" path="tags">
-              <n-dynamic-tags type="success" v-model:value="problem.tags"/>
+              <n-dynamic-tags type="primary" v-model:value="problem.tags"/>
             </n-form-item>
           </n-form>
         </n-spin>
@@ -125,7 +125,7 @@ import MarkdownView from "@/components/MarkdownView/Index.vue"
 import {ErrorMsg, Problem, UserInfo} from "@/api/type"
 import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 @Options({
   name: "ProblemEditor",
@@ -281,7 +281,7 @@ export default class ProblemEditor extends Vue {
           <NBreadcrumbItem>题目管理</NBreadcrumbItem>
           <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
         </NBreadcrumb>)
-    this.store.commit(MutationType.SET_BREADCRUMB, vNode)
+    this.store.commit(Mutations.SET_BREADCRUMB, vNode)
   }
 
   back() {

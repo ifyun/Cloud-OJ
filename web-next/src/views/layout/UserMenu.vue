@@ -35,7 +35,7 @@ import {HouseUser as UserHomeIcon} from "@vicons/fa"
 import {renderIcon} from "@/utils"
 import {AuthApi} from "@/api/request"
 import {ErrorMsg, UserInfo} from "@/api/type"
-import MutationType from "@/store/mutation-type"
+import Mutations from "@/store/mutations"
 
 @Options({
   name: "UserMenu",
@@ -110,7 +110,7 @@ export default class UserMenu extends Vue {
   }
 
   login(event: any) {
-    this.store.commit(MutationType.SHOW_AUTH_DIALOG, true)
+    this.store.commit(Mutations.SHOW_AUTH_DIALOG, true)
     event.target.blur()
     event.target.parentNode.blur()
   }
@@ -123,7 +123,7 @@ export default class UserMenu extends Vue {
     }).catch((error: ErrorMsg) => {
       this.message.warning(`${error.code}: ${error.msg}`)
     }).finally(() => {
-      this.store.commit(MutationType.CLEAR_TOKEN)
+      this.store.commit(Mutations.CLEAR_TOKEN)
     })
   }
 
@@ -132,7 +132,6 @@ export default class UserMenu extends Vue {
       title: "警告",
       content: "确定退出吗？",
       positiveText: "确定",
-      negativeText: "不要",
       onPositiveClick: () => {
         this.logoff()
       }

@@ -1,6 +1,5 @@
 <template>
-  <n-form ref="signupForm" size="large" label-placement="left" :model="user"
-          :rules="signupRules" style="margin-top: 10px">
+  <n-form ref="signupForm" size="large" label-placement="left" :model="user" :rules="signupRules">
     <input type="password" hidden autocomplete="new-password">
     <n-form-item path="userId">
       <n-input placeholder="ID，不能和别人重复" v-model:value="user.userId">
@@ -60,7 +59,7 @@
       </n-input>
     </n-form-item>
     <n-form-item>
-      <n-button style="width: 100%" type="success" :loading="loading" :disabled="loading" @click="signup">
+      <n-button style="width: 100%" type="info" :loading="loading" :disabled="loading" @click="signup">
         注 册
       </n-button>
     </n-form-item>
