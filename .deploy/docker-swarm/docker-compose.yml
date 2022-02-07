@@ -95,7 +95,7 @@ services:
       - cloud-oj-net
     ports:
       - "80:80"
-    #  - "443:443"
+    # - "443:443"
     environment:
       API_HOST: "gateway:8080"
     # ENABLE_HTTPS: "true"
@@ -109,7 +109,7 @@ networks:
       config:
         - subnet: 10.16.0.0/16
 #configs:
-#  ssl_cert:
-#    file: /path/to/ssl_cert.pem
-#  ssl_key:
-#    file: /path/to/ssl_key.key
+# ssl_cert:
+#   file: /path/to/ssl_cert.pem
+# ssl_key:
+#   file: /path/to/ssl_key.key
