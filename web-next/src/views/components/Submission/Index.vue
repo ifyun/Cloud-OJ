@@ -1,21 +1,41 @@
 <template>
   <div class="submission">
-    <n-card :bordered="false" style="height: 100%">
+    <n-card :bordered="false" style="height: 100%" content-style="overflow: hidden">
       <Skeleton v-if="loading"/>
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
             <n-tabs type="line">
               <n-tab-pane name="题目描述">
-                <n-h2 style="margin-bottom: 10px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
+                <n-h2 style="margin-bottom: 6px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
                 <n-space size="small">
-                  <n-tag size="small">分数: {{ problem.score }} 分</n-tag>
-                  <n-tag size="small" type="info">时间: {{ problem.timeout }} ms</n-tag>
-                  <n-tag size="small" type="info">内存: {{ problem.memoryLimit }} MB</n-tag>
-                  <n-tag size="small" type="info">输出: {{ problem.outputLimit }} MB</n-tag>
+                  <badge label="分数" color="#4EAA25">
+                    <template #icon>
+                      <question-circle/>
+                    </template>
+                    {{ problem.score }} 分
+                  </badge>
+                  <badge label="时间" color="#D9644D">
+                    <template #icon>
+                      <timer-outlined/>
+                    </template>
+                    {{ problem.timeout }} ms
+                  </badge>
+                  <badge label="内存" color="#007EC6">
+                    <template #icon>
+                      <memory-round/>
+                    </template>
+                    {{ problem.memoryLimit }} MB
+                  </badge>
+                  <badge label="输出" color="#F48041">
+                    <template #icon>
+                      <file-alt/>
+                    </template>
+                    {{ problem.outputLimit }} MB
+                  </badge>
                 </n-space>
                 <!-- 题目内容 -->
-                <markdown-view :content="problem.description" style="margin-top: 15px"/>
+                <markdown-view :content="problem.description" style="margin-top: 12px"/>
               </n-tab-pane>
               <n-tab-pane name="提交记录">
                 还没有做
@@ -39,9 +59,24 @@
 <script lang="ts">
 import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {NCard, NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
+import {
+  NCard,
+  NGrid,
+  NGridItem,
+  NH2,
+  NModal,
+  NScrollbar,
+  NSpace,
+  NTabPane,
+  NTabs,
+  NTag,
+  useMessage
+} from "naive-ui"
+import {QuestionCircle, FileAlt} from "@vicons/fa"
+import {TimerOutlined, MemoryRound} from "@vicons/material"
 import MarkdownView from "@/components/MarkdownView/Index.vue"
 import CodeEditor from "@/components/CodeEditor.vue"
+import Badge from "@/components/Badge.vue"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
 import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
 import {JudgeApi, ProblemApi} from "@/api/request"
@@ -50,10 +85,9 @@ import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
 @Options({
   name: "Submission",
   components: {
-    ResultDialog,
+    NCard,
     NGrid,
     NGridItem,
-    NCard,
     NSpace,
     NScrollbar,
     NTabs,
@@ -61,9 +95,15 @@ import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
     NH2,
     NTag,
     NModal,
+    QuestionCircle,
+    FileAlt,
+    TimerOutlined,
+    MemoryRound,
+    Badge,
     Skeleton,
     MarkdownView,
-    CodeEditor
+    CodeEditor,
+    ResultDialog,
   }
 })
 export default class Submission extends Vue {
@@ -149,7 +189,7 @@ export default class Submission extends Vue {
 .submission {
   width: calc(100% - var(--layout-padding) * 2);
   height: calc(100% - var(--header-height) - var(--layout-padding) * 2);
-  min-height: 600px;
+  min-height: 720px;
   padding: var(--layout-padding);
   flex: auto;
 
