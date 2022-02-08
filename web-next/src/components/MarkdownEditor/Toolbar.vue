@@ -1,47 +1,47 @@
 <template>
   <n-button-group size="small">
-    <n-button quaternary @click="click('italic')">
+    <n-button tertiary @click="click('italic')">
       <n-icon :size="iconSize">
         <italic-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('bold')">
+    <n-button tertiary @click="click('bold')">
       <n-icon :size="iconSize">
         <bold-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('quote')">
+    <n-button tertiary @click="click('quote')">
       <n-icon :size="iconSize">
         <quote-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('info')">
+    <n-button tertiary @click="click('info')">
       <n-icon :size="iconSize">
         <info-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('warning')">
+    <n-button tertiary @click="click('warning')">
       <n-icon :size="iconSize">
         <warning-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('code')">
+    <n-button tertiary @click="click('code')">
       <n-icon :size="iconSize">
         <code-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('ul')">
+    <n-button tertiary @click="click('ul')">
       <n-icon :size="iconSize">
         <list-ul-icon/>
       </n-icon>
     </n-button>
-    <n-button quaternary @click="click('ol')">
+    <n-button tertiary @click="click('ol')">
       <n-icon :size="iconSize">
         <list-ol-icon/>
       </n-icon>
     </n-button>
     <n-dropdown placement="bottom-start" :show-arrow="true" :options="tableOptions">
-      <n-button quaternary>
+      <n-button tertiary>
         <n-icon :size="iconSize">
           <table-icon/>
         </n-icon>
@@ -49,7 +49,7 @@
     </n-dropdown>
     <n-dropdown placement="bottom-start" size="small" :show-arrow="true"
                 :options="imgOptions" @select="click">
-      <n-button quaternary>
+      <n-button tertiary>
         <n-icon :size="iconSize">
           <image-icon/>
         </n-icon>
