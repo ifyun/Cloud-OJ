@@ -13,13 +13,13 @@
                     <template #icon>
                       <question-circle/>
                     </template>
-                    {{ problem.score }} 分
+                    {{ problem.score }}
                   </badge>
                   <badge label="时间" color="#D9644D">
                     <template #icon>
                       <timer-outlined/>
                     </template>
-                    {{ problem.timeout }} ms
+                    {{ problem.timeout }} 毫秒
                   </badge>
                   <badge label="内存" color="#007EC6">
                     <template #icon>

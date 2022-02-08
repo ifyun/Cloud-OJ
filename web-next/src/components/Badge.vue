@@ -8,7 +8,7 @@
       </div>
       <span>{{ label }}</span>
     </div>
-    <div class="badge-value" :style="{backgroundColor: backColor}">
+    <div class="badge-value" :style="{backgroundColor: valueBackground}">
       <slot/>
     </div>
   </n-element>
@@ -18,6 +18,7 @@
 import {VueComponent} from "@/vue-ts-component"
 import {Options} from "vue-class-component"
 import {Prop} from "vue-property-decorator"
+import {useStore} from "vuex"
 import {NElement, NIcon, useThemeVars} from "naive-ui"
 
 interface Props {
@@ -41,21 +42,25 @@ export default class Badge extends VueComponent<Props> {
   private color?: string
 
   @Prop({
-    type: Object as () => "small" | "medium" | "large",
-    default: Object as () => "medium"
+    type: String as () => "small" | "medium" | "large",
+    default: "medium"
   })
   private size?: string
 
-  private static get themeVars() {
-    return useThemeVars().value
+  private store = useStore()
+
+  private themeVars = useThemeVars().value
+
+  private get theme() {
+    return this.store.state.theme
   }
 
-  private get backColor(): string {
+  private get valueBackground(): string {
     if (this.color) {
       return this.color
     }
 
-    return Badge.themeVars.primaryColor
+    return this.themeVars.primaryColor
   }
 
   private get badgeClasses() {
@@ -89,7 +94,7 @@ export default class Badge extends VueComponent<Props> {
   }
 
   .badge-label {
-    background-color: #555555;
+    background-color: #666666;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
   }
