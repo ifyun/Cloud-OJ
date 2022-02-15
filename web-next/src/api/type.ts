@@ -50,6 +50,11 @@ export class ErrorMsg {
     }
 }
 
+export class TestData {
+    fileName: string = ""
+    size: number = 0
+}
+
 /**
  * 题目
  */

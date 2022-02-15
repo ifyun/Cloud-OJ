@@ -1,5 +1,5 @@
 import {buildHeaders, returnError} from "@/api/utils"
-import {PagedData, Problem, UserInfo} from "@/api/type"
+import {PagedData, Problem, TestData, UserInfo} from "@/api/type"
 import ApiPath from "@/api/request/ApiPath"
 import axios, {AxiosResponse} from "axios"
 
@@ -151,6 +151,52 @@ const ProblemApi = {
             }).then((res) => {
                 resolve(res)
             }).catch((error) => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    /**
+     * 获取测试数据
+     * @param problemId 题目 Id
+     * @param userInfo {@link UserInfo}
+     */
+    getTestData(problemId: number, userInfo: UserInfo): Promise<Array<TestData>> {
+        return new Promise<Array<TestData>>((resolve, reject) => {
+            axios({
+                url: `${ApiPath.TEST_DATA}/${problemId}`,
+                method: "GET",
+                headers: buildHeaders(userInfo)
+            }).then(res => {
+                if (res.status === 200) {
+                    resolve(res.data as TestData[])
+                } else {
+                    resolve([])
+                }
+            }).catch(error => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    /**
+     * 删除测试数据
+     * @param problemId 题目 Id
+     * @param fileName 文件名
+     * @param userInfo {@link UserInfo}
+     */
+    deleteTestData(problemId: number, fileName: string, userInfo: UserInfo): Promise<AxiosResponse> {
+        return new Promise((resolve, reject) => {
+            axios({
+                url: `${ApiPath.TEST_DATA}/${problemId}`,
+                method: "DELETE",
+                headers: buildHeaders(userInfo),
+                params: {
+                    name: fileName
+                }
+            }).then(res => {
+                resolve(res)
+            }).catch(error => {
                 reject(returnError(error))
             })
         })

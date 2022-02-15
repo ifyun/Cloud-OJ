@@ -177,7 +177,7 @@ export default class ProblemAdmin extends Vue {
     {
       label: "管理测试数据",
       key: "test_data",
-      icon: renderIcon(FileIcon, "#399F58")
+      icon: renderIcon(FileIcon, "#18A058")
     },
     {
       label: "删除",
@@ -286,7 +286,10 @@ export default class ProblemAdmin extends Vue {
     switch (key) {
       case "edit":
         this.router.push({name: "edit_problem", params: {id: selectedId}})
-        break;
+        break
+      case "test_data":
+        this.router.push({name: "test_data", params: {id: selectedId}})
+        break
       case "del":
         this.deleteProblem()
         break
