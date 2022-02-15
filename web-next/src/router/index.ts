@@ -12,6 +12,7 @@ const NotFound = () => import("@/views/components/NotFound.vue")
 const Admin = () => import("@/views/Admin.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () => import("@/views/components/Admin/Problem/Editor.vue")
+const TestData = () => import("@/views/components/Admin/Problem/DataManage.vue")
 const ContestAdmin = () => import("@/views/components/Admin/Contest/Index.vue")
 const ContestEditor = () => import("@/views/components/Admin/Contest/Editor.vue")
 const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
@@ -79,6 +80,11 @@ const router = createRouter({
                     path: "/admin/problem/:id",
                     name: "edit_problem",
                     component: ProblemEditor
+                },
+                {
+                    path: "/admin/data/:id",
+                    name: "test_data",
+                    component: TestData
                 },
                 {
                     path: "/admin/contest",
