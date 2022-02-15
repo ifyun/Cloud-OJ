@@ -23,7 +23,7 @@ eureka:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 logging:
   file:
-    name: /var/log/judge-service.log
+    name: /tmp/cloud-oj/judge-service.log
   level:
     root: info
 app:

@@ -48,7 +48,7 @@ services:
     networks:
       - cloud-oj-net
     volumes:
-      - "/var/lib/cloud_oj:/var/lib/cloud_oj:ro"
+      - "/var/lib/cloud_oj:/var/lib/cloud_oj"
     environment:
       JVM_OPTS: "-Xms128m -Xmx128m"
       EUREKA_SERVER: "registry:8761"

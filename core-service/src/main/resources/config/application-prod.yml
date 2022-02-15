@@ -18,6 +18,6 @@ eureka:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1}/eureka/
 logging:
   file:
-    name: /var/log/manager-service.log
+    name: /tmp/cloud-oj/core-service.log
   level:
-    root: info
+    root: warn
