@@ -5,8 +5,8 @@
 <script lang="ts">
 import {Options} from "vue-class-component"
 import {Prop, Watch} from "vue-property-decorator"
-import {NAvatar} from "naive-ui"
 import {VueComponent} from "@/vue-ts-component"
+import {NAvatar} from "naive-ui"
 
 interface Props {
   userId: string

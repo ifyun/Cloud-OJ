@@ -1,24 +1,60 @@
 <template>
-  <div>
-    个人中心
-    <!-- TODO 未完成 -->
+  <div class="account">
+    <n-card :bordered="false">
+      <template #cover>
+        <profile :user-id="userId" style="padding: 12px 24px"/>
+      </template>
+      <n-space vertical>
+        <n-tabs type="line">
+          <n-tab-pane name="profile" tab="概览">
+            <overview :user-id="userId"/>
+          </n-tab-pane>
+          <n-tab-pane name="solutions" tab="提交记录">
+
+          </n-tab-pane>
+        </n-tabs>
+      </n-space>
+    </n-card>
   </div>
 </template>
 
-<script lang="ts">
-import {Options, Vue} from "vue-class-component"
+<script setup lang="ts">
 import {setTitle} from "@/utils"
+import {computed, onBeforeMount} from "vue"
+import {useStore} from "vuex"
+import {useRoute} from "vue-router"
+import {NCard, NTabPane, NTabs, NSpace} from "naive-ui"
+import Profile from "@/views/components/Account/Profile.vue"
+import Overview from "@/views/components/Account/Overview.vue"
+import {UserInfo} from "@/api/type"
 
-@Options({
-  name: "Account"
+const route = useRoute()
+const store = useStore()
+
+const userInfo = computed<UserInfo | null>(() => {
+  return store.state.userInfo
 })
-export default class Account extends Vue {
-  beforeMount() {
-    setTitle("个人中心")
+
+const userId = computed<string>(() => {
+  const userId = route.params.id
+  if (userId) {
+    return userId.toString()
+  } else if (userInfo.value != null) {
+    return userInfo.value.userId!
+  } else {
+    return ""
   }
-}
+})
+
+onBeforeMount(() => {
+  setTitle("个人中心")
+})
 </script>
 
 <style scoped>
-
+.account {
+  width: calc(100% - var(--layout-padding) * 2);
+  padding: var(--layout-padding) 0;
+  margin: 0 auto;
+}
 </style>

@@ -15,8 +15,8 @@ import java.io.File;
 public class AppConfig {
     private boolean fileSync = false;
     private boolean autoCleanSolution = true;
-    private String fileDir = "/var/lib/cloud_oj";
-    private String codeDir = "/tmp/code";
+    private String fileDir = "/var/lib/cloud_oj/";
+    private String codeDir = "/tmp/code/";
     private int judgePoolSize = 4;
 
     @PostConstruct
@@ -38,7 +38,11 @@ public class AppConfig {
             judgePoolSize = cpuCores - 1;
         }
 
-        log.info("Judge Pool Size: {} + 1.", judgePoolSize);
+        if (judgePoolSize == 0) {
+            judgePoolSize = 1;
+        }
+
+        log.info("Judge Pool Size: {}.", judgePoolSize);
     }
 
     private void createDir(String path) {
