@@ -213,7 +213,7 @@ public class Judgement {
 
         Integer cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
 
-        String solutionDir = appConfig.getFileDir() + solution.getSolutionId();
+        String solutionDir = appConfig.getCodeDir() + solution.getSolutionId();
         ProcessBuilder builder = new ProcessBuilder();
         List<String> cmd = new ArrayList<>();
 

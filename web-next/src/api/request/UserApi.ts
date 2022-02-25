@@ -1,5 +1,5 @@
-import {PagedData, User, UserInfo} from "@/api/type"
 import {ApiPath} from "@/api/request/index"
+import {Overview, PagedData, User, UserInfo} from "@/api/type"
 import {buildHeaders, returnError} from "@/api/utils"
 import axios from "axios"
 
@@ -23,9 +23,42 @@ const UserApi = {
                     userId: params.userId,
                     name: params.name
                 }
-            }).then((res) => {
+            }).then(res => {
                 resolve(res.status === 200 ? res.data : {data: [], count: 0})
-            }).catch((error) => {
+            }).catch(error => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    getProfile(userId: string): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            axios({
+                url: ApiPath.PROFILE,
+                method: "GET",
+                params: {
+                    userId
+                }
+            }).then(res => {
+                resolve(res.data as User)
+            }).catch(error => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    getOverview(userId: string, year: number) {
+        return new Promise<Overview>((resolve, reject) => {
+            axios({
+                url: ApiPath.OVERVIEW,
+                method: "GET",
+                params: {
+                    userId,
+                    year
+                }
+            }).then(res => {
+                resolve(res.data as Overview)
+            }).catch(error => {
                 reject(returnError(error))
             })
         })

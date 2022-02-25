@@ -14,8 +14,8 @@ export class UsernamePassword {
 export class User {
     userId: string = ""
     name: string = ""
-    password: string = ""
-    confirmPassword: string = ""
+    password?: string
+    confirmPassword?: string
     roleId?: number
     email: string = ""
     section: string = ""
@@ -117,4 +117,38 @@ export class JudgeResult {
     memory?: number
     passRate?: number
     errorInfo?: string
+}
+
+export type Preference = {
+    count: number
+    language: number
+}
+
+export type Statistics = {
+    AC: number
+    WA: number
+    CE: number
+    RE: number
+    MLE: number
+    TLE: number
+    total: number
+}
+
+export type Activity = {
+    date: string
+    count: number
+}
+
+export class Overview {
+    preference: Array<Preference> = []
+    statistics: Statistics = {
+        AC: 0,
+        WA: 0,
+        CE: 0,
+        RE: 0,
+        MLE: 0,
+        TLE: 0,
+        total: 0
+    }
+    activities: Array<Activity> = []
 }

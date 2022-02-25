@@ -59,24 +59,10 @@
 <script lang="ts">
 import {useStore} from "vuex"
 import {Options, Vue} from "vue-class-component"
-import {
-  NCard,
-  NGrid,
-  NGridItem,
-  NH2,
-  NModal,
-  NScrollbar,
-  NSpace,
-  NTabPane,
-  NTabs,
-  NTag,
-  useMessage
-} from "naive-ui"
-import {QuestionCircle, FileAlt} from "@vicons/fa"
-import {TimerOutlined, MemoryRound} from "@vicons/material"
-import MarkdownView from "@/components/MarkdownView/Index.vue"
-import CodeEditor from "@/components/CodeEditor.vue"
-import Badge from "@/components/Badge.vue"
+import {NCard, NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
+import {FileAlt, QuestionCircle} from "@vicons/fa"
+import {MemoryRound, TimerOutlined} from "@vicons/material"
+import {Badge, CodeEditor, MarkdownView} from "@/components"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
 import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
 import {JudgeApi, ProblemApi} from "@/api/request"

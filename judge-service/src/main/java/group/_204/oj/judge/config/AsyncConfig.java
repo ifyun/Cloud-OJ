@@ -36,9 +36,13 @@ public class AsyncConfig {
     public HashMap<String, Integer> cpus() {
         HashMap<String, Integer> cpus = new HashMap<>();
 
-        // 将 CPU 核心 ID 与线程名称绑定，CPU0 留给提交线程
-        for (int i = 1; i <= appConfig.getJudgePoolSize(); i++) {
-            cpus.put(THREAD_PREFIX + i, i);
+        if (appConfig.getJudgePoolSize() == 1) {
+            cpus.put(THREAD_PREFIX + 1, 0);
+        } else {
+            // 将 CPU 核心 ID 与线程名称绑定，CPU0 留给提交线程
+            for (int i = 1; i <= appConfig.getJudgePoolSize(); i++) {
+                cpus.put(THREAD_PREFIX + i, i);
+            }
         }
 
         return cpus;
