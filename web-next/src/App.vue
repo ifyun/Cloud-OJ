@@ -1,6 +1,5 @@
 <template>
-  <n-config-provider :theme="theme" :theme-overrides="themeOverrides" :locale="locale" :date-locale="dateLocale"
-                     abstract>
+  <n-config-provider abstract :theme="theme" :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN">
     <n-dialog-provider>
       <n-message-provider>
         <n-global-style/>
@@ -18,52 +17,32 @@
   </n-config-provider>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import {computed} from "vue"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
 import {dateZhCN, NConfigProvider, NDialogProvider, NGlobalStyle, NMessageProvider, NModal, zhCN} from "naive-ui"
 import themeOverrides from "@/theme"
 import Auth from "@/views/components/Auth/Index.vue"
 import Mutations from "@/store/mutations"
 
-@Options({
-  components: {
-    zhCN,
-    dateZhCN,
-    NConfigProvider,
-    NDialogProvider,
-    NMessageProvider,
-    NGlobalStyle,
-    NModal,
-    Auth
+const store = useStore()
+
+const theme = computed(() => {
+  return store.state.theme
+})
+
+const showAuthDialog = computed<boolean>({
+  get: () => {
+    return store.state.showAuthDialog
+  },
+  set: (value) => {
+    store.commit(Mutations.SHOW_AUTH_DIALOG, value)
   }
 })
-export default class App extends Vue {
-  private store = useStore()
 
-  private locale = zhCN
-  private dateLocale = dateZhCN
-
-  get theme() {
-    return this.store.state.theme
-  }
-
-  get themeOverrides() {
-    return themeOverrides
-  }
-
-  get showAuthDialog(): boolean {
-    return this.store.state.showAuthDialog
-  }
-
-  set showAuthDialog(value: boolean) {
-    this.store.commit(Mutations.SHOW_AUTH_DIALOG, value)
-  }
-
-  get reload() {
-    return this.store.state.reload
-  }
-}
+const reload = computed(() => {
+  return store.state.reload
+})
 </script>
 
 <style lang="scss">
@@ -74,7 +53,6 @@ export default class App extends Vue {
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
