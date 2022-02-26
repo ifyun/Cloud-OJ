@@ -1,12 +1,13 @@
 <template>
-  <div>
-
+  <div class="overview">
+    <languages :languages="overview.preference" style="flex: 0.5"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onBeforeMount, defineProps, ref} from "vue"
+import {defineProps, onBeforeMount, ref} from "vue"
 import {useMessage} from "naive-ui"
+import {Languages} from "@/components"
 import {UserApi} from "@/api/request"
 import {ErrorMsg, Overview} from "@/api/type"
 import moment from "moment"
@@ -30,5 +31,8 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
-
+.overview {
+  display: flex;
+  flex-direction: row;
+}
 </style>

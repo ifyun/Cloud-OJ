@@ -119,7 +119,7 @@ export class JudgeResult {
     errorInfo?: string
 }
 
-export type Preference = {
+export type Language = {
     count: number
     language: number
 }
@@ -140,7 +140,7 @@ export type Activity = {
 }
 
 export class Overview {
-    preference: Array<Preference> = []
+    preference: Array<Language> = []
     statistics: Statistics = {
         AC: 0,
         WA: 0,
