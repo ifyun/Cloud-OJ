@@ -111,12 +111,15 @@ export type SubmitData = {
 }
 
 export class JudgeResult {
+    solutionId?: string
+    title?: string
     state?: number
     result?: number
     time?: number
     memory?: number
     passRate?: number
     errorInfo?: string
+    submitTime?: string
 }
 
 export type Language = {

@@ -61,10 +61,7 @@ const data = computed<Array<LanguageItem>>(() => {
   height: 12px;
 
   .language-bar {
-    margin-left: 1px;
-
     &:first-child {
-      margin-left: 0;
       border-top-left-radius: 6px;
       border-bottom-left-radius: 6px;
     }
@@ -79,11 +76,12 @@ const data = computed<Array<LanguageItem>>(() => {
 .language-detail {
   display: flex;
   flex-direction: column;
-  margin-top: 6px;
+  margin-top: 10px;
 
   .item {
     display: flex;
     align-items: center;
+    margin-top: 3px;
 
     *:first-child {
       margin-left: 0;

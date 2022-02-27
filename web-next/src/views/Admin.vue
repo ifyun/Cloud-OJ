@@ -59,9 +59,8 @@ import {
 } from "naive-ui"
 import {RefreshRound as RefreshIcon} from "@vicons/material"
 import {AdminMenu, ThemeSwitch, UserMenu} from "@/views/layout"
-import Logo from "@/components/Logo.vue"
-import VNodeRenderer from "@/components/VNodeRenderer.vue"
-import Mutations from "@/store/mutations";
+import {Logo, VNodeRenderer} from "@/components"
+import Mutations from "@/store/mutations"
 
 @Options({
   name: "Admin",

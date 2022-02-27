@@ -1,5 +1,5 @@
 import {ApiPath} from "@/api/request/index"
-import {Overview, PagedData, User, UserInfo} from "@/api/type"
+import {JudgeResult, Overview, PagedData, User, UserInfo} from "@/api/type"
 import {buildHeaders, returnError} from "@/api/utils"
 import axios from "axios"
 
@@ -58,6 +58,34 @@ const UserApi = {
                 }
             }).then(res => {
                 resolve(res.data as Overview)
+            }).catch(error => {
+                reject(returnError(error))
+            })
+        })
+    },
+
+    getSolutions(page: number, limit: number, userInfo: UserInfo, searchParam?: { problemId?: number, title?: string }) {
+        return new Promise<PagedData<JudgeResult>>((resolve, reject) => {
+            axios({
+                url: ApiPath.HISTORY,
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": userInfo.token!,
+                    "userId": userInfo.userId!
+                },
+                params: {
+                    page,
+                    limit,
+                    problemId: searchParam?.problemId,
+                    title: searchParam?.title
+                }
+            }).then(res => {
+                if (res.status === 200) {
+                    resolve(res.data as PagedData<JudgeResult>)
+                } else {
+                    resolve({data: [], count: 0})
+                }
             }).catch(error => {
                 reject(returnError(error))
             })

@@ -3,7 +3,7 @@
     <user-avatar :size="72" :user-id="userId"/>
     <div>
       <n-space vertical size="small">
-        <n-text strong style="font-size: 18px">{{ profile.name }}</n-text>
+        <n-text strong style="font-size: 16px">{{ profile.name }}</n-text>
         <n-text italic depth="3">{{ profile.userId }}</n-text>
       </n-space>
     </div>
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {onBeforeMount, defineProps, ref} from "vue"
+import {defineProps, onBeforeMount, ref} from "vue"
 import {NSpace, NText, useMessage} from "naive-ui"
 import {UserAvatar} from "@/components"
 import {ErrorMsg, User} from "@/api/type"
@@ -33,7 +33,3 @@ onBeforeMount(() => {
   })
 })
 </script>
-
-<style scoped>
-
-</style>
