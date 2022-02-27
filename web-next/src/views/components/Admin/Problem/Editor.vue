@@ -119,9 +119,7 @@ import {
   useMessage
 } from "naive-ui"
 import {HelpOutlineRound as HelpIcon, SaveOutlined as SaveIcon} from "@vicons/material"
-import markdownHelp from "@/components/MarkdownEditor/markdown-help"
-import MarkdownEditor from "@/components/MarkdownEditor/Index.vue"
-import MarkdownView from "@/components/MarkdownView/Index.vue"
+import {MarkdownEditor, MarkdownHelp, MarkdownView} from "@/components"
 import {ErrorMsg, Problem, UserInfo} from "@/api/type"
 import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
@@ -220,7 +218,7 @@ export default class ProblemEditor extends Vue {
   }
 
   get helpDoc() {
-    return `\`\`\`\`markdown\n${markdownHelp}\n\`\`\`\`\n${markdownHelp}`
+    return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
   }
 
   get isDarkTheme(): boolean {

@@ -24,8 +24,8 @@ import {computed, onBeforeMount} from "vue"
 import {useStore} from "vuex"
 import {useRoute} from "vue-router"
 import {NCard, NTabPane, NTabs, NSpace} from "naive-ui"
-import Profile from "@/views/components/Account/Profile.vue"
-import Overview from "@/views/components/Account/Overview.vue"
+import Profile from "./Profile.vue"
+import Overview from "./Overview.vue"
 import {UserInfo} from "@/api/type"
 
 const route = useRoute()
