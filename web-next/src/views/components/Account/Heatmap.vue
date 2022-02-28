@@ -133,7 +133,6 @@ watch(heatmapTheme, (newVal) => {
 })
 
 watch(() => props.data, (newVal) => {
-  console.log("watch", newVal)
   nextTick(() => {
     newVal.forEach((val) => {
       (option.series as HeatmapSeriesOption).data?.push([val.date, val.count])
@@ -144,7 +143,6 @@ watch(() => props.data, (newVal) => {
 
 onMounted(() => {
   heatmap = echarts.init(document.getElementById("heatmap")!, heatmapTheme.value)
-  console.log(props.data)
   props.data.forEach((val) => {
     (option.series as HeatmapSeriesOption).data?.push([val.date, val.count])
   })
