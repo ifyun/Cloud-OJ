@@ -1,9 +1,9 @@
 <template>
   <div>
-    <n-h4 strong style="margin-bottom: 16px">最近提交</n-h4>
+    <n-h3 strong style="margin-bottom: 16px">最近提交</n-h3>
     <n-timeline>
-      <n-timeline-item v-for="item in solutions.data" :key="item.solutionId" :type="TYPES[item.result]"
-                       :content="item.title" :title="RESULTS[item.result]" :time="item.submitTime"/>
+      <n-timeline-item v-for="item in solutions.data" :key="item.solutionId" :type="ResultTypes[item.result].type"
+                       :title="ResultTypes[item.result].text" :content="content(item)" :time="item.submitTime"/>
     </n-timeline>
   </div>
 </template>
@@ -11,15 +11,10 @@
 <script setup lang="ts">
 import {computed, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
-import {NH4, NTimeline, NTimelineItem} from "naive-ui"
+import {NH3, NTimeline, NTimelineItem} from "naive-ui"
 import {UserApi} from "@/api/request"
 import {JudgeResult, PagedData} from "@/api/type"
-
-const TYPES = ["success", "warning", "warning", "warning", "error", "error", "error", "error", "warning"]
-const RESULTS = [
-  "正确", "时间超限", "内存超限", "部分通过", "答案错误",
-  "编译错误", "运行错误", "内部错误", "输出超限"
-]
+import {LanguageNames, ResultTypes} from "@/type"
 
 const store = useStore()
 
@@ -32,4 +27,8 @@ onBeforeMount(() => {
     solutions.value = data
   })
 })
+
+function content(item: JudgeResult) {
+  return `[${LanguageNames[item.language!]}] ${item.problemId}.${item.title}`
+}
 </script>
