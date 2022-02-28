@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-h4 strong style="margin-bottom: 12px">常用语言</n-h4>
+    <n-h3 strong style="margin-bottom: 12px">常用语言</n-h3>
     <div class="languages">
       <div class="language-bar" v-for="item in data" :key="item.name"
            :style="{flexGrow: item.percent, backgroundColor: item.color}"/>
@@ -21,11 +21,11 @@
 
 <script setup lang="ts">
 import {computed, defineProps} from "vue"
-import {NH4, NIcon, NText} from "naive-ui"
+import {NH3, NIcon, NText} from "naive-ui"
 import {CircleRound} from "@vicons/material"
 import {Language} from "@/api/type"
+import {LanguageNames} from "@/type"
 
-const names = ["C", "C++", "Java", "Python", "Bash", "JavaScript", "Kotlin", "Go"]
 const colors = ["#555555", "#F34B7D", "#B07219", "#3572A5", "#89E051", "#F1E05A", "#A97BFF", "#00ADD8"]
 
 const props = defineProps<{ languages: Array<Language> }>()
@@ -43,11 +43,15 @@ const data = computed<Array<LanguageItem>>(() => {
 
   props.languages.forEach(val => {
     items.push({
-      name: names[val.language],
+      name: LanguageNames[val.language],
       count: val.count,
       percent: val.count / total,
       color: colors[val.language]
     })
+  })
+
+  items.sort((a, b) => {
+    return b.count - a.count
   })
 
   return items
@@ -75,7 +79,10 @@ const data = computed<Array<LanguageItem>>(() => {
 
 .language-detail {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 210px;
   margin-top: 10px;
 
   .item {
