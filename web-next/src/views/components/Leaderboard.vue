@@ -111,7 +111,7 @@ export default class Leaderboard extends Vue {
 
 <style scoped>
 .leaderboard {
-  width: calc(100% - var(--layout-padding) * 2);
+  width: 1100px;
   padding: var(--layout-padding) 0;
   margin: 0 auto;
 }

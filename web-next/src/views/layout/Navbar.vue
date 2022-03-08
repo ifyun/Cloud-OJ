@@ -1,5 +1,5 @@
 <template>
-  <div class="top-nav">
+  <div class="top-nav" :class="route.name">
     <div class="app-name">
       <logo :size="40"/>
     </div>
@@ -15,53 +15,55 @@
   </div>
 </template>
 
-<script lang="tsx">
-import {Options, Vue} from "vue-class-component"
-import {RouterLink} from "vue-router"
+<script setup lang="tsx">
+import {RouterLink, useRoute} from "vue-router"
 import {NMenu, NSpace} from "naive-ui"
 import {Logo} from "@/components"
 import ThemeSwitch from "./ThemeSwitch.vue"
 import UserMenu from "./UserMenu.vue"
+import {onBeforeMount} from "vue"
 
-@Options({
-  name: "Navbar",
-  components: {
-    NSpace,
-    NMenu,
-    Logo,
-    ThemeSwitch,
-    UserMenu
+const route = useRoute()
+
+const navMenuOptions = [
+  {
+    label: () => <RouterLink to={{name: "problems"}}>练习</RouterLink>,
+    key: "problems"
+  },
+  {
+    label: () => <RouterLink to={{name: "contests"}}>竞赛 & 作业</RouterLink>,
+    key: "contests"
+  },
+  {
+    label: () => <RouterLink to={{name: "leaderboard"}}>排名</RouterLink>,
+    key: "leaderboard"
+  },
+  {
+    label: () => <RouterLink to={{name: "help"}}>帮助</RouterLink>,
+    key: "help"
+  }
+]
+
+onBeforeMount(() => {
+  if (route.name === "submission") {
+    console.log(route.name)
   }
 })
-export default class Navbar extends Vue {
-  private navMenuOptions = [
-    {
-      label: () => <RouterLink to={{name: "problems"}}>练习</RouterLink>,
-      key: "problems"
-    },
-    {
-      label: () => <RouterLink to={{name: "contests"}}>竞赛 & 作业</RouterLink>,
-      key: "contests"
-    },
-    {
-      label: () => <RouterLink to={{name: "leaderboard"}}>排名</RouterLink>,
-      key: "leaderboard"
-    },
-    {
-      label: () => <RouterLink to={{name: "help"}}>帮助</RouterLink>,
-      key: "help"
-    }
-  ]
-}
 </script>
 
 <style scoped lang="scss">
 .top-nav {
+  width: 1100px;
   height: 60px;
-  padding: 0 25px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+
+  &.submission {
+    width: auto;
+    padding: 0 calc(var(--layout-padding) * 2);
+  }
 
   .app-name {
     display: flex;

@@ -51,14 +51,14 @@
   </n-config-provider>
 </template>
 
-<script lang="ts">
-import {Options, Vue} from "vue-class-component"
-import {NAlert, NAnchor, NAnchorLink, NCard, NCode, NConfigProvider, NDataTable, NH1, NH2, NH3, NP} from "naive-ui"
-import {setTitle} from "@/utils"
+<script setup lang="ts">
+import {onBeforeMount} from "vue"
+import {NAlert, NCard, NCode, NConfigProvider, NDataTable, NH1, NH2, NH3, NP} from "naive-ui"
 import highlightJs from "highlight.js/lib/core"
 import cpp from "highlight.js/lib/languages/cpp"
 import py from "highlight.js/lib/languages/python"
 import java from "highlight.js/lib/languages/java"
+import {setTitle} from "@/utils"
 
 highlightJs.registerLanguage("cpp", cpp)
 highlightJs.registerLanguage("py", py)
@@ -92,87 +92,63 @@ public class Solution {
 `
 // endregion
 
-@Options({
-  name: "Help",
-  components: {
-    NH1,
-    NH2,
-    NH3,
-    NP,
-    NCode,
-    NConfigProvider,
-    NAnchor,
-    NAnchorLink,
-    NCard,
-    NDataTable,
-    NAlert
-  }
-})
-export default class Help extends Vue {
-  private highlightJs = highlightJs
+const languageColumns = [
+  {title: "语言", key: "lang"},
+  {title: "编译器/解释器", key: "compiler"},
+  {title: "版本/参数", key: "version"}
+]
 
-  private cppSample = cppSample
-  private pySample = pySample
-  private javaSample = javaSample
+const languageData = [
+  {lang: "C", compiler: "gcc", version: "std=c11"},
+  {lang: "C++", compiler: "g++", version: "std=c++17"},
+  {lang: "Java", compiler: "OpenJDK", version: "1.8"},
+  {lang: "Python", compiler: "python3", version: "3.5"},
+  {lang: "Bash", compiler: "-", version: "-"},
+  {lang: "C#", compiler: "Mono", version: "4.6.2 (C# 5.0)"},
+  {lang: "JavaScript", compiler: "Node.js", version: "LTS (14.x)"},
+  {lang: "Kotlin", compiler: "-", version: "1.4.10",},
+  {lang: "Go", compiler: "-", version: "1.15.7"}
+]
 
-  private languageColumns = [
-    {title: "语言", key: "lang"},
-    {title: "编译器/解释器", key: "compiler"},
-    {title: "版本/参数", key: "version"}
-  ]
-
-  private languageData = [
-    {lang: "C", compiler: "gcc", version: "std=c11"},
-    {lang: "C++", compiler: "g++", version: "std=c++17"},
-    {lang: "Java", compiler: "OpenJDK", version: "1.8"},
-    {lang: "Python", compiler: "python3", version: "3.5"},
-    {lang: "Bash", compiler: "-", version: "-"},
-    {lang: "C#", compiler: "Mono", version: "4.6.2 (C# 5.0)"},
-    {lang: "JavaScript", compiler: "Node.js", version: "LTS (14.x)"},
-    {lang: "Kotlin", compiler: "-", version: "1.4.10",},
-    {lang: "Go", compiler: "-", version: "1.15.7"}
-  ]
-
-  private judgeColumns = [
-    {
-      title: "状态", key: "status",
-      rowSpan: (rowData: any, index: number) => {
-        if (index === 8 || index === 10) {
-          return 2
-        } else {
-          return 1
-        }
+const judgeColumns = [
+  {
+    title: "状态", key: "status",
+    rowSpan: (rowData: any, index: number) => {
+      if (index === 8 || index === 10) {
+        return 2
+      } else {
+        return 1
       }
-    },
-    {title: "说明", key: "desc"}
-  ]
+    }
+  },
+  {title: "说明", key: "desc"}
+]
 
-  private judgeData = [
-    {status: "等待判题", desc: "你的提交已经加入队列，不要着急"},
-    {status: "部分通过", desc: "你可能有一些特殊情况没有考虑到"},
-    {status: "完全正确 AC", desc: "恭喜你通过了所有测试点"},
-    {status: "答案错误 WA", desc: "再接再厉！"},
-    {status: "时间超限 TLE", desc: "注意！时间超限不能说明答案是正确的"},
-    {status: "内存超限 MLE", desc: "注意！内存超限也不能说明答案是正确的"},
-    {status: "输出超限 OLE", desc: "你的算法可能不太对"},
-    {status: "编译错误 CE", desc: "如果本地能运行那可能版本不对"},
-    {status: "运行错误 RE", desc: "1.如果是脚本语言可能存在语法错误"},
-    {desc: "2.其它原因导致判题程序中断，具体可以参考错误信息"},
-    {status: "内部错误 IE", desc: "1.题目没有测试数据"},
-    {desc: "2.判题服务器出问题了"}
-  ]
+const judgeData = [
+  {status: "等待判题", desc: "你的提交已经加入队列，不要着急"},
+  {status: "部分通过", desc: "你可能有一些特殊情况没有考虑到"},
+  {status: "完全正确 AC", desc: "恭喜你通过了所有测试点"},
+  {status: "答案错误 WA", desc: "再接再厉！"},
+  {status: "时间超限 TLE", desc: "注意！时间超限不能说明答案是正确的"},
+  {status: "内存超限 MLE", desc: "注意！内存超限也不能说明答案是正确的"},
+  {status: "输出超限 OLE", desc: "你的算法可能不太对"},
+  {status: "编译错误 CE", desc: "如果本地能运行那可能版本不对"},
+  {status: "运行错误 RE", desc: "1.如果是脚本语言可能存在语法错误"},
+  {desc: "2.其它原因导致判题程序中断，具体可以参考错误信息"},
+  {status: "内部错误 IE", desc: "1.题目没有测试数据"},
+  {desc: "2.判题服务器出问题了"}
+]
 
-  beforeMount() {
-    setTitle("帮助文档")
-  }
-}
+onBeforeMount(() => {
+  setTitle("帮助文档")
+})
 </script>
 
 <style scoped lang="scss">
 .help {
   display: flex;
   flex-direction: column;
-  width: 1080px;
+  width: 1100px;
   padding: var(--layout-padding) 0;
   margin: 0 auto;
 

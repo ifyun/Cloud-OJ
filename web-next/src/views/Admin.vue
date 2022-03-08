@@ -1,6 +1,6 @@
 <template>
   <n-layout position="absolute" :has-sider="true">
-    <n-config-provider abstract :theme="menuTheme" :theme-overrides="themeOverrides">
+    <n-config-provider abstract :theme="darkTheme" :theme-overrides="themeOverrides">
       <n-layout-sider class="aside" collapse-mode="width" :native-scrollbar="false" width="180">
         <div>
           <logo style="height: 60px"/>
@@ -41,10 +41,9 @@
   </n-layout>
 </template>
 
-<script lang="ts">
-import {VNode} from "vue"
+<script setup lang="ts">
+import {computed, nextTick, VNode} from "vue"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
 import {
   darkTheme,
   GlobalThemeOverrides,
@@ -62,56 +61,29 @@ import {AdminMenu, ThemeSwitch, UserMenu} from "@/views/layout"
 import {Logo, VNodeRenderer} from "@/components"
 import Mutations from "@/store/mutations"
 
-@Options({
-  name: "Admin",
-  components: {
-    darkTheme,
-    NConfigProvider,
-    NLayout,
-    NLayoutHeader,
-    NLayoutContent,
-    NLayoutSider,
-    NSpace,
-    NButton,
-    NIcon,
-    RefreshIcon,
-    Logo,
-    VNodeRenderer,
-    ThemeSwitch,
-    AdminMenu,
-    UserMenu
+const store = useStore()
+
+const themeOverrides = computed<GlobalThemeOverrides>(() => {
+  if (store.state.theme != null) {
+    return {}
+  }
+
+  return {
+    Layout: {
+      siderColor: "#161B22FF",
+      siderColorInverted: "#161B22FF",
+    }
   }
 })
-export default class Admin extends Vue {
-  private store = useStore()
 
-  get menuTheme() {
-    return darkTheme
-  }
+const breadcrumb = computed<VNode>(() => {
+  return store.state.breadcrumb
+})
 
-  get themeOverrides(): GlobalThemeOverrides {
-    if (this.store.state.theme != null) {
-      return {}
-    }
-
-    return {
-      Layout: {
-        siderColor: "#161B22FF",
-        siderColorInverted: "#161B22FF",
-      }
-    }
-  }
-
-  get breadcrumb(): VNode {
-    return this.store.state.breadcrumb
-  }
-
-  reload() {
-    this.store.commit(Mutations.SET_RELOAD, true)
-    this.$nextTick(() => {
-      this.store.commit(Mutations.SET_RELOAD, false)
-    })
-  }
+async function reload() {
+  store.commit(Mutations.SET_RELOAD, true)
+  await nextTick()
+  store.commit(Mutations.SET_RELOAD, false)
 }
 </script>
 

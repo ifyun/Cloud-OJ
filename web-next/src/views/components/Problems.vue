@@ -186,7 +186,7 @@ export default class ProblemTable extends Vue {
 
 <style scoped lang="scss">
 .problem-table {
-  width: calc(100% - var(--layout-padding) * 2);
+  width: 1100px;
   padding: var(--layout-padding) 0;
   margin: 0 auto;
 }
