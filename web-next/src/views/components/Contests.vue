@@ -144,7 +144,7 @@ export default class ContestTable extends Vue {
 
 <style scoped>
 .contest-table {
-  width: calc(100% - var(--layout-padding) * 2);
+  width: 1100px;
   padding: var(--layout-padding) 0;
   margin: 0 auto;
 }

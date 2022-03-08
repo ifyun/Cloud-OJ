@@ -177,7 +177,6 @@ export default class Submission extends Vue {
   height: calc(100% - var(--header-height) - var(--layout-padding) * 2);
   min-height: 720px;
   padding: var(--layout-padding);
-  flex: auto;
 
   .content {
     height: 100%;

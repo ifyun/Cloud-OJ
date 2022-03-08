@@ -4,9 +4,7 @@
       <n-message-provider>
         <n-global-style/>
         <router-view v-if="!reload" v-slot="{Component}" :key="$route.fullPath">
-          <keep-alive>
-            <component :is="Component"/>
-          </keep-alive>
+          <component :is="Component"/>
         </router-view>
         <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false" :show-icon="false"
                  transform-origin="center" style="margin-top: 220px">
