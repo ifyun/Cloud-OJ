@@ -58,7 +58,7 @@
 import {nextTick} from "vue"
 import {Options, Vue} from "vue-class-component"
 import {useStore} from "vuex"
-import {RouterLink, useRouter} from "vue-router"
+import {useRouter} from "vue-router"
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -82,15 +82,15 @@ import {
 } from "naive-ui"
 import {FileArchive as FileIcon, Search as SearchIcon, Tags as TagsIcon} from "@vicons/fa"
 import {
-  ManageSearchRound,
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
+  ManageSearchRound,
   PostAddRound as AddIcon
 } from "@vicons/material"
 import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {renderIcon, setTitle, TagUtil} from "@/utils"
 import {ProblemApi} from "@/api/request"
-import Mutations from "@/store/mutations";
+import {Mutations} from "@/store"
 
 let selectedId: number | undefined
 let selectedTitle: string | undefined
@@ -198,10 +198,8 @@ export default class ProblemAdmin extends Vue {
       title: "题目名称",
       key: "title",
       render: (row: Problem) => (
-          <NButton text>
-            <RouterLink to={{name: "submission", query: {problemId: row.problemId}}}>
-              {row.title}
-            </RouterLink>
+          <NButton text onClick={() => this.router.push({name: "submission", query: {problemId: row.problemId}})}>
+            {row.title}
           </NButton>
       )
     },

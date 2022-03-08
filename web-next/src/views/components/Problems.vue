@@ -31,156 +31,134 @@
   </div>
 </template>
 
-<script lang="tsx">
-import {Options, Vue} from "vue-class-component"
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
-import {RouterLink, useRouter} from "vue-router"
+import {useRoute, useRouter} from "vue-router"
 import {NButton, NCard, NDataTable, NIcon, NInput, NInputGroup, NPagination, NSpace, NTag, useMessage} from "naive-ui"
 import {Search as SearchIcon} from "@vicons/fa"
 import {ProblemApi} from "@/api/request"
-import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
+import {ErrorMsg, PagedData, Problem} from "@/api/type"
 import {setTitle, TagUtil} from "@/utils"
 
-@Options({
-  name: "Problems",
-  components: {
-    NCard,
-    NSpace,
-    NInput,
-    NInputGroup,
-    NIcon,
-    NButton,
-    NTag,
-    NDataTable,
-    NPagination,
-    SearchIcon
-  }
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const message = useMessage()
+
+const pagination = ref({
+  page: 1,
+  pageSize: 20,
+  loading: true
 })
-export default class ProblemTable extends Vue {
-  private store = useStore()
-  private router = useRouter()
-  private message = useMessage()
 
-  private pagination = {
-    page: 1,
-    pageSize: 20,
-    loading: true
-  }
-
-  /* 表格列配置 */
-  private problemColumns = [
-    {
-      title: "#",
-      align: "right",
-      width: 50,
-      render: (row: Problem, rowIndex: number) => (
-          <span>{(this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1}</span>
-      )
-    },
-    {
-      title: "ID",
-      key: "problemId",
-      align: "right",
-      width: 70
-    },
-    {
-      title: "题目名称",
-      render: (row: Problem) => (
-          <NButton text>
-            <RouterLink to={{name: "submission", query: {problemId: row.problemId}}}>
-              {row.title}
-            </RouterLink>
-          </NButton>
-      )
-    },
-    {
-      title: "分类",
-      render: (row: Problem) => {
-        if (row.category === "") {
-          return ""
-        }
-        const tags = row.category.split(",")
-        return tags.map((tag) => {
-          return <NTag class="tag" size="small" color={TagUtil.getColor(tag, this.theme)}>{tag}</NTag>
-        })
+/* 表格列配置 */
+const problemColumns = [
+  {
+    title: "#",
+    align: "right",
+    width: 50,
+    render: (row: Problem, rowIndex: number) => (
+        <span>{(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}</span>
+    )
+  },
+  {
+    title: "ID",
+    key: "problemId",
+    align: "right",
+    width: 70
+  },
+  {
+    title: "题目名称",
+    render: (row: Problem) => (
+        <NButton text onClick={() => router.push({name: "submission", query: {problemId: row.problemId}})}>
+          {row.title}
+        </NButton>
+    )
+  },
+  {
+    title: "分类",
+    render: (row: Problem) => {
+      if (row.category === "") {
+        return ""
       }
-    },
-    {
-      title: "分数",
-      key: "score",
-      align: "right"
-    }
-  ]
-
-  /* 题目数据 */
-  private problems: PagedData<Problem> = {
-    data: [],
-    count: 0
-  }
-
-  private keyword: string = ""
-  private keywordTag: string | null = null
-
-  get theme() {
-    return this.store.state.theme
-  }
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  beforeMount() {
-    setTitle("练习")
-
-    if ("page" in this.$route.query) {
-      this.pagination.page = Number(this.$route.query.page)
-    }
-
-    if ("keyword" in this.$route.query) {
-      this.keyword = String(this.$route.query.keyword)
-      this.keywordTag = this.keyword
-    }
-
-    this.queryProblems()
-  }
-
-  pageChange(page: number) {
-    this.router.push({
-      query: {page}
-    })
-  }
-
-  clearKeyword() {
-    this.router.push({
-      query: {}
-    })
-  }
-
-  search() {
-    if (this.keyword !== "") {
-      this.router.push({
-        query: {keyword: this.keyword}
+      const tags = row.category.split(",")
+      return tags.map((tag) => {
+        return <NTag class="tag" size="small" color={TagUtil.getColor(tag, theme)}>{tag}</NTag>
       })
     }
+  },
+  {
+    title: "分数",
+    key: "score",
+    align: "right"
+  }
+]
+
+/* 题目数据 */
+const problems = ref<PagedData<Problem>>({
+  data: [],
+  count: 0
+})
+
+const keyword = ref<string>("")
+const keywordTag = ref<string | null>(null)
+
+const theme = computed(() => {
+  return store.state.theme
+})
+
+onBeforeMount(() => {
+  setTitle("练习")
+
+  if ("page" in route.query) {
+    pagination.value.page = Number(route.query.page)
   }
 
-  /**
-   * 获取题目
-   */
-  queryProblems() {
-    this.pagination.loading = true
-    ProblemApi.getAllOpened(
-        this.pagination.page,
-        this.pagination.pageSize,
-        this.keyword
-    ).then((data) => {
-      this.problems = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(`${error.code}: ${error.msg}`)
-    }).finally(() => {
-      this.pagination.loading = false
+  if ("keyword" in route.query) {
+    keyword.value = String(route.query.keyword)
+    keywordTag.value = keyword.value
+  }
+
+  queryProblems()
+})
+
+function pageChange(page: number) {
+  router.push({
+    query: {page}
+  })
+}
+
+function clearKeyword() {
+  router.push({
+    query: {}
+  })
+}
+
+function search() {
+  if (keyword.value !== "") {
+    router.push({
+      query: {keyword: keyword.value}
     })
   }
+}
+
+/**
+ * 获取题目
+ */
+function queryProblems() {
+  pagination.value.loading = true
+  ProblemApi.getAllOpened(
+      pagination.value.page,
+      pagination.value.pageSize,
+      keyword.value
+  ).then((data) => {
+    problems.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(`${error.code}: ${error.msg}`)
+  }).finally(() => {
+    pagination.value.loading = false
+  })
 }
 </script>
 
