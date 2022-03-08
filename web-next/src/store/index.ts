@@ -54,3 +54,6 @@ const store = createStore({
 })
 
 export default store
+export {
+    Mutations
+}
