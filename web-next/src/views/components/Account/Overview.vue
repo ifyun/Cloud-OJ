@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onBeforeMount, ref} from "vue"
-import {NSpace, NDivider, useMessage} from "naive-ui"
+import {onBeforeMount, ref} from "vue"
+import {NDivider, NSpace, useMessage} from "naive-ui"
 import Languages from "./Languages.vue"
 import Heatmap from "./Heatmap.vue"
 import Timeline from "./Timeline.vue"

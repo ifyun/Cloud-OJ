@@ -10,102 +10,93 @@
   </div>
 </template>
 
-<script lang="tsx">
-import {Options, Vue} from "vue-class-component"
-import {useRouter} from "vue-router"
+<script setup lang="tsx">
+import {onBeforeMount, ref} from "vue"
+import {useRoute, useRouter} from "vue-router"
 import {NCard, NDataTable, NPagination, NSpace, NText, useMessage} from "naive-ui"
-import UserAvatar from "@/components/UserAvatar.vue"
+import {UserAvatar} from "@/components"
 import {RankingApi} from "@/api/request"
 import {ErrorMsg, PagedData, Ranking} from "@/api/type"
 import {setTitle} from "@/utils"
 
-@Options({
-  name: "Leaderboard",
-  components: {
-    NCard,
-    NSpace,
-    NDataTable,
-    NPagination
-  }
+const route = useRoute()
+const router = useRouter()
+const message = useMessage()
+
+const pagination = ref({
+  page: 1,
+  pageSize: 15,
+  loading: true
 })
-export default class Leaderboard extends Vue {
-  private router = useRouter()
-  private message = useMessage()
 
-  private pagination = {
-    page: 1,
-    pageSize: 15,
-    loading: true
+const rankings = ref<PagedData<Ranking>>({
+  data: [],
+  count: 0
+})
+
+const rankingColumns = [
+  {
+    title: "排名",
+    align: "center",
+    width: 90,
+    key: "rank"
+  },
+  {
+    title: "用户",
+    render: (row: Ranking) => (
+        <NSpace align="center" size="small">
+          <UserAvatar size="small" userId={row.userId}/>
+          <NText>{row.name}</NText>
+        </NSpace>
+    )
+  },
+  {
+    title: "提交",
+    width: 100,
+    align: "right",
+    key: "committed"
+  },
+  {
+    title: "通过",
+    width: 100,
+    align: "right",
+    key: "passed"
+  },
+  {
+    title: "分数",
+    width: 100,
+    align: "right",
+    render: (row: Ranking) => <NText type="success" strong>{row.score}</NText>
+  }
+]
+
+onBeforeMount(() => {
+  setTitle("排名")
+
+  if ("page" in route.query) {
+    pagination.value.page = Number(route.query.page)
   }
 
-  private rankingColumns = [
-    {
-      title: "排名",
-      align: "center",
-      width: 90,
-      key: "rank"
-    },
-    {
-      title: "用户",
-      render: (row: Ranking) => (
-          <NSpace align="center" size="small">
-            <UserAvatar size="small" userId={row.userId}/>
-            <NText>{row.name}</NText>
-          </NSpace>
-      )
-    },
-    {
-      title: "提交",
-      width: 100,
-      align: "right",
-      key: "committed"
-    },
-    {
-      title: "通过",
-      width: 100,
-      align: "right",
-      key: "passed"
-    },
-    {
-      title: "分数",
-      width: 100,
-      align: "right",
-      render: (row: Ranking) => <NText type="success" strong>{row.score}</NText>
-    }
-  ]
+  queryRankings()
+})
 
-  private rankings: PagedData<Ranking> = {
-    data: [],
-    count: 0
-  }
+function pageChange(page: number) {
+  router.push({
+    query: {page}
+  })
+}
 
-  beforeMount() {
-    setTitle("排名")
-
-    if ("page" in this.$route.query) {
-      this.pagination.page = Number(this.$route.query.page)
-    }
-    this.queryRankings()
-  }
-
-  pageChange(page: number) {
-    this.router.push({
-      query: {page}
-    })
-  }
-
-  queryRankings() {
-    RankingApi.get(
-        this.pagination.page,
-        this.pagination.pageSize
-    ).then((data) => {
-      this.rankings = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(`${error.code}: ${error.msg}`)
-    }).finally(() => {
-      this.pagination.loading = false
-    })
-  }
+function queryRankings() {
+  RankingApi.get(
+      pagination.value.page,
+      pagination.value.pageSize
+  ).then((data) => {
+    rankings.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(`${error.code}: ${error.msg}`)
+  }).finally(() => {
+    pagination.value.loading = false
+  })
 }
 </script>
 

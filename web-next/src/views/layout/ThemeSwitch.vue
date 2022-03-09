@@ -13,30 +13,21 @@
   </n-switch>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import {computed} from "vue"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
 import {NIcon, NSwitch} from "naive-ui"
 import {DarkModeRound as DarkIcon} from "@vicons/material"
-import Mutations from "@/store/mutations"
+import {Mutations} from "@/store"
 
-@Options({
-  name: "ThemeSwitch",
-  components: {
-    NSwitch,
-    NIcon,
-    DarkIcon
+const store = useStore()
+
+const isDarkTheme = computed<boolean>({
+  get: () => {
+    return store.state.theme != null
+  },
+  set: (value) => {
+    store.commit(Mutations.CHANGE_THEME, value ? "dark" : "light")
   }
 })
-export default class ThemeSwitch extends Vue {
-  private store = useStore()
-
-  get isDarkTheme(): boolean {
-    return this.store.state.theme != null
-  }
-
-  set isDarkTheme(value: boolean) {
-    this.store.commit(Mutations.CHANGE_THEME, value ? "dark" : "light")
-  }
-}
 </script>

@@ -2,35 +2,18 @@
   <n-avatar round :src="url" :size="size" @error="url= ''" style="vertical-align: middle"/>
 </template>
 
-<script lang="ts">
-import {Options} from "vue-class-component"
-import {Prop, Watch} from "vue-property-decorator"
-import {VueComponent} from "@/vue-ts-component"
+<script setup lang="ts">
+import {ref, watch} from "vue"
 import {NAvatar} from "naive-ui"
 
-interface Props {
-  userId: string
-  size?: string | number
-}
+const props = defineProps<{
+  userId: string,
+  size: "small" | "medium" | "large" | number
+}>()
 
-@Options({
-  name: "UserAvatar",
-  components: {
-    NAvatar
-  }
-})
-export default class UserAvatar extends VueComponent<Props> {
-  @Prop(String)
-  private readonly userId?: string
+const url = ref<string>("")
 
-  @Prop({type: [String, Number], default: "medium"})
-  private readonly size?: string | number
-
-  private url: string = ""
-
-  @Watch("userId", {immediate: true})
-  userIdChanged(value: string) {
-    this.url = `/api/file/image/avatar/${value}.png`
-  }
-}
+watch(props, async (newValue) => {
+  url.value = `/api/file/image/avatar/${newValue.userId}.png`
+}, {immediate: true, deep: true})
 </script>

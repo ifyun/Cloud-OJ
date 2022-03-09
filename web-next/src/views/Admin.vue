@@ -80,10 +80,11 @@ const breadcrumb = computed<VNode>(() => {
   return store.state.breadcrumb
 })
 
-async function reload() {
+function reload() {
   store.commit(Mutations.SET_RELOAD, true)
-  await nextTick()
-  store.commit(Mutations.SET_RELOAD, false)
+  nextTick(() => {
+    store.commit(Mutations.SET_RELOAD, false)
+  })
 }
 </script>
 

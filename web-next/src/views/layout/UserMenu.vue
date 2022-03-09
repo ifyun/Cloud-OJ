@@ -20,123 +20,105 @@
   </n-space>
 </template>
 
-<script lang="tsx">
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
 import {RouterLink} from "vue-router"
-import {Options, Vue} from "vue-class-component"
 import {NAvatar, NButton, NDropdown, NIcon, NSpace, useDialog, useMessage} from "naive-ui"
 import {
   ArrowDropDownFilled as DropDownIcon,
   DashboardCustomizeRound as DashboardIcon,
-  ExitToAppOutlined as LogoutIcon,
-  LogInFilled as LoginIcon
+  ExitToAppOutlined as LogoutIcon
 } from "@vicons/material"
 import {HouseUser as UserHomeIcon} from "@vicons/fa"
 import {renderIcon} from "@/utils"
 import {AuthApi} from "@/api/request"
 import {ErrorMsg, UserInfo} from "@/api/type"
-import Mutations from "@/store/mutations"
+import {Mutations} from "@/store"
 
-@Options({
-  name: "UserMenu",
-  components: {
-    NSpace,
-    NButton,
-    NDropdown,
-    NAvatar,
-    NIcon,
-    DropDownIcon,
-    UserHomeIcon,
-    DashboardIcon,
-    LogoutIcon,
-    LoginIcon
+const store = useStore()
+const message = useMessage()
+const dialog = useDialog()
+const avatar = ref<string>("")
+
+const userMenuOptions = [
+  {
+    label: "个人中心",
+    key: "account",
+    icon: renderIcon(UserHomeIcon)
+  },
+  {
+    label: "退出",
+    key: "exit",
+    icon: renderIcon(LogoutIcon)
+  }
+]
+
+const adminMenuOptions = [
+  {
+    label: () => <RouterLink to={{name: "account"}}>个人中心</RouterLink>,
+    key: "account",
+    icon: renderIcon(UserHomeIcon)
+  },
+  {
+    label: () => <RouterLink to={{name: "problem_admin"}}>系统管理</RouterLink>,
+    key: "admin",
+    icon: renderIcon(DashboardIcon)
+  },
+  {
+    label: "退出登录",
+    key: "exit",
+    icon: renderIcon(LogoutIcon)
+  }
+]
+
+const isLoggedIn = computed<boolean>(() => {
+  return store.getters.isLoggedIn
+})
+
+const userInfo = computed<UserInfo>(() => {
+  return store.state.userInfo
+})
+
+function userMenuSelect(key: string) {
+  if (key === "exit") {
+    exit()
+  }
+}
+
+onBeforeMount(() => {
+  if (store.state.userInfo != null) {
+    avatar.value = `/api/file/image/avatar/${userInfo.value.userId}.png`
   }
 })
-export default class UserMenu extends Vue {
-  private store = useStore()
-  private message = useMessage()
-  private dialog = useDialog()
-  private avatar: string = ""
 
-  private userMenuOptions = [
-    {
-      label: "个人中心",
-      key: "account",
-      icon: renderIcon(UserHomeIcon)
-    },
-    {
-      label: "退出",
-      key: "exit",
-      icon: renderIcon(LogoutIcon)
+function login(event: any) {
+  store.commit(Mutations.SHOW_AUTH_DIALOG, true)
+  event.target.blur()
+  event.target.parentNode.blur()
+}
+
+function logoff() {
+  AuthApi.logoff(
+      userInfo.value
+  ).then(() => {
+    message.success(`${userInfo.value.name} 已退出`)
+  }).catch((error: ErrorMsg) => {
+    message.warning(`${error.code}: ${error.msg}`)
+  }).finally(() => {
+    store.commit(Mutations.CLEAR_TOKEN)
+  })
+}
+
+function exit() {
+  dialog.warning({
+    title: "警告",
+    content: "确定退出吗？",
+    positiveText: "确定",
+    onPositiveClick: () => {
+      logoff()
     }
-  ]
-
-  private adminMenuOptions = [
-    {
-      label: () => <RouterLink to={{name: "account"}}>个人中心</RouterLink>,
-      key: "account",
-      icon: renderIcon(UserHomeIcon)
-    },
-    {
-      label: () => <RouterLink to={{name: "problem_admin"}}>系统管理</RouterLink>,
-      key: "admin",
-      icon: renderIcon(DashboardIcon)
-    },
-    {
-      label: "退出登录",
-      key: "exit",
-      icon: renderIcon(LogoutIcon)
-    }
-  ]
-
-  get isLoggedIn(): boolean {
-    return this.store.getters.isLoggedIn
-  }
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  userMenuSelect(key: string) {
-    if (key === "exit") {
-      this.exit()
-    }
-  }
-
-  beforeMount() {
-    if (this.store.state.userInfo != null) {
-      this.avatar = `/api/file/image/avatar/${this.userInfo.userId}.png`
-    }
-  }
-
-  login(event: any) {
-    this.store.commit(Mutations.SHOW_AUTH_DIALOG, true)
-    event.target.blur()
-    event.target.parentNode.blur()
-  }
-
-  logoff() {
-    AuthApi.logoff(
-        this.userInfo
-    ).then(() => {
-      this.message.success(`${this.userInfo.name} 已退出`)
-    }).catch((error: ErrorMsg) => {
-      this.message.warning(`${error.code}: ${error.msg}`)
-    }).finally(() => {
-      this.store.commit(Mutations.CLEAR_TOKEN)
-    })
-  }
-
-  exit() {
-    this.dialog.warning({
-      title: "警告",
-      content: "确定退出吗？",
-      positiveText: "确定",
-      onPositiveClick: () => {
-        this.logoff()
-      }
-    })
-  }
+  })
 }
 </script>
 

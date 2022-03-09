@@ -66,107 +66,87 @@
   </n-form>
 </template>
 
-<script lang="ts">
-import {Options, Vue} from "vue-class-component"
+<script setup lang="ts">
+import {ref} from "vue"
 import {FormRules, NButton, NForm, NFormItem, NIcon, NInput} from "naive-ui"
 import {Building, Envelope as MailIcon, Lock as PasswordIcon, Orcid as UserIdIcon, User as UserIcon} from "@vicons/fa"
 import {User} from "@/api/type"
 
-@Options({
-  name: "Signup",
-  components: {
-    NForm,
-    NFormItem,
-    NButton,
-    NInput,
-    NIcon,
-    UserIdIcon,
-    UserIcon,
-    MailIcon,
-    PasswordIcon,
-    Building
-  }
-})
-export default class Signup extends Vue {
-  private loading: boolean = false
-  private user: User = new User()
+const loading = ref<boolean>(false)
+const user = ref<User>(new User())
+const signupForm = ref<HTMLFormElement | null>(null)
 
-  private signupRules: FormRules = {
-    userId: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        if (!value) {
-          return new Error("请输入ID")
-        } else if (value.length < 6) {
-          return new Error("至少 6 个字符!")
-        }
+const signupRules: FormRules = {
+  userId: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      if (!value) {
+        return new Error("请输入ID")
+      } else if (value.length < 6) {
+        return new Error("至少 6 个字符!")
+      }
+      return true
+    }
+  },
+  name: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      if (!value) {
+        return new Error("请输入昵称")
+      } else if (value.length < 2) {
+        return new Error("至少 2 个字符!")
+      }
+      return true
+    }
+  },
+  password: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      if (!value) {
+        return new Error("请输入密码")
+      } else if (value.length < 6) {
+        return new Error("至少 6 位!")
+      }
+      return true
+    }
+  },
+  confirmPassword: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator: (rule: any, value: string): Error | boolean => {
+      if (!value) {
+        return new Error("请确认密码")
+      } else if (value !== user.value.password) {
+        return new Error("密码不一致!")
+      }
+      return true
+    }
+  },
+  email: {
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      if (value.length === 0) {
         return true
       }
-    },
-    name: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        if (!value) {
-          return new Error("请输入昵称")
-        } else if (value.length < 2) {
-          return new Error("至少 2 个字符!")
-        }
+      if (regex.test(value)) {
         return true
-      }
-    },
-    password: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        if (!value) {
-          return new Error("请输入密码")
-        } else if (value.length < 6) {
-          return new Error("至少 6 位!")
-        }
-        return true
-      }
-    },
-    confirmPassword: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator: (rule: any, value: string): Error | boolean => {
-        if (!value) {
-          return new Error("请确认密码")
-        } else if (value !== this.user.password) {
-          return new Error("密码不一致!")
-        }
-        return true
-      }
-    },
-    email: {
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-        if (value.length === 0) {
-          return true
-        }
-        if (regex.test(value)) {
-          return true
-        } else {
-          return Error("格式不正确!")
-        }
+      } else {
+        return Error("格式不正确!")
       }
     }
   }
+}
 
-  declare $refs: {
-    signupForm: HTMLFormElement
-  }
-
-  signup() {
-    this.$refs.signupForm.validate((errors: any) => {
-      if (!errors) {
-        console.debug(this.user)
-      }
-    })
-  }
+function signup() {
+  signupForm.value?.validate((errors: any) => {
+    if (!errors) {
+      // TODO 完成注册功能
+    }
+  })
 }
 </script>
 

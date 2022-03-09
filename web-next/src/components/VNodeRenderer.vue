@@ -1,14 +1,18 @@
-<script lang="tsx">
-import {PropType, VNode} from "vue"
-import {Vue} from "vue-class-component"
-import {Prop} from "vue-property-decorator"
+<script lang="ts">
+import {h, PropType, VNode} from "vue"
 
-export default class VNodeRenderer extends Vue {
-  @Prop({type: Object as PropType<VNode>})
-  private vNode?: VNode
+export default {
+  props: {
+    vNode: {
+      type: [Object as PropType<VNode>, null]
+    }
+  },
+  render(props: any) {
+    if (props.vNode != null) {
+      return h(props.vNode)
+    }
 
-  render() {
-    return this.vNode
+    return null
   }
 }
 </script>

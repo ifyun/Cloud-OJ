@@ -17,25 +17,12 @@
   </div>
 </template>
 
-<script>
-import {Options, Vue} from "vue-class-component"
+<script setup lang="ts">
 import {NButton, NDivider, NIcon} from "naive-ui"
 import {Github as GithubIcon} from "@vicons/fa"
-
-@Options({
-  name: "BottomInfo",
-  components: {
-    NDivider,
-    NIcon,
-    NButton,
-    GithubIcon
-  }
-})
-export default class BottomInfo extends Vue {
-}
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .footer {
   display: flex;
   flex-direction: row;
