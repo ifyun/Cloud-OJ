@@ -11,18 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, onBeforeMount, ref} from "vue"
+import {onBeforeMount, ref} from "vue"
 import {NSpace, NText, useMessage} from "naive-ui"
 import {UserAvatar} from "@/components"
 import {ErrorMsg, User} from "@/api/type"
 import {UserApi} from "@/api/request"
 
-const props = defineProps<{
-  userId: string
-}>()
-
 const message = useMessage()
 
+const props = defineProps<{ userId: string }>()
 const profile = ref<User>(new User())
 
 onBeforeMount(() => {

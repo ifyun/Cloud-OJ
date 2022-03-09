@@ -14,131 +14,112 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script setup lang="tsx">
+import {onBeforeMount, ref} from "vue"
 import {useRouter} from "vue-router"
-import {Options, Vue} from "vue-class-component"
-import {useStore} from "vuex"
 import {NButton, NCard, NDataTable, NPagination, NSpace, NTag, useMessage} from "naive-ui"
 import {ContestApi} from "@/api/request"
 import {Contest, ErrorMsg, PagedData} from "@/api/type"
 import {LanguageUtil, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
 
-@Options({
-  name: "Contests",
-  components: {
-    NCard,
-    NSpace,
-    NDataTable,
-    NPagination,
-    NButton,
-    NTag
-  }
+const router = useRouter()
+const message = useMessage()
+
+const pagination = ref({
+  page: 1,
+  pageSize: 15,
+  loading: true
 })
-export default class ContestTable extends Vue {
-  private router = useRouter()
-  private store = useStore()
-  private message = useMessage()
 
-  private pagination = {
-    page: 1,
-    pageSize: 15,
-    loading: true
-  }
+const contests = ref<PagedData<Contest>>({
+  data: [],
+  count: 0
+})
 
-  private contestColumns = [
-    {
-      title: "#",
-      align: "right",
-      width: 50,
-      render: (row: Contest, rowIndex: number) => (
-          <span>{(this.pagination.page - 1) * this.pagination.pageSize + rowIndex + 1}</span>
-      )
-    },
-    {
-      title: "竞赛",
-      render: (row: Contest) => (
-          <NSpace align="center">
-            <NTag type={this.contestTagType(row)}>{this.contestStateText(row)}</NTag>
-            <NButton text>{row.contestName}</NButton>
-          </NSpace>
-      )
-    },
-    {
-      title: "语言限制",
-      render: (row: Contest) => {
-        if (row.languages === 511) {
-          return <span>"没有限制"</span>
-        }
-        const languages: Array<string> = []
-        LanguageUtil.toArray(row.languages).forEach((value) => {
-          languages.push(LanguageOptions[value].label)
-        })
-        return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
+const contestColumns = [
+  {
+    title: "#",
+    align: "right",
+    width: 50,
+    render: (row: Contest, rowIndex: number) => (
+        <span>{(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}</span>
+    )
+  },
+  {
+    title: "竞赛",
+    render: (row: Contest) => (
+        <NSpace align="center">
+          <NTag type={contestTagType(row)}>{contestStateText(row)}</NTag>
+          <NButton text>{row.contestName}</NButton>
+        </NSpace>
+    )
+  },
+  {
+    title: "语言限制",
+    render: (row: Contest) => {
+      if (row.languages === 511) {
+        return <span>"没有限制"</span>
       }
-    },
-    {
-      title: "开始时间",
-      key: "startAt"
-    },
-    {
-      title: "结束时间",
-      key: "endAt"
+      const languages: Array<string> = []
+      LanguageUtil.toArray(row.languages).forEach((value) => {
+        languages.push(LanguageOptions[value].label)
+      })
+      return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
     }
-  ]
-
-  private contests: PagedData<Contest> = {
-    data: [],
-    count: 0
+  },
+  {
+    title: "开始时间",
+    key: "startAt"
+  },
+  {
+    title: "结束时间",
+    key: "endAt"
   }
+]
 
-  get userInfo() {
-    return this.store.state.userInfo
-  }
+onBeforeMount(() => {
+  setTitle("竞赛")
+  queryContests()
+})
 
-  beforeMount() {
-    setTitle("竞赛")
-    this.queryContests()
+function contestTagType(c: Contest) {
+  if (c.ended) {
+    return "error"
+  } else if (c.started) {
+    return "success"
+  } else {
+    return "info"
   }
+}
 
-  contestTagType(contest: Contest) {
-    if (contest.ended) {
-      return "error"
-    } else if (contest.started) {
-      return "success"
-    } else {
-      return "info"
-    }
+function contestStateText(c: Contest) {
+  if (c.ended) {
+    return "已结束"
+  } else if (c.started) {
+    return "进行中"
+  } else {
+    return "未开始"
   }
+}
 
-  contestStateText(c: Contest) {
-    if (c.ended) {
-      return "已结束"
-    } else if (c.started) {
-      return "进行中"
-    } else {
-      return "未开始"
-    }
-  }
+function pageChange(page: number) {
+  router.push({
+    query: {page}
+  })
+}
 
-  pageChange(page: number) {
-    this.router.push({
-      query: {page}
-    })
-  }
-
-  queryContests() {
-    ContestApi.getAll(
-        this.pagination.page,
-        this.pagination.pageSize
-    ).then((data) => {
-      this.contests = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(`${error}: ${error.msg}`)
-    }).finally(() => {
-      this.pagination.loading = false
-    })
-  }
+function queryContests() {
+  ContestApi.getAll(
+      pagination.value.page,
+      pagination.value.pageSize
+  ).then((data) => {
+    contests.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(`${error}: ${error.msg}`)
+  }).finally(() => {
+    pagination.value.loading = false
+  })
 }
 </script>
 

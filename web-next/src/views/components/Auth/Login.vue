@@ -28,90 +28,74 @@
   </n-form>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import {ref} from "vue"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
 import {FormRules, NButton, NForm, NFormItem, NIcon, NInput, useMessage} from "naive-ui"
 import {Lock, Orcid} from "@vicons/fa"
 import {AuthApi} from "@/api/request"
 import {UsernamePassword} from "@/api/type"
-import Mutations from "@/store/mutations"
+import {Mutations} from "@/store"
 
 const md5 = require("crypto-js/md5")
 
-@Options({
-  name: "Login",
-  components: {
-    NForm,
-    NIcon,
-    NFormItem,
-    NInput,
-    NButton,
-    Orcid,
-    Lock
-  }
+const loading = ref<boolean>(false)
+const store = useStore()
+const message = useMessage()
+
+const user = ref<UsernamePassword>({
+  username: "",
+  password: ""
 })
-export default class Login extends Vue {
-  private loading: boolean = false
-  private readonly store = useStore()
-  private readonly message = useMessage()
 
-  private user: UsernamePassword = {
-    username: "",
-    password: ""
-  }
+const loginForm = ref<HTMLFormElement | null>(null)
 
-  private loginRules: FormRules = {
-    username: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        if (!value) {
-          return new Error("请输入用户ID")
-        } else if (value.length < 4) {
-          return new Error("这么短不可能是ID")
-        }
-        return true
+const loginRules: FormRules = {
+  username: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      if (!value) {
+        return new Error("请输入用户ID")
+      } else if (value.length < 4) {
+        return new Error("这么短不可能是ID")
       }
-    },
-    password: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: string): Error | boolean {
-        if (!value) {
-          return new Error("请输入密码")
-        } else if (value.length < 4) {
-          return new Error("这么短不可能是密码")
-        }
-        return true
+      return true
+    }
+  },
+  password: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: string): Error | boolean {
+      if (!value) {
+        return new Error("请输入密码")
+      } else if (value.length < 4) {
+        return new Error("这么短不可能是密码")
       }
+      return true
     }
   }
+}
 
-  declare $refs: {
-    loginForm: HTMLFormElement
-  }
-
-  login() {
-    this.$refs.loginForm.validate((errors: any) => {
-      if (!errors) {
-        this.loading = true
-        AuthApi.login({
-          username: this.user.username,
-          password: md5(this.user.password).toString()
-        }).then((data) => {
-          this.store.commit(Mutations.SAVE_TOKEN, data)
-          this.store.commit(Mutations.SHOW_AUTH_DIALOG, false)
-        }).catch((error) => {
-          this.message.error(`${error.code}: ${error.msg}`)
-        }).finally(() => {
-          this.loading = false
-        })
-      } else {
-        this.message.error("请检查你的输入")
-      }
-    })
-  }
+function login() {
+  loginForm.value?.validate((errors: any) => {
+    if (!errors) {
+      loading.value = true
+      AuthApi.login({
+        username: user.value.username,
+        password: md5(user.value.password).toString()
+      }).then((data) => {
+        store.commit(Mutations.SAVE_TOKEN, data)
+        store.commit(Mutations.SHOW_AUTH_DIALOG, false)
+      }).catch((error) => {
+        message.error(`${error.code}: ${error.msg}`)
+      }).finally(() => {
+        loading.value = false
+      })
+    } else {
+      message.error("请检查你的输入")
+    }
+  })
 }
 </script>
 

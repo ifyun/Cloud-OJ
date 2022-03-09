@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, nextTick, onMounted, watch} from "vue"
+import {computed, nextTick, onMounted, watch} from "vue"
 import {useStore} from "vuex"
 import * as echarts from "echarts/core"
 import {EChartsType} from "echarts/core"
@@ -91,10 +91,10 @@ let heatmap: EChartsType | null = null
 const option: ECOption = {
   calendar: {
     top: 24,
-    left: 96,
-    right: 48,
+    left: 120,
+    right: 70,
     range: props.year,
-    cellSize: ["auto", 17],
+    cellSize: ["auto", 16],
     dayLabel: {
       firstDay: 1,
       nameMap: "EN"
@@ -105,7 +105,7 @@ const option: ECOption = {
     splitLine: {
       show: false,
       lineStyle: {
-        width: 0.1
+        width: 0.2
       }
     },
     itemStyle: {
@@ -114,7 +114,7 @@ const option: ECOption = {
   },
   visualMap: {
     min: 0,
-    max: 15,
+    max: 10,
     type: "piecewise",
     orient: "horizontal",
     left: "center"
