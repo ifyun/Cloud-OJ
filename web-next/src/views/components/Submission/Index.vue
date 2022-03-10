@@ -9,25 +9,25 @@
               <n-tab-pane name="题目描述">
                 <n-h2 style="margin-bottom: 6px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
                 <n-space size="small">
-                  <badge label="分数" color="#4EAA25">
+                  <badge label="分数" size="medium" color="#4EAA25">
                     <template #icon>
                       <question-circle/>
                     </template>
                     {{ problem.score }}
                   </badge>
-                  <badge label="时间" color="#D9644D">
+                  <badge label="时间" size="medium" color="#D9644D">
                     <template #icon>
                       <timer-outlined/>
                     </template>
                     {{ problem.timeout }} 毫秒
                   </badge>
-                  <badge label="内存" color="#007EC6">
+                  <badge label="内存" size="medium" color="#007EC6">
                     <template #icon>
                       <memory-round/>
                     </template>
                     {{ problem.memoryLimit }} MB
                   </badge>
-                  <badge label="输出" color="#F48041">
+                  <badge label="输出" size="medium" color="#F48041">
                     <template #icon>
                       <file-alt/>
                     </template>
@@ -56,10 +56,11 @@
   </n-modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import {computed, onBeforeMount, ref} from "vue"
+import {useRoute} from "vue-router"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
-import {NCard, NGrid, NGridItem, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, NTag, useMessage} from "naive-ui"
+import {NCard, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, useMessage} from "naive-ui"
 import {FileAlt, QuestionCircle} from "@vicons/fa"
 import {MemoryRound, TimerOutlined} from "@vicons/material"
 import {Badge, CodeEditor, MarkdownView} from "@/components"
@@ -68,106 +69,79 @@ import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
 import {JudgeApi, ProblemApi} from "@/api/request"
 import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
 
-@Options({
-  name: "Submission",
-  components: {
-    NCard,
-    NGrid,
-    NGridItem,
-    NSpace,
-    NScrollbar,
-    NTabs,
-    NTabPane,
-    NH2,
-    NTag,
-    NModal,
-    QuestionCircle,
-    FileAlt,
-    TimerOutlined,
-    MemoryRound,
-    Badge,
-    Skeleton,
-    MarkdownView,
-    CodeEditor,
-    ResultDialog,
+const route = useRoute()
+const store = useStore()
+const message = useMessage()
+
+const loading = ref<boolean>(true)
+const showResult = ref<boolean>(false)
+const disableSubmit = ref<boolean>(false)
+
+const problem = ref<Problem>(new Problem())
+const code = ref<string>("")
+
+let problemId: number | null = null
+let solutionId: string = ""
+
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
+
+onBeforeMount(() => {
+  const id = route.query.problemId
+
+  if (typeof id !== "undefined") {
+    problemId = Number(route.query.problemId)
   }
+
+  queryProblem()
 })
-export default class Submission extends Vue {
-  private store = useStore()
-  private message = useMessage()
 
-  private loading: boolean = true
-  private error: ErrorMsg | null = null
-
-  private showResult: boolean = false
-  private disableSubmit: boolean = false
-
-  private problemId: number | null = null
-  private problem: Problem = new Problem()
-  private code: string = ""
-  private solutionId: string = ""
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  beforeMount() {
-    const problemId = this.$route.query.problemId
-
-    if (typeof problemId !== "undefined") {
-      this.problemId = Number(this.$route.query.problemId)
-    }
-
-    this.getProblem()
-  }
-
-  /**
-   * 获取题目数据
-   */
-  getProblem() {
-    if (this.problemId != null) {
-      ProblemApi.getSingle(this.problemId)
-          .then((data) => {
-            this.problem = data
-          })
-          .catch((error) => {
-            console.debug(error)
-          })
-          .finally(() => {
-            this.loading = false
-          })
-    }
-  }
-
-  /**
-   * 提交代码
-   */
-  submit(language: number) {
-    if (this.code.trim().length == 0 || this.disableSubmit) {
-      return
-    }
-
-    this.disableSubmit = true
-    const data: SubmitData = {
-      language,
-      problemId: this.problemId!,
-      sourceCode: this.code,
-      type: 0,
-      userId: this.userInfo.userId!
-    }
-
-    JudgeApi.submit(data, this.userInfo)
-        .then((solutionId) => {
-          this.solutionId = solutionId
-          this.showResult = true
+/**
+ * 获取题目数据
+ */
+function queryProblem() {
+  if (problemId != null) {
+    ProblemApi.getSingle(problemId)
+        .then((data) => {
+          problem.value = data
         })
         .catch((error: ErrorMsg) => {
-          this.message.error(error.toString())
+          message.error(error.toString())
         })
         .finally(() => {
-          this.disableSubmit = false
+          loading.value = false
         })
   }
+}
+
+/**
+ * 提交代码
+ */
+function submit(language: number) {
+  if (code.value.trim().length == 0 || disableSubmit.value) {
+    return
+  }
+
+  disableSubmit.value = true
+
+  const data: SubmitData = {
+    language,
+    problemId: problemId!,
+    sourceCode: code.value.trim(),
+    type: 0,
+    userId: userInfo.value.userId!
+  }
+
+  JudgeApi.submit(
+      data,
+      userInfo.value
+  ).then((id) => {
+    solutionId = id
+    showResult.value = true
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    disableSubmit.value = false
+  })
 }
 </script>
 

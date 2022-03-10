@@ -1,6 +1,6 @@
 import {PagedData, Ranking} from "@/api/type"
-import {ApiPath} from "@/api/request/index"
 import {returnError} from "@/api/utils"
+import ApiPath from "./ApiPath"
 import axios from "axios"
 
 const RankingApi = {

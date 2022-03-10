@@ -1,6 +1,6 @@
 import {buildHeaders, returnError} from "@/api/utils"
 import {PagedData, Problem, TestData, UserInfo} from "@/api/type"
-import ApiPath from "@/api/request/ApiPath"
+import ApiPath from "./ApiPath"
 import axios, {AxiosResponse} from "axios"
 
 /**

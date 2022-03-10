@@ -1,6 +1,6 @@
-import {ApiPath} from "@/api/request/index"
 import {Contest, PagedData, Problem, UserInfo} from "@/api/type"
 import {buildHeaders, returnError} from "@/api/utils"
+import ApiPath from "./ApiPath"
 import axios, {AxiosResponse} from "axios"
 
 const ContestApi = {
