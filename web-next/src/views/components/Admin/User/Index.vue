@@ -28,10 +28,10 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
-import {useRouter} from "vue-router"
-import {Options, Vue} from "vue-class-component"
+import {useRoute, useRouter} from "vue-router"
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -49,12 +49,12 @@ import {
 } from "naive-ui"
 import {CalendarCheck as DateIcon, UserShield as RoleIcon, UserTag as UserIcon} from "@vicons/fa"
 import {PersonSearchRound as SearchIcon} from "@vicons/material"
-import UserAvatar from "@/components/UserAvatar.vue"
+import {UserAvatar} from "@/components"
 import {ErrorMsg, PagedData, User, UserInfo} from "@/api/type"
 import {UserApi} from "@/api/request"
 import {setTitle} from "@/utils"
 import moment from "moment"
-import Mutations from "@/store/mutations";
+import {Mutations} from "@/store"
 
 const roles = [
   {text: "用户", type: "info"},
@@ -63,163 +63,149 @@ const roles = [
   {text: "ROOT", type: "error"}
 ]
 
-@Options({
-  name: "UserAdmin",
-  components: {
-    NCard,
-    NSpace,
-    NBreadcrumb,
-    NBreadcrumbItem,
-    NIcon,
-    NInputGroup,
-    NSelect,
-    NInput,
-    NButton,
-    NDataTable,
-    NPagination,
-    SearchIcon,
-    UserAvatar
-  }
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const message = useMessage()
+
+const searchTypes = [
+  {label: "用户 ID", value: 1},
+  {label: "用户名", value: 2}
+]
+
+const searchType = ref<number>(1)
+const keyword = ref<string>("")
+
+const users = ref<PagedData<User>>({
+  data: [],
+  count: 0
 })
-export default class UserAdmin extends Vue {
-  private router = useRouter()
-  private store = useStore()
-  private message = useMessage()
 
-  private searchTypes = [
-    {label: "用户 ID", value: 1},
-    {label: "用户名", value: 2}
-  ]
+const pagination = ref({
+  page: 1,
+  pageSize: 15,
+  loading: true
+})
 
-  private searchType: number = 1
-  private keyword: string = ""
-
-  private users: PagedData<User> = {
-    data: [],
-    count: 0
-  }
-
-  private pagination = {
-    page: 1,
-    pageSize: 15,
-    loading: true
-  }
-
-  private columns = [
-    {
-      title: "ID",
-      key: "userId",
-      width: 150
-    },
-    {
-      title: () => (
-          <NSpace size="small" align="center">
-            <NIcon style="display: flex">
-              <UserIcon/>
-            </NIcon>
-            <span>用户名</span>
-          </NSpace>
-      ),
-      render: (row: User) => (
-          <NSpace align="center">
-            <UserAvatar size="small" userId={row.userId}/>
-            <NButton text={true}><b>{row.name}</b></NButton>
-          </NSpace>
-      )
-    },
-    {
-      title: () => (
-          <NSpace size="small" justify="center" align="center">
-            <NIcon style="display: flex">
-              <RoleIcon/>
-            </NIcon>
-            <span>权限</span>
-          </NSpace>
-      ),
-      render: (row: User) => (
-          <NTag size="small" type={roles[row.roleId!].type as any}>{roles[row.roleId!].text}</NTag>
-      ),
-      align: "center"
-    },
-    {
-      title: () => (
-          <NSpace size="small" justify="end" align="center">
-            <NIcon style="display: flex">
-              <DateIcon/>
-            </NIcon>
-            <span>注册时间</span>
-          </NSpace>
-      ),
-      align: "right",
-      render: (row: User) => (<span>{moment(row.createAt).format("YYYY-MM-DD")}</span>)
-    }
-  ]
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  get searchParams(): any {
-    const keyword = this.keyword.trim()
-    if (keyword.length === 0) {
-      return {}
-    }
-    return this.searchType === 1 ? {userId: keyword} : {name: keyword}
-  }
-
-  beforeMount() {
-    setTitle("用户管理")
-    this.store.commit(Mutations.SET_BREADCRUMB,
-        <NBreadcrumb>
-          <NBreadcrumbItem>用户管理</NBreadcrumbItem>
-        </NBreadcrumb>
+const columns = [
+  {
+    title: "ID",
+    key: "userId",
+    width: 150
+  },
+  {
+    title: () => (
+        <NSpace size="small" align="center">
+          <NIcon style="display: flex">
+            <UserIcon/>
+          </NIcon>
+          <span>用户名</span>
+        </NSpace>
+    ),
+    render: (row: User) => (
+        <NSpace align="center">
+          <UserAvatar size="small" userId={row.userId}/>
+          <NButton text={true}><b>{row.name}</b></NButton>
+        </NSpace>
     )
-    const query = this.$route.query
-    console.debug(query)
-    if ("page" in query) {
-      this.pagination.page = Number(query.page)
-    }
-    if ("keyword" in query) {
-      this.keyword = String(query.keyword)
-    }
-    if ("searchType" in query) {
-      const val = Number(query.searchType)
-      this.searchType = val in [1, 2] ? val : 1
-    }
-    this.queryUsers()
+  },
+  {
+    title: () => (
+        <NSpace size="small" justify="center" align="center">
+          <NIcon style="display: flex">
+            <RoleIcon/>
+          </NIcon>
+          <span>权限</span>
+        </NSpace>
+    ),
+    render: (row: User) => (
+        <NTag size="small" type={roles[row.roleId!].type as any}>{roles[row.roleId!].text}</NTag>
+    ),
+    align: "center"
+  },
+  {
+    title: () => (
+        <NSpace size="small" justify="end" align="center">
+          <NIcon style="display: flex">
+            <DateIcon/>
+          </NIcon>
+          <span>注册时间</span>
+        </NSpace>
+    ),
+    align: "right",
+    render: (row: User) => (<span>{moment(row.createAt).format("YYYY-MM-DD")}</span>)
+  }
+]
+
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
+
+const searchParams = computed(() => {
+  const val = keyword.value.trim()
+
+  if (val.length === 0) {
+    return {}
   }
 
-  search() {
-    this.pagination.page = 1
-    this.pageChange(this.pagination.page)
+  return searchType.value === 1 ? {userId: val} : {name: val}
+})
+
+onBeforeMount(() => {
+  setTitle("用户管理")
+  store.commit(Mutations.SET_BREADCRUMB,
+      <NBreadcrumb>
+        <NBreadcrumbItem>用户管理</NBreadcrumbItem>
+      </NBreadcrumb>
+  )
+  const query = route.query
+
+  if ("page" in query) {
+    pagination.value.page = Number(query.page)
   }
 
-  pageChange(page: number) {
-    const keyword = this.keyword.trim()
-    const query: any = {page}
-    if (keyword.length > 0) {
-      query.keyword = keyword
-      query.searchType = this.searchType
-    }
-    this.router.push({
-      query
-    })
+  if ("keyword" in query) {
+    keyword.value = String(query.keyword)
   }
 
-  queryUsers() {
-    UserApi.getAll(
-        this.pagination.page,
-        this.pagination.pageSize,
-        this.searchParams,
-        this.userInfo
-    ).then((data) => {
-      this.users = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.pagination.loading = false
-    })
+  if ("searchType" in query) {
+    const val = Number(query.searchType)
+    searchType.value = val in [1, 2] ? val : 1
   }
+
+  queryUsers()
+})
+
+function search() {
+  pagination.value.page = 1
+  pageChange(pagination.value.page)
+}
+
+function pageChange(page: number) {
+  keyword.value = keyword.value.trim()
+  const query: any = {page}
+
+  if (keyword.value.length > 0) {
+    query.keyword = keyword
+    query.searchType = searchType
+  }
+
+  router.push({
+    query
+  })
+}
+
+function queryUsers() {
+  UserApi.getAll(
+      pagination.value.page,
+      pagination.value.pageSize,
+      searchParams,
+      userInfo.value
+  ).then((data) => {
+    users.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    pagination.value.loading = false
+  })
 }
 </script>
 

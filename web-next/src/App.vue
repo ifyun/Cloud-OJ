@@ -21,7 +21,7 @@ import {useStore} from "vuex"
 import {dateZhCN, NConfigProvider, NDialogProvider, NGlobalStyle, NMessageProvider, NModal, zhCN} from "naive-ui"
 import themeOverrides from "@/theme"
 import Auth from "@/views/components/Auth/Index.vue"
-import Mutations from "@/store/mutations"
+import {Mutations} from "@/store"
 
 const store = useStore()
 

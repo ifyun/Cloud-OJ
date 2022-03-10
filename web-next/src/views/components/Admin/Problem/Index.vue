@@ -1,4 +1,3 @@
-<!-- Problem Admin -->
 <template>
   <div class="problem-table">
     <n-card :bordered="false">

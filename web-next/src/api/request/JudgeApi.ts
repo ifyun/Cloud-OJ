@@ -1,6 +1,6 @@
 import {buildHeaders, returnError} from "@/api/utils"
 import {JudgeResult, SubmitData, UserInfo} from "@/api/type"
-import {ApiPath} from "@/api/request/index"
+import ApiPath from "./ApiPath"
 import axios from "axios"
 
 const JudgeApi = {

@@ -58,9 +58,7 @@
   </n-button-group>
 </template>
 
-<script lang="tsx">
-import {Options, Vue} from "vue-class-component"
-import {Emit} from "vue-property-decorator"
+<script setup lang="tsx">
 import {
   NSpace,
   NButtonGroup,
@@ -85,90 +83,60 @@ import {
 } from "@vicons/material"
 import {renderIcon} from "@/utils"
 
-let self: any
+const iconSize: number = 20
 
-@Options({
-  components: {
-    NSpace,
-    NButtonGroup,
-    NButton,
-    NInputNumber,
-    NDropdown,
-    NIcon,
-    ItalicIcon,
-    BoldIcon,
-    QuoteIcon,
-    InfoIcon,
-    WarningIcon,
-    CodeIcon,
-    ListUlIcon,
-    ListOlIcon,
-    TableIcon,
-    ImageIcon,
-    LinkIcon,
-    UploadIcon
+let cols: number = 3
+let rows: number = 3
+
+// region 表格选项
+const tableOptions = [
+  {
+    key: "header",
+    type: "render",
+    render: () => (
+        <NSpace vertical={true} style="padding: 0 6px">
+          <NInputNumber value={cols} onUpdateValue={value => cols = value as number} style="width: 120px">
+            {{suffix: () => "列"}}
+          </NInputNumber>
+          <NInputNumber value={rows} onUpdateValue={value => rows = value as number} style="width: 120px">
+            {{suffix: () => "行"}}
+          </NInputNumber>
+          <NButton type="primary" onClick={() => insertTable()} style="width: 100%">插入表格</NButton>
+        </NSpace>
+    )
   }
-})
-export default class Toolbar extends Vue {
-  private iconSize: number = 20
+]
+// endregion
 
-  private cols: number = 3
-  private rows: number = 3
-
-  // region 表格选项
-  private tableOptions = [
-    {
-      key: "header",
-      type: "render",
-      render: () => (
-          <NSpace vertical={true} style="padding: 0 5px">
-            <NInputNumber value={this.cols} onUpdateValue={value => this.cols = value as number} style="width: 120px">
-              {{suffix: () => "列"}}
-            </NInputNumber>
-            <NInputNumber value={this.rows} onUpdateValue={value => this.rows = value as number} style="width: 120px">
-              {{suffix: () => "行"}}
-            </NInputNumber>
-            <NButton type="primary" onClick={() => self.insertTable()} style="width: 100%">插入表格</NButton>
-          </NSpace>
-      )
-    }
-  ]
-  // endregion
-
-  // 图片选项
-  private imgOptions = [
-    {
-      label: "插入图片链接",
-      key: "img_link",
-      icon: renderIcon(LinkIcon)
-    },
-    {
-      label: "上传本地图片",
-      key: "img_upload",
-      icon: renderIcon(UploadIcon)
-    }
-  ]
-
-  @Emit("insertTable")
-  insertTable(): any {
-    return {
-      cols: this.cols,
-      rows: this.rows
-    }
+// 图片选项
+const imgOptions = [
+  {
+    label: "插入图片链接",
+    key: "img_link",
+    icon: renderIcon(LinkIcon)
+  },
+  {
+    label: "上传本地图片",
+    key: "img_upload",
+    icon: renderIcon(UploadIcon)
   }
+]
 
-  @Emit("click")
-  click(key: string): string {
-    return key
-  }
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (e: "insertTable", value: any): void
+  // eslint-disable-next-line no-unused-vars
+  (e: "click", value: string): void
+}>()
 
-  beforeMount() {
-    // 将代理对象赋值给 self 变量，以便在渲染函数中使用
-    self = this
-  }
+function insertTable() {
+  emit("insertTable", {
+    cols: cols,
+    rows: rows
+  })
+}
+
+function click(key: string) {
+  emit("click", key)
 }
 </script>
-
-<style scoped>
-
-</style>

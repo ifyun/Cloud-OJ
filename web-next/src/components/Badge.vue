@@ -14,62 +14,26 @@
   </n-element>
 </template>
 
-<script lang="ts">
-import {VueComponent} from "@/vue-ts-component"
-import {Options} from "vue-class-component"
-import {Prop} from "vue-property-decorator"
-import {useStore} from "vuex"
+<script setup lang="ts">
+import {computed} from "vue"
 import {NElement, NIcon, useThemeVars} from "naive-ui"
 
-interface Props {
+const props = defineProps<{
   label: string
   size: "small" | "medium" | "large"
   color: string
-}
+}>()
 
-@Options({
-  name: "Badge",
-  components: {
-    NIcon,
-    NElement
-  }
-})
-export default class Badge extends VueComponent<Props> {
-  @Prop(String)
-  private label?: string
+const themeVars = useThemeVars().value
 
-  @Prop(String)
-  private color?: string
+const valueBackground = computed<string>(() => props.color ? props.color : themeVars.primaryColor)
 
-  @Prop({
-    type: String as () => "small" | "medium" | "large",
-    default: "medium"
-  })
-  private size?: string
-
-  private store = useStore()
-
-  private themeVars = useThemeVars().value
-
-  private get theme() {
-    return this.store.state.theme
-  }
-
-  private get valueBackground(): string {
-    if (this.color) {
-      return this.color
-    }
-
-    return this.themeVars.primaryColor
-  }
-
-  private get badgeClasses() {
-    return [
+const badgeClasses = computed(() =>
+    [
       [`badge`],
-      [`badge__${this.size}`]
+      [`badge__${props.size}`]
     ]
-  }
-}
+)
 </script>
 
 <style lang="scss" scoped>

@@ -1,0 +1,186 @@
+.markdown-body {
+  font-family: inherit;
+
+  &.light {
+    @import "~highlight.js/scss/github";
+  }
+
+  & > *:first-child {
+    margin-top: 0;
+  }
+
+  h1, h2, h3 {
+    border-bottom: 1px solid #EFEFF5;
+    margin-top: 28px;
+    margin-bottom: 18px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    padding-bottom: 5px;
+  }
+
+  h4, h5, h6 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  h4 {
+    font-size: 16px;
+  }
+
+  ul, ol {
+    padding-left: 25px;
+  }
+
+  table {
+    border: 1px solid #EFEFEF;
+    border-radius: 4px;
+    border-spacing: 0;
+    width: 100%;
+
+    thead {
+      background-color: #F8F8F8;
+    }
+
+    th, td {
+      padding: 10px 15px;
+    }
+
+    td {
+      border-top: 1px solid #EFEFEF;
+    }
+  }
+
+  blockquote {
+    margin: 10px 0 0 0;
+    padding: 6px 15px;
+    border-left-width: 5px;
+    border-left-style: solid;
+    border-left-color: #EFEFEF;
+    color: #A5A5A5;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  p code {
+    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+    background-color: #F8F8F8;
+    padding: 1px 4px;
+  }
+
+  pre {
+    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+    background-color: #F8F8F8;
+    padding: 15px;
+    border-radius: 3px;
+    overflow: auto;
+
+    code {
+      font-family: inherit;
+    }
+
+    &.math-block {
+      text-align: center;
+      background-color: transparent;
+
+      .katex {
+        .katex-html > .newline {
+          margin-top: 10px;
+        }
+      }
+    }
+
+    &::-webkit-scrollbar {
+      height: 8px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: #E8E8E8;
+    }
+  }
+
+  .markdown-alert {
+    padding: 2px 15px;
+    margin-top: 10px;
+    background-color: #F8F8F8;
+    border-left-width: 5px;
+    border-left-style: solid;
+    border-radius: 2px;
+
+    &.info {
+      border-left-color: #1890FF;
+    }
+
+    &.warning {
+      border-left-color: #F5B047;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    margin-top: 12px;
+  }
+
+  &.dark {
+    @import "~highlight.js/scss/github-dark";
+
+    background-color: #18181C;
+
+    h1, h2, h3 {
+      border-bottom: 1px solid #26262A;
+    }
+
+    blockquote {
+      border-left-color: #31313C;
+    }
+
+    table {
+      border: 1px solid #26262A;
+
+      thead {
+        background-color: #26262A;
+      }
+
+      td {
+        border-top: 1px solid #26262A;
+      }
+    }
+
+    p code {
+      background-color: #26262A;
+    }
+
+    pre {
+      background-color: #26262A;
+
+      &.math-block {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #28282C;
+      }
+    }
+
+    .markdown-alert {
+      background-color: #26262A;
+    }
+  }
+}

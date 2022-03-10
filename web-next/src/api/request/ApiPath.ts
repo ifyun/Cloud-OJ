@@ -22,7 +22,6 @@ const ApiPath = {
     QUEUE_INFO: "/api/judgement/pro/queue_info",
     PROFILE: "/api/core/user/profile",
     OVERVIEW: "/api/core/user/overview",
-    BACKUP: "/api/core/backup",
     SETTINGS: "/api/core/settings"
 }
 
