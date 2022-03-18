@@ -17,244 +17,207 @@
   </div>
 </template>
 
-<script lang="ts">
-import {h} from "vue"
+<script setup lang="tsx">
+import {computed, ref, watch} from "vue"
 import {useStore} from "vuex"
-import {RouterLink} from "vue-router"
-import {Options, Vue} from "vue-class-component"
-import {Prop, Watch} from "vue-property-decorator"
+import {useRouter} from "vue-router"
 import {NButton, NDataTable, NPagination, NSpace, useDialog, useMessage} from "naive-ui"
 import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
 import {ContestApi} from "@/api/request"
 
-let self: any
+const props = defineProps<{ contestId: number }>()
 
-@Options({
-  components: {
-    NSpace,
-    NButton,
-    NDataTable,
-    NPagination
-  }
+const store = useStore()
+const router = useRouter()
+const message = useMessage()
+const dialog = useDialog()
+
+const problems = ref<PagedData<Problem>>({
+  data: [],
+  count: 0
 })
-export default class ProblemManage extends Vue {
-  private store = useStore()
-  private message = useMessage()
-  private dialog = useDialog()
 
-  private problems: PagedData<Problem> = {
-    data: [],
-    count: 0
+const contestProblems = ref<PagedData<Problem>>({
+  data: [],
+  count: 0
+})
+
+const pagination1 = ref({
+  page: 1,
+  pageSize: 15,
+  loading: true
+})
+
+const pagination2 = ref({
+  page: 1,
+  pageSize: 10,
+  loading: true
+})
+
+const columns1 = [
+  {
+    title: "可用题目",
+    align: "center",
+    children: [
+      {
+        title: "ID",
+        key: "problemId",
+        align: "right",
+        width: 70
+      },
+      {
+        title: "题目名称",
+        render: (row: Problem) => <NButton text={true} onClick={() => toSubmission(row)}>{row.title}</NButton>
+      },
+      {
+        title: "分数",
+        key: "score",
+        align: "right"
+      },
+      {
+        title: "操作",
+        align: "right",
+        width: 100,
+        render: (row: Problem) => <NButton size="tiny" type="success" onClick={() => addToContest(row)}>添加</NButton>
+      }
+    ]
   }
+]
 
-  private contestProblems: PagedData<Problem> = {
-    data: [],
-    count: 0
+const columns2 = [
+  {
+    title: "已添加的题目",
+    align: "center",
+    children: [
+      {
+        title: "ID",
+        key: "problemId",
+        align: "right",
+        width: 70
+      },
+      {
+        title: "题目名称",
+        render: (row: Problem) => <NButton text={true} onClick={() => toSubmission(row)}>{row.title}</NButton>
+      },
+      {
+        title: "分数",
+        key: "score",
+        align: "right"
+      },
+      {
+        title: "操作",
+        align: "right",
+        width: 100,
+        render: (row: Problem) =>
+            <NButton size="tiny" type="warning" onClick={() => handleRemove(row)}>移除</NButton>
+      }
+    ]
   }
+]
 
-  private pagination1 = {
-    page: 1,
-    pageSize: 15,
-    loading: true
+const userInfo = computed<UserInfo>(() => {
+  return store.state.userInfo
+})
+
+
+watch(() => props.contestId, value => {
+  if (typeof value !== "undefined") {
+    queryProblems()
+    queryContestProblems()
   }
+}, {immediate: true})
 
-  private pagination2 = {
-    page: 1,
-    pageSize: 10,
-    loading: true
-  }
+/**
+ * 获取可用题目
+ */
+function queryProblems() {
+  pagination1.value.loading = true
+  const {page, pageSize} = pagination1.value
+  ContestApi.getProblemsNotInContest(
+      props.contestId,
+      page,
+      pageSize,
+      userInfo.value
+  ).then((data) => {
+    problems.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    pagination1.value.loading = false
+  })
+}
 
-  private columns1 = [
-    {
-      title: "可用题目",
-      align: "center",
-      children: [
-        {
-          title: "ID",
-          key: "problemId",
-          align: "right",
-          width: 70
-        },
-        {
-          title: "题目名称",
-          render: (row: Problem) => {
-            return h(NButton,
-                {text: true},
-                {
-                  default: () => h(RouterLink,
-                      {to: {name: "submission", query: {problemId: row.problemId}}},
-                      {default: () => row.title})
-                })
-          }
-        },
-        {
-          title: "分数",
-          key: "score",
-          align: "right"
-        },
-        {
-          title: "操作",
-          align: "right",
-          width: 100,
-          render: (row: Problem) =>
-              h(NButton, {
-                size: "tiny",
-                type: "success",
-                onClick: () => self.addToContest(row)
-              }, {default: () => "添加"})
-        }
-      ]
-    }
-  ]
+/**
+ * 获取当前竞赛的题目
+ */
+function queryContestProblems() {
+  pagination2.value.loading = true
+  const {page, pageSize} = pagination2.value
+  ContestApi.getProblems(
+      props.contestId!,
+      page,
+      pageSize,
+      userInfo.value
+  ).then((data) => {
+    contestProblems.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    pagination2.value.loading = false
+  })
+}
 
-  private columns2 = [
-    {
-      title: "已添加的题目",
-      align: "center",
-      children: [
-        {
-          title: "ID",
-          key: "problemId",
-          align: "right",
-          width: 70
-        },
-        {
-          title: "题目名称",
-          render: (row: Problem) => {
-            return h(NButton,
-                {text: true},
-                {
-                  default: () => h(RouterLink,
-                      {to: {name: "submission", query: {problemId: row.problemId}}},
-                      {default: () => row.title})
-                })
-          }
-        },
-        {
-          title: "分数",
-          key: "score",
-          align: "right"
-        },
-        {
-          title: "操作",
-          align: "right",
-          width: 100,
-          render: (row: Problem) =>
-              h(NButton, {
-                size: "tiny",
-                type: "warning",
-                onClick: () => self.handleRemove(row)
-              }, {default: () => "移除"})
-        }
-      ]
-    }
-  ]
+function refresh() {
+  queryContestProblems()
+  queryProblems()
+}
 
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
+function toSubmission(p: Problem) {
+  router.push({name: "submission", query: {problemId: p.problemId}})
+}
 
-  beforeMount() {
-    self = this
-  }
+/**
+ * 将题目添加到当前竞赛
+ */
+function addToContest(p: Problem) {
+  ContestApi.addProblem(
+      props.contestId,
+      p.problemId!,
+      userInfo.value
+  ).then(() => {
+    message.success(`[${p.title}] 已添加`)
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    refresh()
+  })
+}
 
-  @Prop(Number)
-  private contestId?: number
+function handleRemove(p: Problem) {
+  dialog.warning({
+    title: "警告",
+    content: `是否移除 [${p.title}]？`,
+    positiveText: "是",
+    negativeText: "不要",
+    onPositiveClick: () => remove(p)
+  })
+}
 
-  @Watch("contestId", {immediate: true})
-  contestIdChanged(value: number) {
-    if (typeof value !== "undefined") {
-      this.queryProblems()
-      this.queryContestProblems()
-    }
-  }
-
-  /**
-   * 获取可用题目
-   */
-  queryProblems() {
-    this.pagination1.loading = true
-    ContestApi.getProblemsNotInContest(
-        this.contestId!,
-        this.pagination1.page,
-        this.pagination1.pageSize,
-        this.userInfo
-    ).then((data) => {
-      this.problems = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.pagination1.loading = false
-    })
-  }
-
-  /**
-   * 获取当前竞赛的题目
-   */
-  queryContestProblems() {
-    this.pagination2.loading = true
-    ContestApi.getProblems(
-        this.contestId!,
-        this.pagination2.page,
-        this.pagination2.pageSize,
-        this.userInfo
-    ).then((data) => {
-      this.contestProblems = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.pagination2.loading = false
-    })
-  }
-
-  refresh() {
-    this.queryContestProblems()
-    this.queryProblems()
-  }
-
-  /**
-   * 将题目添加到当前竞赛
-   */
-  addToContest(problem: Problem) {
-    ContestApi.addProblem(
-        this.contestId!,
-        problem.problemId!,
-        this.userInfo
-    ).then(() => {
-      this.message.success(`[${problem.title}] 已添加`)
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.refresh()
-    })
-  }
-
-  handleRemove(p: Problem) {
-    this.dialog.warning({
-      title: "警告",
-      content: `是否移除 [${p.title}]？`,
-      positiveText: "是",
-      negativeText: "不要",
-      onPositiveClick: () => this.remove(p)
-    })
-  }
-
-  /**
-   * 从竞赛中移除题目
-   */
-  remove(problem: Problem) {
-    ContestApi.removeProblem(
-        this.contestId!,
-        problem.problemId!,
-        this.userInfo
-    ).then(() => {
-      this.message.warning(`[${problem.title}] 已移除`)
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.refresh()
-    })
-  }
+/**
+ * 从竞赛中移除题目
+ */
+function remove(p: Problem) {
+  ContestApi.removeProblem(
+      props.contestId,
+      p.problemId!,
+      userInfo.value
+  ).then(() => {
+    message.warning(`[${p.title}] 已移除`)
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    refresh()
+  })
 }
 </script>
 

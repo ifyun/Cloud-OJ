@@ -27,10 +27,10 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
 import {useRoute, useRouter} from "vue-router"
-import {Options, Vue} from "vue-class-component"
 import {
   NAlert,
   NBreadcrumb,
@@ -58,208 +58,186 @@ import Mutations from "@/store/mutations"
 import {ProblemApi} from "@/api/request"
 import {ErrorMsg, Problem, TestData} from "@/api/type"
 
-let self: any
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const message = useMessage()
 
-@Options({
-  name: "DataManage",
-  components: {
-    NCard,
-    NSpace,
-    NButton,
-    NPageHeader,
-    NDataTable,
-    NUpload,
-    NUploadDragger,
-    NAlert,
-    NText,
-    NP,
-    NIcon,
-    ArchiveIcon
+const title = "测试数据管理"
+const loading = ref<boolean>(false)
+const problem = ref<Problem | null>(null)
+const testData = ref<Array<TestData>>([])
+
+const columns = [
+  {
+    title: "#",
+    align: "right",
+    width: 50,
+    render: (row: TestData, rowIndex: number) => <span>{rowIndex + 1}</span>
+  },
+  {
+    title: "文件名",
+    align: "left",
+    render: (row: TestData) => {
+      let type = ""
+      if (row.fileName.endsWith(".in")) {
+        type = "info"
+      } else if (row.fileName.endsWith(".out")) {
+        type = "success"
+      }
+      return <NText strong={true} type={type}>{row.fileName}</NText>
+    }
+  },
+  {
+    title: "文件长度",
+    align: "right",
+    render: (row: TestData) => <span>{row.size} 字节</span>
+  },
+  {
+    title: "操作",
+    align: "center",
+    width: 240,
+    render: (row: TestData) =>
+        <NSpace size="small" justify="center">
+          <NButton size="small" type="primary" secondary={true} onClick={() => downloadFile(row.fileName)}>
+            {{
+              icon: () => <NIcon><DownloadIcon/></NIcon>,
+              default: () => <span>下载</span>
+            }}
+          </NButton>
+          <NPopconfirm>
+            {{
+              trigger: () =>
+                  <NButton size="small" type="error" secondary={true}>
+                    {{
+                      icon: () => <NIcon><DeleteIcon/></NIcon>,
+                      default: () => <span>删除</span>
+                    }}
+                  </NButton>,
+              action: () => <NButton size="small" type="error" ghost={true}
+                                     onClick={() => deleteFile(row.fileName)}>确认</NButton>,
+              default: () => <span>确定要删除吗？</span>
+            }}
+          </NPopconfirm>
+        </NSpace>
+  }
+]
+
+const subtitle = computed(() => {
+  if (problem.value == null) {
+    return ""
+  } else {
+    return `${problem.value.problemId} - ${problem.value.title}`
   }
 })
-export default class DataManage extends Vue {
-  private route = useRoute()
-  private router = useRouter()
-  private store = useStore()
-  private message = useMessage()
 
-  private loading: boolean = false
-  private title = "测试数据管理"
-  private problem: Problem | null = null
-  private testData: Array<TestData> = []
+const userInfo = computed(() => {
+  return store.state.userInfo
+})
 
-  private columns = [
-    {
-      title: "#",
-      align: "right",
-      width: 50,
-      render: (row: TestData, rowIndex: number) => <span>{rowIndex + 1}</span>
-    },
-    {
-      title: "文件名",
-      align: "left",
-      render: (row: TestData) => {
-        let type = ""
-        if (row.fileName.endsWith(".in")) {
-          type = "info"
-        } else if (row.fileName.endsWith(".out")) {
-          type = "success"
-        }
-        return <NText strong={true} type={type}>{row.fileName}</NText>
-      }
-    },
-    {
-      title: "文件长度",
-      align: "right",
-      render: (row: TestData) => <span>{row.size} 字节</span>
-    },
-    {
-      title: "操作",
-      align: "center",
-      width: 240,
-      render: (row: TestData) =>
-          <NSpace size="small" justify="center">
-            <NButton size="small" type="primary" secondary={true} onClick={() => self.downloadFile(row.fileName)}>
-              {{
-                icon: () => <NIcon><DownloadIcon/></NIcon>,
-                default: () => <span>下载</span>
-              }}
-            </NButton>
-            <NPopconfirm>
-              {{
-                trigger: () =>
-                    <NButton size="small" type="error" secondary={true}>
-                      {{
-                        icon: () => <NIcon><DeleteIcon/></NIcon>,
-                        default: () => <span>删除</span>
-                      }}
-                    </NButton>,
-                action: () => <NButton size="small" type="error" ghost={true}
-                                       onClick={() => self.deleteFile(row.fileName)}>确认</NButton>,
-                default: () => <span>确定要删除吗？</span>
-              }}
-            </NPopconfirm>
-          </NSpace>
-    }
-  ]
-
-  get subtitle() {
-    if (this.problem == null) {
-      return ""
-    } else {
-      return `${this.problem.problemId} - ${this.problem.title}`
-    }
+const headers = computed(() => {
+  return {
+    "userId": userInfo.value.userId,
+    "token": userInfo.value.token
   }
+})
 
-  get userInfo() {
-    return this.store.state.userInfo
-  }
-
-  get headers() {
+const uploadData = computed(() => {
+  if (problem.value == null) {
+    return {}
+  } else {
     return {
-      "userId": this.userInfo.userId,
-      "token": this.userInfo.token
+      "problemId": problem.value?.problemId
     }
   }
+})
 
-  get uploadData() {
-    if (this.problem == null) {
-      return {}
-    } else {
-      return {
-        "problemId": this.problem?.problemId
-      }
-    }
+const disableUpload = computed<boolean>(() => {
+  return loading.value || problem.value == null
+})
+
+onBeforeMount(() => {
+  const vNode =
+      (<NBreadcrumb>
+        <NBreadcrumbItem>题目管理</NBreadcrumbItem>
+        <NBreadcrumbItem>{title}</NBreadcrumbItem>
+      </NBreadcrumb>)
+  store.commit(Mutations.SET_BREADCRUMB, vNode)
+
+  const reg = /^[\d]+$/
+  const id = route.params.id.toString()
+
+  if (reg.test(id)) {
+    loading.value = true
+    const problemId = Number(id)
+    ProblemApi.getSingle(
+        problemId,
+        userInfo.value
+    ).then(p => {
+      problem.value = p
+      queryData(p.problemId!)
+    }).catch((error: ErrorMsg) => {
+      message.error(error.toString())
+      loading.value = false
+    })
   }
+})
 
-  get disableUpload(): boolean {
-    return this.loading || this.problem == null
-  }
+function queryData(id: number) {
+  ProblemApi.getTestData(
+      id,
+      userInfo.value
+  ).then(data => {
+    testData.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    loading.value = false
+  })
+}
 
-  beforeMount() {
-    self = this
-    const vNode =
-        (<NBreadcrumb>
-          <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-          <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
-        </NBreadcrumb>)
-    this.store.commit(Mutations.SET_BREADCRUMB, vNode)
+function back() {
+  router.back()
+}
 
-    const reg = /^[\d]+$/
-    const id = this.route.params.id.toString()
+function beforeUpload({file}: any) {
+  const fileName = file.name as string
+  return fileName.endsWith(".in") || fileName.endsWith(".out")
+}
 
-    if (reg.test(id)) {
-      this.loading = true
-      const problemId = Number(id)
-      ProblemApi.getSingle(
-          problemId,
-          this.userInfo
-      ).then(p => {
-        this.problem = p
-        this.queryData(p.problemId!)
-      }).catch((error: ErrorMsg) => {
-        this.message.error(error.toString())
-        this.loading = false
+function handleUploadFinish({file}: any) {
+  message.success(`${file.name} 已上传`)
+  queryData(problem.value!.problemId!)
+}
+
+function downloadFile(fileName: string) {
+  const url = `/api/file/test_data/download/${problem.value!.problemId!}/${fileName}`
+  const anchor = document.createElement("a")
+  axios.get(url, {headers: headers.value, responseType: "blob"})
+      .then(res => {
+        const objectUrl = window.URL.createObjectURL(res.data)
+        anchor.href = objectUrl
+        anchor.download = fileName
+        anchor.click()
+        window.URL.revokeObjectURL(objectUrl)
       })
-    }
-  }
+      .catch((error) => {
+        message.error(error.toString())
+      })
+}
 
-  queryData(id: number) {
-    ProblemApi.getTestData(
-        id,
-        this.userInfo
-    ).then(data => {
-      this.testData = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.loading = false
-    })
-  }
-
-  back() {
-    this.router.back()
-  }
-
-  beforeUpload({file}: any) {
-    const fileName = file.name as string
-    return fileName.endsWith(".in") || fileName.endsWith(".out")
-  }
-
-  handleUploadFinish({file}: any) {
-    this.message.success(`${file.name} 已上传`)
-    this.queryData(this.problem!.problemId!)
-  }
-
-  downloadFile(fileName: string) {
-    const url = `/api/file/test_data/${this.problem!.problemId!}/${fileName}`
-    const anchor = document.createElement("a")
-    axios.get(url, {headers: this.headers, responseType: "blob"})
-        .then(res => {
-          const objectUrl = window.URL.createObjectURL(res.data)
-          anchor.href = objectUrl
-          anchor.download = fileName
-          anchor.click()
-          window.URL.revokeObjectURL(objectUrl)
-        })
-        .catch((error) => {
-          this.message.error(error.toString())
-        })
-  }
-
-  deleteFile(fileName: string) {
-    ProblemApi.deleteTestData(
-        this.problem!.problemId!,
-        fileName,
-        this.userInfo
-    ).then(() => {
-      this.message.warning(`${fileName} 已删除`)
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.queryData(this.problem!.problemId!)
-    })
-  }
+function deleteFile(fileName: string) {
+  ProblemApi.deleteTestData(
+      problem.value!.problemId!,
+      fileName,
+      userInfo.value
+  ).then(() => {
+    message.warning(`${fileName} 已删除`)
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    queryData(problem.value!.problemId!)
+  })
 }
 </script>
 

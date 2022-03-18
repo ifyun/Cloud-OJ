@@ -4,7 +4,7 @@
       <n-page-header class="page-header" :subtitle="subtitle" @back="router.back()">
         <template #title>{{ title }}</template>
         <template #extra>
-          <n-button v-if="showSaveButton" type="primary" size="small" round @click="save">
+          <n-button v-if="showSaveButton" type="primary" size="small" round @click="handleSave">
             <template #icon>
               <save-icon/>
             </template>
@@ -40,10 +40,9 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref, watch} from "vue"
 import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
-import {Watch} from "vue-property-decorator"
 import {useRoute, useRouter} from "vue-router"
 import {
   FormRules,
@@ -51,8 +50,6 @@ import {
   NBreadcrumbItem,
   NButton,
   NCard,
-  NCheckbox,
-  NCheckboxGroup,
   NDatePicker,
   NForm,
   NFormItem,
@@ -60,7 +57,6 @@ import {
   NGrid,
   NInput,
   NPageHeader,
-  NSpace,
   NSpin,
   NTabPane,
   NTabs,
@@ -76,171 +72,135 @@ import {LanguageOption, LanguageOptions} from "@/type"
 import {LanguageUtil} from "@/utils"
 import Mutations from "@/store/mutations"
 
-@Options({
-  name: "ContestEditor",
-  components: {
-    NCard,
-    NSpace,
-    NGrid,
-    NSpin,
-    NTabs,
-    NTabPane,
-    NForm,
-    NFormItem,
-    NFormItemGridItem,
-    NInput,
-    NCheckboxGroup,
-    NCheckbox,
-    NButton,
-    NTransfer,
-    NPageHeader,
-    NBreadcrumb,
-    NBreadcrumbItem,
-    NDatePicker,
-    SaveIcon,
-    ProblemManage
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const message = useMessage()
+
+const contest = ref<Contest>(new Contest())
+const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
+const languages = ref<Array<number>>([])
+const loading = ref<boolean>(false)
+const currentTab = ref<string>("base-info")
+
+let create: boolean = false
+
+const rules: FormRules = {
+  contestName: {
+    required: true,
+    trigger: ["input", "blur"],
+    message: "请输入竞赛名称"
+  },
+  timeRange: {
+    required: true,
+    trigger: ["input", "blur"],
+    validator(rule: any, value: Array<number>): Error | boolean {
+      if (!value) {
+        return new Error("请输入时间范围")
+      }
+      return true
+    }
+  },
+  languages: {
+    required: true,
+    trigger: ["input"],
+    validator: (): Error | boolean => {
+      if (languages.value.length === 0) {
+        return new Error("请选择语言")
+      }
+      return true
+    }
+  }
+}
+
+const title = computed<string>(() => create ? "创建新竞赛" : "编辑竞赛")
+
+const subtitle = computed(() => {
+  if (typeof contest.value.contestId === "undefined") {
+    return ""
+  } else {
+    return contest.value.contestName
   }
 })
-export default class ContestEditor extends Vue {
-  private route = useRoute()
-  private router = useRouter()
-  private store = useStore()
-  private message = useMessage()
 
-  private contest: Contest = new Contest()
-  private languageOptions: Array<LanguageOption> = LanguageOptions
-  private languages: Array<number> = []
-  private create: boolean = false
-  private loading: boolean = false
-  private currentTab = "base-info"
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
-  private rules: FormRules = {
-    contestName: {
-      required: true,
-      trigger: ["input", "blur"],
-      message: "请输入竞赛名称"
-    },
-    timeRange: {
-      required: true,
-      trigger: ["input", "blur"],
-      validator(rule: any, value: Array<number>): Error | boolean {
-        if (!value) {
-          return new Error("请输入时间范围")
-        }
-        return true
-      }
-    },
-    languages: {
-      required: true,
-      trigger: ["input"],
-      validator: (): Error | boolean => {
-        if (this.languages.length === 0) {
-          return new Error("请选择语言")
-        }
-        return true
-      }
+const showSaveButton = computed<boolean>(() => currentTab.value === "base-info")
+
+const contestForm = ref<HTMLFormElement | null>(null)
+
+watch(() => contest.value.timeRange, value => {
+  const fmt = "yyyy-MM-DD HH:mm:ss"
+  const [start, end] = value!
+  contest.value.startAt = moment(start).format(fmt)
+  contest.value.endAt = moment(end).format(fmt)
+})
+
+watch(languages, value => {
+  contest.value.languages = LanguageUtil.toNumber(value)
+})
+
+onBeforeMount(() => {
+  const reg = /^[\d]+$/
+  const id = route.params.id.toString()
+
+  if (id === "new") {
+    create = true
+  } else if (reg.test(id)) {
+    loading.value = true
+    queryContest(Number(id))
+  }
+
+  setBreadcrumb()
+})
+
+function setBreadcrumb() {
+  const vNode =
+      (<NBreadcrumb>
+        <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+        <NBreadcrumbItem>{title}</NBreadcrumbItem>
+      </NBreadcrumb>)
+  store.commit(Mutations.SET_BREADCRUMB, vNode)
+}
+
+function tabChange(tab: string) {
+  currentTab.value = tab
+}
+
+function queryContest(contestId: number) {
+  ContestApi.getById(
+      contestId
+  ).then((data) => {
+    data.timeRange = []
+    data.timeRange.push(Date.parse(data.startAt))
+    data.timeRange.push(Date.parse(data.endAt))
+    languages.value = LanguageUtil.toArray(data.languages)
+    contest.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    loading.value = false
+  })
+}
+
+function handleSave() {
+  contestForm.value?.validate((errors: any) => {
+    if (!errors) {
+      save()
     }
-  }
+  })
+}
 
-  get title(): string {
-    return this.create ? "创建新竞赛" : "编辑竞赛"
-  }
-
-  get subtitle(): string {
-    if (typeof this.contest.contestId === "undefined") {
-      return ""
-    } else {
-      return this.contest.contestName
-    }
-  }
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  get showSaveButton(): boolean {
-    return this.currentTab === "base-info"
-  }
-
-  declare $refs: {
-    contestForm: HTMLFormElement
-  }
-
-  @Watch("contest.timeRange")
-  timeRangeChange(value: Array<number>) {
-    const fmt = "yyyy-MM-DD HH:mm:ss"
-    const [start, end] = value
-    this.contest.startAt = moment(start).format(fmt)
-    this.contest.endAt = moment(end).format(fmt)
-  }
-
-  @Watch("languages")
-  languagesChange(value: Array<number>) {
-    this.contest.languages = LanguageUtil.toNumber(value)
-  }
-
-  beforeMount() {
-    const reg = /^[\d]+$/
-    const id = this.route.params.id.toString()
-
-    if (id === "new") {
-      this.create = true
-    } else if (reg.test(id)) {
-      this.loading = true
-      this.queryContest(Number(id))
-    }
-
-    this.setBreadcrumb()
-  }
-
-  setBreadcrumb() {
-    const vNode =
-        (<NBreadcrumb>
-          <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-          <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
-        </NBreadcrumb>)
-    this.store.commit(Mutations.SET_BREADCRUMB, vNode)
-  }
-
-  tabChange(tab: string) {
-    this.currentTab = tab
-  }
-
-  queryContest(contestId: number) {
-    ContestApi.getById(
-        contestId
-    ).then((data) => {
-      data.timeRange = []
-      data.timeRange.push(Date.parse(data.startAt))
-      data.timeRange.push(Date.parse(data.endAt))
-      this.languages = LanguageUtil.toArray(data.languages)
-      this.contest = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.loading = false
-    })
-  }
-
-  handleSave() {
-    this.$refs.contestForm.validate((errors: any) => {
-      if (!errors) {
-        this.save()
-      }
-    })
-  }
-
-  save() {
-    ContestApi.save(
-        this.contest,
-        this.userInfo,
-        this.create
-    ).then(() => {
-      this.message.success(`${this.contest.contestName} 保存成功`)
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    })
-  }
+function save() {
+  ContestApi.save(
+      contest.value,
+      userInfo.value,
+      create
+  ).then(() => {
+    message.success(`${contest.value.contestName} 保存成功`)
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  })
 }
 </script>
 

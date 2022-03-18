@@ -88,9 +88,8 @@
   </n-drawer>
 </template>
 
-<script lang="tsx">
-import {Options, Vue} from "vue-class-component"
-import {Watch} from "vue-property-decorator"
+<script setup lang="tsx">
+import {computed, onBeforeMount, ref, watch} from "vue"
 import {useRoute, useRouter} from "vue-router"
 import {useStore} from "vuex"
 import {
@@ -98,7 +97,6 @@ import {
   NBreadcrumb,
   NBreadcrumbItem,
   NButton,
-  NButtonGroup,
   NCard,
   NDrawer,
   NDrawerContent,
@@ -107,7 +105,6 @@ import {
   NFormItem,
   NFormItemGridItem,
   NGrid,
-  NIcon,
   NInput,
   NInputNumber,
   NPageHeader,
@@ -125,222 +122,185 @@ import {ProblemApi} from "@/api/request"
 import {setTitle} from "@/utils"
 import Mutations from "@/store/mutations"
 
-@Options({
-  name: "ProblemEditor",
-  components: {
-    NDrawer,
-    NDrawerContent,
-    NPageHeader,
-    NScrollbar,
-    NCard,
-    NSpace,
-    NSpin,
-    NGrid,
-    NForm,
-    NFormItem,
-    NFormItemGridItem,
-    NInput,
-    NInputNumber,
-    NDynamicTags,
-    NButtonGroup,
-    NButton,
-    NRadioGroup,
-    NRadioButton,
-    NIcon,
-    SaveIcon,
-    HelpIcon,
-    MarkdownEditor,
-    MarkdownView
+const problemForm = ref<HTMLFormElement | null>(null)
+
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const message = useMessage()
+
+const problem = ref<Problem>(new Problem())
+const showHelp = ref<boolean>(false)
+const loading = ref<boolean>(false)
+
+let create = false
+
+/* 表单验证规则 */
+const rules: FormRules = {
+  title: {
+    required: true,
+    trigger: ["blur", "input"],
+    message: "请输入题目名称"
+  },
+  type: {
+    required: true
+  },
+  score: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: number): Error | boolean {
+      if (value < 0 || value > 100) {
+        return new Error("请输入分数")
+      }
+      return true
+    }
+  },
+  timeout: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: number): Error | boolean {
+      if (value < 100 || value > 10000) {
+        return new Error("请输入时间限制")
+      }
+      return true
+    }
+  },
+  memoryLimit: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: number): Error | boolean {
+      if (value < 16 || value > 256) {
+        return new Error("请输入内存限制")
+      }
+      return true
+    }
+  },
+  outputLimit: {
+    required: true,
+    trigger: ["blur", "input"],
+    validator(rule: any, value: number): Error | boolean {
+      if (value < 1 || value > 128) {
+        return new Error("请输入输出限制")
+      }
+      return true
+    }
+  },
+
+}
+
+const helpDoc = computed(() => {
+  return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
+})
+
+const userInfo = computed<UserInfo>(() => {
+  return store.state.userInfo
+})
+
+const subtitle = computed<string>(() => {
+  if (typeof problem.value.problemId === "undefined") {
+    return ""
+  } else {
+    return `${problem.value.problemId} - ${problem.value.title}`
   }
 })
-export default class ProblemEditor extends Vue {
-  private route = useRoute()
-  private router = useRouter()
-  private store = useStore()
-  private message = useMessage()
 
-  private problem: Problem = new Problem()
-  private showHelp: boolean = false
-  private create: boolean = false
-  private loading: boolean = false
+const title = computed<string>(() => {
+  return create ? "创建题目" : "编辑题目"
+})
 
-  /* 表单验证规则 */
-  private rules: FormRules = {
-    title: {
-      required: true,
-      trigger: ["blur", "input"],
-      message: "请输入题目名称"
-    },
-    type: {
-      required: true
-    },
-    score: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: number): Error | boolean {
-        if (value < 0 || value > 100) {
-          return new Error("请输入分数")
-        }
-        return true
-      }
-    },
-    timeout: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: number): Error | boolean {
-        if (value < 100 || value > 10000) {
-          return new Error("请输入时间限制")
-        }
-        return true
-      }
-    },
-    memoryLimit: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: number): Error | boolean {
-        if (value < 16 || value > 256) {
-          return new Error("请输入内存限制")
-        }
-        return true
-      }
-    },
-    outputLimit: {
-      required: true,
-      trigger: ["blur", "input"],
-      validator(rule: any, value: number): Error | boolean {
-        if (value < 1 || value > 128) {
-          return new Error("请输入输出限制")
-        }
-        return true
-      }
-    },
+const disableType = computed<boolean>(() => {
+  return !create
+})
 
+watch(title, value => {
+  setTitle(value)
+})
+
+watch(() => problem.value.tags, value => {
+  problem.value.category = value.join(",")
+})
+
+onBeforeMount(() => {
+  const reg = /^[\d]+$/
+  const id = route.params.id.toString()
+
+  if (id === "new") {
+    create = true
+  } else if (reg.test(id)) {
+    loading.value = true
+    queryProblem(Number(id))
   }
 
-  get helpDoc() {
-    return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
-  }
+  setBreadcrumb()
+})
 
-  get isDarkTheme(): boolean {
-    return this.store.state.theme != null
-  }
+function setBreadcrumb() {
+  const vNode =
+      (<NBreadcrumb>
+        <NBreadcrumbItem>题目管理</NBreadcrumbItem>
+        <NBreadcrumbItem>{title.value}</NBreadcrumbItem>
+      </NBreadcrumb>)
+  store.commit(Mutations.SET_BREADCRUMB, vNode)
+}
 
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
+function back() {
+  router.back()
+}
 
-  get subtitle(): string {
-    if (typeof this.problem.problemId === "undefined") {
-      return ""
+/**
+ * 显示/隐藏帮助
+ */
+function toggleHelp() {
+  showHelp.value = !showHelp.value
+}
+
+function queryProblem(problemId: number) {
+  ProblemApi.getSingle(
+      problemId,
+      userInfo.value
+  ).then((data) => {
+    if (data.category.length > 0) {
+      data.tags = data.category.split(",")
     } else {
-      return `${this.problem.problemId} - ${this.problem.title}`
+      data.tags = []
     }
+    problem.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(`${error.code}: ${error.msg}`)
+  }).finally(() => {
+    loading.value = false
+  })
+}
+
+function handleSave() {
+  if (problem.value.description.trim().length === 0) {
+    message.warning("请输入题目内容！")
+    return
   }
-
-  get title(): string {
-    return this.create ? "创建题目" : "编辑题目"
-  }
-
-  get disableType(): boolean {
-    return !this.create
-  }
-
-  @Watch("title")
-  titleChange(value: string) {
-    setTitle(value)
-  }
-
-  @Watch("problem.tags")
-  tagsChange(value: Array<string>) {
-    this.problem.category = value.join(",")
-  }
-
-  declare $refs: {
-    problemForm: HTMLFormElement
-  }
-
-  beforeMount() {
-    const reg = /^[\d]+$/
-    const id = this.route.params.id.toString()
-
-    if (id === "new") {
-      this.create = true
-    } else if (reg.test(id)) {
-      this.loading = true
-      this.queryProblem(Number(id))
+  problemForm.value?.validate((errors: any) => {
+    if (!errors) {
+      save()
     }
+  })
+}
 
-    this.setBreadcrumb()
-  }
-
-  setBreadcrumb() {
-    const vNode =
-        (<NBreadcrumb>
-          <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-          <NBreadcrumbItem>{this.title}</NBreadcrumbItem>
-        </NBreadcrumb>)
-    this.store.commit(Mutations.SET_BREADCRUMB, vNode)
-  }
-
-  back() {
-    this.router.back()
-  }
-
-  /**
-   * 显示/隐藏帮助
-   */
-  toggleHelp() {
-    this.showHelp = !this.showHelp
-  }
-
-  queryProblem(problemId: number) {
-    ProblemApi.getSingle(
-        problemId,
-        this.userInfo
-    ).then((data) => {
-      this.problem = data
-      if (this.problem.category.length > 0) {
-        this.problem.tags = this.problem.category.split(",")
-      } else {
-        this.problem.tags = []
-      }
-    }).catch((error: ErrorMsg) => {
-      this.message.error(`${error.code}: ${error.msg}`)
-    }).finally(() => {
-      this.loading = false
-    })
-  }
-
-  handleSave() {
-    if (this.problem.description.trim().length === 0) {
-      this.message.warning("请输入题目内容！")
-      return
-    }
-    this.$refs.problemForm.validate((errors: any) => {
-      if (!errors) {
-        this.save()
-      }
-    })
-  }
-
-  /**
-   * 保存
-   */
-  save() {
-    this.loading = true
-    ProblemApi.save(
-        this.problem,
-        this.userInfo,
-        this.create
-    ).then(() => {
-      this.message.success(`${this.problem.title} 保存成功`)
-      this.create && this.back()
-    }).catch((error: ErrorMsg) => {
-      this.message.error(`${error.code}: ${error.msg}`)
-    }).finally(() => {
-      this.loading = false
-    })
-  }
+/**
+ * 保存
+ */
+function save() {
+  loading.value = true
+  ProblemApi.save(
+      problem.value,
+      userInfo.value,
+      create
+  ).then(() => {
+    message.success(`${problem.value.title} 保存成功`)
+    create && back()
+  }).catch((error: ErrorMsg) => {
+    message.error(`${error.code}: ${error.msg}`)
+  }).finally(() => {
+    loading.value = false
+  })
 }
 </script>
 

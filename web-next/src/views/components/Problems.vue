@@ -148,9 +148,10 @@ function search() {
  */
 function queryProblems() {
   pagination.value.loading = true
+  const {page, pageSize} = pagination.value
   ProblemApi.getAllOpened(
-      pagination.value.page,
-      pagination.value.pageSize,
+      page,
+      pageSize,
       keyword.value
   ).then((data) => {
     problems.value = data
