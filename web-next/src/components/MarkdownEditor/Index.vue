@@ -143,7 +143,7 @@ export default class MarkdownEditor extends Vue {
       return
     }
 
-    const {anchor, head} = this.cmEditor?.listSelections()[0]!
+    const {anchor, head} = this.cmEditor!.listSelections()[0]!
 
     if (!onlyLeft) {
       this.cmEditor?.setCursor(anchor)
