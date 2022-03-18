@@ -29,9 +29,8 @@
               :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
 </template>
 
-<script lang="tsx">
-import {nextTick} from "vue"
-import {Options, Vue} from "vue-class-component"
+<script setup lang="tsx">
+import {computed, nextTick, onBeforeMount, ref} from "vue"
 import {useStore} from "vuex"
 import {useRouter} from "vue-router"
 import {
@@ -52,7 +51,7 @@ import {Contest, ErrorMsg, PagedData, UserInfo} from "@/api/type"
 import {LanguageUtil, renderIcon, setTitle} from "@/utils"
 import {LanguageOptions} from "@/type"
 import {ContestApi} from "@/api/request"
-import Mutations from "@/store/mutations";
+import Mutations from "@/store/mutations"
 
 let selectedId: number | undefined
 
@@ -61,189 +60,172 @@ type StateTag = {
   state: string
 }
 
-@Options({
-  name: "ContestAdmin",
-  components: {
-    NCard,
-    NSpace,
-    NBreadcrumb,
-    NBreadcrumbItem,
-    NDataTable,
-    NPagination,
-    NDropdown,
-    NButton,
-    NIcon,
-    AddIcon
-  }
+const store = useStore()
+const router = useRouter()
+const message = useMessage()
+
+const pagination = ref({
+  page: 1,
+  pageSize: 15,
+  loading: true
 })
-export default class ContestAdmin extends Vue {
-  private store = useStore()
-  private router = useRouter()
-  private message = useMessage()
 
-  private pagination = {
-    page: 1,
-    pageSize: 15,
-    loading: true
-  }
+const showOperations = ref<boolean>(false)
 
-  private showOperations: boolean = false
-  private point = {
-    x: 0,
-    y: 0
-  }
+const point = ref({
+  x: 0,
+  y: 0
+})
 
-  private rowProps = (row: Contest) => {
-    return {
-      onContextmenu: (e: PointerEvent) => {
-        if ((e.target as Element).tagName !== "TD") {
-          return
-        }
-        e.preventDefault()
-        this.showOperations = false
-        nextTick().then(() => {
-          selectedId = row.contestId
-          this.showOperations = true
-          this.point = {
-            x: e.clientX,
-            y: e.clientY
-          }
-        })
-      },
-    }
-  }
-
-  private operations = [
-    {
-      key: "edit",
-      label: "编辑",
-      icon: renderIcon(EditIcon, "#399F58")
-    },
-    {
-      key: "del",
-      label: "删除",
-      icon: renderIcon(DelIcon, "#F17C67")
-    }
-  ]
-
-  // #region 表格列选项
-  private contestColumns = [
-    {
-      title: "状态",
-      align: "center",
-      width: 120,
-      render: (row: Contest) => {
-        const tag = this.stateTag(row)
-        return <NTag type={tag.type}>{tag.state}</NTag>
-      }
-    },
-    {
-      title: "竞赛",
-      render: (row: Contest) => (
-          <NSpace align="center">
-            <NButton text>{row.contestName}</NButton>
-          </NSpace>
-      )
-    },
-    {
-      title: "语言限制",
-      render: (row: Contest) => {
-        if (row.languages === 511) {
-          return "没有限制"
-        }
-        const languages: Array<string> = []
-        LanguageUtil.toArray(row.languages).forEach((value) => {
-          languages.push(LanguageOptions[value].label)
-        })
-        return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
-      }
-    },
-    {
-      title: "开始时间",
-      key: "startAt"
-    },
-    {
-      title: "结束时间",
-      key: "endAt"
-    }
-  ]
-  // endregion
-
-  private contests: PagedData<Contest> = {
-    data: [],
-    count: 0
-  }
-
-  get userInfo(): UserInfo {
-    return this.store.state.userInfo
-  }
-
-  beforeMount() {
-    setTitle("竞赛管理")
-    this.store.commit(Mutations.SET_BREADCRUMB,
-        <NBreadcrumb>
-          <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-        </NBreadcrumb>
-    )
-    this.queryContests()
-  }
-
-  hideOperation() {
-    this.showOperations = false
-  }
-
-  operationSelect(key: string) {
-    this.hideOperation()
-    switch (key) {
-      case "edit":
-        this.router.push({name: "edit_contest", params: {id: selectedId}})
-        break;
-      default:
+const rowProps = (row: Contest) => {
+  return {
+    onContextmenu: (e: PointerEvent) => {
+      if ((e.target as Element).tagName !== "TD") {
         return
+      }
+      e.preventDefault()
+      showOperations.value = false
+      nextTick().then(() => {
+        selectedId = row.contestId
+        point.value = {
+          x: e.clientX,
+          y: e.clientY
+        }
+        showOperations.value = true
+      })
+    },
+  }
+}
+
+const operations = [
+  {
+    key: "edit",
+    label: "编辑",
+    icon: renderIcon(EditIcon, "#399F58")
+  },
+  {
+    key: "del",
+    label: "删除",
+    icon: renderIcon(DelIcon, "#F17C67")
+  }
+]
+
+// #region 表格列选项
+const contestColumns = [
+  {
+    title: "状态",
+    align: "center",
+    width: 120,
+    render: (row: Contest) => {
+      const tag = stateTag(row)
+      return <NTag type={tag.type}>{tag.state}</NTag>
+    }
+  },
+  {
+    title: "竞赛",
+    render: (row: Contest) => (
+        <NSpace align="center">
+          <NButton text>{row.contestName}</NButton>
+        </NSpace>
+    )
+  },
+  {
+    title: "语言限制",
+    render: (row: Contest) => {
+      if (row.languages === 511) {
+        return "没有限制"
+      }
+      const languages: Array<string> = []
+      LanguageUtil.toArray(row.languages).forEach((value) => {
+        languages.push(LanguageOptions[value].label)
+      })
+      return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
+    }
+  },
+  {
+    title: "开始时间",
+    key: "startAt"
+  },
+  {
+    title: "结束时间",
+    key: "endAt"
+  }
+]
+// endregion
+
+const contests = ref<PagedData<Contest>>({
+  data: [],
+  count: 0
+})
+
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
+
+onBeforeMount(() => {
+  setTitle("竞赛管理")
+  store.commit(Mutations.SET_BREADCRUMB,
+      <NBreadcrumb>
+        <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+      </NBreadcrumb>
+  )
+  queryContests()
+})
+
+function hideOperation() {
+  showOperations.value = false
+}
+
+function operationSelect(key: string) {
+  hideOperation()
+  switch (key) {
+    case "edit":
+      router.push({name: "edit_contest", params: {id: selectedId}})
+      break;
+    default:
+      return
+  }
+}
+
+/**
+ * 竞赛状态标签
+ */
+function stateTag(c: Contest): StateTag {
+  if (c.ended) {
+    return {
+      type: "error",
+      state: "已结束"
+    }
+  } else if (c.started) {
+    return {
+      type: "success",
+      state: "进行中"
+    }
+  } else {
+    return {
+      type: "info",
+      state: "未开始"
     }
   }
+}
 
-  /**
-   * 竞赛状态标签
-   */
-  stateTag(c: Contest): StateTag {
-    if (c.ended) {
-      return {
-        type: "error",
-        state: "已结束"
-      }
-    } else if (c.started) {
-      return {
-        type: "success",
-        state: "进行中"
-      }
-    } else {
-      return {
-        type: "info",
-        state: "未开始"
-      }
-    }
-  }
+function pageChange(page: number) {
+  router.push({
+    query: {page}
+  })
+}
 
-  pageChange(page: number) {
-    this.router.push({
-      query: {page}
-    })
-  }
-
-  queryContests() {
-    ContestApi.getAll(
-        this.pagination.page,
-        this.pagination.pageSize,
-        this.userInfo
-    ).then((data) => {
-      this.contests = data
-    }).catch((error: ErrorMsg) => {
-      this.message.error(error.toString())
-    }).finally(() => {
-      this.pagination.loading = false
-    })
-  }
+function queryContests() {
+  const {page, pageSize} = pagination.value
+  ContestApi.getAll(
+      page,
+      pageSize,
+      userInfo.value
+  ).then((data) => {
+    contests.value = data
+  }).catch((error: ErrorMsg) => {
+    message.error(error.toString())
+  }).finally(() => {
+    pagination.value.loading = false
+  })
 }
 </script>
 
