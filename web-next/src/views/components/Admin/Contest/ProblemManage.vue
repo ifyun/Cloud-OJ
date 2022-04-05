@@ -1,29 +1,46 @@
 <template>
   <div class="contest-problem-tables">
     <n-space vertical size="large">
-      <n-data-table :columns="columns1" :data="problems.data" :loading="pagination1.loading"/>
-      <n-pagination v-model:page="pagination1.page" :page-size="pagination1.pageSize"
-                    :item-count="problems.count" @update:page="queryProblems">
-        <template #prefix="{itemCount}">
-          共 {{ itemCount }} 项
-        </template>
+      <n-data-table
+        :columns="columns1"
+        :data="problems.data"
+        :loading="pagination1.loading" />
+      <n-pagination
+        v-model:page="pagination1.page"
+        :page-size="pagination1.pageSize"
+        :item-count="problems.count"
+        @update:page="queryProblems">
+        <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
       </n-pagination>
     </n-space>
     <n-space vertical size="large">
-      <n-data-table :columns="columns2" :data="contestProblems.data" :loading="pagination2.loading"/>
-      <n-pagination v-model:page="pagination2.page" :page-size="pagination2.pageSize"
-                    :item-count="contestProblems.count" @update:page="queryContestProblems"/>
+      <n-data-table
+        :columns="columns2"
+        :data="contestProblems.data"
+        :loading="pagination2.loading" />
+      <n-pagination
+        v-model:page="pagination2.page"
+        :page-size="pagination2.pageSize"
+        :item-count="contestProblems.count"
+        @update:page="queryContestProblems" />
     </n-space>
   </div>
 </template>
 
 <script setup lang="tsx">
-import {computed, ref, watch} from "vue"
-import {useStore} from "vuex"
-import {useRouter} from "vue-router"
-import {NButton, NDataTable, NPagination, NSpace, useDialog, useMessage} from "naive-ui"
-import {ErrorMsg, PagedData, Problem, UserInfo} from "@/api/type"
-import {ContestApi} from "@/api/request"
+import { computed, ref, watch } from "vue"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
+import {
+  NButton,
+  NDataTable,
+  NPagination,
+  NSpace,
+  useDialog,
+  useMessage
+} from "naive-ui"
+import { ErrorMsg, PagedData, Problem, UserInfo } from "@/api/type"
+import { ContestApi } from "@/api/request"
 
 const props = defineProps<{ contestId: number }>()
 
@@ -67,7 +84,11 @@ const columns1 = [
       },
       {
         title: "题目名称",
-        render: (row: Problem) => <NButton text={true} onClick={() => toSubmission(row)}>{row.title}</NButton>
+        render: (row: Problem) => (
+          <NButton text={true} onClick={() => toSubmission(row)}>
+            {row.title}
+          </NButton>
+        )
       },
       {
         title: "分数",
@@ -78,7 +99,11 @@ const columns1 = [
         title: "操作",
         align: "right",
         width: 100,
-        render: (row: Problem) => <NButton size="tiny" type="success" onClick={() => addToContest(row)}>添加</NButton>
+        render: (row: Problem) => (
+          <NButton size="tiny" type="success" onClick={() => addToContest(row)}>
+            添加
+          </NButton>
+        )
       }
     ]
   }
@@ -97,7 +122,11 @@ const columns2 = [
       },
       {
         title: "题目名称",
-        render: (row: Problem) => <NButton text={true} onClick={() => toSubmission(row)}>{row.title}</NButton>
+        render: (row: Problem) => (
+          <NButton text={true} onClick={() => toSubmission(row)}>
+            {row.title}
+          </NButton>
+        )
       },
       {
         title: "分数",
@@ -108,8 +137,11 @@ const columns2 = [
         title: "操作",
         align: "right",
         width: 100,
-        render: (row: Problem) =>
-            <NButton size="tiny" type="warning" onClick={() => handleRemove(row)}>移除</NButton>
+        render: (row: Problem) => (
+          <NButton size="tiny" type="warning" onClick={() => handleRemove(row)}>
+            移除
+          </NButton>
+        )
       }
     ]
   }
@@ -119,32 +151,38 @@ const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo
 })
 
-
-watch(() => props.contestId, value => {
-  if (typeof value !== "undefined") {
-    queryProblems()
-    queryContestProblems()
-  }
-}, {immediate: true})
+watch(
+  () => props.contestId,
+  (value) => {
+    if (typeof value !== "undefined") {
+      queryProblems()
+      queryContestProblems()
+    }
+  },
+  { immediate: true }
+)
 
 /**
  * 获取可用题目
  */
 function queryProblems() {
   pagination1.value.loading = true
-  const {page, pageSize} = pagination1.value
+  const { page, pageSize } = pagination1.value
   ContestApi.getProblemsNotInContest(
-      props.contestId,
-      page,
-      pageSize,
-      userInfo.value
-  ).then((data) => {
-    problems.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    pagination1.value.loading = false
-  })
+    props.contestId,
+    page,
+    pageSize,
+    userInfo.value
+  )
+    .then((data) => {
+      problems.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      pagination1.value.loading = false
+    })
 }
 
 /**
@@ -152,19 +190,17 @@ function queryProblems() {
  */
 function queryContestProblems() {
   pagination2.value.loading = true
-  const {page, pageSize} = pagination2.value
-  ContestApi.getProblems(
-      props.contestId!,
-      page,
-      pageSize,
-      userInfo.value
-  ).then((data) => {
-    contestProblems.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    pagination2.value.loading = false
-  })
+  const { page, pageSize } = pagination2.value
+  ContestApi.getProblems(props.contestId!, page, pageSize, userInfo.value)
+    .then((data) => {
+      contestProblems.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      pagination2.value.loading = false
+    })
 }
 
 function refresh() {
@@ -173,24 +209,23 @@ function refresh() {
 }
 
 function toSubmission(p: Problem) {
-  router.push({name: "submission", query: {problemId: p.problemId}})
+  router.push({ name: "submission", query: { problemId: p.problemId } })
 }
 
 /**
  * 将题目添加到当前竞赛
  */
 function addToContest(p: Problem) {
-  ContestApi.addProblem(
-      props.contestId,
-      p.problemId!,
-      userInfo.value
-  ).then(() => {
-    message.success(`[${p.title}] 已添加`)
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    refresh()
-  })
+  ContestApi.addProblem(props.contestId, p.problemId!, userInfo.value)
+    .then(() => {
+      message.success(`[${p.title}] 已添加`)
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      refresh()
+    })
 }
 
 function handleRemove(p: Problem) {
@@ -207,17 +242,16 @@ function handleRemove(p: Problem) {
  * 从竞赛中移除题目
  */
 function remove(p: Problem) {
-  ContestApi.removeProblem(
-      props.contestId,
-      p.problemId!,
-      userInfo.value
-  ).then(() => {
-    message.warning(`[${p.title}] 已移除`)
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    refresh()
-  })
+  ContestApi.removeProblem(props.contestId, p.problemId!, userInfo.value)
+    .then(() => {
+      message.warning(`[${p.title}] 已移除`)
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      refresh()
+    })
 }
 </script>
 

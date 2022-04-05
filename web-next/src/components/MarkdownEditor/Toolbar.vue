@@ -2,56 +2,63 @@
   <n-button-group size="small">
     <n-button tertiary @click="click('italic')">
       <n-icon :size="iconSize">
-        <italic-icon/>
+        <italic-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('bold')">
       <n-icon :size="iconSize">
-        <bold-icon/>
+        <bold-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('quote')">
       <n-icon :size="iconSize">
-        <quote-icon/>
+        <quote-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('info')">
       <n-icon :size="iconSize">
-        <info-icon/>
+        <info-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('warning')">
       <n-icon :size="iconSize">
-        <warning-icon/>
+        <warning-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('code')">
       <n-icon :size="iconSize">
-        <code-icon/>
+        <code-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('ul')">
       <n-icon :size="iconSize">
-        <list-ul-icon/>
+        <list-ul-icon />
       </n-icon>
     </n-button>
     <n-button tertiary @click="click('ol')">
       <n-icon :size="iconSize">
-        <list-ol-icon/>
+        <list-ol-icon />
       </n-icon>
     </n-button>
-    <n-dropdown placement="bottom-start" :show-arrow="true" :options="tableOptions">
+    <n-dropdown
+      placement="bottom-start"
+      :show-arrow="true"
+      :options="tableOptions">
       <n-button tertiary>
         <n-icon :size="iconSize">
-          <table-icon/>
+          <table-icon />
         </n-icon>
       </n-button>
     </n-dropdown>
-    <n-dropdown placement="bottom-start" size="small" :show-arrow="true"
-                :options="imgOptions" @select="click">
+    <n-dropdown
+      placement="bottom-start"
+      size="small"
+      :show-arrow="true"
+      :options="imgOptions"
+      @select="click">
       <n-button tertiary>
         <n-icon :size="iconSize">
-          <image-icon/>
+          <image-icon />
         </n-icon>
       </n-button>
     </n-dropdown>
@@ -81,12 +88,12 @@ import {
   AddLinkRound as LinkIcon,
   FileUploadOutlined as UploadIcon
 } from "@vicons/material"
-import {renderIcon} from "@/utils"
+import { renderIcon } from "@/utils"
 
-const iconSize: number = 20
+const iconSize = 20
 
-let cols: number = 3
-let rows: number = 3
+let cols = 3
+let rows = 3
 
 // region 表格选项
 const tableOptions = [
@@ -94,15 +101,26 @@ const tableOptions = [
     key: "header",
     type: "render",
     render: () => (
-        <NSpace vertical={true} style="padding: 0 6px">
-          <NInputNumber value={cols} onUpdateValue={value => cols = value as number} style="width: 120px">
-            {{suffix: () => "列"}}
-          </NInputNumber>
-          <NInputNumber value={rows} onUpdateValue={value => rows = value as number} style="width: 120px">
-            {{suffix: () => "行"}}
-          </NInputNumber>
-          <NButton type="primary" onClick={() => insertTable()} style="width: 100%">插入表格</NButton>
-        </NSpace>
+      <NSpace vertical={true} style="padding: 0 6px">
+        <NInputNumber
+          value={cols}
+          onUpdateValue={(value) => (cols = value as number)}
+          style="width: 120px">
+          {{ suffix: () => "列" }}
+        </NInputNumber>
+        <NInputNumber
+          value={rows}
+          onUpdateValue={(value) => (rows = value as number)}
+          style="width: 120px">
+          {{ suffix: () => "行" }}
+        </NInputNumber>
+        <NButton
+          type="primary"
+          onClick={() => insertTable()}
+          style="width: 100%">
+          插入表格
+        </NButton>
+      </NSpace>
     )
   }
 ]

@@ -1,20 +1,20 @@
 <!-- Markdown 编辑器 -->
 <template>
   <div class="markdown-editor">
-    <toolbar @click="toolbarClick" @insertTable="insertTable" style="margin-bottom: 2px"/>
-    <textarea ref="editor"/>
+    <toolbar
+      @click="toolbarClick"
+      @insertTable="insertTable"
+      style="margin-bottom: 2px" />
+    <textarea ref="editor" />
   </div>
 </template>
 
 <script lang="ts">
-import {markRaw} from "vue"
-import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
-import {Emit, Prop, Watch} from "vue-property-decorator"
-import CodeMirror, {
-  Editor,
-  EditorConfiguration
-} from "codemirror"
+import { markRaw } from "vue"
+import { useStore } from "vuex"
+import { Options, Vue } from "vue-class-component"
+import { Emit, Prop, Watch } from "vue-property-decorator"
+import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ayu-dark.css"
 import "codemirror/theme/material-darker.css"
@@ -33,7 +33,7 @@ import Toolbar from "./Toolbar.vue"
 export default class MarkdownEditor extends Vue {
   private store = useStore()
 
-  private firstLoad: boolean = true
+  private firstLoad = true
   private cmEditor?: Editor | null
   private cmOptions: EditorConfiguration = {
     mode: {
@@ -43,7 +43,7 @@ export default class MarkdownEditor extends Vue {
     scrollbarStyle: "simple",
     lineNumbers: true,
     lineWrapping: true,
-    tabSize: 4,
+    tabSize: 4
   }
 
   get theme(): any {
@@ -54,7 +54,7 @@ export default class MarkdownEditor extends Vue {
   private modelValue?: string
 
   @Prop(Boolean)
-  private readOnly: boolean = false
+  private readOnly = false
 
   @Watch("readOnly")
   readOnlyChange(value: boolean) {
@@ -84,7 +84,10 @@ export default class MarkdownEditor extends Vue {
   }
 
   mounted() {
-    this.cmEditor = CodeMirror.fromTextArea(this.$refs.editor as HTMLTextAreaElement, this.cmOptions)
+    this.cmEditor = CodeMirror.fromTextArea(
+      this.$refs.editor as HTMLTextAreaElement,
+      this.cmOptions
+    )
     this.cmEditor = markRaw(this.cmEditor)
     this.cmEditor.setValue(this.modelValue!)
     this.cmEditor.on("change", (cm: Editor) => {
@@ -138,12 +141,12 @@ export default class MarkdownEditor extends Vue {
    * @param symbol 符号字符串
    * @param onlyLeft 是否只在左边插入
    */
-  addSymbol(symbol: string, onlyLeft: boolean = false) {
+  addSymbol(symbol: string, onlyLeft = false) {
     if (this.hasSelected()) {
       return
     }
 
-    const {anchor, head} = this.cmEditor!.listSelections()[0]!
+    const { anchor, head } = this.cmEditor!.listSelections()[0]!
 
     if (!onlyLeft) {
       this.cmEditor?.setCursor(anchor)
@@ -158,7 +161,7 @@ export default class MarkdownEditor extends Vue {
     this.cmEditor?.setCursor(head)
     this.cmEditor?.replaceSelection(symbol)
     head.ch += symbol.length
-    this.cmEditor?.setCursor(head)  // 光标移动到符号中间（右侧）
+    this.cmEditor?.setCursor(head) // 光标移动到符号中间（右侧）
     this.cmEditor?.focus()
   }
 
@@ -223,7 +226,9 @@ export default class MarkdownEditor extends Vue {
       bodyRows.push("\n")
     }
 
-    const content = `${header.join("")}\n${divider.join("")}\n${bodyRows.join("")}`
+    const content = `${header.join("")}\n${divider.join("")}\n${bodyRows.join(
+      ""
+    )}`
     const head = this.cmEditor?.getCursor()!
 
     if (head.ch != 0) {
@@ -252,7 +257,7 @@ export default class MarkdownEditor extends Vue {
     height: calc(100% - 30px);
 
     &.cm-s-elegant {
-      border-right: 1px solid #F7F7F7;
+      border-right: 1px solid #f7f7f7;
 
       .CodeMirror-gutters {
         border-right: none;
@@ -269,7 +274,7 @@ export default class MarkdownEditor extends Vue {
 
         div {
           border: none;
-          background-color: #28282C;
+          background-color: #28282c;
         }
       }
 
@@ -278,7 +283,7 @@ export default class MarkdownEditor extends Vue {
 
         div {
           border: none;
-          background-color: #28282C;
+          background-color: #28282c;
         }
       }
     }

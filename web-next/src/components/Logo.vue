@@ -1,6 +1,6 @@
 <template>
   <div class="text-logo">
-    <router-link :to="{path: '/'}">
+    <router-link :to="{ path: '/' }">
       <span>Cloud</span>
       <span class="colored">OJ</span>
     </router-link>

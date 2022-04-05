@@ -1,25 +1,33 @@
 <template>
   <div class="footer">
-    <n-button text tag="a" href="https://github.com/imcloudfloating" target="_blank">
+    <n-button
+      text
+      tag="a"
+      href="https://github.com/imcloudfloating"
+      target="_blank">
       © Cloud Li
     </n-button>
-    <n-divider vertical/>
-    <n-button text tag="a" href="https://github.com/imcloudfloating/Cloud-OJ" target="_blank">
+    <n-divider vertical />
+    <n-button
+      text
+      tag="a"
+      href="https://github.com/imcloudfloating/Cloud-OJ"
+      target="_blank">
       <template #icon>
         <n-icon size="16">
-          <github-icon/>
+          <github-icon />
         </n-icon>
       </template>
       GitHub
     </n-button>
-    <n-divider vertical/>
+    <n-divider vertical />
     <n-button text>MIT License</n-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import {NButton, NDivider, NIcon} from "naive-ui"
-import {Github as GithubIcon} from "@vicons/fa"
+import { NButton, NDivider, NIcon } from "naive-ui"
+import { Github as GithubIcon } from "@vicons/fa"
 </script>
 
 <style scoped>

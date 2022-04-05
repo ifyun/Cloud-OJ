@@ -1,14 +1,27 @@
 <template>
-  <n-config-provider abstract :theme="theme" :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN">
+  <n-config-provider
+    abstract
+    :theme="theme"
+    :theme-overrides="themeOverrides"
+    :locale="zhCN"
+    :date-locale="dateZhCN">
     <n-dialog-provider>
       <n-message-provider>
-        <n-global-style/>
-        <router-view v-if="!reload" v-slot="{Component}" :key="$route.fullPath">
-          <component :is="Component"/>
+        <n-global-style />
+        <router-view
+          v-if="!reload"
+          v-slot="{ Component }"
+          :key="$route.fullPath">
+          <component :is="Component" />
         </router-view>
-        <n-modal v-model:show="showAuthDialog" preset="dialog" :mask-closable="false" :show-icon="false"
-                 transform-origin="center" style="margin-top: 220px">
-          <auth/>
+        <n-modal
+          v-model:show="showAuthDialog"
+          preset="dialog"
+          :mask-closable="false"
+          :show-icon="false"
+          transform-origin="center"
+          style="margin-top: 220px">
+          <auth />
         </n-modal>
       </n-message-provider>
     </n-dialog-provider>
@@ -16,12 +29,20 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue"
-import {useStore} from "vuex"
-import {dateZhCN, NConfigProvider, NDialogProvider, NGlobalStyle, NMessageProvider, NModal, zhCN} from "naive-ui"
+import { computed } from "vue"
+import { useStore } from "vuex"
+import {
+  dateZhCN,
+  NConfigProvider,
+  NDialogProvider,
+  NGlobalStyle,
+  NMessageProvider,
+  NModal,
+  zhCN
+} from "naive-ui"
 import themeOverrides from "@/theme"
 import Auth from "@/views/components/Auth/Index.vue"
-import {Mutations} from "@/store"
+import { Mutations } from "@/store"
 
 const store = useStore()
 
@@ -47,7 +68,7 @@ const reload = computed(() => {
 :root {
   --layout-padding: 12px;
   --header-height: 60px;
-  --primary-color: #18A058;
+  --primary-color: #18a058;
 }
 
 #app {
@@ -61,7 +82,7 @@ const reload = computed(() => {
   }
 
   .aside {
-    box-shadow: 2px 0 8px #1D23290D;
+    box-shadow: 2px 0 8px #1d23290d;
     z-index: 2;
   }
 

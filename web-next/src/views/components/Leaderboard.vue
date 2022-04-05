@@ -2,22 +2,35 @@
   <div class="leaderboard">
     <n-card :bordered="false">
       <n-space vertical>
-        <n-data-table :loading="pagination.loading" :columns="rankingColumns" :data="rankings.data"/>
-        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                      :item-count="rankings.count" @update:page="pageChange"/>
+        <n-data-table
+          :loading="pagination.loading"
+          :columns="rankingColumns"
+          :data="rankings.data" />
+        <n-pagination
+          v-model:page="pagination.page"
+          :page-size="pagination.pageSize"
+          :item-count="rankings.count"
+          @update:page="pageChange" />
       </n-space>
     </n-card>
   </div>
 </template>
 
 <script setup lang="tsx">
-import {onBeforeMount, ref} from "vue"
-import {useRoute, useRouter} from "vue-router"
-import {NCard, NDataTable, NPagination, NSpace, NText, useMessage} from "naive-ui"
-import {UserAvatar} from "@/components"
-import {RankingApi} from "@/api/request"
-import {ErrorMsg, PagedData, Ranking} from "@/api/type"
-import {setTitle} from "@/utils"
+import { onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import {
+  NCard,
+  NDataTable,
+  NPagination,
+  NSpace,
+  NText,
+  useMessage
+} from "naive-ui"
+import { UserAvatar } from "@/components"
+import { RankingApi } from "@/api/request"
+import { ErrorMsg, PagedData, Ranking } from "@/api/type"
+import { setTitle } from "@/utils"
 
 const route = useRoute()
 const router = useRouter()
@@ -44,10 +57,10 @@ const rankingColumns = [
   {
     title: "用户",
     render: (row: Ranking) => (
-        <NSpace align="center" size="small">
-          <UserAvatar size="small" userId={row.userId}/>
-          <NText>{row.name}</NText>
-        </NSpace>
+      <NSpace align="center" size="small">
+        <UserAvatar size="small" userId={row.userId} />
+        <NText>{row.name}</NText>
+      </NSpace>
     )
   },
   {
@@ -66,7 +79,11 @@ const rankingColumns = [
     title: "分数",
     width: 100,
     align: "right",
-    render: (row: Ranking) => <NText type="success" strong>{row.score}</NText>
+    render: (row: Ranking) => (
+      <NText type="success" strong>
+        {row.score}
+      </NText>
+    )
   }
 ]
 
@@ -82,21 +99,21 @@ onBeforeMount(() => {
 
 function pageChange(page: number) {
   router.push({
-    query: {page}
+    query: { page }
   })
 }
 
 function queryRankings() {
-  RankingApi.get(
-      pagination.value.page,
-      pagination.value.pageSize
-  ).then((data) => {
-    rankings.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(`${error.code}: ${error.msg}`)
-  }).finally(() => {
-    pagination.value.loading = false
-  })
+  RankingApi.get(pagination.value.page, pagination.value.pageSize)
+    .then((data) => {
+      rankings.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(`${error.code}: ${error.msg}`)
+    })
+    .finally(() => {
+      pagination.value.loading = false
+    })
 }
 </script>
 

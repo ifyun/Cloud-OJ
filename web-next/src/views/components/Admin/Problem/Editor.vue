@@ -1,20 +1,22 @@
 <template>
   <div class="problem-editor">
-    <n-card :bordered="false" style="height: 100%"
-            content-style="height: 100%; display: flex; flex-direction: column">
+    <n-card
+      :bordered="false"
+      style="height: 100%"
+      content-style="height: 100%; display: flex; flex-direction: column">
       <n-page-header class="page-header" :subtitle="subtitle" @back="back">
         <template #title>{{ title }}</template>
         <template #extra>
           <n-space size="small">
             <n-button type="primary" size="small" @click="handleSave">
               <template #icon>
-                <save-icon/>
+                <save-icon />
               </template>
               保存
             </n-button>
             <n-button type="info" size="small" ghost @click="toggleHelp">
               <template #icon>
-                <help-icon/>
+                <help-icon />
               </template>
               帮助
             </n-button>
@@ -24,46 +26,82 @@
       <!-- 表单 -->
       <n-space class="editor-from" vertical size="small">
         <n-spin :show="loading">
-          <n-form :model="problem" label-placement="left" :rules="rules" ref="problemForm">
+          <n-form
+            :model="problem"
+            label-placement="left"
+            :rules="rules"
+            ref="problemForm">
             <n-grid :cols="2" :x-gap="12">
               <n-form-item-grid-item label="题目名称" path="title" :span="1">
-                <n-input v-model:value="problem.title" maxlength="16" show-count clearable/>
+                <n-input
+                  v-model:value="problem.title"
+                  maxlength="16"
+                  show-count
+                  clearable />
               </n-form-item-grid-item>
               <n-form-item-grid-item label="题目类型" path="type" :span="1">
                 <n-radio-group v-model:value="problem.type">
-                  <n-radio-button :disabled="disableType" :value="0">程序设计</n-radio-button>
-                  <n-radio-button :disabled="disableType" :value="1">SQL(SQLite)</n-radio-button>
+                  <n-radio-button :disabled="disableType" :value="0"
+                  >程序设计
+                  </n-radio-button
+                  >
+                  <n-radio-button :disabled="disableType" :value="1"
+                  >SQL(SQLite)
+                  </n-radio-button
+                  >
                 </n-radio-group>
               </n-form-item-grid-item>
             </n-grid>
             <n-grid :cols="4" :x-gap="12">
               <n-form-item-grid-item label="题目分数" path="score" :span="1">
-                <n-input-number v-model:value="problem.score" :min="0" :max="100" :show-button="false"
-                                placeholder="0 ~ 100">
+                <n-input-number
+                  v-model:value="problem.score"
+                  :min="0"
+                  :max="100"
+                  :show-button="false"
+                  placeholder="0 ~ 100">
                   <template #suffix>分</template>
                 </n-input-number>
               </n-form-item-grid-item>
               <n-form-item-grid-item label="时间限制" path="timeout" :span="1">
-                <n-input-number v-model:value="problem.timeout" :show-button="false" :min="100" :max="10000"
-                                placeholder="100 ~ 10000">
+                <n-input-number
+                  v-model:value="problem.timeout"
+                  :show-button="false"
+                  :min="100"
+                  :max="10000"
+                  placeholder="100 ~ 10000">
                   <template #suffix>毫秒</template>
                 </n-input-number>
               </n-form-item-grid-item>
-              <n-form-item-grid-item label="内存限制" path="memoryLimit" :span="1">
-                <n-input-number v-model:value="problem.memoryLimit" :show-button="false" :min="16" :max="256"
-                                placeholder="16 ~ 256">
+              <n-form-item-grid-item
+                label="内存限制"
+                path="memoryLimit"
+                :span="1">
+                <n-input-number
+                  v-model:value="problem.memoryLimit"
+                  :show-button="false"
+                  :min="16"
+                  :max="256"
+                  placeholder="16 ~ 256">
                   <template #suffix>MB</template>
                 </n-input-number>
               </n-form-item-grid-item>
-              <n-form-item-grid-item label="输出限制" path="outputLimit" :span="1">
-                <n-input-number v-model:value="problem.outputLimit" :show-button="false" :min="1" :max="128"
-                                placeholder="1 ~ 128">
+              <n-form-item-grid-item
+                label="输出限制"
+                path="outputLimit"
+                :span="1">
+                <n-input-number
+                  v-model:value="problem.outputLimit"
+                  :show-button="false"
+                  :min="1"
+                  :max="128"
+                  placeholder="1 ~ 128">
                   <template #suffix>MB</template>
                 </n-input-number>
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="分类/标签" path="tags">
-              <n-dynamic-tags type="primary" v-model:value="problem.tags"/>
+              <n-dynamic-tags type="primary" v-model:value="problem.tags" />
             </n-form-item>
           </n-form>
         </n-spin>
@@ -71,11 +109,13 @@
       <!-- 题目内容编辑器 -->
       <div class="editor-markdown">
         <div>
-          <markdown-editor v-model="problem.description" :read-only="loading"/>
+          <markdown-editor v-model="problem.description" :read-only="loading" />
         </div>
         <div>
           <n-scrollbar style="max-height: 100%">
-            <markdown-view :content="problem.description" style="margin: 30px 0 12px 0"/>
+            <markdown-view
+              :content="problem.description"
+              style="margin: 30px 0 12px 0" />
           </n-scrollbar>
         </div>
       </div>
@@ -83,15 +123,15 @@
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
     <n-drawer-content :native-scrollbar="false" body-content-style="padding: 0">
-      <markdown-view :content="helpDoc" style="padding: 24px"/>
+      <markdown-view :content="helpDoc" style="padding: 24px" />
     </n-drawer-content>
   </n-drawer>
 </template>
 
 <script setup lang="tsx">
-import {computed, onBeforeMount, ref, watch} from "vue"
-import {useRoute, useRouter} from "vue-router"
-import {useStore} from "vuex"
+import { computed, onBeforeMount, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 import {
   FormRules,
   NBreadcrumb,
@@ -115,11 +155,14 @@ import {
   NSpin,
   useMessage
 } from "naive-ui"
-import {HelpOutlineRound as HelpIcon, SaveOutlined as SaveIcon} from "@vicons/material"
-import {MarkdownEditor, MarkdownHelp, MarkdownView} from "@/components"
-import {ErrorMsg, Problem, UserInfo} from "@/api/type"
-import {ProblemApi} from "@/api/request"
-import {setTitle} from "@/utils"
+import {
+  HelpOutlineRound as HelpIcon,
+  SaveOutlined as SaveIcon
+} from "@vicons/material"
+import { MarkdownEditor, MarkdownHelp, MarkdownView } from "@/components"
+import { ErrorMsg, Problem, UserInfo } from "@/api/type"
+import { ProblemApi } from "@/api/request"
+import { setTitle } from "@/utils"
 import Mutations from "@/store/mutations"
 
 const problemForm = ref<HTMLFormElement | null>(null)
@@ -184,8 +227,7 @@ const rules: FormRules = {
       }
       return true
     }
-  },
-
+  }
 }
 
 const helpDoc = computed(() => {
@@ -212,13 +254,16 @@ const disableType = computed<boolean>(() => {
   return !create
 })
 
-watch(title, value => {
+watch(title, (value) => {
   setTitle(value)
 })
 
-watch(() => problem.value.tags, value => {
-  problem.value.category = value.join(",")
-})
+watch(
+  () => problem.value.tags,
+  (value) => {
+    problem.value.category = value.join(",")
+  }
+)
 
 onBeforeMount(() => {
   const reg = /^[\d]+$/
@@ -235,11 +280,12 @@ onBeforeMount(() => {
 })
 
 function setBreadcrumb() {
-  const vNode =
-      (<NBreadcrumb>
-        <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-        <NBreadcrumbItem>{title.value}</NBreadcrumbItem>
-      </NBreadcrumb>)
+  const vNode = (
+    <NBreadcrumb>
+      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
+      <NBreadcrumbItem>{title.value}</NBreadcrumbItem>
+    </NBreadcrumb>
+  )
   store.commit(Mutations.SET_BREADCRUMB, vNode)
 }
 
@@ -255,21 +301,21 @@ function toggleHelp() {
 }
 
 function queryProblem(problemId: number) {
-  ProblemApi.getSingle(
-      problemId,
-      userInfo.value
-  ).then((data) => {
-    if (data.category.length > 0) {
-      data.tags = data.category.split(",")
-    } else {
-      data.tags = []
-    }
-    problem.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(`${error.code}: ${error.msg}`)
-  }).finally(() => {
-    loading.value = false
-  })
+  ProblemApi.getSingle(problemId, userInfo.value)
+    .then((data) => {
+      if (data.category.length > 0) {
+        data.tags = data.category.split(",")
+      } else {
+        data.tags = []
+      }
+      problem.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(`${error.code}: ${error.msg}`)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function handleSave() {
@@ -289,18 +335,17 @@ function handleSave() {
  */
 function save() {
   loading.value = true
-  ProblemApi.save(
-      problem.value,
-      userInfo.value,
-      create
-  ).then(() => {
-    message.success(`${problem.value.title} 保存成功`)
-    create && back()
-  }).catch((error: ErrorMsg) => {
-    message.error(`${error.code}: ${error.msg}`)
-  }).finally(() => {
-    loading.value = false
-  })
+  ProblemApi.save(problem.value, userInfo.value, create)
+    .then(() => {
+      message.success(`${problem.value.title} 保存成功`)
+      create && back()
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(`${error.code}: ${error.msg}`)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>
 

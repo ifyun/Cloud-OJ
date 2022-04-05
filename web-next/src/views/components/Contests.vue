@@ -2,12 +2,16 @@
   <div class="contest-table">
     <n-card :bordered="false">
       <n-space vertical size="large">
-        <n-data-table :loading="pagination.loading" :columns="contestColumns" :data="contests.data"/>
-        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                      :item-count="contests.count" @update:page="pageChange">
-          <template #prefix="{itemCount}">
-            共 {{ itemCount }} 项
-          </template>
+        <n-data-table
+          :loading="pagination.loading"
+          :columns="contestColumns"
+          :data="contests.data" />
+        <n-pagination
+          v-model:page="pagination.page"
+          :page-size="pagination.pageSize"
+          :item-count="contests.count"
+          @update:page="pageChange">
+          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
     </n-card>
@@ -15,13 +19,21 @@
 </template>
 
 <script setup lang="tsx">
-import {onBeforeMount, ref} from "vue"
-import {useRouter} from "vue-router"
-import {NButton, NCard, NDataTable, NPagination, NSpace, NTag, useMessage} from "naive-ui"
-import {ContestApi} from "@/api/request"
-import {Contest, ErrorMsg, PagedData} from "@/api/type"
-import {LanguageUtil, setTitle} from "@/utils"
-import {LanguageOptions} from "@/type"
+import { onBeforeMount, ref } from "vue"
+import { useRouter } from "vue-router"
+import {
+  NButton,
+  NCard,
+  NDataTable,
+  NPagination,
+  NSpace,
+  NTag,
+  useMessage
+} from "naive-ui"
+import { ContestApi } from "@/api/request"
+import { Contest, ErrorMsg, PagedData } from "@/api/type"
+import { LanguageUtil, setTitle } from "@/utils"
+import { LanguageOptions } from "@/type"
 
 const router = useRouter()
 const message = useMessage()
@@ -43,16 +55,18 @@ const contestColumns = [
     align: "right",
     width: 50,
     render: (row: Contest, rowIndex: number) => (
-        <span>{(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}</span>
+      <span>
+        {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
+      </span>
     )
   },
   {
     title: "竞赛",
     render: (row: Contest) => (
-        <NSpace align="center">
-          <NTag type={contestTagType(row)}>{contestStateText(row)}</NTag>
-          <NButton text>{row.contestName}</NButton>
-        </NSpace>
+      <NSpace align="center">
+        <NTag type={contestTagType(row)}>{contestStateText(row)}</NTag>
+        <NButton text>{row.contestName}</NButton>
+      </NSpace>
     )
   },
   {
@@ -65,7 +79,9 @@ const contestColumns = [
       LanguageUtil.toArray(row.languages).forEach((value) => {
         languages.push(LanguageOptions[value].label)
       })
-      return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
+      return (
+        <span style={{ wordBreak: "break-word" }}>{languages.join(" / ")}</span>
+      )
     }
   },
   {
@@ -105,21 +121,21 @@ function contestStateText(c: Contest) {
 
 function pageChange(page: number) {
   router.push({
-    query: {page}
+    query: { page }
   })
 }
 
 function queryContests() {
-  ContestApi.getAll(
-      pagination.value.page,
-      pagination.value.pageSize
-  ).then((data) => {
-    contests.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(`${error}: ${error.msg}`)
-  }).finally(() => {
-    pagination.value.loading = false
-  })
+  ContestApi.getAll(pagination.value.page, pagination.value.pageSize)
+    .then((data) => {
+      contests.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(`${error}: ${error.msg}`)
+    })
+    .finally(() => {
+      pagination.value.loading = false
+    })
 }
 </script>
 

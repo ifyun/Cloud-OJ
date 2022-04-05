@@ -6,33 +6,44 @@
           <n-button type="primary">
             <template #icon>
               <n-icon>
-                <add-icon/>
+                <add-icon />
               </n-icon>
             </template>
-            <router-link :to="{name: 'edit_contest', params: {id: 'new'}}">
+            <router-link :to="{ name: 'edit_contest', params: { id: 'new' } }">
               创建竞赛
             </router-link>
           </n-button>
         </n-space>
-        <n-data-table :row-props="rowProps" :columns="contestColumns" :data="contests.data"
-                      :loading="pagination.loading"/>
-        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                      :item-count="contests.count" @update:page="pageChange">
-          <template #prefix="{itemCount}">
-            共 {{ itemCount }} 项
-          </template>
+        <n-data-table
+          :row-props="rowProps"
+          :columns="contestColumns"
+          :data="contests.data"
+          :loading="pagination.loading" />
+        <n-pagination
+          v-model:page="pagination.page"
+          :page-size="pagination.pageSize"
+          :item-count="contests.count"
+          @update:page="pageChange">
+          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
     </n-card>
   </div>
-  <n-dropdown trigger="manual" :show-arrow="true" :x="point.x" :y="point.y" :options="operations"
-              :show="showOperations" @select="operationSelect" :on-clickoutside="hideOperation"/>
+  <n-dropdown
+    trigger="manual"
+    :show-arrow="true"
+    :x="point.x"
+    :y="point.y"
+    :options="operations"
+    :show="showOperations"
+    @select="operationSelect"
+    :on-clickoutside="hideOperation" />
 </template>
 
 <script setup lang="tsx">
-import {computed, nextTick, onBeforeMount, ref} from "vue"
-import {useStore} from "vuex"
-import {useRouter} from "vue-router"
+import { computed, nextTick, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -46,17 +57,21 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import {DeleteForeverRound as DelIcon, EditNoteRound as EditIcon, PlaylistAddRound as AddIcon} from "@vicons/material"
-import {Contest, ErrorMsg, PagedData, UserInfo} from "@/api/type"
-import {LanguageUtil, renderIcon, setTitle} from "@/utils"
-import {LanguageOptions} from "@/type"
-import {ContestApi} from "@/api/request"
+import {
+  DeleteForeverRound as DelIcon,
+  EditNoteRound as EditIcon,
+  PlaylistAddRound as AddIcon
+} from "@vicons/material"
+import { Contest, ErrorMsg, PagedData, UserInfo } from "@/api/type"
+import { LanguageUtil, renderIcon, setTitle } from "@/utils"
+import { LanguageOptions } from "@/type"
+import { ContestApi } from "@/api/request"
 import Mutations from "@/store/mutations"
 
 let selectedId: number | undefined
 
 type StateTag = {
-  type: "info" | "error" | "success",
+  type: "info" | "error" | "success"
   state: string
 }
 
@@ -93,7 +108,7 @@ const rowProps = (row: Contest) => {
         }
         showOperations.value = true
       })
-    },
+    }
   }
 }
 
@@ -124,9 +139,9 @@ const contestColumns = [
   {
     title: "竞赛",
     render: (row: Contest) => (
-        <NSpace align="center">
-          <NButton text>{row.contestName}</NButton>
-        </NSpace>
+      <NSpace align="center">
+        <NButton text>{row.contestName}</NButton>
+      </NSpace>
     )
   },
   {
@@ -139,7 +154,9 @@ const contestColumns = [
       LanguageUtil.toArray(row.languages).forEach((value) => {
         languages.push(LanguageOptions[value].label)
       })
-      return <span style={{wordBreak: "break-word"}}>{languages.join(" / ")}</span>
+      return (
+        <span style={{ wordBreak: "break-word" }}>{languages.join(" / ")}</span>
+      )
     }
   },
   {
@@ -162,10 +179,11 @@ const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
   setTitle("竞赛管理")
-  store.commit(Mutations.SET_BREADCRUMB,
-      <NBreadcrumb>
-        <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-      </NBreadcrumb>
+  store.commit(
+    Mutations.SET_BREADCRUMB,
+    <NBreadcrumb>
+      <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+    </NBreadcrumb>
   )
   queryContests()
 })
@@ -178,8 +196,8 @@ function operationSelect(key: string) {
   hideOperation()
   switch (key) {
     case "edit":
-      router.push({name: "edit_contest", params: {id: selectedId}})
-      break;
+      router.push({ name: "edit_contest", params: { id: selectedId } })
+      break
     default:
       return
   }
@@ -209,23 +227,22 @@ function stateTag(c: Contest): StateTag {
 
 function pageChange(page: number) {
   router.push({
-    query: {page}
+    query: { page }
   })
 }
 
 function queryContests() {
-  const {page, pageSize} = pagination.value
-  ContestApi.getAll(
-      page,
-      pageSize,
-      userInfo.value
-  ).then((data) => {
-    contests.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    pagination.value.loading = false
-  })
+  const { page, pageSize } = pagination.value
+  ContestApi.getAll(page, pageSize, userInfo.value)
+    .then((data) => {
+      contests.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      pagination.value.loading = false
+    })
 }
 </script>
 

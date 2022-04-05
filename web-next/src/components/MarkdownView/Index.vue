@@ -1,10 +1,10 @@
 <template>
-  <div :class="theme" class="markdown-body" v-html="html"/>
+  <div :class="theme" class="markdown-body" v-html="html" />
 </template>
 
 <script setup lang="ts">
-import {useStore} from "vuex"
-import {KatexPlugin} from "@/components/MarkdownView/markdown-katex"
+import { useStore } from "vuex"
+import { KatexPlugin } from "@/components/MarkdownView/markdown-katex"
 import markdownItContainer from "markdown-it-container"
 import highlightJs from "highlight.js/lib/core"
 import markdown from "highlight.js/lib/languages/markdown"
@@ -12,7 +12,7 @@ import c from "highlight.js/lib/languages/c"
 import cpp from "highlight.js/lib/languages/cpp"
 import python from "highlight.js/lib/languages/python"
 import java from "highlight.js/lib/languages/java"
-import {computed} from "vue";
+import { computed } from "vue"
 
 highlightJs.registerLanguage("markdown", markdown)
 highlightJs.registerLanguage("c", c)
@@ -26,7 +26,7 @@ const md = new MarkdownIt({
   highlight: function (str: string, lang: string) {
     if (lang && highlightJs.getLanguage(lang)) {
       try {
-        return highlightJs.highlight(str, {language: lang}).value
+        return highlightJs.highlight(str, { language: lang }).value
       } catch (_) {
         return ""
       }
@@ -48,29 +48,31 @@ md.use(markdownItContainer, "info", {
       return `</div>`
     }
   }
-}).use(markdownItContainer, "warning", {
-  validate: (params: string) => {
-    return params.trim() === "warning"
-  },
-  render: (tokens: any, index: number) => {
-    if (tokens[index].nesting === 1) {
-      return `<div class="markdown-alert warning">`
-    } else {
-      return `</div>`
-    }
-  }
-}).use(markdownItContainer, "error", {
-  validate: (params: string) => {
-    return params.trim() === "error"
-  },
-  render: (tokens: any, index: number) => {
-    if (tokens[index].nesting === 1) {
-      return `<div class="markdown-alert error">`
-    } else {
-      return `</div>`
-    }
-  }
 })
+  .use(markdownItContainer, "warning", {
+    validate: (params: string) => {
+      return params.trim() === "warning"
+    },
+    render: (tokens: any, index: number) => {
+      if (tokens[index].nesting === 1) {
+        return `<div class="markdown-alert warning">`
+      } else {
+        return `</div>`
+      }
+    }
+  })
+  .use(markdownItContainer, "error", {
+    validate: (params: string) => {
+      return params.trim() === "error"
+    },
+    render: (tokens: any, index: number) => {
+      if (tokens[index].nesting === 1) {
+        return `<div class="markdown-alert error">`
+      } else {
+        return `</div>`
+      }
+    }
+  })
 
 const store = useStore()
 
@@ -79,7 +81,9 @@ const props = defineProps<{
 }>()
 
 const html = computed<string>(() => md.render(props.content))
-const theme = computed<string>(() => store.state.theme != null ? "dark" : "light")
+const theme = computed<string>(() =>
+  store.state.theme != null ? "dark" : "light"
+)
 </script>
 
 <style lang="scss">
