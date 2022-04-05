@@ -1,73 +1,94 @@
 <template>
   <div class="submission">
-    <n-card :bordered="false" style="height: 100%" content-style="overflow: hidden">
-      <Skeleton v-if="loading"/>
+    <n-card
+      :bordered="false"
+      style="height: 100%"
+      content-style="overflow: hidden">
+      <Skeleton v-if="loading" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
             <n-tabs type="line">
               <n-tab-pane name="题目描述">
-                <n-h2 style="margin-bottom: 6px">{{ `${problem.problemId}.${problem.title}` }}</n-h2>
+                <n-h2 style="margin-bottom: 6px">{{
+                    `${problem.problemId}.${problem.title}`
+                  }}
+                </n-h2>
                 <n-space size="small">
                   <badge label="分数" size="medium" color="#4EAA25">
                     <template #icon>
-                      <question-circle/>
+                      <question-circle />
                     </template>
                     {{ problem.score }}
                   </badge>
                   <badge label="时间" size="medium" color="#D9644D">
                     <template #icon>
-                      <timer-outlined/>
+                      <timer-outlined />
                     </template>
                     {{ problem.timeout }} 毫秒
                   </badge>
                   <badge label="内存" size="medium" color="#007EC6">
                     <template #icon>
-                      <memory-round/>
+                      <memory-round />
                     </template>
                     {{ problem.memoryLimit }} MB
                   </badge>
                   <badge label="输出" size="medium" color="#F48041">
                     <template #icon>
-                      <file-alt/>
+                      <file-alt />
                     </template>
                     {{ problem.outputLimit }} MB
                   </badge>
                 </n-space>
                 <!-- 题目内容 -->
-                <markdown-view :content="problem.description" style="margin-top: 12px"/>
+                <markdown-view
+                  :content="problem.description"
+                  style="margin-top: 12px" />
               </n-tab-pane>
-              <n-tab-pane name="提交记录">
-                还没有做
-              </n-tab-pane>
+              <n-tab-pane name="提交记录"> 还没有做</n-tab-pane>
             </n-tabs>
           </n-scrollbar>
         </div>
         <!-- 代码编辑器 -->
         <div class="editor">
-          <code-editor v-model="code" @submit="submit" :loading="disableSubmit"/>
+          <code-editor
+            v-model="code"
+            @submit="submit"
+            :loading="disableSubmit" />
         </div>
       </div>
     </n-card>
   </div>
-  <n-modal v-model:show="showResult" preset="card" :mask-closable="false"
-           style="width: 520px; margin-top: 220px">
-    <result-dialog :solution-id="solutionId"/>
+  <n-modal
+    v-model:show="showResult"
+    preset="card"
+    :mask-closable="false"
+    style="width: 520px; margin-top: 220px">
+    <result-dialog :solution-id="solutionId" />
   </n-modal>
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, ref} from "vue"
-import {useRoute} from "vue-router"
-import {useStore} from "vuex"
-import {NCard, NH2, NModal, NScrollbar, NSpace, NTabPane, NTabs, useMessage} from "naive-ui"
-import {FileAlt, QuestionCircle} from "@vicons/fa"
-import {MemoryRound, TimerOutlined} from "@vicons/material"
-import {Badge, CodeEditor, MarkdownView} from "@/components"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute } from "vue-router"
+import { useStore } from "vuex"
+import {
+  NCard,
+  NH2,
+  NModal,
+  NScrollbar,
+  NSpace,
+  NTabPane,
+  NTabs,
+  useMessage
+} from "naive-ui"
+import { FileAlt, QuestionCircle } from "@vicons/fa"
+import { MemoryRound, TimerOutlined } from "@vicons/material"
+import { Badge, CodeEditor, MarkdownView } from "@/components"
 import Skeleton from "@/views/components/Submission/Skeleton.vue"
 import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
-import {JudgeApi, ProblemApi} from "@/api/request"
-import {ErrorMsg, Problem, SubmitData, UserInfo} from "@/api/type"
+import { JudgeApi, ProblemApi } from "@/api/request"
+import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
 
 const route = useRoute()
 const store = useStore()
@@ -81,7 +102,7 @@ const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
 
 let problemId: number | null = null
-let solutionId: string = ""
+let solutionId = ""
 
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
@@ -101,15 +122,15 @@ onBeforeMount(() => {
 function queryProblem() {
   if (problemId != null) {
     ProblemApi.getSingle(problemId)
-        .then((data) => {
-          problem.value = data
-        })
-        .catch((error: ErrorMsg) => {
-          message.error(error.toString())
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      .then((data) => {
+        problem.value = data
+      })
+      .catch((error: ErrorMsg) => {
+        message.error(error.toString())
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 }
 
@@ -131,17 +152,17 @@ function submit(language: number) {
     userId: userInfo.value.userId!
   }
 
-  JudgeApi.submit(
-      data,
-      userInfo.value
-  ).then((id) => {
-    solutionId = id
-    showResult.value = true
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    disableSubmit.value = false
-  })
+  JudgeApi.submit(data, userInfo.value)
+    .then((id) => {
+      solutionId = id
+      showResult.value = true
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      disableSubmit.value = false
+    })
 }
 </script>
 

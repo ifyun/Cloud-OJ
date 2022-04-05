@@ -4,24 +4,35 @@
       <n-space vertical size="large">
         <n-space>
           <n-input-group>
-            <n-select v-model:value="searchType" :options="searchTypes" style="width: 150px"/>
-            <n-input clearable show-count maxlength="15" v-model:value="keyword"/>
+            <n-select
+              v-model:value="searchType"
+              :options="searchTypes"
+              style="width: 150px" />
+            <n-input
+              clearable
+              show-count
+              maxlength="15"
+              v-model:value="keyword" />
             <n-button type="primary" @click="search">
               <template #icon>
                 <n-icon>
-                  <search-icon/>
+                  <search-icon />
                 </n-icon>
               </template>
               搜索
             </n-button>
           </n-input-group>
         </n-space>
-        <n-data-table :columns="columns" :data="users.data" :loading="pagination.loading"/>
-        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                      :item-count="users.count" @update:page="pageChange">
-          <template #prefix="{itemCount}">
-            共 {{ itemCount }} 项
-          </template>
+        <n-data-table
+          :columns="columns"
+          :data="users.data"
+          :loading="pagination.loading" />
+        <n-pagination
+          v-model:page="pagination.page"
+          :page-size="pagination.pageSize"
+          :item-count="users.count"
+          @update:page="pageChange">
+          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
     </n-card>
@@ -29,9 +40,9 @@
 </template>
 
 <script setup lang="tsx">
-import {computed, onBeforeMount, ref} from "vue"
-import {useStore} from "vuex"
-import {useRoute, useRouter} from "vue-router"
+import { computed, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
+import { useRoute, useRouter } from "vue-router"
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -47,20 +58,24 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import {CalendarCheck as DateIcon, UserShield as RoleIcon, UserTag as UserIcon} from "@vicons/fa"
-import {PersonSearchRound as SearchIcon} from "@vicons/material"
-import {UserAvatar} from "@/components"
-import {ErrorMsg, PagedData, User, UserInfo} from "@/api/type"
-import {UserApi} from "@/api/request"
-import {setTitle} from "@/utils"
+import {
+  CalendarCheck as DateIcon,
+  UserShield as RoleIcon,
+  UserTag as UserIcon
+} from "@vicons/fa"
+import { PersonSearchRound as SearchIcon } from "@vicons/material"
+import { UserAvatar } from "@/components"
+import { ErrorMsg, PagedData, User, UserInfo } from "@/api/type"
+import { UserApi } from "@/api/request"
+import { setTitle } from "@/utils"
 import moment from "moment"
-import {Mutations} from "@/store"
+import { Mutations } from "@/store"
 
 const roles = [
-  {text: "用户", type: "info"},
-  {text: "题目管理员", type: "warning"},
-  {text: "用户管理员", type: "warning"},
-  {text: "ROOT", type: "error"}
+  { text: "用户", type: "info" },
+  { text: "题目管理员", type: "warning" },
+  { text: "用户管理员", type: "warning" },
+  { text: "ROOT", type: "error" }
 ]
 
 const route = useRoute()
@@ -69,8 +84,8 @@ const store = useStore()
 const message = useMessage()
 
 const searchTypes = [
-  {label: "用户 ID", value: 1},
-  {label: "用户名", value: 2}
+  { label: "用户 ID", value: 1 },
+  { label: "用户名", value: 2 }
 ]
 
 const searchType = ref<number>(1)
@@ -95,45 +110,51 @@ const columns = [
   },
   {
     title: () => (
-        <NSpace size="small" align="center">
-          <NIcon style="display: flex">
-            <UserIcon/>
-          </NIcon>
-          <span>用户名</span>
-        </NSpace>
+      <NSpace size="small" align="center">
+        <NIcon style="display: flex">
+          <UserIcon />
+        </NIcon>
+        <span>用户名</span>
+      </NSpace>
     ),
     render: (row: User) => (
-        <NSpace align="center">
-          <UserAvatar size="small" userId={row.userId}/>
-          <NButton text={true}><b>{row.name}</b></NButton>
-        </NSpace>
+      <NSpace align="center">
+        <UserAvatar size="small" userId={row.userId} />
+        <NButton text={true}>
+          <b>{row.name}</b>
+        </NButton>
+      </NSpace>
     )
   },
   {
     title: () => (
-        <NSpace size="small" justify="center" align="center">
-          <NIcon style="display: flex">
-            <RoleIcon/>
-          </NIcon>
-          <span>权限</span>
-        </NSpace>
+      <NSpace size="small" justify="center" align="center">
+        <NIcon style="display: flex">
+          <RoleIcon />
+        </NIcon>
+        <span>权限</span>
+      </NSpace>
     ),
     render: (row: User) => (
-        <NTag size="small" type={roles[row.roleId!].type as any}>{roles[row.roleId!].text}</NTag>
+      <NTag size="small" type={roles[row.roleId!].type as any}>
+        {roles[row.roleId!].text}
+      </NTag>
     ),
     align: "center"
   },
   {
     title: () => (
-        <NSpace size="small" justify="end" align="center">
-          <NIcon style="display: flex">
-            <DateIcon/>
-          </NIcon>
-          <span>注册时间</span>
-        </NSpace>
+      <NSpace size="small" justify="end" align="center">
+        <NIcon style="display: flex">
+          <DateIcon />
+        </NIcon>
+        <span>注册时间</span>
+      </NSpace>
     ),
     align: "right",
-    render: (row: User) => (<span>{moment(row.createAt).format("YYYY-MM-DD")}</span>)
+    render: (row: User) => (
+      <span>{moment(row.createAt).format("YYYY-MM-DD")}</span>
+    )
   }
 ]
 
@@ -146,15 +167,16 @@ const searchParams = computed(() => {
     return {}
   }
 
-  return searchType.value === 1 ? {userId: val} : {name: val}
+  return searchType.value === 1 ? { userId: val } : { name: val }
 })
 
 onBeforeMount(() => {
   setTitle("用户管理")
-  store.commit(Mutations.SET_BREADCRUMB,
-      <NBreadcrumb>
-        <NBreadcrumbItem>用户管理</NBreadcrumbItem>
-      </NBreadcrumb>
+  store.commit(
+    Mutations.SET_BREADCRUMB,
+    <NBreadcrumb>
+      <NBreadcrumbItem>用户管理</NBreadcrumbItem>
+    </NBreadcrumb>
   )
   const query = route.query
 
@@ -181,7 +203,7 @@ function search() {
 
 function pageChange(page: number) {
   keyword.value = keyword.value.trim()
-  const query: any = {page}
+  const query: any = { page }
 
   if (keyword.value.length > 0) {
     query.keyword = keyword
@@ -195,17 +217,20 @@ function pageChange(page: number) {
 
 function queryUsers() {
   UserApi.getAll(
-      pagination.value.page,
-      pagination.value.pageSize,
-      searchParams,
-      userInfo.value
-  ).then((data) => {
-    users.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    pagination.value.loading = false
-  })
+    pagination.value.page,
+    pagination.value.pageSize,
+    searchParams,
+    userInfo.value
+  )
+    .then((data) => {
+      users.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      pagination.value.loading = false
+    })
 }
 </script>
 

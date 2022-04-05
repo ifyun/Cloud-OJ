@@ -1,31 +1,25 @@
 <template>
-  <div id="heatmap" style="width: 100%; height: 210px">
-  </div>
+  <div id="heatmap" style="width: 100%; height: 210px"></div>
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, watch} from "vue"
-import {useStore} from "vuex"
+import { computed, nextTick, onMounted, watch } from "vue"
+import { useStore } from "vuex"
 import * as echarts from "echarts/core"
-import {EChartsType} from "echarts/core"
-import {SVGRenderer} from "echarts/renderers"
-import {HeatmapChart, HeatmapSeriesOption} from "echarts/charts"
+import { EChartsType } from "echarts/core"
+import { SVGRenderer } from "echarts/renderers"
+import { HeatmapChart, HeatmapSeriesOption } from "echarts/charts"
 import {
   CalendarComponent,
   CalendarComponentOption,
   VisualMapComponent,
   VisualMapComponentOption
 } from "echarts/components"
-import {Activity} from "@/api/type"
+import { Activity } from "@/api/type"
 
 type ECOption = echarts.ComposeOption<HeatmapSeriesOption | CalendarComponentOption | VisualMapComponentOption>
 
-echarts.use([
-  SVGRenderer,
-  HeatmapChart,
-  CalendarComponent,
-  VisualMapComponent
-])
+echarts.use([SVGRenderer, HeatmapChart, CalendarComponent, VisualMapComponent])
 
 const light = {
   calendar: {
@@ -40,10 +34,7 @@ const light = {
     }
   },
   visualMap: {
-    color: [
-      "#2F6D39",
-      "#58C363"
-    ]
+    color: ["#2F6D39", "#58C363"]
   }
 }
 
@@ -69,17 +60,14 @@ const dark = {
     }
   },
   visualMap: {
-    color: [
-      "#39D353",
-      "#0E4429"
-    ],
+    color: ["#39D353", "#0E4429"],
     textStyle: {
       color: "#FFFFFF"
     }
   }
 }
 
-const props = defineProps<{ data: Array<Activity>, year: string }>()
+const props = defineProps<{ data: Array<Activity>; year: string }>()
 const store = useStore()
 const theme = computed(() => store.state.theme)
 const heatmapTheme = computed(() => {
@@ -132,19 +120,28 @@ watch(heatmapTheme, (newVal) => {
   heatmap.setOption(option)
 })
 
-watch(() => props.data, (newVal) => {
-  nextTick(() => {
-    newVal.forEach((val) => {
-      (option.series as HeatmapSeriesOption).data?.push([val.date, val.count])
+watch(
+  () => props.data,
+  (newVal) => {
+    nextTick(() => {
+      newVal.forEach((val) => {
+        ;(option.series as HeatmapSeriesOption).data?.push([
+          val.date,
+          val.count
+        ])
+      })
+      heatmap?.setOption(option)
     })
-    heatmap?.setOption(option)
-  })
-})
+  }
+)
 
 onMounted(() => {
-  heatmap = echarts.init(document.getElementById("heatmap")!, heatmapTheme.value)
+  heatmap = echarts.init(
+    document.getElementById("heatmap")!,
+    heatmapTheme.value
+  )
   props.data.forEach((val) => {
-    (option.series as HeatmapSeriesOption).data?.push([val.date, val.count])
+    ;(option.series as HeatmapSeriesOption).data?.push([val.date, val.count])
   })
   heatmap.setOption(option)
 })

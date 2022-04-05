@@ -1,13 +1,17 @@
 <template>
   <n-space v-if="isLoggedIn" align="center" size="small">
-    <n-avatar class="avatar" round :src="avatar" @error="avatar = undefined"/>
-    <n-dropdown trigger="click" :show-arrow="true" placement="bottom-end" @select="userMenuSelect"
-                :options="userInfo.roleId > 0 ? adminMenuOptions: userMenuOptions">
+    <n-avatar class="avatar" round :src="avatar" @error="avatar = undefined" />
+    <n-dropdown
+      trigger="click"
+      :show-arrow="true"
+      placement="bottom-end"
+      @select="userMenuSelect"
+      :options="userInfo.roleId > 0 ? adminMenuOptions : userMenuOptions">
       <n-button text icon-placement="right" style="padding: 6px 0">
         {{ userInfo.name }}
         <template #icon>
           <n-icon>
-            <drop-down-icon/>
+            <drop-down-icon />
           </n-icon>
         </template>
       </n-button>
@@ -21,20 +25,28 @@
 </template>
 
 <script setup lang="tsx">
-import {computed, onBeforeMount, ref} from "vue"
-import {useStore} from "vuex"
-import {RouterLink} from "vue-router"
-import {NAvatar, NButton, NDropdown, NIcon, NSpace, useDialog, useMessage} from "naive-ui"
+import { computed, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
+import { RouterLink } from "vue-router"
+import {
+  NAvatar,
+  NButton,
+  NDropdown,
+  NIcon,
+  NSpace,
+  useDialog,
+  useMessage
+} from "naive-ui"
 import {
   ArrowDropDownFilled as DropDownIcon,
   DashboardCustomizeRound as DashboardIcon,
   ExitToAppOutlined as LogoutIcon
 } from "@vicons/material"
-import {HouseUser as UserHomeIcon} from "@vicons/fa"
-import {renderIcon} from "@/utils"
-import {AuthApi} from "@/api/request"
-import {ErrorMsg, UserInfo} from "@/api/type"
-import {Mutations} from "@/store"
+import { HouseUser as UserHomeIcon } from "@vicons/fa"
+import { renderIcon } from "@/utils"
+import { AuthApi } from "@/api/request"
+import { ErrorMsg, UserInfo } from "@/api/type"
+import { Mutations } from "@/store"
 
 const store = useStore()
 const message = useMessage()
@@ -56,12 +68,14 @@ const userMenuOptions = [
 
 const adminMenuOptions = [
   {
-    label: () => <RouterLink to={{name: "account"}}>个人中心</RouterLink>,
+    label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
     key: "account",
     icon: renderIcon(UserHomeIcon)
   },
   {
-    label: () => <RouterLink to={{name: "problem_admin"}}>系统管理</RouterLink>,
+    label: () => (
+      <RouterLink to={{ name: "problem_admin" }}>系统管理</RouterLink>
+    ),
     key: "admin",
     icon: renderIcon(DashboardIcon)
   },
@@ -99,15 +113,16 @@ function login(event: any) {
 }
 
 function logoff() {
-  AuthApi.logoff(
-      userInfo.value
-  ).then(() => {
-    message.success(`${userInfo.value.name} 已退出`)
-  }).catch((error: ErrorMsg) => {
-    message.warning(`${error.code}: ${error.msg}`)
-  }).finally(() => {
-    store.commit(Mutations.CLEAR_TOKEN)
-  })
+  AuthApi.logoff(userInfo.value)
+    .then(() => {
+      message.success(`${userInfo.value.name} 已退出`)
+    })
+    .catch((error: ErrorMsg) => {
+      message.warning(`${error.code}: ${error.msg}`)
+    })
+    .finally(() => {
+      store.commit(Mutations.CLEAR_TOKEN)
+    })
 }
 
 function exit() {

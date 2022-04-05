@@ -1,5 +1,5 @@
 <script lang="ts">
-import {h, PropType, VNode} from "vue"
+import { h, PropType, VNode } from "vue"
 
 export default {
   props: {

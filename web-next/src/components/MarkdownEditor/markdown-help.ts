@@ -1,4 +1,4 @@
-const markdownHelp: string = `## 二级标题
+const markdownHelp = `## 二级标题
 
 ### 三级标题
 

@@ -1,19 +1,34 @@
 <template>
   <n-space vertical>
     <!-- 错误 -->
-    <n-result v-if="error != null" :status="error" :title="error.code" :description="error.msg">
+    <n-result
+      v-if="error != null"
+      :status="error"
+      :title="error.code"
+      :description="error.msg">
       <template #footer>
-        <n-button secondary size="small" type="primary" @click="retry">重试</n-button>
+        <n-button secondary size="small" type="primary" @click="retry"
+        >重试
+        </n-button
+        >
       </template>
     </n-result>
     <!-- 结果 -->
-    <n-result v-else size="small" :status="result.status" :title="result.title" :description="result.desc">
+    <n-result
+      v-else
+      size="small"
+      :status="result.status"
+      :title="result.title"
+      :description="result.desc">
       <template #footer v-if="showRetry">
-        <n-button secondary size="small" type="primary" @click="retry">重试</n-button>
+        <n-button secondary size="small" type="primary" @click="retry"
+        >重试
+        </n-button
+        >
       </template>
     </n-result>
     <n-text v-if="result.error" type="error">
-      <pre :class="{dark: isDarkTheme}">{{ result.error }}</pre>
+      <pre :class="{ dark: isDarkTheme }">{{ result.error }}</pre>
     </n-text>
     <n-text v-if="showRetry" depth="3">
       你可以关闭此窗口，稍后查看提交记录
@@ -22,12 +37,12 @@
 </template>
 
 <script lang="ts">
-import {useStore} from "vuex"
-import {Options, Vue} from "vue-class-component"
-import {Prop} from "vue-property-decorator"
-import {NButton, NResult, NSpace, NText} from "naive-ui"
-import {ErrorMsg, JudgeResult, UserInfo} from "@/api/type"
-import {JudgeApi} from "@/api/request"
+import { useStore } from "vuex"
+import { Options, Vue } from "vue-class-component"
+import { Prop } from "vue-property-decorator"
+import { NButton, NResult, NSpace, NText } from "naive-ui"
+import { ErrorMsg, JudgeResult, UserInfo } from "@/api/type"
+import { JudgeApi } from "@/api/request"
 
 class Result {
   status: string
@@ -46,7 +61,7 @@ class Result {
 const JUDGED = 0
 
 const Cost = (r: JudgeResult) => {
-  const {time, memory} = r
+  const { time, memory } = r
   return `运行时间: ${time} ms，内存占用: ${memory} KB`
 }
 
@@ -100,19 +115,18 @@ export default class ResultDialog extends Vue {
       return
     }
 
-    JudgeApi.getResult(
-        this.solutionId!,
-        this.userInfo
-    ).then((data) => {
-      if (data == null || data.state !== JUDGED) {
-        setTimeout(() => this.fetchResult(count + 1), 1000)
-      } else {
-        this.setResult(data)
-      }
-    }).catch((error: ErrorMsg) => {
-      this.error = error
-      this.showRetry = true
-    })
+    JudgeApi.getResult(this.solutionId!, this.userInfo)
+      .then((data) => {
+        if (data == null || data.state !== JUDGED) {
+          setTimeout(() => this.fetchResult(count + 1), 1000)
+        } else {
+          this.setResult(data)
+        }
+      })
+      .catch((error: ErrorMsg) => {
+        this.error = error
+        this.showRetry = true
+      })
   }
 
   setResult(r: JudgeResult) {
@@ -132,7 +146,7 @@ export default class ResultDialog extends Vue {
         break
       case 4:
         this.result = new Result("error", "答案错误", Cost(r))
-        break;
+        break
       case 5:
         this.result = new Result("error", "编译错误", undefined, r.errorInfo)
         break
@@ -143,7 +157,11 @@ export default class ResultDialog extends Vue {
         this.result = new Result("error", "内部错误", "判题服务器发生错误")
         break
       case 8:
-        this.result = new Result("warning", "输出超限", "你的程序产生的输出已超出题目限制")
+        this.result = new Result(
+          "warning",
+          "输出超限",
+          "你的程序产生的输出已超出题目限制"
+        )
         break
     }
   }
@@ -155,9 +173,9 @@ pre {
   font-family: inherit;
   margin: 0;
   padding: 12px;
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
   border-radius: 2px;
-  border-left: 2px solid #E88080;
+  border-left: 2px solid #e88080;
 
   &.dark {
     background-color: #383842;

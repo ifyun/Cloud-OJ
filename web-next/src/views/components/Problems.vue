@@ -4,11 +4,16 @@
       <n-space vertical size="large">
         <n-space align="center">
           <n-input-group>
-            <n-input size="large" maxlength="10" show-count clearable
-                     placeholder="输入题目名称、分类" v-model:value="keyword">
+            <n-input
+              size="large"
+              maxlength="10"
+              show-count
+              clearable
+              placeholder="输入题目名称、分类"
+              v-model:value="keyword">
               <template #prefix>
                 <n-icon>
-                  <search-icon/>
+                  <search-icon />
                 </n-icon>
               </template>
             </n-input>
@@ -16,15 +21,21 @@
               搜索题目
             </n-button>
           </n-input-group>
-          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{ keywordTag }}</n-tag>
+          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{
+              keywordTag
+            }}
+          </n-tag>
         </n-space>
-        <n-data-table :columns="problemColumns" :data="problems.data"
-                      :loading="pagination.loading"/>
-        <n-pagination v-model:page="pagination.page" :page-size="pagination.pageSize"
-                      :item-count="problems.count" @update:page="pageChange">
-          <template #prefix="{itemCount}">
-            共 {{ itemCount }} 项
-          </template>
+        <n-data-table
+          :columns="problemColumns"
+          :data="problems.data"
+          :loading="pagination.loading" />
+        <n-pagination
+          v-model:page="pagination.page"
+          :page-size="pagination.pageSize"
+          :item-count="problems.count"
+          @update:page="pageChange">
+          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
     </n-card>
@@ -32,14 +43,25 @@
 </template>
 
 <script setup lang="tsx">
-import {computed, onBeforeMount, ref} from "vue"
-import {useStore} from "vuex"
-import {useRoute, useRouter} from "vue-router"
-import {NButton, NCard, NDataTable, NIcon, NInput, NInputGroup, NPagination, NSpace, NTag, useMessage} from "naive-ui"
-import {Search as SearchIcon} from "@vicons/fa"
-import {ProblemApi} from "@/api/request"
-import {ErrorMsg, PagedData, Problem} from "@/api/type"
-import {setTitle, TagUtil} from "@/utils"
+import { computed, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
+import { useRoute, useRouter } from "vue-router"
+import {
+  NButton,
+  NCard,
+  NDataTable,
+  NIcon,
+  NInput,
+  NInputGroup,
+  NPagination,
+  NSpace,
+  NTag,
+  useMessage
+} from "naive-ui"
+import { Search as SearchIcon } from "@vicons/fa"
+import { ProblemApi } from "@/api/request"
+import { ErrorMsg, PagedData, Problem } from "@/api/type"
+import { setTitle, TagUtil } from "@/utils"
 
 const store = useStore()
 const route = useRoute()
@@ -59,7 +81,9 @@ const problemColumns = [
     align: "right",
     width: 50,
     render: (row: Problem, rowIndex: number) => (
-        <span>{(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}</span>
+      <span>
+        {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
+      </span>
     )
   },
   {
@@ -71,9 +95,16 @@ const problemColumns = [
   {
     title: "题目名称",
     render: (row: Problem) => (
-        <NButton text onClick={() => router.push({name: "submission", query: {problemId: row.problemId}})}>
-          {row.title}
-        </NButton>
+      <NButton
+        text
+        onClick={() =>
+          router.push({
+            name: "submission",
+            query: { problemId: row.problemId }
+          })
+        }>
+        {row.title}
+      </NButton>
     )
   },
   {
@@ -84,7 +115,11 @@ const problemColumns = [
       }
       const tags = row.category.split(",")
       return tags.map((tag) => {
-        return <NTag class="tag" size="small" color={TagUtil.getColor(tag, theme)}>{tag}</NTag>
+        return (
+          <NTag class="tag" size="small" color={TagUtil.getColor(tag, theme)}>
+            {tag}
+          </NTag>
+        )
       })
     }
   },
@@ -125,7 +160,7 @@ onBeforeMount(() => {
 
 function pageChange(page: number) {
   router.push({
-    query: {page}
+    query: { page }
   })
 }
 
@@ -138,7 +173,7 @@ function clearKeyword() {
 function search() {
   if (keyword.value !== "") {
     router.push({
-      query: {keyword: keyword.value}
+      query: { keyword: keyword.value }
     })
   }
 }
@@ -148,18 +183,17 @@ function search() {
  */
 function queryProblems() {
   pagination.value.loading = true
-  const {page, pageSize} = pagination.value
-  ProblemApi.getAllOpened(
-      page,
-      pageSize,
-      keyword.value
-  ).then((data) => {
-    problems.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(`${error.code}: ${error.msg}`)
-  }).finally(() => {
-    pagination.value.loading = false
-  })
+  const { page, pageSize } = pagination.value
+  ProblemApi.getAllOpened(page, pageSize, keyword.value)
+    .then((data) => {
+      problems.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(`${error.code}: ${error.msg}`)
+    })
+    .finally(() => {
+      pagination.value.loading = false
+    })
 }
 </script>
 

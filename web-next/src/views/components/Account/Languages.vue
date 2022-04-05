@@ -2,14 +2,17 @@
   <div>
     <n-h3 strong style="margin-bottom: 12px">常用语言</n-h3>
     <div class="languages">
-      <div class="language-bar" v-for="item in data" :key="item.name"
-           :style="{flexGrow: item.percent, backgroundColor: item.color}"/>
+      <div
+        class="language-bar"
+        v-for="item in data"
+        :key="item.name"
+        :style="{ flexGrow: item.percent, backgroundColor: item.color }" />
     </div>
     <div class="language-detail">
       <div v-for="item in data" :key="item.name">
         <div class="item">
           <n-icon :color="item.color">
-            <circle-round/>
+            <circle-round />
           </n-icon>
           <n-text depth="1" strong>{{ item.name }}</n-text>
           <n-text depth="3">{{ item.percent.toFixed(2) * 100 }}%</n-text>
@@ -20,13 +23,22 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue"
-import {NH3, NIcon, NText} from "naive-ui"
-import {CircleRound} from "@vicons/material"
-import {Language} from "@/api/type"
-import {LanguageNames} from "@/type"
+import { computed } from "vue"
+import { NH3, NIcon, NText } from "naive-ui"
+import { CircleRound } from "@vicons/material"
+import { Language } from "@/api/type"
+import { LanguageNames } from "@/type"
 
-const colors = ["#555555", "#F34B7D", "#B07219", "#3572A5", "#89E051", "#F1E05A", "#A97BFF", "#00ADD8"]
+const colors = [
+  "#555555",
+  "#F34B7D",
+  "#B07219",
+  "#3572A5",
+  "#89E051",
+  "#F1E05A",
+  "#A97BFF",
+  "#00ADD8"
+]
 
 const props = defineProps<{ languages: Array<Language> }>()
 
@@ -41,7 +53,7 @@ const data = computed<Array<LanguageItem>>(() => {
   const total = props.languages.length
   const items: Array<LanguageItem> = []
 
-  props.languages.forEach(val => {
+  props.languages.forEach((val) => {
     items.push({
       name: LanguageNames[val.language],
       count: val.count,

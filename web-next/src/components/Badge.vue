@@ -3,20 +3,20 @@
     <div class="badge-label">
       <div v-if="$slots.icon" class="badge-icon">
         <n-icon>
-          <slot name="icon"/>
+          <slot name="icon" />
         </n-icon>
       </div>
       <span>{{ label }}</span>
     </div>
-    <div class="badge-value" :style="{backgroundColor: valueBackground}">
-      <slot/>
+    <div class="badge-value" :style="{ backgroundColor: valueBackground }">
+      <slot />
     </div>
   </n-element>
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue"
-import {NElement, NIcon, useThemeVars} from "naive-ui"
+import { computed } from "vue"
+import { NElement, NIcon, useThemeVars } from "naive-ui"
 
 const props = defineProps<{
   label: string
@@ -26,14 +26,11 @@ const props = defineProps<{
 
 const themeVars = useThemeVars().value
 
-const valueBackground = computed<string>(() => props.color ? props.color : themeVars.primaryColor)
-
-const badgeClasses = computed(() =>
-    [
-      [`badge`],
-      [`badge__${props.size}`]
-    ]
+const valueBackground = computed<string>(() =>
+  props.color ? props.color : themeVars.primaryColor
 )
+
+const badgeClasses = computed(() => [[`badge`], [`badge__${props.size}`]])
 </script>
 
 <style lang="scss" scoped>

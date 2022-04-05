@@ -1,27 +1,33 @@
 <template>
   <div class="code-editor">
     <n-input-group>
-      <n-input-group-label :style="{width: '110px'}">选择语言</n-input-group-label>
-      <n-select v-model:value="language" :options="languageOptions" :render-label="renderLabel"/>
+      <n-input-group-label :style="{ width: '110px' }"
+      >选择语言
+      </n-input-group-label
+      >
+      <n-select
+        v-model:value="language"
+        :options="languageOptions"
+        :render-label="renderLabel" />
       <n-button type="primary" @click="submit" :loading="loading">
         <template #icon>
           <n-icon>
-            <submit-icon/>
+            <submit-icon />
           </n-icon>
         </template>
         提交运行
       </n-button>
     </n-input-group>
     <div class="editor-wrapper">
-      <textarea ref="editor"/>
+      <textarea ref="editor" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {markRaw} from "vue"
-import {Options, Vue} from "vue-class-component"
-import {Emit, Prop, Watch} from "vue-property-decorator"
+import { markRaw } from "vue"
+import { Options, Vue } from "vue-class-component"
+import { Emit, Prop, Watch } from "vue-property-decorator"
 import {
   NSpace,
   NButton,
@@ -31,10 +37,10 @@ import {
   NSelect,
   NIcon
 } from "naive-ui"
-import {PlayCircleRound as SubmitIcon} from "@vicons/material"
-import {LanguageOption, LanguageOptions} from "@/type"
-import {LanguageUtil} from "@/utils"
-import CodeMirror, {Editor, EditorConfiguration} from "codemirror"
+import { PlayCircleRound as SubmitIcon } from "@vicons/material"
+import { LanguageOption, LanguageOptions } from "@/type"
+import { LanguageUtil } from "@/utils"
+import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/clike/clike.js"
 import "codemirror/mode/go/go.js"
@@ -73,9 +79,7 @@ const Modes = [
 })
 export default class CodeEditor extends Vue {
   private renderLabel = (option: LanguageOption) => {
-    return [
-      option.label
-    ]
+    return [option.label]
   }
 
   private cmEditor?: Editor | null
@@ -88,22 +92,22 @@ export default class CodeEditor extends Vue {
     indentUnit: 4,
     lineNumbers: true,
     matchBrackets: true,
-    autoCloseBrackets: true,
+    autoCloseBrackets: true
   }
 
   private languageOptions: Array<LanguageOption> = LanguageOptions
-  private language: number = 0    // 当前选中的语言ID
+  private language = 0 // 当前选中的语言ID
 
-  @Prop({type: Boolean, default: false})
+  @Prop({ type: Boolean, default: false })
   private loading?: boolean
 
   @Prop(String)
-  private modelValue: string = ""
+  private modelValue = ""
 
   @Prop(Number)
-  private availableLanguages?: number | null    // 可用语言，未指定时使用所有语言
+  private availableLanguages?: number | null // 可用语言，未指定时使用所有语言
 
-  @Watch("availableLanguage", {immediate: true})
+  @Watch("availableLanguage", { immediate: true })
   availableLanguageChange(value: number) {
     if (typeof value === "undefined") {
       return
@@ -121,7 +125,7 @@ export default class CodeEditor extends Vue {
     this.cmOptions.mode = Modes[value]
   }
 
-  @Watch("cmOptions", {deep: true})
+  @Watch("cmOptions", { deep: true })
   cmOptionsChange(value: EditorConfiguration) {
     this.cmEditor?.setOption("mode", value.mode)
     this.cmEditor?.setOption("theme", value.theme)
@@ -138,7 +142,10 @@ export default class CodeEditor extends Vue {
   }
 
   mounted() {
-    this.cmEditor = CodeMirror.fromTextArea(this.$refs.editor as HTMLTextAreaElement, this.cmOptions)
+    this.cmEditor = CodeMirror.fromTextArea(
+      this.$refs.editor as HTMLTextAreaElement,
+      this.cmOptions
+    )
     this.cmEditor = markRaw(this.cmEditor)
     this.cmEditor.setValue(this.modelValue)
     this.cmEditor.on("change", (cm: Editor) => {

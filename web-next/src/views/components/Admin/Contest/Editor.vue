@@ -1,12 +1,20 @@
 <template>
   <div class="contest-editor">
     <n-card :bordered="false">
-      <n-page-header class="page-header" :subtitle="subtitle" @back="router.back()">
+      <n-page-header
+        class="page-header"
+        :subtitle="subtitle"
+        @back="router.back()">
         <template #title>{{ title }}</template>
         <template #extra>
-          <n-button v-if="showSaveButton" type="primary" size="small" round @click="handleSave">
+          <n-button
+            v-if="showSaveButton"
+            type="primary"
+            size="small"
+            round
+            @click="handleSave">
             <template #icon>
-              <save-icon/>
+              <save-icon />
             </template>
             保存
           </n-button>
@@ -15,25 +23,45 @@
       <n-tabs type="line" default-value="base-info" @update:value="tabChange">
         <n-tab-pane name="base-info" tab="竞赛设置">
           <n-spin :show="loading">
-            <n-form label-placement="left" :model="contest" :rules="rules" ref="contestForm">
+            <n-form
+              label-placement="left"
+              :model="contest"
+              :rules="rules"
+              ref="contestForm">
               <n-grid :cols="2" x-gap="12">
-                <n-form-item-grid-item :span="1" label="竞赛名称" path="contestName">
-                  <n-input v-model:value="contest.contestName" maxlength="24" show-count clearable/>
+                <n-form-item-grid-item
+                  :span="1"
+                  label="竞赛名称"
+                  path="contestName">
+                  <n-input
+                    v-model:value="contest.contestName"
+                    maxlength="24"
+                    show-count
+                    clearable />
                 </n-form-item-grid-item>
-                <n-form-item-grid-item :span="1" label="时间范围" path="timeRange">
-                  <n-date-picker type="datetimerange" v-model:value="contest.timeRange" clearable
-                                 format="yyyy/MM/dd - HH:mm:ss"/>
+                <n-form-item-grid-item
+                  :span="1"
+                  label="时间范围"
+                  path="timeRange">
+                  <n-date-picker
+                    type="datetimerange"
+                    v-model:value="contest.timeRange"
+                    clearable
+                    format="yyyy/MM/dd - HH:mm:ss" />
                 </n-form-item-grid-item>
               </n-grid>
               <n-form-item label="语言限制" path="languages">
-                <n-transfer source-title="不允许的语言" target-title="允许的语言"
-                            :options="languageOptions" v-model:value="languages"/>
+                <n-transfer
+                  source-title="不允许的语言"
+                  target-title="允许的语言"
+                  :options="languageOptions"
+                  v-model:value="languages" />
               </n-form-item>
             </n-form>
           </n-spin>
         </n-tab-pane>
         <n-tab-pane v-if="!create" name="problems" tab="题目管理">
-          <problem-manage :contest-id="contest.contestId"/>
+          <problem-manage :contest-id="contest.contestId" />
         </n-tab-pane>
       </n-tabs>
     </n-card>
@@ -41,9 +69,9 @@
 </template>
 
 <script setup lang="tsx">
-import {computed, onBeforeMount, ref, watch} from "vue"
-import {useStore} from "vuex"
-import {useRoute, useRouter} from "vue-router"
+import { computed, onBeforeMount, ref, watch } from "vue"
+import { useStore } from "vuex"
+import { useRoute, useRouter } from "vue-router"
 import {
   FormRules,
   NBreadcrumb,
@@ -63,13 +91,13 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
-import {SaveOutlined as SaveIcon} from "@vicons/material"
+import { SaveOutlined as SaveIcon } from "@vicons/material"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import moment from "moment"
-import {ContestApi} from "@/api/request"
-import {Contest, ErrorMsg, UserInfo} from "@/api/type"
-import {LanguageOption, LanguageOptions} from "@/type"
-import {LanguageUtil} from "@/utils"
+import { ContestApi } from "@/api/request"
+import { Contest, ErrorMsg, UserInfo } from "@/api/type"
+import { LanguageOption, LanguageOptions } from "@/type"
+import { LanguageUtil } from "@/utils"
 import Mutations from "@/store/mutations"
 
 const route = useRoute()
@@ -83,7 +111,7 @@ const languages = ref<Array<number>>([])
 const loading = ref<boolean>(false)
 const currentTab = ref<string>("base-info")
 
-let create: boolean = false
+let create = false
 
 const rules: FormRules = {
   contestName: {
@@ -113,7 +141,7 @@ const rules: FormRules = {
   }
 }
 
-const title = computed<string>(() => create ? "创建新竞赛" : "编辑竞赛")
+const title = computed<string>(() => (create ? "创建新竞赛" : "编辑竞赛"))
 
 const subtitle = computed(() => {
   if (typeof contest.value.contestId === "undefined") {
@@ -129,14 +157,17 @@ const showSaveButton = computed<boolean>(() => currentTab.value === "base-info")
 
 const contestForm = ref<HTMLFormElement | null>(null)
 
-watch(() => contest.value.timeRange, value => {
-  const fmt = "yyyy-MM-DD HH:mm:ss"
-  const [start, end] = value!
-  contest.value.startAt = moment(start).format(fmt)
-  contest.value.endAt = moment(end).format(fmt)
-})
+watch(
+  () => contest.value.timeRange,
+  (value) => {
+    const fmt = "yyyy-MM-DD HH:mm:ss"
+    const [start, end] = value!
+    contest.value.startAt = moment(start).format(fmt)
+    contest.value.endAt = moment(end).format(fmt)
+  }
+)
 
-watch(languages, value => {
+watch(languages, (value) => {
   contest.value.languages = LanguageUtil.toNumber(value)
 })
 
@@ -155,11 +186,12 @@ onBeforeMount(() => {
 })
 
 function setBreadcrumb() {
-  const vNode =
-      (<NBreadcrumb>
-        <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-        <NBreadcrumbItem>{title}</NBreadcrumbItem>
-      </NBreadcrumb>)
+  const vNode = (
+    <NBreadcrumb>
+      <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
+      <NBreadcrumbItem>{title}</NBreadcrumbItem>
+    </NBreadcrumb>
+  )
   store.commit(Mutations.SET_BREADCRUMB, vNode)
 }
 
@@ -168,19 +200,20 @@ function tabChange(tab: string) {
 }
 
 function queryContest(contestId: number) {
-  ContestApi.getById(
-      contestId
-  ).then((data) => {
-    data.timeRange = []
-    data.timeRange.push(Date.parse(data.startAt))
-    data.timeRange.push(Date.parse(data.endAt))
-    languages.value = LanguageUtil.toArray(data.languages)
-    contest.value = data
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  }).finally(() => {
-    loading.value = false
-  })
+  ContestApi.getById(contestId)
+    .then((data) => {
+      data.timeRange = []
+      data.timeRange.push(Date.parse(data.startAt))
+      data.timeRange.push(Date.parse(data.endAt))
+      languages.value = LanguageUtil.toArray(data.languages)
+      contest.value = data
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function handleSave() {
@@ -192,15 +225,13 @@ function handleSave() {
 }
 
 function save() {
-  ContestApi.save(
-      contest.value,
-      userInfo.value,
-      create
-  ).then(() => {
-    message.success(`${contest.value.contestName} 保存成功`)
-  }).catch((error: ErrorMsg) => {
-    message.error(error.toString())
-  })
+  ContestApi.save(contest.value, userInfo.value, create)
+    .then(() => {
+      message.success(`${contest.value.contestName} 保存成功`)
+    })
+    .catch((error: ErrorMsg) => {
+      message.error(error.toString())
+    })
 }
 </script>
 
