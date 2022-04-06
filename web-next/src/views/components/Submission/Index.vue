@@ -5,14 +5,14 @@
       style="height: 100%"
       content-style="overflow: hidden">
       <Skeleton v-if="loading" />
+      <ErrorResult v-else-if="!loading && errorMsg != null" :error="errorMsg" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
             <n-tabs type="line">
               <n-tab-pane name="题目描述">
-                <n-h2 style="margin-bottom: 6px">{{
-                    `${problem.problemId}.${problem.title}`
-                  }}
+                <n-h2 style="margin-bottom: 6px">
+                  {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>
                 <n-space size="small">
                   <badge label="分数" size="medium" color="#4EAA25">
@@ -70,7 +70,6 @@
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue"
-import { useRoute } from "vue-router"
 import { useStore } from "vuex"
 import {
   NCard,
@@ -89,31 +88,38 @@ import Skeleton from "@/views/components/Submission/Skeleton.vue"
 import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
 import { JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
+import ErrorResult from "@/components/ErrorResult.vue"
 
-const route = useRoute()
 const store = useStore()
 const message = useMessage()
+
+const props = defineProps<{ pid: string }>()
 
 const loading = ref<boolean>(true)
 const showResult = ref<boolean>(false)
 const disableSubmit = ref<boolean>(false)
+const errorMsg = ref<ErrorMsg | null>(null)
 
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 let problemId: number | null = null
 let solutionId = ""
 
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
-
 onBeforeMount(() => {
-  const id = route.query.problemId
+  const reg = /^[\d]+$/
 
-  if (typeof id !== "undefined") {
-    problemId = Number(route.query.problemId)
+  if (reg.test(props.pid)) {
+    problemId = Number(props.pid)
+    queryProblem()
+  } else {
+    errorMsg.value = {
+      code: 400,
+      msg: "无效的ID"
+    }
+    loading.value = false
   }
-
-  queryProblem()
 })
 
 /**
@@ -126,7 +132,7 @@ function queryProblem() {
         problem.value = data
       })
       .catch((error: ErrorMsg) => {
-        message.error(error.toString())
+        errorMsg.value = error
       })
       .finally(() => {
         loading.value = false

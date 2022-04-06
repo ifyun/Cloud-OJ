@@ -41,14 +41,12 @@
               </n-form-item-grid-item>
               <n-form-item-grid-item label="题目类型" path="type" :span="1">
                 <n-radio-group v-model:value="problem.type">
-                  <n-radio-button :disabled="disableType" :value="0"
-                  >程序设计
-                  </n-radio-button
-                  >
-                  <n-radio-button :disabled="disableType" :value="1"
-                  >SQL(SQLite)
-                  </n-radio-button
-                  >
+                  <n-radio-button :disabled="disableType" :value="0">
+                    程序设计
+                  </n-radio-button>
+                  <n-radio-button :disabled="disableType" :value="1">
+                    SQL(SQLite)
+                  </n-radio-button>
                 </n-radio-group>
               </n-form-item-grid-item>
             </n-grid>

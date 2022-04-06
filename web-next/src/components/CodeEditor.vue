@@ -1,10 +1,9 @@
 <template>
   <div class="code-editor">
     <n-input-group>
-      <n-input-group-label :style="{ width: '110px' }"
-      >选择语言
-      </n-input-group-label
-      >
+      <n-input-group-label :style="{ width: '110px' }">
+        选择语言
+      </n-input-group-label>
       <n-select
         v-model:value="language"
         :options="languageOptions"

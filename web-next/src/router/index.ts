@@ -47,9 +47,12 @@ const router = createRouter({
           component: Leaderboard
         },
         {
-          path: "/submission",
+          path: "/submission/:pid",
           name: "submission",
-          component: Submission
+          component: Submission,
+          props: (route) => ({
+            pid: route.params.pid
+          })
         },
         {
           path: "/help",
