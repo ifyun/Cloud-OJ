@@ -21,9 +21,8 @@
               搜索题目
             </n-button>
           </n-input-group>
-          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">{{
-              keywordTag
-            }}
+          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">
+            {{ keywordTag }}
           </n-tag>
         </n-space>
         <n-data-table
@@ -100,7 +99,7 @@ const problemColumns = [
         onClick={() =>
           router.push({
             name: "submission",
-            query: { problemId: row.problemId }
+            params: { pid: row.problemId }
           })
         }>
         {row.title}

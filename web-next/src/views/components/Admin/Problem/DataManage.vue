@@ -30,14 +30,12 @@
                   <archive-icon />
                 </n-icon>
               </div>
-              <n-text style="font-size: 16px"
-              >点击或拖动文件到该区域上传
-              </n-text
-              >
-              <n-p depth="3"
-              >文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件
-              </n-p
-              >
+              <n-text style="font-size: 16px">
+                点击或拖动文件到该区域上传
+              </n-text>
+              <n-p depth="3">
+                文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件
+              </n-p>
             </n-upload-dragger>
           </n-upload>
         </n-space>

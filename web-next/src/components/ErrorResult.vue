@@ -5,15 +5,13 @@
     :status="status"
     :title="title"
     :description="desc">
-    <template #footer>
-      <n-button>找点乐子吧</n-button>
-    </template>
+    <template #footer>要不刷新一下试试？</template>
   </n-result>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue"
-import { NButton, NResult } from "naive-ui"
+import { NResult } from "naive-ui"
 import { ErrorMsg } from "@/api/type"
 
 const props = defineProps<{
@@ -33,7 +31,7 @@ watch(
 
     if (value.code === 400) {
       title.value = "400"
-      desc.value = "请求错误"
+      desc.value = "错误的请求"
     } else if (value.code === 401) {
       title.value = "401"
       desc.value = "未授权"
@@ -44,7 +42,7 @@ watch(
     } else if (value.code === 404) {
       status.value = value.code.toString()
       title.value = "404"
-      desc.value = "资源不存在"
+      desc.value = "找不到了"
     } else if (value.code === 500) {
       status.value = value.code.toString()
       title.value = "500"
@@ -60,6 +58,6 @@ watch(
 
 <style scoped>
 .error-result {
-  margin-top: 60px;
+  margin-top: 24px;
 }
 </style>

@@ -7,10 +7,9 @@
       :title="error.code"
       :description="error.msg">
       <template #footer>
-        <n-button secondary size="small" type="primary" @click="retry"
-        >重试
-        </n-button
-        >
+        <n-button secondary size="small" type="primary" @click="retry">
+          重试
+        </n-button>
       </template>
     </n-result>
     <!-- 结果 -->
@@ -21,10 +20,9 @@
       :title="result.title"
       :description="result.desc">
       <template #footer v-if="showRetry">
-        <n-button secondary size="small" type="primary" @click="retry"
-        >重试
-        </n-button
-        >
+        <n-button secondary size="small" type="primary" @click="retry">
+          重试
+        </n-button>
       </template>
     </n-result>
     <n-text v-if="result.error" type="error">
