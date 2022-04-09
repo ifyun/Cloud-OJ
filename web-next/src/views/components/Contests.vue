@@ -73,7 +73,7 @@ const contestColumns = [
     title: "语言限制",
     render: (row: Contest) => {
       if (row.languages === 511) {
-        return <span>"没有限制"</span>
+        return <span>没有限制</span>
       }
       const languages: Array<string> = []
       LanguageUtil.toArray(row.languages).forEach((value) => {

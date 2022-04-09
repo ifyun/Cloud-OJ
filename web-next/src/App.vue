@@ -14,15 +14,6 @@
           :key="$route.fullPath">
           <component :is="Component" />
         </router-view>
-        <n-modal
-          v-model:show="showAuthDialog"
-          preset="dialog"
-          :mask-closable="false"
-          :show-icon="false"
-          transform-origin="center"
-          style="margin-top: 220px">
-          <auth />
-        </n-modal>
       </n-message-provider>
     </n-dialog-provider>
   </n-config-provider>
@@ -37,26 +28,14 @@ import {
   NDialogProvider,
   NGlobalStyle,
   NMessageProvider,
-  NModal,
   zhCN
 } from "naive-ui"
 import themeOverrides from "@/theme"
-import Auth from "@/views/components/Auth/Index.vue"
-import { Mutations } from "@/store"
 
 const store = useStore()
 
 const theme = computed(() => {
   return store.state.theme
-})
-
-const showAuthDialog = computed<boolean>({
-  get: () => {
-    return store.state.showAuthDialog
-  },
-  set: (value) => {
-    store.commit(Mutations.SHOW_AUTH_DIALOG, value)
-  }
 })
 
 const reload = computed(() => {

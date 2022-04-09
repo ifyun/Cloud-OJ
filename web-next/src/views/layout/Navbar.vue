@@ -24,7 +24,6 @@ import { NMenu, NSpace } from "naive-ui"
 import { Logo } from "@/components"
 import ThemeSwitch from "./ThemeSwitch.vue"
 import UserMenu from "./UserMenu.vue"
-import { onBeforeMount } from "vue"
 
 const route = useRoute()
 
@@ -46,12 +45,6 @@ const navMenuOptions = [
     key: "help"
   }
 ]
-
-onBeforeMount(() => {
-  if (route.name === "submission") {
-    console.log(route.name)
-  }
-})
 </script>
 
 <style scoped lang="scss">

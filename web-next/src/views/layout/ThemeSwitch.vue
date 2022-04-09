@@ -1,5 +1,5 @@
 <template>
-  <n-switch v-model:value="isDarkTheme">
+  <n-switch v-model:value="isDarkTheme" size="small">
     <template #checked>
       <n-icon color="#FCE100">
         <dark-icon />

@@ -14,7 +14,6 @@ const store = createStore({
   state: {
     theme: theme === "dark" ? darkTheme : null,
     userInfo: token == null ? null : (JSON.parse(token) as UserInfo),
-    showAuthDialog: false,
     reload: false,
     breadcrumb: null
   },
@@ -35,9 +34,6 @@ const store = createStore({
     [Mutations.CLEAR_TOKEN](state: any) {
       localStorage.removeItem(TOKEN)
       state.userInfo = null
-    },
-    [Mutations.SHOW_AUTH_DIALOG](state: any, value: boolean) {
-      state.showAuthDialog = value
     },
     [Mutations.SET_RELOAD](state: any, value: boolean) {
       state.reload = value
