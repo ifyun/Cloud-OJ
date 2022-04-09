@@ -27,7 +27,7 @@
 <script setup lang="tsx">
 import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
-import { RouterLink } from "vue-router"
+import { RouterLink, useRouter } from "vue-router"
 import {
   NAvatar,
   NButton,
@@ -49,6 +49,7 @@ import { ErrorMsg, UserInfo } from "@/api/type"
 import { Mutations } from "@/store"
 
 const store = useStore()
+const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 const avatar = ref<string>("")
@@ -106,10 +107,8 @@ onBeforeMount(() => {
   }
 })
 
-function login(event: any) {
-  store.commit(Mutations.SHOW_AUTH_DIALOG, true)
-  event.target.blur()
-  event.target.parentNode.blur()
+function login() {
+  router.push({ name: "auth" })
 }
 
 function logoff() {
@@ -122,6 +121,7 @@ function logoff() {
     })
     .finally(() => {
       store.commit(Mutations.CLEAR_TOKEN)
+      router.push({ name: "auth" })
     })
 }
 

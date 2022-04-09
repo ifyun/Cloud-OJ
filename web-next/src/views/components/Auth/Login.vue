@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 import {
   FormRules,
   NButton,
@@ -62,6 +63,7 @@ const md5 = require("crypto-js/md5")
 
 const loading = ref<boolean>(false)
 const store = useStore()
+const router = useRouter()
 const message = useMessage()
 
 const user = ref<UsernamePassword>({
@@ -108,7 +110,7 @@ function login() {
       })
         .then((data) => {
           store.commit(Mutations.SAVE_TOKEN, data)
-          store.commit(Mutations.SHOW_AUTH_DIALOG, false)
+          router.push({ path: "/" })
         })
         .catch((error) => {
           message.error(`${error.code}: ${error.msg}`)

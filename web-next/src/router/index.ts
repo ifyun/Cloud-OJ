@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 
+const Auth = () => import("@/views/components/Auth/Index.vue")
 const Front = () => import("@/views/Front.vue")
 const ProblemTable = () => import("@/views/components/Problems.vue")
 const ContestTable = () => import("@/views/components/Contests.vue")
@@ -22,6 +23,11 @@ const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: "/auth",
+      name: "auth",
+      component: Auth
+    },
     {
       path: "/",
       name: "index",
