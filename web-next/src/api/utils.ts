@@ -7,7 +7,7 @@ function returnError(error: any): ErrorMsg {
     const msg =
       typeof err.response.data === "undefined"
         ? err.response.statusText
-        : err.response.data.msg
+        : (err.response.data as any).msg
     return new ErrorMsg(err.response.status, msg)
   } else if (err.request) {
     return new ErrorMsg(0, "请求失败")
