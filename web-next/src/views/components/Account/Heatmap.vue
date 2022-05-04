@@ -17,7 +17,9 @@ import {
 } from "echarts/components"
 import { Activity } from "@/api/type"
 
-type ECOption = echarts.ComposeOption<HeatmapSeriesOption | CalendarComponentOption | VisualMapComponentOption>
+type ECOption = echarts.ComposeOption<
+  HeatmapSeriesOption | CalendarComponentOption | VisualMapComponentOption
+>
 
 echarts.use([SVGRenderer, HeatmapChart, CalendarComponent, VisualMapComponent])
 
