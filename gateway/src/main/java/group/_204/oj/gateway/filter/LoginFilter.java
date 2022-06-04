@@ -1,6 +1,5 @@
 package group._204.oj.gateway.filter;
 
-import group._204.oj.gateway.component.AuthenticationConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpMethod;

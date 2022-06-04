@@ -5,12 +5,17 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JwtUtil {
+    private static SecretKey stringToSecretKey(String secret) {
+        return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+    }
 
     public static String createJwt(String userId, Object authorities, Date expiration, String secret) {
         return Jwts.builder()
@@ -18,7 +23,7 @@ public class JwtUtil {
                 .setIssuer("Cloud OJ")
                 .setSubject(userId)
                 .setExpiration(expiration)
-                .signWith(SignatureAlgorithm.HS512, secret.getBytes())
+                .signWith(stringToSecretKey(secret))
                 .compact();
     }
 
@@ -29,8 +34,9 @@ public class JwtUtil {
      */
     public static Claims getClaims(String jwt, String secret)
             throws JwtException, IllegalArgumentException {
-        return Jwts.parser()
-                .setSigningKey(secret.getBytes())
+        return Jwts.parserBuilder()
+                .setSigningKey(stringToSecretKey(secret))
+                .build()
                 .parseClaimsJws(jwt)
                 .getBody();
     }
