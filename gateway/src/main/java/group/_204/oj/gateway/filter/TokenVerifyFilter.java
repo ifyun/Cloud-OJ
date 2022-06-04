@@ -76,7 +76,7 @@ public class TokenVerifyFilter implements WebFilter {
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
             /* --------------- 添加权限到上下文 --------------- */
-            return chain.filter(exchange).subscriberContext(ReactiveSecurityContextHolder.withAuthentication(token));
+            return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(token));
         } catch (JwtException | IllegalArgumentException e) {
             String error = e.getMessage();
             log.error("Verify JWT failed: {}", error);
