@@ -1,4 +1,4 @@
-package group._204.oj.gateway.component;
+package group._204.oj.gateway.filter;
 
 import group._204.oj.gateway.model.UsernamePasswd;
 import lombok.extern.slf4j.Slf4j;
