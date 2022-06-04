@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { FormRules, NButton, NForm, NFormItem, NIcon, NInput } from "naive-ui"
 import {
   Building,
@@ -98,6 +98,7 @@ import {
   User as UserIcon
 } from "@vicons/fa"
 import { User } from "@/api/type"
+import { setTitle } from "@/utils"
 
 const loading = ref<boolean>(false)
 const user = ref<User>(new User())
@@ -156,7 +157,7 @@ const signupRules: FormRules = {
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {
       const regex =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        /^[a-zA-Z\d.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/
       if (value.length === 0) {
         return true
       }
@@ -169,6 +170,10 @@ const signupRules: FormRules = {
   }
 }
 
+onMounted(() => {
+  setTitle("注册")
+})
+
 function signup() {
   signupForm.value?.validate((errors: any) => {
     if (!errors) {
@@ -177,5 +182,3 @@ function signup() {
   })
 }
 </script>
-
-<style scoped></style>

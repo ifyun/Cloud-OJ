@@ -4,7 +4,7 @@
     content-style="display: flex; flex-direction: column">
     <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
       <n-layout-header>
-        <AppLogo style="height: 60px" />
+        <app-logo style="height: 60px" />
       </n-layout-header>
     </n-config-provider>
     <n-layout-content embedded>
@@ -23,7 +23,7 @@
       </n-card>
     </n-layout-content>
     <n-layout-footer style="margin-top: auto">
-      <BottomInfo />
+      <bottom-info />
     </n-layout-footer>
   </n-layout>
 </template>
