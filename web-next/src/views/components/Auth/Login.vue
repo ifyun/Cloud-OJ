@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import {
@@ -58,6 +58,7 @@ import { Lock, Orcid } from "@vicons/fa"
 import { AuthApi } from "@/api/request"
 import { UsernamePassword } from "@/api/type"
 import { Mutations } from "@/store"
+import { setTitle } from "@/utils"
 
 const md5 = require("crypto-js/md5")
 
@@ -100,6 +101,10 @@ const loginRules: FormRules = {
   }
 }
 
+onMounted(() => {
+  setTitle("登录")
+})
+
 function login() {
   loginForm.value?.validate((errors: any) => {
     if (!errors) {
@@ -124,5 +129,3 @@ function login() {
   })
 }
 </script>
-
-<style scoped></style>
