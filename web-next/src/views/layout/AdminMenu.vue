@@ -1,19 +1,21 @@
 <template>
   <div class="side-navbar">
-    <n-menu :options="menuOptions" v-model:value="$route.name"></n-menu>
+    <n-menu
+      :options="menuOptions"
+      :collapsed-icon-size="20"
+      v-model:value="$route.name" />
   </div>
 </template>
 
 <script setup lang="tsx">
 import { RouterLink } from "vue-router"
-import { NMenu } from "naive-ui"
+import { NIcon, NMenu } from "naive-ui"
 import {
   Book as BookIcon,
   Trophy as TrophyIcon,
   Users as UsersIcon
 } from "@vicons/fa"
 import { SettingsRound as SettingsIcon } from "@vicons/material"
-import { renderIcon } from "@/utils"
 
 const menuOptions = [
   {
@@ -21,24 +23,40 @@ const menuOptions = [
       <RouterLink to={{ name: "problem_admin" }}>题目管理</RouterLink>
     ),
     key: "problem_admin",
-    icon: renderIcon(BookIcon)
+    icon: () => (
+      <NIcon>
+        <BookIcon />
+      </NIcon>
+    )
   },
   {
     label: () => (
       <RouterLink to={{ name: "contest_admin" }}>竞赛管理</RouterLink>
     ),
     key: "contest_admin",
-    icon: renderIcon(TrophyIcon)
+    icon: () => (
+      <NIcon>
+        <TrophyIcon />
+      </NIcon>
+    )
   },
   {
     label: () => <RouterLink to={{ name: "user_admin" }}>用户管理</RouterLink>,
     key: "user_admin",
-    icon: renderIcon(UsersIcon)
+    icon: () => (
+      <NIcon>
+        <UsersIcon />
+      </NIcon>
+    )
   },
   {
     label: "系统设置",
     key: "settings",
-    icon: renderIcon(SettingsIcon)
+    icon: () => (
+      <NIcon>
+        <SettingsIcon />
+      </NIcon>
+    )
   }
 ]
 </script>
