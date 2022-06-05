@@ -15,7 +15,8 @@ const store = createStore({
     theme: theme === "dark" ? darkTheme : null,
     userInfo: token == null ? null : (JSON.parse(token) as UserInfo),
     reload: false,
-    breadcrumb: null
+    breadcrumb: null,
+    menuCollapsed: false
   },
   mutations: {
     [Mutations.CHANGE_THEME](state: any, value: string) {
@@ -40,6 +41,9 @@ const store = createStore({
     },
     [Mutations.SET_BREADCRUMB](state: any, value: VNode) {
       state.breadcrumb = value
+    },
+    [Mutations.TOGGLE_MENU_COLLAPSED](state: any) {
+      state.menuCollapsed = !state.menuCollapsed
     }
   },
   getters: {

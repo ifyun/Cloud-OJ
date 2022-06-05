@@ -7,10 +7,11 @@
       <n-layout-sider
         class="aside"
         collapse-mode="width"
+        width="170"
         :native-scrollbar="false"
-        width="180">
+        :collapsed="collapsed">
         <div>
-          <logo style="height: 60px" />
+          <logo :collapsed="collapsed" style="height: 60px" />
           <admin-menu />
         </div>
       </n-layout-sider>
@@ -19,7 +20,14 @@
       <n-layout-header class="header" position="absolute">
         <div class="admin-nav">
           <n-space align="center" size="small">
-            <n-button quaternary @click="reload">
+            <n-button quaternary @click="collapse" style="padding: 0 6px">
+              <template #icon>
+                <n-icon>
+                  <menu-open :class="{ rotate: collapsed }" />
+                </n-icon>
+              </template>
+            </n-button>
+            <n-button quaternary @click="reload" style="padding: 0 6px">
               <template #icon>
                 <n-icon>
                   <refresh-icon />
@@ -67,7 +75,10 @@ import {
   NLayoutSider,
   NSpace
 } from "naive-ui"
-import { RefreshRound as RefreshIcon } from "@vicons/material"
+import {
+  MenuOpenRound as MenuOpen,
+  RefreshRound as RefreshIcon
+} from "@vicons/material"
 import { AdminMenu, ThemeSwitch, UserMenu } from "@/views/layout"
 import { Logo, VNodeRenderer } from "@/components"
 import Mutations from "@/store/mutations"
@@ -91,11 +102,19 @@ const breadcrumb = computed<VNode>(() => {
   return store.state.breadcrumb
 })
 
+const collapsed = computed<boolean>(() => {
+  return store.state.menuCollapsed
+})
+
 function reload() {
   store.commit(Mutations.SET_RELOAD, true)
   nextTick(() => {
     store.commit(Mutations.SET_RELOAD, false)
   })
+}
+
+function collapse() {
+  store.commit(Mutations.TOGGLE_MENU_COLLAPSED)
 }
 </script>
 
@@ -106,5 +125,9 @@ function reload() {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+}
+
+.rotate {
+  transform: perspective(1px) rotateY(180deg);
 }
 </style>

@@ -1,13 +1,27 @@
 <template>
   <div class="text-logo">
     <router-link :to="{ path: '/' }">
-      <span>Cloud</span>
-      <span class="colored">OJ</span>
+      <div v-if="collapsed">
+        <span class="colored">C</span>
+      </div>
+      <div v-else>
+        <span>Cloud</span>
+        <span class="colored">OJ</span>
+      </div>
     </router-link>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false
+  }
+})
+</script>
+
+<script lang="ts">
 export default {
   name: "AppLogo"
 }
