@@ -21,19 +21,19 @@
                     </template>
                     {{ problem.score }}
                   </badge>
-                  <badge label="时间" size="medium" color="#D9644D">
+                  <badge label="时间" size="medium" color="#0288D1">
                     <template #icon>
                       <timer-outlined />
                     </template>
                     {{ problem.timeout }} 毫秒
                   </badge>
-                  <badge label="内存" size="medium" color="#007EC6">
+                  <badge label="内存" size="medium" color="#4EAA25">
                     <template #icon>
                       <memory-round />
                     </template>
                     {{ problem.memoryLimit }} MB
                   </badge>
-                  <badge label="输出" size="medium" color="#F48041">
+                  <badge label="输出" size="medium" color="#D14748">
                     <template #icon>
                       <file-alt />
                     </template>
@@ -83,12 +83,11 @@ import {
 } from "naive-ui"
 import { FileAlt, QuestionCircle } from "@vicons/fa"
 import { MemoryRound, TimerOutlined } from "@vicons/material"
-import { Badge, CodeEditor, MarkdownView } from "@/components"
-import Skeleton from "@/views/components/Submission/Skeleton.vue"
-import ResultDialog from "@/views/components/Submission/ResultDialog.vue"
+import { Badge, CodeEditor, ErrorResult, MarkdownView } from "@/components"
+import Skeleton from "./Skeleton.vue"
+import ResultDialog from "./ResultDialog.vue"
 import { JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
-import ErrorResult from "@/components/ErrorResult.vue"
 
 const store = useStore()
 const message = useMessage()
