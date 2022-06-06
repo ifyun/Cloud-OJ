@@ -39,6 +39,7 @@ const badgeClasses = computed(() => [[`badge`], [`badge__${props.size}`]])
   flex-direction: row;
   color: white;
   font-size: 14px;
+  border-radius: 6px;
 
   & > div {
     padding: 0 7px;
@@ -55,7 +56,7 @@ const badgeClasses = computed(() => [[`badge`], [`badge__${props.size}`]])
   }
 
   .badge-label {
-    background-color: #666666;
+    background-color: #505050;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
   }
