@@ -23,21 +23,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { markRaw } from "vue"
-import { Options, Vue } from "vue-class-component"
-import { Emit, Prop, Watch } from "vue-property-decorator"
+<script setup lang="ts">
+import { nextTick, onMounted, ref, watch } from "vue"
 import {
-  NSpace,
   NButton,
-  NInput,
+  NIcon,
   NInputGroup,
   NInputGroupLabel,
-  NSelect,
-  NIcon
+  NSelect
 } from "naive-ui"
 import { PlayCircleRound as SubmitIcon } from "@vicons/material"
-import { LanguageOption, LanguageOptions } from "@/type"
+import { SourceCode, LanguageOption, LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
@@ -51,6 +47,7 @@ import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/addon/edit/closebrackets.js"
 import "codemirror/theme/material-darker.css"
 
+// CodeMirror 语言模式
 const Modes = [
   "text/x-csrc",
   "text/x-c++src",
@@ -63,94 +60,91 @@ const Modes = [
   "text/x-go"
 ]
 
-@Options({
-  name: "CodeEditor",
-  components: {
-    NSpace,
-    NInputGroup,
-    NInputGroupLabel,
-    NSelect,
-    NButton,
-    NInput,
-    NIcon,
-    SubmitIcon
+const renderLabel = (option: LanguageOption) => {
+  return [option.label]
+}
+
+const cmOptions: EditorConfiguration = {
+  mode: Modes[0],
+  theme: "material-darker",
+  tabSize: 4,
+  smartIndent: true,
+  indentUnit: 4,
+  lineNumbers: true,
+  matchBrackets: true,
+  autoCloseBrackets: true
+}
+
+const language = ref<number>(0) // 当前选中的语言ID
+const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
+const editor = ref<HTMLTextAreaElement | null>(null)
+
+let cmEditor: Editor | null = null
+
+const props = withDefaults(
+  defineProps<{
+    loading: boolean
+    value: string
+    availableLanguages?: number // 可用语言，未指定时使用所有语言
+  }>(),
+  {
+    loading: false,
+    value: ""
   }
-})
-export default class CodeEditor extends Vue {
-  private renderLabel = (option: LanguageOption) => {
-    return [option.label]
-  }
+)
 
-  private cmEditor?: Editor | null
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (e: "update:modelValue", value: string): void
+  // eslint-disable-next-line no-unused-vars
+  (e: "submit", value: SourceCode): void
+}>()
 
-  private cmOptions: EditorConfiguration = {
-    mode: Modes[0],
-    theme: "material-darker",
-    tabSize: 4,
-    smartIndent: true,
-    indentUnit: 4,
-    lineNumbers: true,
-    matchBrackets: true,
-    autoCloseBrackets: true
-  }
-
-  private languageOptions: Array<LanguageOption> = LanguageOptions
-  private language = 0 // 当前选中的语言ID
-
-  @Prop({ type: Boolean, default: false })
-  private loading?: boolean
-
-  @Prop(String)
-  private modelValue = ""
-
-  @Prop(Number)
-  private availableLanguages?: number | null // 可用语言，未指定时使用所有语言
-
-  @Watch("availableLanguage", { immediate: true })
-  availableLanguageChange(value: number) {
-    if (typeof value === "undefined") {
+watch(
+  () => props.availableLanguages,
+  (val) => {
+    if (typeof val === "undefined") {
       return
     }
 
-    this.languageOptions = []
-    const languageArray = LanguageUtil.toArray(value)
+    const languageArray = LanguageUtil.toArray(val)
+    languageOptions.value = []
     languageArray.forEach((v) => {
-      this.languageOptions.push(LanguageOptions[v])
+      languageOptions.value.push(LanguageOptions[v])
     })
   }
+)
 
-  @Watch("language")
-  languageChange(value: number) {
-    this.cmOptions.mode = Modes[value]
-  }
+watch(language, (val) => {
+  cmOptions.mode = Modes[val]
+})
 
-  @Watch("cmOptions", { deep: true })
-  cmOptionsChange(value: EditorConfiguration) {
-    this.cmEditor?.setOption("mode", value.mode)
-    this.cmEditor?.setOption("theme", value.theme)
-  }
-
-  @Emit("update:modelValue")
-  codeChange(value: string) {
-    return value
-  }
-
-  @Emit("submit")
-  submit() {
-    return this.language
-  }
-
-  mounted() {
-    this.cmEditor = CodeMirror.fromTextArea(
-      this.$refs.editor as HTMLTextAreaElement,
-      this.cmOptions
-    )
-    this.cmEditor = markRaw(this.cmEditor)
-    this.cmEditor.setValue(this.modelValue)
-    this.cmEditor.on("change", (cm: Editor) => {
-      this.codeChange(cm.getValue())
+watch(
+  () => cmOptions,
+  (val) => {
+    nextTick(() => {
+      cmEditor!.setOption("mode", val.mode)
+      cmEditor!.setOption("theme", val.theme)
     })
   }
+)
+
+watch(
+  () => props.value,
+  (val) => {
+    nextTick(() => {
+      cmEditor!.setValue(val)
+    })
+  }
+)
+
+onMounted(() => {
+  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions)
+  cmEditor.setValue(props.value)
+})
+
+function submit() {
+  emit("submit", { language: language.value, code: cmEditor!.getValue() })
 }
 </script>
 
