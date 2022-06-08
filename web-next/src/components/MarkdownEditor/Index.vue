@@ -1,7 +1,7 @@
 <!-- Markdown 编辑器 -->
 <template>
   <div class="markdown-editor">
-    <toolbar
+    <markdown-toolbar
       @click="toolbarClick"
       @insertTable="insertTable"
       style="margin-bottom: 2px" />
@@ -9,11 +9,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { markRaw } from "vue"
+<script setup lang="ts">
+import { computed, defineEmits, nextTick, onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
-import { Options, Vue } from "vue-class-component"
-import { Emit, Prop, Watch } from "vue-property-decorator"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ayu-dark.css"
@@ -22,228 +20,239 @@ import "codemirror/theme/juejin.css"
 import "codemirror/addon/scroll/simplescrollbars.css"
 import "codemirror/addon/scroll/simplescrollbars"
 import "codemirror/mode/markdown/markdown.js"
-import Toolbar from "./Toolbar.vue"
+import MarkdownToolbar from "./Toolbar.vue"
 
-@Options({
-  name: "MarkdownEditor",
-  components: {
-    Toolbar
+const store = useStore()
+
+let cmEditor: Editor | null = null
+const cmOptions: EditorConfiguration = {
+  mode: {
+    name: "text/x-markdown",
+    highlightFormatting: true
+  },
+  scrollbarStyle: "simple",
+  lineNumbers: true,
+  lineWrapping: true,
+  tabSize: 4
+}
+
+const editor = ref<HTMLTextAreaElement | null>(null)
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: string
+    readOnly: boolean
+  }>(),
+  {
+    modelValue: "",
+    readOnly: false
   }
-})
-export default class MarkdownEditor extends Vue {
-  private store = useStore()
+)
 
-  private firstLoad = true
-  private cmEditor?: Editor | null
-  private cmOptions: EditorConfiguration = {
-    mode: {
-      name: "text/x-markdown",
-      highlightFormatting: true
-    },
-    scrollbarStyle: "simple",
-    lineNumbers: true,
-    lineWrapping: true,
-    tabSize: 4
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (e: "update:modelValue", value: string): void
+}>()
+
+const theme = computed(() => store.state.theme)
+const internalValue = ref<string>("")
+
+watch(
+  () => props.readOnly,
+  (val) => {
+    nextTick(() => cmEditor!.setOption("readOnly", val))
   }
+)
 
-  get theme(): any {
-    return this.store.state.theme
-  }
-
-  @Prop(String)
-  private modelValue?: string
-
-  @Prop(Boolean)
-  private readOnly = false
-
-  @Watch("readOnly")
-  readOnlyChange(value: boolean) {
-    this.cmEditor?.setOption("readOnly", value)
-  }
-
-  @Watch("theme")
-  themeChange(value: any) {
-    if (value == null) {
-      this.cmEditor?.setOption("theme", "juejin")
-    } else {
-      this.cmEditor?.setOption("theme", "ayu-dark")
-    }
-  }
-
-  @Watch("modelValue")
-  valueChange(value: string) {
-    if (this.firstLoad) {
-      this.cmEditor?.setValue(value)
-      this.firstLoad = false
-    }
-  }
-
-  @Emit("update:modelValue")
-  updateValue(value: string) {
-    return value
-  }
-
-  mounted() {
-    this.cmEditor = CodeMirror.fromTextArea(
-      this.$refs.editor as HTMLTextAreaElement,
-      this.cmOptions
-    )
-    this.cmEditor = markRaw(this.cmEditor)
-    this.cmEditor.setValue(this.modelValue!)
-    this.cmEditor.on("change", (cm: Editor) => {
-      this.updateValue(cm.getValue())
+watch(
+  theme,
+  (val) => {
+    nextTick(() => {
+      if (val == null) {
+        cmEditor!.setOption("theme", "juejin")
+      } else {
+        cmEditor!.setOption("theme", "ayu-dark")
+      }
     })
-    this.themeChange(this.theme)
-  }
+  },
+  { immediate: true }
+)
 
-  toolbarClick(key: string) {
-    switch (key) {
-      case "italic":
-        this.addSymbol("*")
-        break
-      case "bold":
-        this.addSymbol("**")
-        break
-      case "quote":
-        this.addSymbol("> ", true)
-        break
-      case "info":
-        this.addBlock("::: info", ":::")
-        break
-      case "warning":
-        this.addBlock("::: warning", ":::")
-        break
-      case "code":
-        this.addBlock("```", "```")
-        break
-      case "ul":
-        this.addSymbol("- ", true)
-        break
-      case "ol":
-        this.addSymbol("1. ", true)
-        break
-      default:
-        return
-    }
+watch(
+  () => props.modelValue,
+  (val) => {
+    // 使内部数据和 modelValue 相等，避免 modelValue 改变时触发无限 emit
+    internalValue.value = val
+    nextTick(() => {
+      cmEditor!.setValue(val)
+      cmEditor!.setCursor(cmEditor!.lineCount(), 0)
+    })
   }
+)
 
-  insertTable(value: any) {
-    console.debug("add table.", value)
-    this.addTable(value.cols, value.rows)
-  }
+watch(internalValue, (val) => {
+  emit("update:modelValue", val)
+})
 
-  hasSelected(): boolean | undefined {
-    return this.cmEditor?.somethingSelected()
-  }
+onMounted(() => {
+  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions)
+  cmEditor.setValue(props.modelValue)
+  cmEditor.on("change", (cm: Editor) => {
+    // 改变内部数据，触发 emit
+    internalValue.value = cm.getValue()
+  })
+})
 
-  /**
-   * 插入 markdown 符号
-   * @param symbol 符号字符串
-   * @param onlyLeft 是否只在左边插入
-   */
-  addSymbol(symbol: string, onlyLeft = false) {
-    if (this.hasSelected()) {
+function toolbarClick(key: string) {
+  switch (key) {
+    case "italic":
+      addSymbol("*")
+      break
+    case "bold":
+      addSymbol("**")
+      break
+    case "quote":
+      addSymbol("> ", true)
+      break
+    case "info":
+      addBlock("::: info", ":::")
+      break
+    case "warning":
+      addBlock("::: warning", ":::")
+      break
+    case "code":
+      addBlock("```", "```")
+      break
+    case "ul":
+      addSymbol("- ", true)
+      break
+    case "ol":
+      addSymbol("1. ", true)
+      break
+    default:
       return
-    }
+  }
+}
 
-    const { anchor, head } = this.cmEditor!.listSelections()[0]!
+/**
+ * 插入表格
+ * @param value {cols, rows}
+ */
+function insertTable(value: any) {
+  addTable(value.cols, value.rows)
+}
 
-    if (!onlyLeft) {
-      this.cmEditor?.setCursor(anchor)
-      this.cmEditor?.replaceSelection(symbol)
-    } else if (head.ch != 0) {
-      // 只在左边插入说明是块级元素，不在行首另起一行
-      this.cmEditor?.replaceSelection("\n\n")
-      head.line += 2
-      head.ch = 0
-    }
+function hasSelected(): boolean | undefined {
+  return cmEditor?.somethingSelected()
+}
 
-    this.cmEditor?.setCursor(head)
-    this.cmEditor?.replaceSelection(symbol)
-    head.ch += symbol.length
-    this.cmEditor?.setCursor(head) // 光标移动到符号中间（右侧）
-    this.cmEditor?.focus()
+/**
+ * 插入 markdown 符号
+ * @param symbol 符号字符串
+ * @param onlyLeft 是否只在左边插入
+ */
+function addSymbol(symbol: string, onlyLeft = false) {
+  if (hasSelected()) {
+    return
   }
 
-  /**
-   * 插入块级 markdown 符号
-   * @param start 起始符号
-   * @param end 结束符号
-   */
-  addBlock(start: string, end: string) {
-    if (this.hasSelected()) {
-      return
-    }
+  const { anchor, head } = cmEditor!.listSelections()[0]!
 
-    const head = this.cmEditor?.getCursor()!
-
-    if (head.ch != 0) {
-      // 不在行首，另起一行
-      this.cmEditor?.replaceSelection("\n\n")
-      head.line += 2
-      head.ch = 0
-    }
-
-    this.cmEditor?.setCursor(head)
-    this.cmEditor?.replaceSelection(`${start}\n\n${end}`)
-    head.line += 1
-    this.cmEditor?.setCursor(head)
-    this.cmEditor?.focus()
+  if (!onlyLeft) {
+    cmEditor?.setCursor(anchor)
+    cmEditor?.replaceSelection(symbol)
+  } else if (head.ch != 0) {
+    // 只在左边插入说明是块级元素，不在行首另起一行
+    cmEditor?.replaceSelection("\n\n")
+    head.line += 2
+    head.ch = 0
   }
 
-  /**
-   * 插入表格
-   * @param cols 列数
-   * @param rows 行数
-   */
-  addTable(cols: number, rows: number) {
-    if (this.hasSelected()) {
-      return
-    }
+  cmEditor?.setCursor(head)
+  cmEditor?.replaceSelection(symbol)
+  head.ch += symbol.length
+  cmEditor?.setCursor(head) // 光标移动到符号中间（右侧）
+  cmEditor?.focus()
+}
 
-    const headCell = "| Name\t\t"
-    const dividerCell = "|:---------:"
-    const bodyCell = "|\t\t\t"
-
-    let header = []
-    let divider = []
-    let body = []
-
-    for (let i = 0; i < cols; i += 1) {
-      header.push(headCell)
-      divider.push(dividerCell)
-      body.push(bodyCell)
-    }
-
-    header.push("|")
-    divider.push("|")
-    body.push("|")
-
-    let bodyRows = []
-
-    for (let i = 0; i < rows; i += 1) {
-      bodyRows.push(body.join(""))
-      bodyRows.push("\n")
-    }
-
-    const content = `${header.join("")}\n${divider.join("")}\n${bodyRows.join(
-      ""
-    )}`
-    const head = this.cmEditor?.getCursor()!
-
-    if (head.ch != 0) {
-      // 不在行首，另起一行
-      this.cmEditor?.replaceSelection("\n\n")
-      head.line += 2
-      head.ch = 0
-    }
-
-    this.cmEditor?.setCursor(head)
-    this.cmEditor?.replaceSelection(content)
-    head.line += rows + 2
-    this.cmEditor?.setCursor(head)
-    this.cmEditor?.focus()
+/**
+ * 插入块级 markdown 符号
+ * @param start 起始符号
+ * @param end 结束符号
+ */
+function addBlock(start: string, end: string) {
+  if (hasSelected()) {
+    return
   }
+
+  const head = cmEditor?.getCursor()!
+
+  if (head.ch != 0) {
+    // 不在行首，另起一行
+    cmEditor?.replaceSelection("\n\n")
+    head.line += 2
+    head.ch = 0
+  }
+
+  cmEditor?.setCursor(head)
+  cmEditor?.replaceSelection(`${start}\n\n${end}`)
+  head.line += 1
+  cmEditor?.setCursor(head)
+  cmEditor?.focus()
+}
+
+/**
+ * 插入表格
+ * @param cols 列数
+ * @param rows 行数
+ */
+function addTable(cols: number, rows: number) {
+  if (hasSelected()) {
+    return
+  }
+
+  const headCell = "| Name\t\t"
+  const dividerCell = "|:---------:"
+  const bodyCell = "|\t\t\t"
+
+  let header = []
+  let divider = []
+  let body = []
+
+  for (let i = 0; i < cols; i += 1) {
+    header.push(headCell)
+    divider.push(dividerCell)
+    body.push(bodyCell)
+  }
+
+  header.push("|")
+  divider.push("|")
+  body.push("|")
+
+  let bodyRows = []
+
+  for (let i = 0; i < rows; i += 1) {
+    bodyRows.push(body.join(""))
+    bodyRows.push("\n")
+  }
+
+  const content = `${header.join("")}\n${divider.join("")}\n${bodyRows.join(
+    ""
+  )}`
+  const head = cmEditor?.getCursor()!
+
+  if (head.ch != 0) {
+    // 不在行首，另起一行
+    cmEditor?.replaceSelection("\n\n")
+    head.line += 2
+    head.ch = 0
+  }
+
+  cmEditor?.setCursor(head)
+  cmEditor?.replaceSelection(content)
+  head.line += rows + 2
+  cmEditor?.setCursor(head)
+  cmEditor?.focus()
 }
 </script>
 
