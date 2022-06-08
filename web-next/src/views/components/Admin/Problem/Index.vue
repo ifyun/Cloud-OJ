@@ -199,7 +199,7 @@ const problemColumns = [
         onClick={() =>
           router.push({
             name: "submission",
-            query: { problemId: row.problemId }
+            params: { pid: row.problemId }
           })
         }>
         {row.title}

@@ -52,9 +52,9 @@
         <!-- 代码编辑器 -->
         <div class="editor">
           <code-editor
-            v-model="code"
-            @submit="submit"
-            :loading="disableSubmit" />
+            :value="code"
+            :loading="disableSubmit"
+            @submit="submit" />
         </div>
       </div>
     </n-card>
@@ -63,8 +63,8 @@
     v-model:show="showResult"
     preset="card"
     :mask-closable="false"
-    style="width: 520px; margin-top: 220px">
-    <result-dialog :solution-id="solutionId" />
+    style="width: 520px; margin-top: 240px">
+    <result-dialog :solution-id="solutionId" style="margin-bottom: 24px" />
   </n-modal>
 </template>
 
@@ -88,6 +88,7 @@ import Skeleton from "./Skeleton.vue"
 import ResultDialog from "./ResultDialog.vue"
 import { JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
+import { SourceCode } from "@/type"
 
 const store = useStore()
 const message = useMessage()
@@ -101,13 +102,13 @@ const errorMsg = ref<ErrorMsg | null>(null)
 
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
+const solutionId = ref<string>("")
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 let problemId: number | null = null
-let solutionId = ""
 
 onBeforeMount(() => {
-  const reg = /^[\d]+$/
+  const reg = /^\d+$/
 
   if (reg.test(props.pid)) {
     problemId = Number(props.pid)
@@ -142,24 +143,24 @@ function queryProblem() {
 /**
  * 提交代码
  */
-function submit(language: number) {
-  if (code.value.trim().length == 0 || disableSubmit.value) {
+function submit(data: SourceCode) {
+  if (data.code.trim().length == 0 || disableSubmit.value) {
     return
   }
 
   disableSubmit.value = true
 
-  const data: SubmitData = {
-    language,
+  const submitData: SubmitData = {
+    language: data.language,
     problemId: problemId!,
-    sourceCode: code.value.trim(),
+    sourceCode: data.code.trim(),
     type: 0,
     userId: userInfo.value.userId!
   }
 
-  JudgeApi.submit(data, userInfo.value)
+  JudgeApi.submit(submitData, userInfo.value)
     .then((id) => {
-      solutionId = id
+      solutionId.value = id
       showResult.value = true
     })
     .catch((error: ErrorMsg) => {

@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, nextTick, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
@@ -21,6 +21,7 @@ import "codemirror/addon/scroll/simplescrollbars.css"
 import "codemirror/addon/scroll/simplescrollbars"
 import "codemirror/mode/markdown/markdown.js"
 import MarkdownToolbar from "./Toolbar.vue"
+import debounce from "lodash/debounce"
 
 const store = useStore()
 
@@ -55,7 +56,6 @@ const emit = defineEmits<{
 }>()
 
 const theme = computed(() => store.state.theme)
-const internalValue = ref<string>("")
 
 watch(
   () => props.readOnly,
@@ -81,26 +81,25 @@ watch(
 watch(
   () => props.modelValue,
   (val) => {
-    // 使内部数据和 modelValue 相等，避免 modelValue 改变时触发无限 emit
-    internalValue.value = val
-    nextTick(() => {
-      cmEditor!.setValue(val)
-      cmEditor!.setCursor(cmEditor!.lineCount(), 0)
-    })
+    // 内外数据相等时不更新 CodeMirror 编辑器
+    if (cmEditor!.getValue() !== val) {
+      nextTick(() => {
+        cmEditor!.setValue(val)
+      })
+    }
   }
 )
-
-watch(internalValue, (val) => {
-  emit("update:modelValue", val)
-})
 
 onMounted(() => {
   cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions)
   cmEditor.setValue(props.modelValue)
-  cmEditor.on("change", (cm: Editor) => {
-    // 改变内部数据，触发 emit
-    internalValue.value = cm.getValue()
-  })
+  cmEditor.on(
+    "change",
+    debounce((cm: Editor) => {
+      // 改变内部数据，触发 emit
+      emit("update:modelValue", cm.getValue())
+    }, 250)
+  )
 })
 
 function toolbarClick(key: string) {

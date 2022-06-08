@@ -4,6 +4,14 @@ export type LanguageOption = {
   version: string
 }
 
+/**
+ * 代码编辑器触发提交时的数据
+ */
+export type SourceCode = {
+  language: number
+  code: string
+}
+
 export const LanguageOptions: Array<LanguageOption> = [
   { value: 0, label: "C", version: "" },
   { value: 1, label: "C++", version: "" },
