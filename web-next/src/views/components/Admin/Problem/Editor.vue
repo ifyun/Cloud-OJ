@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import {
@@ -173,8 +173,7 @@ const message = useMessage()
 const problem = ref<Problem>(new Problem())
 const showHelp = ref<boolean>(false)
 const loading = ref<boolean>(false)
-
-let create = false
+const create = ref<boolean>(false)
 
 /* 表单验证规则 */
 const rules: FormRules = {
@@ -245,11 +244,11 @@ const subtitle = computed<string>(() => {
 })
 
 const title = computed<string>(() => {
-  return create ? "创建题目" : "编辑题目"
+  return create.value ? "创建题目" : "编辑题目"
 })
 
 const disableType = computed<boolean>(() => {
-  return !create
+  return !create.value
 })
 
 watch(title, (value) => {
@@ -263,12 +262,12 @@ watch(
   }
 )
 
-onBeforeMount(() => {
-  const reg = /^[\d]+$/
+onMounted(() => {
+  const reg = /^\d+$/
   const id = route.params.id.toString()
 
   if (id === "new") {
-    create = true
+    create.value = true
   } else if (reg.test(id)) {
     loading.value = true
     queryProblem(Number(id))
@@ -333,10 +332,10 @@ function handleSave() {
  */
 function save() {
   loading.value = true
-  ProblemApi.save(problem.value, userInfo.value, create)
+  ProblemApi.save(problem.value, userInfo.value, create.value)
     .then(() => {
       message.success(`${problem.value.title} 保存成功`)
-      create && back()
+      create.value && back()
     })
     .catch((error: ErrorMsg) => {
       message.error(`${error.code}: ${error.msg}`)

@@ -65,6 +65,12 @@
   </n-button-group>
 </template>
 
+<script lang="tsx">
+export default {
+  name: "MarkdownToolbar"
+}
+</script>
+
 <script setup lang="tsx">
 import {
   NSpace,
