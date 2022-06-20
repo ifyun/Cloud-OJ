@@ -20,10 +20,10 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getProblems" resultMap="Map.Problem, Map.Total">
+    <select id="getProblems" resultType="group._204.oj.core.model.Problem">
         <choose>
             <when test="userId != null">
-                select sql_calc_found_rows cp.*, result
+                select cp.*, result
                 from contest_problem cp
                 left join (select user_id, problem_id, contest_id, min(result - 1) result
                 from judge_result
@@ -32,16 +32,13 @@
                 on cp.contest_id = jr.contest_id and cp.problem_id = jr.problem_id
             </when>
             <otherwise>
-                select sql_calc_found_rows *
-                from contest_problem cp
+                select * from contest_problem cp
             </otherwise>
         </choose>
         where cp.contest_id = #{contestId}
         <if test="onlyStarted">
             and cp.start_at &lt;= now()
         </if>
-        limit #{start}, #{limit};
-        select found_rows()
     </select>
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows *

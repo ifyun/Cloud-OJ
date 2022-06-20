@@ -43,27 +43,46 @@ const ContestApi = {
   },
 
   /**
+   * 获取已开始竞赛/作业中的题目
+   */
+  getProblemsFromStarted(
+    contestId: number,
+    userInfo: UserInfo
+  ): Promise<Array<Problem>> {
+    return new Promise<Array<Problem>>((resolve, reject) => {
+      axios({
+        url: `${ApiPath.CONTEST_PROBLEM}`,
+        method: "GET",
+        headers: buildHeaders(userInfo),
+        params: {
+          contestId,
+          userId: userInfo.userId
+        }
+      })
+        .then((res) => {
+          resolve(res.status === 200 ? res.data : [])
+        })
+        .catch((error) => {
+          reject(returnError(error))
+        })
+    })
+  },
+
+  /**
    * 获取竞赛中的所有题目
    */
-  getProblems(
-    contestId: number,
-    page: number,
-    limit: number,
-    userInfo: UserInfo
-  ): Promise<PagedData<Problem>> {
-    return new Promise<PagedData<Problem>>((resolve, reject) => {
+  getProblems(contestId: number, userInfo: UserInfo): Promise<Array<Problem>> {
+    return new Promise<Array<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problem`,
         method: "GET",
         headers: buildHeaders(userInfo),
         params: {
-          contestId,
-          page,
-          limit
+          contestId
         }
       })
         .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], count: 0 })
+          resolve(res.status === 200 ? res.data : [])
         })
         .catch((error) => {
           reject(returnError(error))

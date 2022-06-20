@@ -4,25 +4,17 @@
       <n-data-table
         :columns="columns1"
         :data="problems.data"
-        :loading="pagination1.loading" />
+        :loading="pagination.loading" />
       <n-pagination
-        v-model:page="pagination1.page"
-        :page-size="pagination1.pageSize"
+        v-model:page="pagination.page"
+        :page-size="pagination.pageSize"
         :item-count="problems.count"
         @update:page="queryProblems">
         <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
       </n-pagination>
     </n-space>
     <n-space vertical size="large">
-      <n-data-table
-        :columns="columns2"
-        :data="contestProblems.data"
-        :loading="pagination2.loading" />
-      <n-pagination
-        v-model:page="pagination2.page"
-        :page-size="pagination2.pageSize"
-        :item-count="contestProblems.count"
-        @update:page="queryContestProblems" />
+      <n-data-table :columns="columns2" :data="contestProblems" />
     </n-space>
   </div>
 </template>
@@ -54,20 +46,11 @@ const problems = ref<PagedData<Problem>>({
   count: 0
 })
 
-const contestProblems = ref<PagedData<Problem>>({
-  data: [],
-  count: 0
-})
+const contestProblems = ref<Array<Problem>>([])
 
-const pagination1 = ref({
+const pagination = ref({
   page: 1,
   pageSize: 15,
-  loading: true
-})
-
-const pagination2 = ref({
-  page: 1,
-  pageSize: 10,
   loading: true
 })
 
@@ -166,8 +149,8 @@ watch(
  * 获取可用题目
  */
 function queryProblems() {
-  pagination1.value.loading = true
-  const { page, pageSize } = pagination1.value
+  pagination.value.loading = true
+  const { page, pageSize } = pagination.value
   ContestApi.getProblemsNotInContest(
     props.contestId,
     page,
@@ -181,7 +164,7 @@ function queryProblems() {
       message.error(error.toString())
     })
     .finally(() => {
-      pagination1.value.loading = false
+      pagination.value.loading = false
     })
 }
 
@@ -189,17 +172,12 @@ function queryProblems() {
  * 获取当前竞赛的题目
  */
 function queryContestProblems() {
-  pagination2.value.loading = true
-  const { page, pageSize } = pagination2.value
-  ContestApi.getProblems(props.contestId!, page, pageSize, userInfo.value)
+  ContestApi.getProblems(props.contestId!, userInfo.value)
     .then((data) => {
       contestProblems.value = data
     })
     .catch((error: ErrorMsg) => {
       message.error(error.toString())
-    })
-    .finally(() => {
-      pagination2.value.loading = false
     })
 }
 

@@ -1,6 +1,7 @@
 package group._204.oj.core.dao;
 
 import group._204.oj.core.model.Contest;
+import group._204.oj.core.model.Problem;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface ContestDao {
 
     List<List<?>> getContests(int start, int limit, boolean onlyStarted);
 
-    List<List<?>> getProblems(String userId, int contestId, boolean onlyStarted, int start, int limit);
+    List<Problem> getProblems(String userId, int contestId, boolean onlyStarted);
 
     List<List<?>> getProblemsNotInContest(int contestId, int start, int limit);
 

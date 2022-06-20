@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
     <description>Cloud OJ Project</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
     </properties>
     <modules>
@@ -80,6 +80,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.0</version>
                 <configuration>
                     <excludes>
                         <exclude>
