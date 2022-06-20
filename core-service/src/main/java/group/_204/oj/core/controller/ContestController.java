@@ -51,9 +51,9 @@ public class ContestController implements CRUDController {
      * 从已开始的竞赛/作业中获取题目
      */
     @GetMapping(path = "problem")
-    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, String userId,
-                                                           Integer page, Integer limit) {
-        return buildGETResponse(contestService.getProblemsFromContest(userId, contestId, true, page, limit));
+    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, String userId) {
+        var results = contestService.getProblemsFromContest(userId, contestId, true);
+        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
     }
 
     /**
@@ -68,9 +68,9 @@ public class ContestController implements CRUDController {
      * 从竞赛/作业中获取题目
      */
     @GetMapping(path = "pro/problem")
-    public ResponseEntity<?> getProblemsFromContest(Integer contestId, Integer page, Integer limit) {
-        return buildGETResponse(contestService.getProblemsFromContest(null, contestId, false,
-                page, limit));
+    public ResponseEntity<?> getProblemsFromContest(Integer contestId) {
+        var results = contestService.getProblemsFromContest(null, contestId, false);
+        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
     }
 
     /**

@@ -43,7 +43,7 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - CMake 3.16
 - Linux / WSL
 - Maven
-- OpenJDK 1.8+
+- OpenJDK 11+
 - Node.js v16
 
 ## Credits

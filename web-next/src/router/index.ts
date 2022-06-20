@@ -4,6 +4,8 @@ const Auth = () => import("@/views/components/Auth/Index.vue")
 const Front = () => import("@/views/Front.vue")
 const ProblemTable = () => import("@/views/components/Problems.vue")
 const ContestTable = () => import("@/views/components/Contests.vue")
+const ContestProblemTable = () =>
+  import("@/views/components/ContestProblems.vue")
 const Leaderboard = () => import("@/views/components/Leaderboard.vue")
 const Submission = () => import("@/views/components/Submission/Index.vue")
 const Help = () => import("@/views/components/Help.vue")
@@ -46,6 +48,14 @@ const router = createRouter({
           path: "/contests",
           name: "contests",
           component: ContestTable
+        },
+        {
+          path: "/contests/:cid",
+          name: "contest_problems",
+          component: ContestProblemTable,
+          props: (route) => ({
+            cid: route.params.cid
+          })
         },
         {
           path: "/leaderboard",

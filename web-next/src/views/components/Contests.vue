@@ -65,7 +65,16 @@ const contestColumns = [
     render: (row: Contest) => (
       <NSpace align="center">
         <NTag type={contestTagType(row)}>{contestStateText(row)}</NTag>
-        <NButton text>{row.contestName}</NButton>
+        <NButton
+          text
+          onClick={() =>
+            router.push({
+              name: "contest_problems",
+              params: { cid: row.contestId }
+            })
+          }>
+          {row.contestName}
+        </NButton>
       </NSpace>
     )
   },

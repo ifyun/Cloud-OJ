@@ -184,7 +184,7 @@ select `c`.`contest_id`   AS `contest_id`,
        `p`.`category`     AS `category`,
        `p`.`create_at`    AS `create_at`
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on ((`cp`.`problem_id` = `p`.`problem_id`)))
-         join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
+    join `cloud_oj`.`contest` `c` on ((`cp`.`contest_id` = `c`.`contest_id`)));
 
 create view judge_result as
 select `s`.`solution_id`                                      AS `solution_id`,
@@ -203,8 +203,11 @@ select `s`.`solution_id`                                      AS `solution_id`,
        `r`.`time`                                             AS `time`,
        `r`.`memory`                                           AS `memory`,
        concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
-from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p` on ((`s`.`problem_id` = `p`.`problem_id`))) left join `cloud_oj`.`compile` `c` on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r` on ((`s`.`solution_id` = `r`.`solution_id`)))
-         left join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
+from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p`
+         on ((`s`.`problem_id` = `p`.`problem_id`))) left join `cloud_oj`.`compile` `c`
+        on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r`
+       on ((`s`.`solution_id` = `r`.`solution_id`)))
+    left join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
 order by `s`.`submit_time`;
 
 -- 初始化角色/权限表
@@ -219,7 +222,7 @@ VALUES (3, 'ROLE_ROOT');
 
 -- 初始 ROOT 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-VALUES ('root', '初始管理员', '$2a$10$79exZxOfiSAtHcyCXSfjMeH5GYgMwUhexc.3ZXqbuxLaHVhp05LTi', LEFT(UUID(), 8), 3);
+VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 3);
 
 create table settings
 (
