@@ -34,7 +34,11 @@
                 </n-icon>
               </template>
             </n-button>
-            <v-node-renderer :v-node="breadcrumb" />
+            <n-breadcrumb v-if="breadcrumb != null">
+              <n-breadcrumb-item v-for="item in breadcrumb" :key="item">
+                {{ item }}
+              </n-breadcrumb-item>
+            </n-breadcrumb>
           </n-space>
           <div style="margin-left: auto">
             <n-space size="large" align="center">
@@ -61,11 +65,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, VNode } from "vue"
+import { computed, nextTick } from "vue"
 import { useStore } from "vuex"
 import {
   darkTheme,
   GlobalThemeOverrides,
+  NBreadcrumb,
+  NBreadcrumbItem,
   NButton,
   NConfigProvider,
   NIcon,
@@ -80,7 +86,7 @@ import {
   RefreshRound as RefreshIcon
 } from "@vicons/material"
 import { AdminMenu, ThemeSwitch, UserMenu } from "@/views/layout"
-import { Logo, VNodeRenderer } from "@/components"
+import { Logo } from "@/components"
 import Mutations from "@/store/mutations"
 
 const store = useStore()
@@ -98,7 +104,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
   }
 })
 
-const breadcrumb = computed<VNode>(() => {
+const breadcrumb = computed<Array<string>>(() => {
   return store.state.breadcrumb
 })
 

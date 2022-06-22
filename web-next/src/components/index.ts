@@ -1,4 +1,3 @@
-export { default as VNodeRenderer } from "./VNodeRenderer.vue"
 export { default as Logo } from "./Logo.vue"
 export { default as Badge } from "./Badge.vue"
 export { default as UserAvatar } from "./UserAvatar.vue"

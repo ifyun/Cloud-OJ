@@ -74,8 +74,6 @@ import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
   FormRules,
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NCard,
   NDatePicker,
@@ -110,8 +108,7 @@ const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
 const languages = ref<Array<number>>([])
 const loading = ref<boolean>(false)
 const currentTab = ref<string>("base-info")
-
-let create = false
+const create = ref<boolean>(false)
 
 const rules: FormRules = {
   contestName: {
@@ -141,7 +138,9 @@ const rules: FormRules = {
   }
 }
 
-const title = computed<string>(() => (create ? "创建新竞赛" : "编辑竞赛"))
+const title = computed<string>(() => {
+  return create.value ? "创建新竞赛" : "编辑竞赛"
+})
 
 const subtitle = computed(() => {
   if (typeof contest.value.contestId === "undefined") {
@@ -172,11 +171,11 @@ watch(languages, (value) => {
 })
 
 onBeforeMount(() => {
-  const reg = /^[\d]+$/
+  const reg = /^\d+$/
   const id = route.params.id.toString()
 
   if (id === "new") {
-    create = true
+    create.value = true
   } else if (reg.test(id)) {
     loading.value = true
     queryContest(Number(id))
@@ -186,13 +185,8 @@ onBeforeMount(() => {
 })
 
 function setBreadcrumb() {
-  const vNode = (
-    <NBreadcrumb>
-      <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-      <NBreadcrumbItem>{title}</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
-  store.commit(Mutations.SET_BREADCRUMB, vNode)
+  const breadcrumb = ["竞赛管理", title.value]
+  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
 }
 
 function tabChange(tab: string) {
@@ -225,7 +219,7 @@ function handleSave() {
 }
 
 function save() {
-  ContestApi.save(contest.value, userInfo.value, create)
+  ContestApi.save(contest.value, userInfo.value, create.value)
     .then(() => {
       message.success(`${contest.value.contestName} 保存成功`)
     })

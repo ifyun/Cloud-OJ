@@ -44,8 +44,6 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NCard,
   NDataTable,
@@ -172,12 +170,7 @@ const searchParams = computed(() => {
 
 onBeforeMount(() => {
   setTitle("用户管理")
-  store.commit(
-    Mutations.SET_BREADCRUMB,
-    <NBreadcrumb>
-      <NBreadcrumbItem>用户管理</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
+  store.commit(Mutations.SET_BREADCRUMB, ["用户管理"])
   const query = route.query
 
   if ("page" in query) {

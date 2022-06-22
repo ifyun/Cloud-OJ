@@ -1,4 +1,3 @@
-import { VNode } from "vue"
 import { createStore } from "vuex"
 import { darkTheme } from "naive-ui"
 import { UserInfo } from "@/api/type"
@@ -39,7 +38,7 @@ const store = createStore({
     [Mutations.SET_RELOAD](state: any, value: boolean) {
       state.reload = value
     },
-    [Mutations.SET_BREADCRUMB](state: any, value: VNode) {
+    [Mutations.SET_BREADCRUMB](state: any, value: Array<string>) {
       state.breadcrumb = value
     },
     [Mutations.TOGGLE_MENU_COLLAPSED](state: any) {

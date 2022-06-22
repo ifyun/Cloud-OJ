@@ -50,7 +50,7 @@ type LanguageItem = {
 }
 
 const data = computed<Array<LanguageItem>>(() => {
-  const total = props.languages.length
+  const total = props.languages.reduce((acr, cur) => acr + cur.count, 0)
   const items: Array<LanguageItem> = []
 
   props.languages.forEach((val) => {
