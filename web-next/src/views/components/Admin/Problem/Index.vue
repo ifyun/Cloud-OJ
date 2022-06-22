@@ -77,8 +77,6 @@ import { computed, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NButtonGroup,
   NCard,
@@ -258,12 +256,7 @@ const userInfo = computed<UserInfo>(() => {
 
 onBeforeMount(() => {
   setTitle("题目管理")
-  store.commit(
-    Mutations.SET_BREADCRUMB,
-    <NBreadcrumb>
-      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
+  store.commit(Mutations.SET_BREADCRUMB, ["题目管理"])
 
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)

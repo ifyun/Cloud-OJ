@@ -132,8 +132,6 @@ import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import {
   FormRules,
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NCard,
   NDrawer,
@@ -277,13 +275,8 @@ onMounted(() => {
 })
 
 function setBreadcrumb() {
-  const vNode = (
-    <NBreadcrumb>
-      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-      <NBreadcrumbItem>{title.value}</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
-  store.commit(Mutations.SET_BREADCRUMB, vNode)
+  const breadcrumb = ["题目管理", title.value]
+  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
 }
 
 function back() {

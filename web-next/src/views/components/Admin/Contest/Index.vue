@@ -45,8 +45,6 @@ import { computed, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import {
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NCard,
   NDataTable,
@@ -179,12 +177,7 @@ const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
   setTitle("竞赛管理")
-  store.commit(
-    Mutations.SET_BREADCRUMB,
-    <NBreadcrumb>
-      <NBreadcrumbItem>竞赛管理</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
+  store.commit(Mutations.SET_BREADCRUMB, ["竞赛管理"])
   queryContests()
 })
 
