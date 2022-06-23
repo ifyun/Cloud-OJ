@@ -1,7 +1,7 @@
-import Navbar from "./Navbar.vue"
+import TopNavbar from "./TopNavbar.vue"
 import BottomInfo from "./BottomInfo.vue"
 import UserMenu from "./UserMenu.vue"
-import AdminMenu from "./AdminMenu.vue"
+import AdminNavbar from "./AdminNavbar.vue"
 import ThemeSwitch from "./ThemeSwitch.vue"
 
-export { Navbar, BottomInfo, UserMenu, AdminMenu, ThemeSwitch }
+export { TopNavbar, BottomInfo, UserMenu, AdminNavbar, ThemeSwitch }

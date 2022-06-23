@@ -2,7 +2,7 @@
   <div class="account">
     <n-card :bordered="false">
       <template #cover>
-        <profile :user-id="userId" style="padding: 12px 24px" />
+        <user-profile :user-id="userId" style="padding: 12px 24px" />
       </template>
       <n-space vertical>
         <n-tabs type="line">
@@ -22,7 +22,7 @@ import { computed, onBeforeMount } from "vue"
 import { useStore } from "vuex"
 import { useRoute } from "vue-router"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
-import Profile from "./Profile.vue"
+import UserProfile from "./UserProfile.vue"
 import Overview from "./Overview.vue"
 import { UserInfo } from "@/api/type"
 

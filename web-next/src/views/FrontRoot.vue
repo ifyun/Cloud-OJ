@@ -2,7 +2,7 @@
   <n-layout position="absolute">
     <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
       <n-layout-header class="header" position="absolute">
-        <navbar />
+        <top-navbar />
       </n-layout-header>
     </n-config-provider>
     <n-layout-content
@@ -36,7 +36,7 @@ import {
   NLayoutHeader,
   useMessage
 } from "naive-ui"
-import { BottomInfo, Navbar } from "@/views/layout"
+import { BottomInfo, TopNavbar } from "@/views/layout"
 import { AuthApi } from "@/api/request"
 import { ErrorMsg } from "@/api/type"
 
