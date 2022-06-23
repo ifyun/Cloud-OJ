@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router"
 
 const Auth = () => import("@/views/components/Auth/Index.vue")
-const Front = () => import("@/views/Front.vue")
-const ProblemTable = () => import("@/views/components/Problems.vue")
-const ContestTable = () => import("@/views/components/Contests.vue")
-const ContestProblemTable = () =>
+const Front = () => import("@/views/FrontRoot.vue")
+const ProblemList = () => import("@/views/components/ProblemList.vue")
+const ContestList = () => import("@/views/components/ContestList.vue")
+const ContestProblemList = () =>
   import("@/views/components/ContestProblems.vue")
 const Leaderboard = () => import("@/views/components/Leaderboard.vue")
 const Submission = () => import("@/views/components/Submission/Index.vue")
-const Help = () => import("@/views/components/Help.vue")
+const HelpDoc = () => import("@/views/components/HelpDoc.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
 const NotFound = () => import("@/views/components/NotFound.vue")
 
-const Admin = () => import("@/views/Admin.vue")
+const Admin = () => import("@/views/AdminRoot.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () =>
   import("@/views/components/Admin/Problem/Editor.vue")
@@ -42,17 +42,17 @@ const router = createRouter({
         {
           path: "/problems",
           name: "problems",
-          component: ProblemTable
+          component: ProblemList
         },
         {
           path: "/contests",
           name: "contests",
-          component: ContestTable
+          component: ContestList
         },
         {
           path: "/contests/:cid",
           name: "contest_problems",
-          component: ContestProblemTable,
+          component: ContestProblemList,
           props: (route) => ({
             cid: route.params.cid
           })
@@ -73,7 +73,7 @@ const router = createRouter({
         {
           path: "/help",
           name: "help",
-          component: Help
+          component: HelpDoc
         },
         {
           path: "/account",

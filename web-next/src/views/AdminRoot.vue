@@ -12,7 +12,7 @@
         :collapsed="collapsed">
         <div>
           <logo :collapsed="collapsed" style="height: 60px" />
-          <admin-menu />
+          <admin-navbar />
         </div>
       </n-layout-sider>
     </n-config-provider>
@@ -85,7 +85,7 @@ import {
   MenuOpenRound as MenuOpen,
   RefreshRound as RefreshIcon
 } from "@vicons/material"
-import { AdminMenu, ThemeSwitch, UserMenu } from "@/views/layout"
+import { AdminNavbar, ThemeSwitch, UserMenu } from "@/views/layout"
 import { Logo } from "@/components"
 import Mutations from "@/store/mutations"
 
