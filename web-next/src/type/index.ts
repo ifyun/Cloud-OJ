@@ -1,3 +1,15 @@
+import {
+  BashIcon,
+  CIcon,
+  CppIcon,
+  CSIcon,
+  GoIcon,
+  JavaIcon,
+  JSIcon,
+  KotlinIcon,
+  PyIcon
+} from "@/components/icons"
+
 export type LanguageOption = {
   value: number
   label: string
@@ -30,9 +42,25 @@ export const LanguageNames = [
   "Java",
   "Python",
   "Bash",
+  "C#",
   "JavaScript",
   "Kotlin",
   "Go"
+]
+
+/**
+ * 语言图标组件，下标就是ID
+ */
+export const LanguageIcons: Array<any> = [
+  { component: CIcon, color: "#d14748" },
+  { component: CppIcon, color: "#673ab7" },
+  { component: JavaIcon, color: "#ff9811" },
+  { component: PyIcon, color: "#3776ab" },
+  { component: BashIcon, color: "#4eaa25" },
+  { component: CSIcon, color: "#239120" },
+  { component: JSIcon, color: "#f7df1e" },
+  { component: KotlinIcon, color: "#7f52ff" },
+  { component: GoIcon, color: "#00add8" }
 ]
 
 export const ResultTypes = [
