@@ -1,5 +1,5 @@
 <template>
-  <div class="leaderboard">
+  <div class="wrap">
     <n-card :bordered="false">
       <n-space vertical>
         <n-data-table
@@ -116,11 +116,3 @@ function queryRankings() {
     })
 }
 </script>
-
-<style scoped>
-.leaderboard {
-  width: 1100px;
-  padding: var(--layout-padding) 0;
-  margin: 0 auto;
-}
-</style>

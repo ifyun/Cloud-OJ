@@ -1,6 +1,6 @@
 <!-- 竞赛题目组件 -->
 <template>
-  <div v-if="error == null" class="problem-table">
+  <div v-if="error == null" class="wrap">
     <n-card :bordered="false" :segmented="{ content: true }">
       <template #cover>
         <div v-if="contest != null" style="padding: 24px 24px 12px 24px">
@@ -45,6 +45,7 @@ const store = useStore()
 const router = useRouter()
 
 const props = defineProps<{
+  // 竞赛 ID
   cid: string
 }>()
 
@@ -127,11 +128,3 @@ function queryProblems(cid: number) {
     })
 }
 </script>
-
-<style scoped lang="scss">
-.problem-table {
-  width: 1100px;
-  padding: var(--layout-padding) 0;
-  margin: 0 auto;
-}
-</style>

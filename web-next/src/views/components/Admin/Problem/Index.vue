@@ -1,5 +1,5 @@
 <template>
-  <div class="problem-table">
+  <div class="admin-wrap">
     <n-card :bordered="false">
       <n-space vertical size="large">
         <n-space align="center" justify="space-between">
@@ -387,10 +387,3 @@ function toggleIsEnable(p: Problem, value: boolean) {
     })
 }
 </script>
-
-<style scoped>
-.problem-table {
-  width: calc(100% - var(--layout-padding) * 2);
-  padding: var(--layout-padding);
-}
-</style>

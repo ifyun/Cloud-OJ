@@ -83,7 +83,7 @@ const chartTheme = computed(() => {
 
 const option: ECOption = {
   title: {
-    text: "通过率统计",
+    text: "通过率",
     textStyle: {
       fontSize: 18
     }
