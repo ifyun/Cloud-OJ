@@ -1,5 +1,5 @@
 <template>
-  <div class="contest-table">
+  <div class="wrap">
     <n-card :bordered="false">
       <n-space vertical size="large">
         <n-data-table
@@ -147,11 +147,3 @@ function queryContests() {
     })
 }
 </script>
-
-<style scoped>
-.contest-table {
-  width: 1100px;
-  padding: var(--layout-padding) 0;
-  margin: 0 auto;
-}
-</style>

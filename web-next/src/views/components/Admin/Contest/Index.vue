@@ -1,5 +1,5 @@
 <template>
-  <div class="contest-table">
+  <div class="admin-wrap">
     <n-card :bordered="false">
       <n-space vertical size="large">
         <n-space>
@@ -238,10 +238,3 @@ function queryContests() {
     })
 }
 </script>
-
-<style scoped>
-.contest-table {
-  width: calc(100% - var(--layout-padding) * 2);
-  padding: var(--layout-padding);
-}
-</style>

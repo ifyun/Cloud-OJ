@@ -68,6 +68,17 @@ const reload = computed(() => {
   .main {
     top: var(--header-height);
 
+    .wrap {
+      width: 1100px;
+      padding: var(--layout-padding) 0;
+      margin: 0 auto;
+    }
+
+    .admin-wrap {
+      width: calc(100% - var(--layout-padding) * 2);
+      padding: var(--layout-padding);
+    }
+
     .n-scrollbar > .n-scrollbar-container {
       display: flex;
     }

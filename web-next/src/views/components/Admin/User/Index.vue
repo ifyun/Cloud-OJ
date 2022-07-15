@@ -1,5 +1,5 @@
 <template>
-  <div class="user-admin">
+  <div class="admin-wrap">
     <n-card :bordered="false">
       <n-space vertical size="large">
         <n-space>
@@ -226,10 +226,3 @@ function queryUsers() {
     })
 }
 </script>
-
-<style scoped>
-.user-admin {
-  width: calc(100% - var(--layout-padding) * 2);
-  padding: var(--layout-padding);
-}
-</style>
