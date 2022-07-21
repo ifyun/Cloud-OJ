@@ -25,7 +25,7 @@ public class UserController implements CRUDController {
     /**
      * 获取所有用户
      */
-    @GetMapping(path = "pro")
+    @GetMapping(path = "admin")
     public ResponseEntity<?> getUsers(Integer page, Integer limit, String userId, String name) {
         return buildGETResponse(userService.getUsers(page, limit, userId, name));
     }
@@ -49,7 +49,7 @@ public class UserController implements CRUDController {
     /**
      * 更新用户(管理员)
      */
-    @PutMapping(path = "pro")
+    @PutMapping(path = "admin")
     public ResponseEntity<?> updateUser(@RequestBody User user) {
         return buildPUTResponse(userService.updateUser(user));
     }
@@ -66,7 +66,7 @@ public class UserController implements CRUDController {
     /**
      * 删除用户
      */
-    @DeleteMapping(path = "pro/{userId}")
+    @DeleteMapping(path = "admin/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         return buildDELETEResponse(userService.deleteUser(userId));
     }

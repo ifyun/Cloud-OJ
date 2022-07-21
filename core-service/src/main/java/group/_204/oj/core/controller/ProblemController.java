@@ -33,7 +33,7 @@ public class ProblemController implements CRUDController {
     /**
      * 获取所有题目
      */
-    @GetMapping(path = "pro")
+    @GetMapping(path = "admin")
     public ResponseEntity<?> getAll(String keyword, Integer page, Integer limit) {
         return buildGETResponse(problemService.getAll(keyword, page, limit));
     }
@@ -49,7 +49,7 @@ public class ProblemController implements CRUDController {
     /**
      * 获取单个题目，无论是否开放
      */
-    @GetMapping(path = "pro/{problemId}")
+    @GetMapping(path = "admin/{problemId}")
     public ResponseEntity<?> getSingle(@PathVariable Integer problemId) {
         return buildGETResponse(problemService.getSingle(problemId));
     }
@@ -57,7 +57,7 @@ public class ProblemController implements CRUDController {
     /**
      * 更新题目
      */
-    @PutMapping(path = "pro")
+    @PutMapping(path = "admin")
     public ResponseEntity<?> update(@RequestBody Problem problem) {
         return buildPUTResponse(problemService.update(problem));
     }
@@ -65,7 +65,7 @@ public class ProblemController implements CRUDController {
     /**
      * 切换题目的开放/关闭状态
      */
-    @PutMapping(path = "pro/{problemId}")
+    @PutMapping(path = "admin/{problemId}")
     public ResponseEntity<?> toggleEnable(@PathVariable Integer problemId, Boolean enable) {
         return buildPUTResponse(problemService.toggleEnable(problemId, enable));
     }
@@ -73,7 +73,7 @@ public class ProblemController implements CRUDController {
     /**
      * 添加题目
      */
-    @PostMapping(path = "pro", consumes = "application/json")
+    @PostMapping(path = "admin", consumes = "application/json")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
         return buildPOSTResponse(problemService.add(problem));
     }
@@ -81,7 +81,7 @@ public class ProblemController implements CRUDController {
     /**
      * 删除题目
      */
-    @DeleteMapping(path = "pro/{problemId}")
+    @DeleteMapping(path = "admin/{problemId}")
     public ResponseEntity<?> delete(@PathVariable Integer problemId) {
         return buildDELETEResponse(problemService.delete(problemId));
     }
