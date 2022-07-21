@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue"
+import { computed } from "vue"
 import { useStore } from "vuex"
 import {
   darkTheme,
@@ -33,15 +33,11 @@ import {
   NLayout,
   NLayoutContent,
   NLayoutFooter,
-  NLayoutHeader,
-  useMessage
+  NLayoutHeader
 } from "naive-ui"
 import { BottomInfo, TopNavbar } from "@/views/layout"
-import { AuthApi } from "@/api/request"
-import { ErrorMsg } from "@/api/type"
 
 const store = useStore()
-const message = useMessage()
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
   if (store.state.theme != null) {
@@ -53,20 +49,6 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
       headerColor: "#161B22FF",
       headerColorInverted: "#161B22FF"
     }
-  }
-})
-
-const isLoggedIn = computed(() => {
-  return store.getters.isLoggedIn
-})
-
-onMounted(() => {
-  if (isLoggedIn.value) {
-    AuthApi.verify(store.state.userInfo).catch((error: ErrorMsg) => {
-      if (error.code === 401) {
-        message.warning("登录已失效，请重新登录！")
-      }
-    })
   }
 })
 </script>

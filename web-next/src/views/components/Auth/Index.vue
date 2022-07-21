@@ -46,9 +46,9 @@ import {
 } from "naive-ui"
 import Login from "./Login.vue"
 import Signup from "./Signup.vue"
-import { AuthApi } from "@/api/request"
 import AppLogo from "@/components/Logo.vue"
 import BottomInfo from "@/views/layout/BottomInfo.vue"
+import { AuthApi } from "@/api/request"
 
 const store = useStore()
 const router = useRouter()

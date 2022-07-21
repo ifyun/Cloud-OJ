@@ -20,8 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, onMounted } from "vue"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 import {
   dateZhCN,
   NConfigProvider,
@@ -31,8 +32,12 @@ import {
   zhCN
 } from "naive-ui"
 import themeOverrides from "@/theme"
+import { AuthApi } from "@/api/request"
+import { ErrorMsg } from "@/api/type"
+import { Mutations } from "@/store"
 
 const store = useStore()
+const router = useRouter()
 
 const theme = computed(() => {
   return store.state.theme
@@ -40,6 +45,22 @@ const theme = computed(() => {
 
 const reload = computed(() => {
   return store.state.reload
+})
+
+const isLoggedIn = computed(() => {
+  return store.getters.isLoggedIn
+})
+
+onMounted(() => {
+  if (isLoggedIn.value) {
+    // 已登录，检查是否有效
+    AuthApi.verify(store.state.userInfo).catch((error: ErrorMsg) => {
+      if (error.code === 401) {
+        store.commit(Mutations.CLEAR_TOKEN)
+        router.push({ name: "auth" })
+      }
+    })
+  }
 })
 </script>
 
