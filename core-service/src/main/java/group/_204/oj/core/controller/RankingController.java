@@ -47,7 +47,7 @@ public class RankingController implements CRUDController {
     /**
      * 获取竞赛排行榜(管理员用)
      */
-    @GetMapping(path = "pro/contest/{contestId}")
+    @GetMapping(path = "admin/contest/{contestId}")
     public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId, Integer page, Integer limit) {
         return buildGETResponse(rankingService.getContestRanking(contestId, page, limit));
     }
@@ -55,7 +55,7 @@ public class RankingController implements CRUDController {
     /**
      * 获取用户的详细得分情况
      */
-    @GetMapping(path = "pro/contest/detail")
+    @GetMapping(path = "admin/contest/detail")
     public ResponseEntity<?> getDetail(Integer contestId, String userId) {
         return buildGETResponse(rankingService.getDetail(contestId, userId));
     }

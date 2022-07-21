@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @RestController
-@RequestMapping("pro/queue_info")
+@RequestMapping("admin/queue_info")
 public class QueueInfoController {
 
     @Resource
