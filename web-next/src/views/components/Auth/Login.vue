@@ -7,7 +7,7 @@
     :rules="loginRules">
     <input type="password" hidden autocomplete="new-password" />
     <n-form-item path="username">
-      <n-input placeholder="输入你的ID" v-model:value="user.username">
+      <n-input placeholder="ID" v-model:value="user.username">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <orcid />
