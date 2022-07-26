@@ -6,7 +6,7 @@
         <div v-if="contest != null" style="padding: 24px 24px 12px 24px">
           <n-space vertical size="large">
             <n-h2 style="margin: 0">
-              <n-text type="primary">{{ contest.contestName }}</n-text>
+              <n-text>{{ contest.contestName }}</n-text>
             </n-h2>
             <n-space size="small" align="center">
               <n-icon
@@ -20,9 +20,7 @@
           </n-space>
         </div>
       </template>
-      <n-space vertical size="large">
-        <n-data-table :columns="columns" :data="problems" :loading="loading" />
-      </n-space>
+      <n-data-table :columns="columns" :data="problems" :loading="loading" />
     </n-card>
   </div>
   <div v-else>
@@ -78,7 +76,8 @@ const columns = [
         onClick={() =>
           router.push({
             name: "submission",
-            params: { pid: row.problemId }
+            params: { pid: row.problemId },
+            query: { cid: contest.value!.contestId }
           })
         }>
         {row.title}

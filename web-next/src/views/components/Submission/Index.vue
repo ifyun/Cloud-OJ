@@ -86,14 +86,16 @@ import { MemoryRound, TimerOutlined } from "@vicons/material"
 import { Badge, CodeEditor, ErrorResult, MarkdownView } from "@/components"
 import Skeleton from "./Skeleton.vue"
 import ResultDialog from "./ResultDialog.vue"
-import { JudgeApi, ProblemApi } from "@/api/request"
+import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
 import { SourceCode } from "@/type"
 
 const store = useStore()
 const message = useMessage()
 
-const props = defineProps<{ pid: string }>()
+const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
+  cid: null
+})
 
 const loading = ref<boolean>(true)
 const showResult = ref<boolean>(false)
@@ -106,18 +108,24 @@ const solutionId = ref<string>("")
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 let problemId: number | null = null
+let contestId: number | null = null
 
 onBeforeMount(() => {
   const reg = /^\d+$/
+
+  if (props.cid != null && reg.test(props.cid)) {
+    contestId = Number(props.cid)
+  }
 
   if (reg.test(props.pid)) {
     problemId = Number(props.pid)
     queryProblem()
   } else {
     errorMsg.value = {
-      code: 400,
-      msg: "无效的ID"
+      code: 404,
+      msg: "无效的题目ID"
     }
+
     loading.value = false
   }
 })
@@ -126,17 +134,18 @@ onBeforeMount(() => {
  * 获取题目数据
  */
 function queryProblem() {
-  if (problemId != null) {
-    ProblemApi.getSingle(problemId)
-      .then((data) => {
-        problem.value = data
-      })
-      .catch((error: ErrorMsg) => {
-        errorMsg.value = error
-      })
-      .finally(() => {
-        loading.value = false
-      })
+  if (contestId == null) {
+    // 非竞赛题目
+    ProblemApi.getSingle(problemId!, userInfo.value)
+      .then((data) => (problem.value = data))
+      .catch((err: ErrorMsg) => (errorMsg.value = err))
+      .finally(() => (loading.value = false))
+  } else {
+    // 竞赛题目
+    ContestApi.getProblem(contestId, problemId!, userInfo.value)
+      .then((data) => (problem.value = data))
+      .catch((err: ErrorMsg) => (errorMsg.value = err))
+      .finally(() => (loading.value = false))
   }
 }
 
@@ -153,6 +162,7 @@ function submit(data: SourceCode) {
   const submitData: SubmitData = {
     language: data.language,
     problemId: problemId!,
+    contestId,
     sourceCode: data.code.trim(),
     type: 0,
     userId: userInfo.value.userId!
@@ -163,8 +173,8 @@ function submit(data: SourceCode) {
       solutionId.value = id
       showResult.value = true
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMsg) => {
+      message.error(err.toString())
     })
     .finally(() => {
       disableSubmit.value = false

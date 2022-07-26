@@ -67,7 +67,8 @@ const router = createRouter({
           name: "submission",
           component: Submission,
           props: (route) => ({
-            pid: route.params.pid
+            pid: route.params.pid,
+            cid: route.query.cid
           })
         },
         {

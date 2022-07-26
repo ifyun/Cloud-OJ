@@ -15,7 +15,7 @@ const JudgeApi = {
         url: ApiPath.COMMIT,
         method: "POST",
         headers: buildHeaders(userInfo),
-        data: JSON.stringify(data)
+        data: JSON.stringify(data, (k, v) => v ?? undefined)
       })
         .then((res) => {
           resolve(res.data as string)

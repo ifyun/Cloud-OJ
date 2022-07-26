@@ -105,6 +105,7 @@ export type PagedData<T> = {
 export type SubmitData = {
   userId: string
   problemId: number
+  contestId: number | null
   language: number
   sourceCode: string
   type: number
