@@ -53,6 +53,7 @@
         <div class="editor">
           <code-editor
             :value="code"
+            :available-languages="problem.languages"
             :loading="disableSubmit"
             @submit="submit" />
         </div>

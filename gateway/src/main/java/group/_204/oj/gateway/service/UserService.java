@@ -21,7 +21,7 @@ public class UserService implements ReactiveUserDetailsService {
     @Resource
     private UserDao userDao;
 
-    private static final List<Role> ROLE_LIST = new ArrayList<Role>() {
+    private static final List<Role> ROLE_LIST = new ArrayList<>() {
         {
             add(new Role(0, "ROLE_USER"));
             add(new Role(1, "ROLE_USER_ADMIN"));

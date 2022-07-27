@@ -85,11 +85,12 @@ const props = withDefaults(
   defineProps<{
     loading: boolean
     value: string
-    availableLanguages?: number // 可用语言，未指定时使用所有语言
+    availableLanguages: number | null // 可用语言，未指定时使用所有语言
   }>(),
   {
     loading: false,
-    value: ""
+    value: "",
+    availableLanguages: null
   }
 )
 
@@ -103,7 +104,7 @@ const emit = defineEmits<{
 watch(
   () => props.availableLanguages,
   (val) => {
-    if (typeof val === "undefined") {
+    if (val == null) {
       return
     }
 
@@ -112,7 +113,8 @@ watch(
     languageArray.forEach((v) => {
       languageOptions.value.push(LanguageOptions[v])
     })
-  }
+  },
+  { immediate: true }
 )
 
 watch(language, (val) => {

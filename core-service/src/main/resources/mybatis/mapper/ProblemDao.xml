@@ -116,6 +116,7 @@
                description,
                timeout,
                memory_limit,
+               output_limit,
                score,
                category,
                languages
