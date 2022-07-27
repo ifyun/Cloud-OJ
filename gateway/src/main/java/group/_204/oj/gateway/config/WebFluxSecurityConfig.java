@@ -15,6 +15,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
 import javax.annotation.Resource;
 
@@ -50,6 +51,9 @@ public class WebFluxSecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
                                                          ServerCodecConfigurer serverCodecConfigurer) {
         return http.headers().frameOptions().disable()
+                .and()
+                .requestCache()
+                .requestCache(NoOpServerRequestCache.getInstance())
                 .and()
                 .csrf().disable()
                 .formLogin().disable()

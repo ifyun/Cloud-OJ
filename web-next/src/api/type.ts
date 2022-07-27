@@ -59,18 +59,19 @@ export class TestData {
  * 题目
  */
 export class Problem {
-  problemId: number | undefined
+  problemId?: number
   title = ""
   description = ""
   type = 0
+  languages: number | null = null
   category = ""
   tags: Array<string> = []
   enable = false
   createAt = ""
-  score: number | undefined
-  timeout: number | undefined
-  memoryLimit: number | undefined
-  outputLimit: number | undefined
+  score?: number
+  timeout?: number
+  memoryLimit?: number
+  outputLimit?: number
 }
 
 export class Contest {

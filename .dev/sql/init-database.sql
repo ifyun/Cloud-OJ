@@ -180,6 +180,7 @@ select `c`.`contest_id`   AS `contest_id`,
        `p`.`description`  AS `description`,
        `p`.`timeout`      AS `timeout`,
        `p`.`memory_limit` AS `memory_limit`,
+       `p`.`output_limit` AS `output_limit`,
        `p`.`score`        AS `score`,
        `p`.`category`     AS `category`,
        `p`.`create_at`    AS `create_at`
