@@ -191,7 +191,7 @@ create view judge_result as
 select `s`.`solution_id`                                      AS `solution_id`,
        `s`.`problem_id`                                       AS `problem_id`,
        `s`.`contest_id`                                       AS `contest_id`,
-       `p`.`title`                                            AS `title`,
+       `s`.`title`                                            AS `title`,
        `s`.`type`                                             AS `type`,
        `s`.`language`                                         AS `language`,
        `s`.`state`                                            AS `state`,
@@ -204,26 +204,11 @@ select `s`.`solution_id`                                      AS `solution_id`,
        `r`.`time`                                             AS `time`,
        `r`.`memory`                                           AS `memory`,
        concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
-from ((((`cloud_oj`.`solution` `s` join `cloud_oj`.`problem` `p`
-         on ((`s`.`problem_id` = `p`.`problem_id`))) left join `cloud_oj`.`compile` `c`
-        on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r`
-       on ((`s`.`solution_id` = `r`.`solution_id`)))
-    left join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`)))
+from ((((`cloud_oj`.`solution` `s` left join `cloud_oj`.`compile` `c`
+         on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r`
+        on ((`s`.`solution_id` = `r`.`solution_id`)))
+    left join `cloud_oj`.`source_code` `sc` on ((`s`.`solution_id` = `sc`.`solution_id`))))
 order by `s`.`submit_time`;
-
--- 初始化角色/权限表
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (0, 'ROLE_USER');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (1, 'ROLE_USER_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (2, 'ROLE_PROBLEM_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (3, 'ROLE_ROOT');
-
--- 初始 ROOT 用户
-INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 3);
 
 create table settings
 (
@@ -239,3 +224,17 @@ create table settings
 
 ALTER TABLE problem
     AUTO_INCREMENT = 1000;
+
+-- 初始化角色/权限表
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (0, 'ROLE_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (1, 'ROLE_USER');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (2, 'ROLE_USER_ADMIN');
+INSERT INTO cloud_oj.role (role_id, role_name)
+VALUES (3, 'ROLE_PROBLEM_ADMIN');
+
+-- 初始 ADMIN 用户
+INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
+VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 3);

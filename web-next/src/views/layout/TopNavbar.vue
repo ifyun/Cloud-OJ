@@ -3,7 +3,7 @@
     <div class="app-name">
       <logo :size="40" />
     </div>
-    <div style="margin-left: 50px; font-weight: bold">
+    <div style="margin-left: 50px">
       <n-menu
         mode="horizontal"
         v-model:value="$route.name"

@@ -70,10 +70,10 @@ import moment from "moment"
 import { Mutations } from "@/store"
 
 const roles = [
+  { text: "ADMIN", type: "primary" },
   { text: "用户", type: "info" },
   { text: "题目管理员", type: "warning" },
-  { text: "用户管理员", type: "warning" },
-  { text: "ROOT", type: "error" }
+  { text: "用户管理员", type: "warning" }
 ]
 
 const route = useRoute()

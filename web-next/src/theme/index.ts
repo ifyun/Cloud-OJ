@@ -2,7 +2,6 @@ import { GlobalThemeOverrides } from "naive-ui"
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {
-    fontWeightStrong: "600",
     primaryColor: "#18A058FF",
     primaryColorHover: "#36AD6AFF",
     primaryColorPressed: "#0C7A43FF",

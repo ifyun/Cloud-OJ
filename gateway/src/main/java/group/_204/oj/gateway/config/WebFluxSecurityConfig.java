@@ -6,6 +6,7 @@ import group._204.oj.gateway.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
 import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
 import javax.annotation.Resource;
@@ -34,7 +36,7 @@ public class WebFluxSecurityConfig {
         private static final String USER = "USER";
         private static final String UA = "USER_ADMIN";
         private static final String PA = "PROBLEM_ADMIN";
-        private static final String SU = "ROOT";
+        private static final String SU = "ADMIN";
     }
 
     @Bean
@@ -57,8 +59,9 @@ public class WebFluxSecurityConfig {
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
-                .httpBasic().disable()
                 .logout().disable()
+                .httpBasic().authenticationEntryPoint(new HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED))
+                .and()
                 .authorizeExchange()
                 .pathMatchers("/core-service/**").denyAll()
                 .pathMatchers("/judge-service/**").denyAll()

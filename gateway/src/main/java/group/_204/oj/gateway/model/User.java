@@ -2,36 +2,38 @@ package group._204.oj.gateway.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class User implements UserDetails {
-
     private String userId;
+
     private String name;
-
-    @JsonIgnore
     private String password;
-
     @JsonIgnore
     private String secret;
 
     private String section;
+
     private String email;
 
+    private String token;
+
     private int roleId;
-    private String roleName;
 
     @JsonIgnore
     private List<Role> roles;
-
-    private String token;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expire;
@@ -43,6 +45,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
