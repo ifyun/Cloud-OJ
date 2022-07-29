@@ -47,10 +47,8 @@ public class AppConfig {
 
     private void createDir(String path) {
         File dir = new File(path);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                log.error("Create {} failed.", path);
-            }
+        if (!dir.exists() && !dir.mkdirs()) {
+            log.error("Create {} failed.", path);
         }
     }
 }

@@ -22,22 +22,25 @@ public class ProblemService {
 
     public List<List<?>> getAllEnabled(String keyword, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {
-            keyword = null;
+            return problemDao.getAllEnabled((page - 1) * limit, limit, null);
         }
+
         return problemDao.getAllEnabled((page - 1) * limit, limit, keyword);
     }
 
     public List<List<?>> getAll(String keyword, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {
-            keyword = null;
+            problemDao.getAll((page - 1) * limit, limit, null);
         }
+
         return problemDao.getAll((page - 1) * limit, limit, keyword);
     }
 
     public List<List<?>> getAllWithState(String keyword, String userId, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {
-            keyword = null;
+            problemDao.getWithState((page - 1) * limit, limit, userId, null);
         }
+
         return problemDao.getWithState((page - 1) * limit, limit, userId, keyword);
     }
 

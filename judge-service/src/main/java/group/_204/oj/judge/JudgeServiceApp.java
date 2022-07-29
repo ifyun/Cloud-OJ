@@ -30,11 +30,9 @@ public class JudgeServiceApp {
             InputStream inputStream = new ClassPathResource("bin/judge-runner").getInputStream();
             File dir = new File("/opt/bin");
 
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    log.error("Failed to mkdir: {}", dir.getAbsolutePath());
-                    System.exit(1);
-                }
+            if (!dir.exists() && !dir.mkdirs()) {
+                log.error("Failed to mkdir: {}", dir.getAbsolutePath());
+                System.exit(1);
             }
 
             File file = new File("/opt/bin/judge-runner");
