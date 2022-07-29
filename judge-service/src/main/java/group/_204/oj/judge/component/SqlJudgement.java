@@ -26,13 +26,6 @@ import java.io.*;
 @Component
 public class SqlJudgement {
 
-    @Data
-    @AllArgsConstructor
-    static class Result {
-        boolean correct;
-        long time;
-    }
-
     @Resource
     private AppConfig appConfig;
 
@@ -47,6 +40,13 @@ public class SqlJudgement {
 
     @Resource
     private DatabaseConfig dbConfig;
+
+    @Data
+    @AllArgsConstructor
+    static class Result {
+        boolean correct;
+        long time;
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public void judge(Solution solution) {
@@ -107,12 +107,7 @@ public class SqlJudgement {
         Process process = builder.start();
         OutputStream stdin = process.getOutputStream();
         stdin.write(CONFIG.getBytes());
-
-        if (!sql.endsWith(";")) {
-            sql += ";";
-        }
-
-        stdin.write((sql + "\r\n.quit\r\n").getBytes());
+        stdin.write((sql + ";\r\n.quit\r\n").getBytes());
         stdin.flush();
 
         return process.getInputStream();

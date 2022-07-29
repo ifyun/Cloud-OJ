@@ -74,7 +74,6 @@ onBeforeMount(async () => {
       await AuthApi.verify(store.state.userInfo)
       await router.push({ path: "/" })
     } catch (error) {
-      console.log(error)
       checked.value = true
     }
   } else {

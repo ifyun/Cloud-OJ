@@ -9,18 +9,27 @@
     margin-top: 0;
   }
 
-  h1, h2, h3 {
-    border-bottom: 1px solid #EFEFF5;
+  h1,
+  h2,
+  h3 {
+    border-bottom: 1px solid #efeff5;
     margin-top: 28px;
     margin-bottom: 18px;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 500;
     padding-bottom: 5px;
   }
 
-  h4, h5, h6 {
+  h4,
+  h5,
+  h6 {
     margin-top: 20px;
     margin-bottom: 10px;
   }
@@ -41,26 +50,28 @@
     font-size: 16px;
   }
 
-  ul, ol {
+  ul,
+  ol {
     padding-left: 25px;
   }
 
   table {
-    border: 1px solid #EFEFEF;
+    border: 1px solid #efefef;
     border-radius: 4px;
     border-spacing: 0;
     width: 100%;
 
     thead {
-      background-color: #F8F8F8;
+      background-color: #f8f8f8;
     }
 
-    th, td {
+    th,
+    td {
       padding: 10px 15px;
     }
 
     td {
-      border-top: 1px solid #EFEFEF;
+      border-top: 1px solid #efefef;
     }
   }
 
@@ -69,8 +80,8 @@
     padding: 6px 15px;
     border-left-width: 5px;
     border-left-style: solid;
-    border-left-color: #EFEFEF;
-    color: #A5A5A5;
+    border-left-color: #efefef;
+    color: #a5a5a5;
 
     p {
       margin: 0;
@@ -79,13 +90,13 @@
 
   p code {
     font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-    background-color: #F8F8F8;
+    background-color: #f8f8f8;
     padding: 1px 4px;
   }
 
   pre {
     font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-    background-color: #F8F8F8;
+    background-color: #f8f8f8;
     padding: 15px;
     border-radius: 3px;
     overflow: auto;
@@ -112,24 +123,24 @@
 
     &::-webkit-scrollbar-thumb {
       border-radius: 4px;
-      background-color: #E8E8E8;
+      background-color: #e8e8e8;
     }
   }
 
   .markdown-alert {
     padding: 2px 15px;
     margin-top: 10px;
-    background-color: #F8F8F8;
+    background-color: #f8f8f8;
     border-left-width: 5px;
     border-left-style: solid;
     border-radius: 2px;
 
     &.info {
-      border-left-color: #1890FF;
+      border-left-color: #1890ff;
     }
 
     &.warning {
-      border-left-color: #F5B047;
+      border-left-color: #f5b047;
     }
   }
 
@@ -141,46 +152,48 @@
   &.dark {
     @import "~highlight.js/scss/github-dark";
 
-    background-color: #18181C;
+    background-color: #18181c;
 
-    h1, h2, h3 {
-      border-bottom: 1px solid #26262A;
+    h1,
+    h2,
+    h3 {
+      border-bottom: 1px solid #26262a;
     }
 
     blockquote {
-      border-left-color: #31313C;
+      border-left-color: #31313c;
     }
 
     table {
-      border: 1px solid #26262A;
+      border: 1px solid #26262a;
 
       thead {
-        background-color: #26262A;
+        background-color: #26262a;
       }
 
       td {
-        border-top: 1px solid #26262A;
+        border-top: 1px solid #26262a;
       }
     }
 
     p code {
-      background-color: #26262A;
+      background-color: #26262a;
     }
 
     pre {
-      background-color: #26262A;
+      background-color: #26262a;
 
       &.math-block {
         background-color: transparent;
       }
 
       &::-webkit-scrollbar-thumb {
-        background-color: #28282C;
+        background-color: #28282c;
       }
     }
 
     .markdown-alert {
-      background-color: #26262A;
+      background-color: #26262a;
     }
   }
 }
