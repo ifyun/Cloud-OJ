@@ -84,6 +84,10 @@ onMounted(() => {
 
 function retry() {
   fetchResult(0)
+  result.value = {
+    status: "418",
+    title: "重新获取中"
+  }
 }
 
 /**

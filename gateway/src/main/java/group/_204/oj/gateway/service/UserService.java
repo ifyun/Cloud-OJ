@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -23,10 +24,10 @@ public class UserService implements ReactiveUserDetailsService {
 
     private static final List<Role> ROLE_LIST = new ArrayList<>() {
         {
-            add(new Role(0, "ROLE_USER"));
-            add(new Role(1, "ROLE_USER_ADMIN"));
-            add(new Role(2, "ROLE_PROBLEM_ADMIN"));
-            add(new Role(3, "ROLE_ROOT"));
+            add(new Role(0, "ROLE_ADMIN"));
+            add(new Role(1, "ROLE_USER"));
+            add(new Role(2, "ROLE_USER_ADMIN"));
+            add(new Role(3, "ROLE_PROBLEM_ADMIN"));
         }
     };
 
@@ -38,13 +39,11 @@ public class UserService implements ReactiveUserDetailsService {
             int roleId = user.getRoleId();
             List<Role> roles;
 
-            if (roleId == 3) {
-                // root has all roles
-                roles = new ArrayList<>(ROLE_LIST);
+            if (roleId == 0) {
+                // Admin 拥有所有角色
+                roles = ROLE_LIST;
             } else {
-                roles = new ArrayList<>();
-                roles.add(ROLE_LIST.get(0));
-                roles.add(ROLE_LIST.get(roleId));
+                roles = Arrays.asList(ROLE_LIST.get(1), ROLE_LIST.get(roleId));
             }
 
             user.setRoles(roles);
@@ -52,7 +51,7 @@ public class UserService implements ReactiveUserDetailsService {
         } else {
             String error = String.format("User(%s) not found.", username);
             log.error(error);
-            throw new UsernameNotFoundException(error);
+            return Mono.error(new UsernameNotFoundException(error));
         }
     }
 }

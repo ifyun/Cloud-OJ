@@ -6,7 +6,7 @@
       :show-arrow="true"
       placement="bottom-end"
       @select="userMenuSelect"
-      :options="userInfo.roleId > 0 ? adminMenuOptions : userMenuOptions">
+      :options="userInfo.roleId === 1 ? userMenuOptions : adminMenuOptions">
       <n-button text icon-placement="right" style="padding: 6px 0">
         {{ userInfo.name }}
         <template #icon>
