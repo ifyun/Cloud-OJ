@@ -15,7 +15,7 @@
             <circle-round />
           </n-icon>
           <n-text depth="1" strong>{{ item.name }}</n-text>
-          <n-text depth="3">{{ item.percent.toFixed(2) * 100 }}%</n-text>
+          <n-text depth="3">{{ item.percent }}%</n-text>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@ const props = defineProps<{ languages: Array<Language> }>()
 type LanguageItem = {
   name: string
   count: number
-  percent: number
+  percent: string
   color: string
 }
 
@@ -57,7 +57,7 @@ const data = computed<Array<LanguageItem>>(() => {
     items.push({
       name: LanguageNames[val.language],
       count: val.count,
-      percent: val.count / total,
+      percent: ((val.count / total) * 100).toFixed(1),
       color: colors[val.language]
     })
   })

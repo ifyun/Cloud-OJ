@@ -219,7 +219,10 @@ const problemColumns = [
       }
       const tags = row.category.split(",")
       return tags.map((tag) => (
-        <NTag class="tag" size="small" color={TagUtil.getColor(tag, theme)}>
+        <NTag
+          class="tag"
+          size="small"
+          color={TagUtil.getColor(tag, theme.value)}>
           {tag}
         </NTag>
       ))

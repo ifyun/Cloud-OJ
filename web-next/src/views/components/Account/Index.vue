@@ -9,7 +9,9 @@
           <n-tab-pane name="profile" tab="概览">
             <overview :user-id="userId" />
           </n-tab-pane>
-          <n-tab-pane name="solutions" tab="提交记录"></n-tab-pane>
+          <n-tab-pane name="solutions" tab="提交记录">
+            <solution-list :problem-id="null" />
+          </n-tab-pane>
         </n-tabs>
       </n-space>
     </n-card>
@@ -24,6 +26,7 @@ import { useRoute } from "vue-router"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
 import UserProfile from "./UserProfile.vue"
 import Overview from "./Overview.vue"
+import SolutionList from "@/views/components/Solutions.vue"
 import { UserInfo } from "@/api/type"
 
 const route = useRoute()

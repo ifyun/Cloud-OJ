@@ -83,9 +83,10 @@ const chartTheme = computed(() => {
 
 const option: ECOption = {
   title: {
-    text: "通过率",
+    text: "结果统计",
     textStyle: {
-      fontSize: 18
+      fontSize: 18,
+      fontWeight: 500
     }
   },
   legend: {
@@ -127,6 +128,11 @@ watch(
         })
       })
       pieChart?.setOption(option)
+      pieChart?.dispatchAction({
+        type: "highlight",
+        seriesIndex: 0,
+        dataIndex: 0
+      })
     })
   }
 )
