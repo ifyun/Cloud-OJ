@@ -119,7 +119,7 @@ const columns = [
       <NSpace align="center">
         <UserAvatar size="small" userId={row.userId} />
         <NButton text={true}>
-          <b>{row.name}</b>
+          <span style="font-weight: 500">{row.name}</span>
         </NButton>
       </NSpace>
     )

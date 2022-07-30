@@ -29,7 +29,7 @@ export default {
 
 <style scoped lang="scss">
 .text-logo {
-  font-weight: bold;
+  font-weight: 500;
   font-size: 26px;
   display: flex;
   flex-direction: row;

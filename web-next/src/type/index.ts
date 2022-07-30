@@ -48,6 +48,17 @@ export const LanguageNames = [
   "Go"
 ]
 
+export const LanguageColors = [
+  "#555555",
+  "#F34B7D",
+  "#B07219",
+  "#3572A5",
+  "#89E051",
+  "#F1E05A",
+  "#A97BFF",
+  "#00ADD8"
+]
+
 /**
  * 语言图标组件，下标就是ID
  */
@@ -72,5 +83,5 @@ export const ResultTypes = [
   { type: "error", text: "编译错误" },
   { type: "error", text: "运行错误" },
   { type: "error", text: "内部错误" },
-  { type: "warning", text: "输出超限" }
+  { type: "error", text: "输出超限" }
 ]
