@@ -4,7 +4,7 @@
       :bordered="false"
       style="height: 100%"
       content-style="height: 100%; display: flex; flex-direction: column">
-      <n-page-header class="page-header" :subtitle="subtitle" @back="back">
+      <n-page-header class="page-header" @back="back">
         <template #title>{{ title }}</template>
         <template #extra>
           <n-space size="small">
@@ -233,16 +233,16 @@ const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo
 })
 
-const subtitle = computed<string>(() => {
+const title = computed<string>(() => {
+  if (create.value) {
+    return "创建题目"
+  }
+
   if (typeof problem.value.problemId === "undefined") {
     return ""
   } else {
-    return `${problem.value.problemId} - ${problem.value.title}`
+    return `${problem.value.problemId}. ${problem.value.title}`
   }
-})
-
-const title = computed<string>(() => {
-  return create.value ? "创建题目" : "编辑题目"
 })
 
 const disableType = computed<boolean>(() => {
@@ -275,7 +275,7 @@ onMounted(() => {
 })
 
 function setBreadcrumb() {
-  const breadcrumb = ["题目管理", title.value]
+  const breadcrumb = ["题目管理", create.value ? "创建题目" : "编辑题目"]
   store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
 }
 

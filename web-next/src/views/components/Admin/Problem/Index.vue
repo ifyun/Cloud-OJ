@@ -32,7 +32,7 @@
           </n-space>
           <n-space align="center" justify="end">
             <n-button-group>
-              <n-button type="primary">
+              <n-button type="info" round secondary>
                 <template #icon>
                   <n-icon>
                     <add-icon />
