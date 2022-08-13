@@ -9,9 +9,10 @@
         <template #extra>
           <n-button
             v-if="showSaveButton"
+            round
+            secondary
             type="primary"
             size="small"
-            round
             @click="handleSave">
             <template #icon>
               <save-icon />

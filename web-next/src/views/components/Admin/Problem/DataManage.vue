@@ -4,7 +4,7 @@
       :bordered="false"
       style="height: 100%"
       content-style="height: 100%; display: flex; flex-direction: column">
-      <n-page-header :subtitle="subtitle" @back="back">
+      <n-page-header @back="back">
         <template #title>{{ title }}</template>
         <n-space vertical size="large">
           <n-data-table
@@ -50,8 +50,6 @@ import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
   NAlert,
-  NBreadcrumb,
-  NBreadcrumbItem,
   NButton,
   NCard,
   NDataTable,
@@ -80,7 +78,6 @@ const router = useRouter()
 const store = useStore()
 const message = useMessage()
 
-const title = "测试数据管理"
 const loading = ref<boolean>(false)
 const problem = ref<Problem | null>(null)
 const testData = ref<Array<TestData>>([])
@@ -165,11 +162,11 @@ const columns = [
   }
 ]
 
-const subtitle = computed(() => {
+const title = computed(() => {
   if (problem.value == null) {
     return ""
   } else {
-    return `${problem.value.problemId} - ${problem.value.title}`
+    return `${problem.value.problemId}. ${problem.value.title}`
   }
 })
 
@@ -199,15 +196,10 @@ const disableUpload = computed<boolean>(() => {
 })
 
 onBeforeMount(() => {
-  const vNode = (
-    <NBreadcrumb>
-      <NBreadcrumbItem>题目管理</NBreadcrumbItem>
-      <NBreadcrumbItem>{title}</NBreadcrumbItem>
-    </NBreadcrumb>
-  )
-  store.commit(Mutations.SET_BREADCRUMB, vNode)
+  const breadcrumb = ["题目管理", "测试数据管理"]
+  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
 
-  const reg = /^[\d]+$/
+  const reg = /^\d+$/
   const id = route.params.id.toString()
 
   if (reg.test(id)) {

@@ -3,7 +3,7 @@
     <n-card :bordered="false">
       <n-space vertical size="large">
         <n-space>
-          <n-button type="primary">
+          <n-button type="primary" secondary round>
             <template #icon>
               <n-icon>
                 <add-icon />
@@ -58,7 +58,9 @@ import {
 import {
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
-  PlaylistAddRound as AddIcon
+  PlaylistAddRound as AddIcon,
+  PlayArrowRound,
+  InfoRound
 } from "@vicons/material"
 import { Contest, ErrorMsg, PagedData, UserInfo } from "@/api/type"
 import { LanguageUtil, renderIcon, setTitle } from "@/utils"
@@ -71,6 +73,7 @@ let selectedId: number | undefined
 type StateTag = {
   type: "info" | "error" | "success"
   state: string
+  icon: any
 }
 
 const store = useStore()
@@ -131,7 +134,14 @@ const contestColumns = [
     width: 120,
     render: (row: Contest) => {
       const tag = stateTag(row)
-      return <NTag type={tag.type}>{tag.state}</NTag>
+      return (
+        <NTag round={true} bordered={false} type={tag.type}>
+          {{
+            icon: () => <NIcon component={tag.icon} />,
+            default: () => <span>{tag.state}</span>
+          }}
+        </NTag>
+      )
     }
   },
   {
@@ -203,17 +213,20 @@ function stateTag(c: Contest): StateTag {
   if (c.ended) {
     return {
       type: "error",
-      state: "已结束"
+      state: "已结束",
+      icon: InfoRound
     }
   } else if (c.started) {
     return {
       type: "success",
-      state: "进行中"
+      state: "进行中",
+      icon: PlayArrowRound
     }
   } else {
     return {
       type: "info",
-      state: "未开始"
+      state: "未开始",
+      icon: InfoRound
     }
   }
 }
