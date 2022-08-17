@@ -11,5 +11,5 @@ else
     -e "MYSQL_ROOT_HOST=%" \
     -v "$PWD"/sql:/docker-entrypoint-initdb.d \
     -v mysql-cloudoj:/var/lib/mysql \
-    -d mysql:8.0
+    -d mysql:8.0.30
 fi
