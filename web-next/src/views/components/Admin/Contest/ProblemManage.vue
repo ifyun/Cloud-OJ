@@ -24,6 +24,7 @@ import { computed, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NDataTable,
   NPagination,
@@ -54,9 +55,10 @@ const pagination = ref({
   loading: true
 })
 
-const columns1 = [
+const columns1: DataTableColumns<Problem> = [
   {
     title: "可用题目",
+    key: "allProblems",
     align: "center",
     children: [
       {
@@ -67,7 +69,8 @@ const columns1 = [
       },
       {
         title: "题目名称",
-        render: (row: Problem) => (
+        key: "title",
+        render: (row) => (
           <NButton text={true} onClick={() => toSubmission(row)}>
             {row.title}
           </NButton>
@@ -80,9 +83,10 @@ const columns1 = [
       },
       {
         title: "操作",
+        key: "operation",
         align: "right",
         width: 100,
-        render: (row: Problem) => (
+        render: (row) => (
           <NButton size="tiny" type="success" onClick={() => addToContest(row)}>
             添加
           </NButton>
@@ -92,9 +96,10 @@ const columns1 = [
   }
 ]
 
-const columns2 = [
+const columns2: DataTableColumns<Problem> = [
   {
     title: "已添加的题目",
+    key: "contestProblems",
     align: "center",
     children: [
       {
@@ -105,7 +110,8 @@ const columns2 = [
       },
       {
         title: "题目名称",
-        render: (row: Problem) => (
+        key: "title",
+        render: (row) => (
           <NButton text={true} onClick={() => toSubmission(row)}>
             {row.title}
           </NButton>
@@ -118,9 +124,10 @@ const columns2 = [
       },
       {
         title: "操作",
+        key: "operation",
         align: "right",
         width: 100,
-        render: (row: Problem) => (
+        render: (row) => (
           <NButton size="tiny" type="warning" onClick={() => handleRemove(row)}>
             移除
           </NButton>

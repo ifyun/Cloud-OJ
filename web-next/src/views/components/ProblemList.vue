@@ -26,6 +26,7 @@
           </n-tag>
         </n-space>
         <n-data-table
+          :bordered="false"
           :columns="problemColumns"
           :data="problems.data"
           :loading="pagination.loading" />
@@ -46,6 +47,7 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NCard,
   NDataTable,
@@ -74,12 +76,13 @@ const pagination = ref({
 })
 
 /* 表格列配置 */
-const problemColumns = [
+const problemColumns: DataTableColumns<Problem> = [
   {
     title: "#",
+    key: "#",
     align: "right",
     width: 50,
-    render: (row: Problem, rowIndex: number) => (
+    render: (row, rowIndex: number) => (
       <span>
         {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
       </span>
@@ -93,7 +96,8 @@ const problemColumns = [
   },
   {
     title: "题目名称",
-    render: (row: Problem) => (
+    key: "title",
+    render: (row) => (
       <NButton
         text
         onClick={() =>
@@ -108,7 +112,8 @@ const problemColumns = [
   },
   {
     title: "分类",
-    render: (row: Problem) => {
+    key: "category",
+    render: (row) => {
       if (row.category === "") {
         return ""
       }

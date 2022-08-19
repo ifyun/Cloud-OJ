@@ -21,13 +21,13 @@
                     </template>
                     {{ problem.score }}
                   </badge>
-                  <badge label="时间" size="medium" color="#0288D1">
+                  <badge label="CPU" size="medium" color="#0288D1">
                     <template #icon>
                       <timer-outlined />
                     </template>
                     {{ problem.timeout }} 毫秒
                   </badge>
-                  <badge label="内存" size="medium" color="#4EAA25">
+                  <badge label="RAM" size="medium" color="#4EAA25">
                     <template #icon>
                       <memory-round />
                     </template>

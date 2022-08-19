@@ -2,25 +2,29 @@
 <template>
   <div v-if="error == null" class="wrap">
     <n-card :bordered="false" :segmented="{ content: true }">
-      <template #cover>
-        <div v-if="contest != null" style="padding: 24px 24px 12px 24px">
-          <n-space vertical size="large">
-            <n-h2 style="margin: 0">
-              <n-text>{{ contest.contestName }}</n-text>
-            </n-h2>
-            <n-space size="small" align="center">
-              <n-icon
-                v-for="id in languages"
-                :key="id"
-                :color="LanguageIcons[id].color"
-                size="20">
-                <component :is="LanguageIcons[id].component" />
-              </n-icon>
-            </n-space>
-          </n-space>
-        </div>
-      </template>
-      <n-data-table :columns="columns" :data="problems" :loading="loading" />
+      <n-space vertical size="large">
+        <n-space align="center">
+          <n-skeleton v-if="contestState == null" round width="120" />
+          <n-tag
+            v-else
+            round
+            :bordered="false"
+            :type="contestState.type"
+            style="margin-top: 2px">
+            <template #icon>
+              <n-icon :component="contestState.icon" />
+            </template>
+            {{ contestState.state }}
+          </n-tag>
+          <n-skeleton v-if="contest == null" text width="250" />
+          <n-text v-else strong>{{ contest.contestName }}</n-text>
+        </n-space>
+        <n-data-table
+          :bordered="false"
+          :columns="columns"
+          :data="problems"
+          :loading="loading" />
+      </n-space>
     </n-card>
   </div>
   <div v-else>
@@ -32,18 +36,26 @@
 import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
-import { NButton, NCard, NDataTable, NH2, NIcon, NSpace, NText } from "naive-ui"
+import {
+  DataTableColumns,
+  NButton,
+  NCard,
+  NDataTable,
+  NIcon,
+  NSkeleton,
+  NSpace,
+  NTag,
+  NText
+} from "naive-ui"
 import { ErrorResult } from "@/components"
-import { LanguageIcons } from "@/type"
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMsg, Problem } from "@/api/type"
-import { LanguageUtil } from "@/utils"
+import { LanguageUtil, stateTag } from "@/utils"
 
 const store = useStore()
 const router = useRouter()
 
 const props = defineProps<{
-  // 竞赛 ID
   cid: string
 }>()
 
@@ -55,12 +67,13 @@ const contest = ref<Contest | null>(null)
 const languages = ref<Array<number>>([])
 const problems = ref<Array<Problem>>([])
 
-const columns = [
+const columns: DataTableColumns<Problem> = [
   {
     title: "#",
+    key: "#",
     align: "right",
     width: 50,
-    render: (row: Problem, rowIndex: number) => <span>{rowIndex + 1}</span>
+    render: (row, rowIndex: number) => <span>{rowIndex + 1}</span>
   },
   {
     title: "ID",
@@ -70,7 +83,8 @@ const columns = [
   },
   {
     title: "题目名称",
-    render: (row: Problem) => (
+    key: "title",
+    render: (row) => (
       <NButton
         text
         onClick={() =>
@@ -90,6 +104,10 @@ const columns = [
     align: "right"
   }
 ]
+
+const contestState = computed(() => {
+  return contest.value == null ? null : stateTag(contest.value)
+})
 
 onBeforeMount(() => {
   const reg = /^\d+$/

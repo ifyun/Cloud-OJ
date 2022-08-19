@@ -61,15 +61,15 @@ const columns: DataTableColumns<JudgeResult> = [
     width: 50,
     align: "right",
     render: (row, rowIndex: number) => (
-      <span>
+      <NText>
         {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
-      </span>
+      </NText>
     )
   },
   {
-    title: "结果",
+    title: "状态",
     key: "result",
-    width: 100,
+    width: 120,
     align: "center",
     render: (row) => {
       const { type, text } = ResultTypes[row.result!]
@@ -90,13 +90,7 @@ const columns: DataTableColumns<JudgeResult> = [
     }
   },
   {
-    title: "ID",
-    key: "problemId",
-    width: 90,
-    align: "center"
-  },
-  {
-    title: "题目",
+    title: "题名",
     key: "title",
     render: (row) => (
       <NButton
@@ -114,25 +108,27 @@ const columns: DataTableColumns<JudgeResult> = [
   {
     title: "语言",
     key: "language",
+    align: "left",
     render: (row) => (
       <div style="display: flex; align-items: center">
         <NIcon color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText depth="1" style="margin-left: 6px">
+        <NText depth="1" style="margin-left: 6px" italic={true}>
           {LanguageNames[row.language!]}
         </NText>
       </div>
     )
   },
   {
-    title: "得分",
+    title: "分数",
     key: "score",
     align: "right"
   },
   {
     title: "提交时间",
     key: "submitTime",
+    width: "140",
     align: "right",
     render: (row) => (
       <NTooltip trigger="hover" placement="left">
@@ -143,7 +139,9 @@ const columns: DataTableColumns<JudgeResult> = [
             </NButton>
           ),
           default: () => (
-            <span>{moment(row.submitTime).format("HH:mm:ss")}</span>
+            <NText italic={true}>
+              {moment(row.submitTime).format("HH:mm:ss")}
+            </NText>
           )
         }}
       </NTooltip>

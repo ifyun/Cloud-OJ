@@ -44,6 +44,7 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NCard,
   NDataTable,
@@ -100,7 +101,7 @@ const pagination = ref({
   loading: true
 })
 
-const columns = [
+const columns: DataTableColumns<User> = [
   {
     title: "ID",
     key: "userId",
@@ -115,7 +116,8 @@ const columns = [
         <span>用户名</span>
       </NSpace>
     ),
-    render: (row: User) => (
+    key: "name",
+    render: (row) => (
       <NSpace align="center">
         <UserAvatar size="small" userId={row.userId} />
         <NButton text={true}>
@@ -133,7 +135,8 @@ const columns = [
         <span>权限</span>
       </NSpace>
     ),
-    render: (row: User) => (
+    key: "role",
+    render: (row) => (
       <NTag size="small" type={roles[row.roleId!].type as any}>
         {roles[row.roleId!].text}
       </NTag>
@@ -149,10 +152,9 @@ const columns = [
         <span>注册时间</span>
       </NSpace>
     ),
+    key: "createAt",
     align: "right",
-    render: (row: User) => (
-      <span>{moment(row.createAt).format("YYYY-MM-DD")}</span>
-    )
+    render: (row) => <span>{moment(row.createAt).format("YYYY-MM-DD")}</span>
   }
 ]
 
