@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-h3 strong style="margin-bottom: 16px">最近提交</n-h3>
+    <n-h3 strong style="margin-bottom: 16px">最近记录</n-h3>
     <n-timeline>
       <n-timeline-item
         v-for="item in solutions.data"

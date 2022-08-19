@@ -45,6 +45,7 @@ import { computed, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NCard,
   NDataTable,
@@ -58,23 +59,15 @@ import {
 import {
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
-  PlaylistAddRound as AddIcon,
-  PlayArrowRound,
-  InfoRound
+  PlaylistAddRound as AddIcon
 } from "@vicons/material"
 import { Contest, ErrorMsg, PagedData, UserInfo } from "@/api/type"
-import { LanguageUtil, renderIcon, setTitle } from "@/utils"
+import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import { LanguageOptions } from "@/type"
 import { ContestApi } from "@/api/request"
 import Mutations from "@/store/mutations"
 
 let selectedId: number | undefined
-
-type StateTag = {
-  type: "info" | "error" | "success"
-  state: string
-  icon: any
-}
 
 const store = useStore()
 const router = useRouter()
@@ -127,12 +120,13 @@ const operations = [
 ]
 
 // #region 表格列选项
-const contestColumns = [
+const contestColumns: DataTableColumns<Contest> = [
   {
     title: "状态",
+    key: "state",
     align: "center",
     width: 120,
-    render: (row: Contest) => {
+    render: (row) => {
       const tag = stateTag(row)
       return (
         <NTag round={true} bordered={false} type={tag.type}>
@@ -146,7 +140,8 @@ const contestColumns = [
   },
   {
     title: "竞赛",
-    render: (row: Contest) => (
+    key: "name",
+    render: (row) => (
       <NSpace align="center">
         <NButton text>{row.contestName}</NButton>
       </NSpace>
@@ -154,7 +149,8 @@ const contestColumns = [
   },
   {
     title: "语言限制",
-    render: (row: Contest) => {
+    key: "languages",
+    render: (row) => {
       if (row.languages === 511) {
         return "没有限制"
       }
@@ -203,31 +199,6 @@ function operationSelect(key: string) {
       break
     default:
       return
-  }
-}
-
-/**
- * 竞赛状态标签
- */
-function stateTag(c: Contest): StateTag {
-  if (c.ended) {
-    return {
-      type: "error",
-      state: "已结束",
-      icon: InfoRound
-    }
-  } else if (c.started) {
-    return {
-      type: "success",
-      state: "进行中",
-      icon: PlayArrowRound
-    }
-  } else {
-    return {
-      type: "info",
-      state: "未开始",
-      icon: InfoRound
-    }
   }
 }
 

@@ -22,9 +22,11 @@
 import { onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NCard,
   NDataTable,
+  NIcon,
   NPagination,
   NSpace,
   NTag,
@@ -32,8 +34,8 @@ import {
 } from "naive-ui"
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMsg, PagedData } from "@/api/type"
-import { LanguageUtil, setTitle } from "@/utils"
-import { LanguageOptions } from "@/type"
+import { LanguageUtil, setTitle, stateTag } from "@/utils"
+import { LanguageNames } from "@/type"
 
 const router = useRouter()
 const message = useMessage()
@@ -49,44 +51,54 @@ const contests = ref<PagedData<Contest>>({
   count: 0
 })
 
-const contestColumns = [
+const contestColumns: DataTableColumns<Contest> = [
   {
-    title: "#",
-    align: "right",
-    width: 50,
-    render: (row: Contest, rowIndex: number) => (
-      <span>
-        {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
-      </span>
-    )
+    title: "状态",
+    key: "state",
+    align: "center",
+    width: 100,
+    render: (row) => {
+      const tag = stateTag(row)
+      return (
+        <NTag
+          round={true}
+          bordered={false}
+          type={tag.type}
+          style="margin-top: 2px">
+          {{
+            icon: () => <NIcon component={tag.icon} />,
+            default: () => <span>{tag.state}</span>
+          }}
+        </NTag>
+      )
+    }
   },
   {
     title: "竞赛",
-    render: (row: Contest) => (
-      <NSpace align="center">
-        <NTag type={contestTagType(row)}>{contestStateText(row)}</NTag>
-        <NButton
-          text
-          onClick={() =>
-            router.push({
-              name: "contest_problems",
-              params: { cid: row.contestId }
-            })
-          }>
-          {row.contestName}
-        </NButton>
-      </NSpace>
+    key: "contest",
+    render: (row) => (
+      <NButton
+        text
+        onClick={() =>
+          router.push({
+            name: "contest_problems",
+            params: { cid: row.contestId }
+          })
+        }>
+        {row.contestName}
+      </NButton>
     )
   },
   {
     title: "语言限制",
+    key: "languages",
     render: (row: Contest) => {
       if (row.languages === 511) {
         return <span>没有限制</span>
       }
       const languages: Array<string> = []
       LanguageUtil.toArray(row.languages).forEach((value) => {
-        languages.push(LanguageOptions[value].label)
+        languages.push(LanguageNames[value])
       })
       return (
         <span style={{ wordBreak: "break-word" }}>{languages.join(" / ")}</span>
@@ -108,26 +120,6 @@ onBeforeMount(() => {
   queryContests()
 })
 
-function contestTagType(c: Contest) {
-  if (c.ended) {
-    return "error"
-  } else if (c.started) {
-    return "success"
-  } else {
-    return "info"
-  }
-}
-
-function contestStateText(c: Contest) {
-  if (c.ended) {
-    return "已结束"
-  } else if (c.started) {
-    return "进行中"
-  } else {
-    return "未开始"
-  }
-}
-
 function pageChange(page: number) {
   router.push({
     query: { page }
@@ -147,3 +139,9 @@ function queryContests() {
     })
 }
 </script>
+
+<style>
+td[class="n-data-table-td"] {
+  vertical-align: middle;
+}
+</style>

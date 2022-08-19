@@ -20,6 +20,7 @@
 import { onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NCard,
   NDataTable,
   NPagination,
@@ -47,7 +48,7 @@ const rankings = ref<PagedData<Ranking>>({
   count: 0
 })
 
-const rankingColumns = [
+const rankingColumns: DataTableColumns<Ranking> = [
   {
     title: "排名",
     align: "center",
@@ -56,7 +57,8 @@ const rankingColumns = [
   },
   {
     title: "用户",
-    render: (row: Ranking) => (
+    key: "name",
+    render: (row) => (
       <NSpace align="center" size="small">
         <UserAvatar size="small" userId={row.userId} />
         <NText>{row.name}</NText>
@@ -77,9 +79,10 @@ const rankingColumns = [
   },
   {
     title: "分数",
+    key: "score",
     width: 100,
     align: "right",
-    render: (row: Ranking) => (
+    render: (row) => (
       <NText type="success" strong>
         {row.score}
       </NText>

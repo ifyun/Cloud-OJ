@@ -49,6 +49,7 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NAlert,
   NButton,
   NCard,
@@ -82,17 +83,19 @@ const loading = ref<boolean>(false)
 const problem = ref<Problem | null>(null)
 const testData = ref<Array<TestData>>([])
 
-const columns = [
+const columns: DataTableColumns<TestData> = [
   {
     title: "#",
+    key: "#",
     align: "right",
     width: 50,
-    render: (row: TestData, rowIndex: number) => <span>{rowIndex + 1}</span>
+    render: (row, rowIndex: number) => <span>{rowIndex + 1}</span>
   },
   {
     title: "文件名",
+    key: "fileName",
     align: "left",
-    render: (row: TestData) => {
+    render: (row) => {
       let type = ""
       if (row.fileName.endsWith(".in")) {
         type = "info"
@@ -108,14 +111,16 @@ const columns = [
   },
   {
     title: "文件长度",
+    key: "size",
     align: "right",
-    render: (row: TestData) => <span>{row.size} 字节</span>
+    render: (row) => <span>{row.size} 字节</span>
   },
   {
     title: "操作",
+    key: "operation",
     align: "center",
     width: 240,
-    render: (row: TestData) => (
+    render: (row) => (
       <NSpace size="small" justify="center">
         <NButton
           size="small"

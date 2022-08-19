@@ -77,6 +77,7 @@ import { computed, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
+  DataTableColumns,
   NButton,
   NButtonGroup,
   NCard,
@@ -181,7 +182,7 @@ const operations = [
 ]
 
 // region 表格列选项
-const problemColumns = [
+const problemColumns: DataTableColumns<Problem> = [
   {
     title: "ID",
     key: "problemId",
@@ -191,7 +192,7 @@ const problemColumns = [
   {
     title: "题目名称",
     key: "title",
-    render: (row: Problem) => (
+    render: (row) => (
       <NButton
         text
         onClick={() =>
@@ -213,7 +214,8 @@ const problemColumns = [
         <span>分类</span>
       </NSpace>
     ),
-    render: (row: Problem) => {
+    key: "category",
+    render: (row) => {
       if (row.category === "") {
         return ""
       }
@@ -235,9 +237,10 @@ const problemColumns = [
   },
   {
     title: "是否开放",
+    key: "enable",
     align: "center",
     width: 120,
-    render: (row: Problem) => (
+    render: (row) => (
       <NSwitch
         value={row.enable}
         onUpdateValue={(value) => toggleIsEnable(row, value)}>
