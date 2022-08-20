@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 public class AuthController {
 
-    @Value("${project.token-valid-time:4}")
+    @Value("${app.token-valid-time:4}")
     private int tokenValidTime;
 
     @Resource

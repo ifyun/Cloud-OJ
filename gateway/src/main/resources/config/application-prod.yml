@@ -48,5 +48,5 @@ logging:
     name: /tmp/cloud-oj/gateway.log
   level:
     root: warn
-project:
+app:
   token-valid-time: ${TOKEN_VALID_TIME:4}
