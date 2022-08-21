@@ -1,13 +1,15 @@
 package group._204.oj.judge.service;
 
-import group._204.oj.judge.model.*;
+import group._204.oj.judge.dao.SolutionDao;
+import group._204.oj.judge.dao.SourceCodeDao;
+import group._204.oj.judge.model.CommitData;
+import group._204.oj.judge.model.Solution;
+import group._204.oj.judge.model.SourceCode;
 import group._204.oj.judge.type.SolutionState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import group._204.oj.judge.dao.SolutionDao;
-import group._204.oj.judge.dao.SourceCodeDao;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,7 @@ public class SubmitService {
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public void submit(CommitData commitData) {
-        Solution solution = new Solution(
+        var solution = new Solution(
                 commitData.getSolutionId(),
                 commitData.getUserId(),
                 commitData.getProblemId(),
@@ -45,7 +47,7 @@ public class SubmitService {
                 commitData.getSubmitTime()
         );
 
-        SourceCode sourceCode = new SourceCode(solution.getSolutionId(), commitData.getSourceCode());
+        var sourceCode = new SourceCode(solution.getSolutionId(), commitData.getSourceCode());
 
         solutionDao.add(solution);
         sourceCodeDao.add(sourceCode);

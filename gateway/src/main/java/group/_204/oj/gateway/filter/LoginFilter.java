@@ -1,11 +1,9 @@
 package group._204.oj.gateway.filter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.WebFilterExchange;
@@ -29,8 +27,8 @@ public class LoginFilter extends AuthenticationWebFilter {
 
         @Override
         public Mono<Void> onAuthenticationFailure(WebFilterExchange exchange, AuthenticationException exception) {
-            ServerHttpResponse response = exchange.getExchange().getResponse();
-            DataBuffer dataBuffer = response.bufferFactory().wrap(("{\"msg\": \"用户名或密码错误\"}").getBytes());
+            var response = exchange.getExchange().getResponse();
+            var dataBuffer = response.bufferFactory().wrap(("{\"msg\": \"用户名或密码错误\"}").getBytes());
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             response.getHeaders().add("Content-Type", "application/json");
 

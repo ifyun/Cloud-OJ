@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
@@ -31,8 +30,8 @@ public class AuthenticationConverter implements ServerAuthenticationConverter {
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
-        ServerHttpRequest request = exchange.getRequest();
-        MediaType contentType = request.getHeaders().getContentType();
+        var request = exchange.getRequest();
+        var contentType = request.getHeaders().getContentType();
 
         if (contentType != null && contentType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
             return serverCodecConfigurer.getReaders().stream()

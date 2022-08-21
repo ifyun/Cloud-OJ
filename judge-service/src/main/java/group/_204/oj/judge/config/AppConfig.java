@@ -32,7 +32,7 @@ public class AppConfig {
         createDir(fileDir + "test_data");
         createDir(codeDir);
 
-        int cpuCores = Runtime.getRuntime().availableProcessors();
+        var cpuCores = Runtime.getRuntime().availableProcessors();
 
         if (judgePoolSize >= cpuCores) {
             judgePoolSize = cpuCores - 1;

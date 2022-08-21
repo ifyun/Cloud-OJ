@@ -30,8 +30,8 @@ public class NotifyService {
      * @param isDeleted 是否删除
      */
     public void notifyTestData(File file, boolean isDeleted) {
-        String path = file.getAbsolutePath().replace(fileDir + "test_data", "");
-        FileInfo fileInfo = new FileInfo(path, file.lastModified(), isDeleted);
+        var path = file.getAbsolutePath().replace(fileDir + "test_data", "");
+        var fileInfo = new FileInfo(path, file.lastModified(), isDeleted);
         rabbitTemplate.convertAndSend(testDataExchange.getName(), "", fileInfo);
         log.info(fileInfo.toString());
     }

@@ -1,7 +1,6 @@
 package group._204.oj.judge.service;
 
 import feign.FeignException;
-import feign.Response;
 import group._204.oj.judge.client.FileService;
 import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.config.AppHealth;
@@ -16,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -54,7 +52,7 @@ public class DataSyncService {
     @SneakyThrows(InterruptedException.class)
     public void syncAllFiles() {
         try {
-            List<FileInfo> remoteFiles = fileService.dataList();
+            var remoteFiles = fileService.dataList();
 
             if (remoteFiles == null) {
                 return;
@@ -62,7 +60,7 @@ public class DataSyncService {
 
             Collections.sort(remoteFiles);
 
-            List<FileInfo> localFiles = getLocalFiles();
+            var localFiles = getLocalFiles();
             Collections.sort(localFiles);
 
             localFiles.forEach(localFile -> {
@@ -70,7 +68,7 @@ public class DataSyncService {
                 int i = Collections.binarySearch(remoteFiles, localFile);
                 if (i >= 0) {
                     // 本地远程都存在，更新
-                    FileInfo remoteFile = remoteFiles.get(i);
+                    var remoteFile = remoteFiles.get(i);
                     if (remoteFile.getLastModified() != localFile.getLastModified()) {
                         downloadFile(remoteFile.getPath(), remoteFile.getLastModified());
                     }
@@ -110,13 +108,14 @@ public class DataSyncService {
     }
 
     private List<FileInfo> getLocalFiles() throws IOException {
-        return Files.walk(Paths.get(dataDir), Integer.MAX_VALUE)
-                .filter(p -> p.toFile().isFile())
-                .map(p -> {
-                    String relativePath = p.toString().replace(dataDir, "");
-                    return new FileInfo(relativePath, p.toFile().lastModified());
-                })
-                .collect(Collectors.toList());
+        try (var files = Files.walk(Paths.get(dataDir), Integer.MAX_VALUE)) {
+            return files.filter(p -> p.toFile().isFile())
+                    .map(p -> {
+                        String relativePath = p.toString().replace(dataDir, "");
+                        return new FileInfo(relativePath, p.toFile().lastModified());
+                    })
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -126,21 +125,19 @@ public class DataSyncService {
      * @param time 文件的修改时间
      */
     private void downloadFile(String path, long time) {
-        Response res = fileService.downloadFile(path);
-
-        if (res.status() == 200) {
-            try {
-                InputStream is = res.body().asInputStream();
-                File dest = new File(dataDir + path);
+        try (var res = fileService.downloadFile(path)) {
+            if (res.status() == 200) {
+                var is = res.body().asInputStream();
+                var dest = new File(dataDir + path);
                 FileUtils.copyInputStreamToFile(is, dest);
                 //noinspection ResultOfMethodCallIgnored
                 dest.setLastModified(time);
-                log.info("Sync file: {}", dest.getAbsolutePath());
-            } catch (IOException e) {
-                log.error(e.getMessage());
+                log.info("Sync: {}", dest.getAbsolutePath());
+            } else {
+                log.error("Sync {} failed: {}", path, res.status());
             }
-        } else {
-            log.error("Sync {} failed: {}", path, res.status());
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -150,7 +147,7 @@ public class DataSyncService {
      * @param path eg: /problemId/file
      */
     private void deleteFile(String path) {
-        File file = new File(dataDir + path);
+        var file = new File(dataDir + path);
 
         if (!file.exists()) {
             return;

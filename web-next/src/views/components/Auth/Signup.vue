@@ -1,13 +1,12 @@
 <template>
   <n-form
     ref="signupForm"
-    size="large"
     label-placement="left"
     :model="user"
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
     <n-form-item path="userId">
-      <n-input placeholder="ID，不能和别人重复" v-model:value="user.userId">
+      <n-input placeholder="用户ID，必须是唯一的" v-model:value="user.userId">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <user-id-icon />
@@ -18,7 +17,7 @@
     <n-form-item path="name">
       <n-input
         placeholder="昵称"
-        :maxlength="16"
+        maxlength="16"
         v-model:value="user.name"
         :input-props="{ autocomplete: 'off' }">
         <template #prefix>
@@ -32,7 +31,7 @@
       <n-input
         placeholder="密码"
         type="password"
-        :maxlength="16"
+        maxlength="16"
         v-model:value="user.password"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>
@@ -46,7 +45,7 @@
       <n-input
         placeholder="确认密码"
         type="password"
-        :maxlength="16"
+        maxlength="16"
         v-model:value="user.confirmPassword"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>

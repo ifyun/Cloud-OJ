@@ -36,7 +36,7 @@ public class ContestService {
     }
 
     public Msg updateContest(Contest contest) {
-        int status = contestDao.updateContest(contest) == 1 ? 200 : 304;
+        var status = contestDao.updateContest(contest) == 1 ? 200 : 304;
         return new Msg(status);
     }
 
@@ -62,7 +62,7 @@ public class ContestService {
     }
 
     public Msg removeProblem(int contestId, int problemId) {
-        int status = contestDao.removeProblem(contestId, problemId) == 1 ? 204 : 410;
+        var status = contestDao.removeProblem(contestId, problemId) == 1 ? 204 : 410;
         return new Msg(status);
     }
 }

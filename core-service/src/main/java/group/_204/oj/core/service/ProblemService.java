@@ -54,30 +54,36 @@ public class ProblemService {
 
     @Transactional
     public Msg update(Problem problem) {
-        Integer contestId = problemDao.isInContest(problem.getProblemId());
+        var contestId = problemDao.isInContest(problem.getProblemId());
+
         if (contestId != null && contestDao.getContest(contestId).isStarted()) {
             return new Msg(400, "不能修改已开始竞赛中的题目");
         }
-        int status = problemDao.update(problem) == 1 ? 200 : 304;
+
+        var status = problemDao.update(problem) == 1 ? 200 : 304;
+
         return new Msg(status, null);
     }
 
     @Transactional
     public Msg toggleEnable(int problemId, boolean enable) {
         if (enable) {
-            Integer contestId = problemDao.isInContest(problemId);
+            var contestId = problemDao.isInContest(problemId);
+
             if (contestId != null && !contestDao.getContest(contestId).isEnded()) {
                 return new Msg(400, "不能开放未结束竞赛中的题目");
             }
         }
-        int status = problemDao.toggleEnable(problemId, enable) == 1 ? 200 : 304;
+
+        var status = problemDao.toggleEnable(problemId, enable) == 1 ? 200 : 304;
+
         return new Msg(status, null);
     }
 
     public boolean add(Problem problem) {
-        int row = problemDao.add(problem);
+        var row = problemDao.add(problem);
         log.info("Add Problem: id={}, title={}", problem.getProblemId(), problem.getTitle());
-        return row == 1;
+        return row > 0;
     }
 
     public Msg delete(Integer problemId) {
@@ -85,8 +91,8 @@ public class ProblemService {
             return new Msg(400, "无法删除竞赛中的题目");
         }
 
-        int row = problemDao.delete(problemId);
-        int status = row == 1 ? 204 : 410;
+        var row = problemDao.delete(problemId);
+        var status = row == 1 ? 204 : 410;
 
         return new Msg(status, null);
     }

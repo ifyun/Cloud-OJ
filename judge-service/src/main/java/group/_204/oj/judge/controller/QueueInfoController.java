@@ -1,6 +1,5 @@
 package group._204.oj.judge.controller;
 
-import com.rabbitmq.client.AMQP;
 import group._204.oj.judge.config.RabbitConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,7 +34,7 @@ public class QueueInfoController {
      */
     @GetMapping()
     public ResponseEntity<?> getQueueInfo() {
-        QueueInfo queueInfo = new QueueInfo(
+        var queueInfo = new QueueInfo(
                 getMessageCount(RabbitConfig.COMMIT_QUEUE),
                 getMessageCount(RabbitConfig.JUDGE_QUEUE)
         );
@@ -50,7 +49,7 @@ public class QueueInfoController {
      * @return 消息数量
      */
     private int getMessageCount(String queueName) {
-        AMQP.Queue.DeclareOk declareOk =
+        var declareOk =
                 rabbitTemplate.execute(channel -> channel.queueDeclarePassive(queueName));
         return declareOk == null ? 0 : declareOk.getMessageCount();
     }

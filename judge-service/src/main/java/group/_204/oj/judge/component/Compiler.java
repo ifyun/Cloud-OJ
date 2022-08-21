@@ -35,23 +35,23 @@ class Compiler {
      * 编译
      */
     public Compile compile(Solution solution) {
-        String solutionId = solution.getSolutionId();
-        Integer languageId = solution.getLanguage();
-        String sourceCode = solution.getSourceCode();
+        var solutionId = solution.getSolutionId();
+        var languageId = solution.getLanguage();
+        var sourceCode = solution.getSourceCode();
 
-        String src = writeCode(solutionId, languageId, sourceCode);
+        var src = writeCode(solutionId, languageId, sourceCode);
 
         if (src.isEmpty()) {
-            String err = "Compile error: Cannot write source code.";
+            var err = "编译错误: 无法写入代码.";
             log.error(err);
             return new Compile(solutionId, -1, err);
         }
 
         try {
-            Language language = Language.get(languageId);
+            var language = Language.get(languageId);
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
-            log.error("Compile error: {}", e.getMessage());
+            log.error("编译错误: {}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -66,7 +66,7 @@ class Compiler {
             throw new UnsupportedLanguageError("NULL");
         }
 
-        String solutionDir = appConfig.getCodeDir() + solutionId;
+        var solutionDir = appConfig.getCodeDir() + solutionId;
         String[] cmd;
 
         switch (language) {
@@ -102,7 +102,7 @@ class Compiler {
             processBuilder.command(cmd);
             processBuilder.directory(new File(solutionDir));
 
-            Process process = processBuilder.start();
+            var process = processBuilder.start();
 
             if (process.waitFor(20, TimeUnit.SECONDS)) {
                 if (process.exitValue() == 0) {
@@ -130,19 +130,18 @@ class Compiler {
      * @return 文件路径
      */
     private String writeCode(String solutionId, int language, String source) {
-        File sourceFile;
-        File solutionDir = new File(appConfig.getCodeDir() + solutionId);
+        var solutionDir = new File(appConfig.getCodeDir() + solutionId);
 
         if (!solutionDir.mkdirs()) {
             log.error("Cannot create dir {}.", solutionDir.getName());
             return "";
         }
 
-        sourceFile = new File(solutionDir + "/Solution" + Language.getExt(language));
+        var sourceFile = new File(solutionDir + "/Solution" + Language.getExt(language));
 
         try {
             if (sourceFile.exists() || sourceFile.createNewFile()) {
-                FileWriter writer = new FileWriter(sourceFile, false);
+                var writer = new FileWriter(sourceFile, false);
                 writer.write(source);
                 writer.flush();
                 writer.close();

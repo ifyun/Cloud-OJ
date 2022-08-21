@@ -4,15 +4,12 @@
     content-style="display: flex; flex-direction: column">
     <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
       <n-layout-header>
-        <app-logo style="height: 60px" />
+        <app-logo style="height: 48px" />
       </n-layout-header>
     </n-config-provider>
     <n-layout-content embedded>
-      <n-card
-        v-if="checked"
-        style="width: 400px; margin: 24px auto 0 auto"
-        :bordered="false">
-        <n-tabs size="large" type="line" default-value="login">
+      <div v-if="checked" style="width: 320px; margin: 24px auto 0 auto">
+        <n-tabs type="line" default-value="login">
           <n-tab-pane name="login" tab="登录">
             <login />
           </n-tab-pane>
@@ -20,7 +17,7 @@
             <signup />
           </n-tab-pane>
         </n-tabs>
-      </n-card>
+      </div>
     </n-layout-content>
     <n-layout-footer style="margin-top: auto">
       <bottom-info />
@@ -35,7 +32,6 @@ import { useRouter } from "vue-router"
 import {
   darkTheme,
   GlobalThemeOverrides,
-  NCard,
   NConfigProvider,
   NLayout,
   NLayoutContent,

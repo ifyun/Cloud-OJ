@@ -2,8 +2,11 @@
   <div class="wrap">
     <n-card :bordered="false">
       <n-space vertical size="large">
+        <empty-data v-if="!loading && contests.count === 0" />
         <n-data-table
-          :loading="pagination.loading"
+          v-else
+          size="small"
+          :loading="loading"
           :columns="contestColumns"
           :data="contests.data" />
         <n-pagination
@@ -36,15 +39,17 @@ import { ContestApi } from "@/api/request"
 import { Contest, ErrorMsg, PagedData } from "@/api/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import { LanguageNames } from "@/type"
+import EmptyData from "@/components/EmptyData.vue"
 
 const router = useRouter()
 const message = useMessage()
 
 const pagination = ref({
   page: 1,
-  pageSize: 15,
-  loading: true
+  pageSize: 15
 })
+
+const loading = ref<boolean>(true)
 
 const contests = ref<PagedData<Contest>>({
   data: [],
@@ -135,7 +140,7 @@ function queryContests() {
       message.error(`${error}: ${error.msg}`)
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 </script>

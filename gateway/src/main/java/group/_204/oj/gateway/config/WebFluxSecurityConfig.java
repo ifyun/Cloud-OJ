@@ -93,8 +93,7 @@ public class WebFluxSecurityConfig {
 
     @Bean
     public ReactiveAuthenticationManager authenticationManager() {
-        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager
-                = new UserDetailsRepositoryReactiveAuthenticationManager(userService);
+        var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userService);
         authenticationManager.setPasswordEncoder(new BCryptPasswordEncoder());
         return authenticationManager;
     }

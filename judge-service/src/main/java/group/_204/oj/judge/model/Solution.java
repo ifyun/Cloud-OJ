@@ -24,7 +24,7 @@ public class Solution {
     private Date submitTime;
 
     public Solution(String solutionId, String userId, Integer problemId, Integer contestId,
-                    Integer language, int type, Date submitTime) {
+                    Integer language, Integer type, Date submitTime) {
         this.solutionId = solutionId;
         this.userId = userId;
         this.problemId = problemId;

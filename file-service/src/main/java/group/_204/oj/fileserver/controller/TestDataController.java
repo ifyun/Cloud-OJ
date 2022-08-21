@@ -1,6 +1,5 @@
 package group._204.oj.fileserver.controller;
 
-import group._204.oj.fileserver.model.FileInfo;
 import group._204.oj.fileserver.model.TestData;
 import group._204.oj.fileserver.service.NotifyService;
 import group._204.oj.fileserver.util.FileUtil;
@@ -15,7 +14,6 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -33,7 +31,7 @@ public class TestDataController {
      */
     @GetMapping(path = "info")
     public ResponseEntity<?> getTestDataInfo() {
-        List<FileInfo> fileInfos = FileUtil.getFilesInfo(fileDir + "test_data");
+        var fileInfos = FileUtil.getFilesInfo(fileDir + "test_data");
         return fileInfos.size() > 0 ? ResponseEntity.ok(fileInfos) : ResponseEntity.noContent().build();
     }
 
@@ -42,11 +40,11 @@ public class TestDataController {
      */
     @GetMapping(path = "{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable Integer problemId) {
-        File[] files = new File(fileDir + "test_data/" + problemId).listFiles();
-        List<TestData> testDataList = new ArrayList<>();
+        var files = new File(fileDir + "test_data/" + problemId).listFiles();
+        var testDataList = new ArrayList<>();
 
         if (files != null) {
-            for (File file : files) {
+            for (var file : files) {
                 testDataList.add(new TestData(file.getName(), file.length()));
             }
         }
@@ -64,8 +62,8 @@ public class TestDataController {
             return ResponseEntity.badRequest().body("未选择文件.");
         }
 
-        String testDataDir = fileDir + "test_data/";
-        File dir = new File(testDataDir + problemId);
+        var testDataDir = fileDir + "test_data/";
+        var dir = new File(testDataDir + problemId);
 
         if (!dir.exists() && !dir.mkdirs()) {
             log.error("无法创建目录 {}", dir.getName());
@@ -73,8 +71,8 @@ public class TestDataController {
         }
 
         for (MultipartFile file : files) {
-            String fileName = file.getOriginalFilename();
-            File dest = new File(dir + "/" + fileName);
+            var fileName = file.getOriginalFilename();
+            var dest = new File(dir + "/" + fileName);
 
             try {
                 file.transferTo(dest);
@@ -96,8 +94,8 @@ public class TestDataController {
      */
     @DeleteMapping(path = "{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
-        String testDataDir = fileDir + "test_data/";
-        File file = new File(testDataDir + problemId + "/" + name);
+        var testDataDir = fileDir + "test_data/";
+        var file = new File(testDataDir + problemId + "/" + name);
 
         if (file.exists()) {
             if (file.delete()) {

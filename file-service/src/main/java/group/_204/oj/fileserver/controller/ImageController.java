@@ -25,8 +25,8 @@ public class ImageController {
      */
     @PostMapping(path = "avatar")
     public ResponseEntity<?> uploadAvatar(@RequestHeader String userId, @RequestParam MultipartFile file) {
-        String avatarDir = fileDir + "image/avatar/";
-        File avatar = new File(avatarDir + userId + ".png");
+        var avatarDir = fileDir + "image/avatar/";
+        var avatar = new File(avatarDir + userId + ".png");
 
         try {
             FileUtil.writeFile(file, avatar);
@@ -42,19 +42,19 @@ public class ImageController {
      */
     @PostMapping(path = "problem")
     public ResponseEntity<?> uploadProblemImage(@RequestParam MultipartFile file) {
-        String originalName = file.getOriginalFilename();
+        var originalName = file.getOriginalFilename();
 
         if (originalName == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        String imageDir = fileDir + "image/problem/";
-        String ext = originalName.substring(originalName.lastIndexOf("."));
-        String fileName = UUID.randomUUID().toString()
+        var imageDir = fileDir + "image/problem/";
+        var ext = originalName.substring(originalName.lastIndexOf("."));
+        var fileName = UUID.randomUUID().toString()
                 .replaceAll("-", "")
                 .substring(15) + ext;
 
-        File image = new File(imageDir + fileName);
+        var image = new File(imageDir + fileName);
 
         try {
             FileUtil.writeFile(file, image);
@@ -67,14 +67,14 @@ public class ImageController {
 
     @PostMapping(path = "logo")
     public ResponseEntity<?> uploadLogo(@RequestParam MultipartFile file) {
-        String originalName = file.getOriginalFilename();
+        var originalName = file.getOriginalFilename();
 
         if (originalName == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        String dir = fileDir + "image/";
-        File logo = new File(dir + "favicon.png");
+        var dir = fileDir + "image/";
+        var logo = new File(dir + "favicon.png");
 
         try {
             FileUtil.writeFile(file, logo);

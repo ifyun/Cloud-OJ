@@ -5,7 +5,6 @@
         <n-space align="center">
           <n-input-group>
             <n-input
-              size="large"
               maxlength="10"
               show-count
               clearable
@@ -17,19 +16,20 @@
                 </n-icon>
               </template>
             </n-input>
-            <n-button size="large" type="primary" @click="search">
-              搜索题目
-            </n-button>
+            <n-button type="primary" @click="search"> 搜索题目</n-button>
           </n-input-group>
           <n-tag v-if="keywordTag != null" closable @close="clearKeyword">
             {{ keywordTag }}
           </n-tag>
         </n-space>
+        <empty-data v-if="!loading && problems.count === 0" />
         <n-data-table
+          v-else
+          size="small"
           :bordered="false"
           :columns="problemColumns"
           :data="problems.data"
-          :loading="pagination.loading" />
+          :loading="loading" />
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
@@ -63,6 +63,7 @@ import { Search as SearchIcon } from "@vicons/fa"
 import { ProblemApi } from "@/api/request"
 import { ErrorMsg, PagedData, Problem } from "@/api/type"
 import { setTitle, TagUtil } from "@/utils"
+import EmptyData from "@/components/EmptyData.vue"
 
 const store = useStore()
 const route = useRoute()
@@ -71,9 +72,10 @@ const message = useMessage()
 
 const pagination = ref({
   page: 1,
-  pageSize: 20,
-  loading: true
+  pageSize: 20
 })
+
+const loading = ref<boolean>(true)
 
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
@@ -189,7 +191,7 @@ function search() {
  * 获取题目
  */
 function queryProblems() {
-  pagination.value.loading = true
+  loading.value = true
   const { page, pageSize } = pagination.value
   ProblemApi.getAllOpened(page, pageSize, keyword.value)
     .then((data) => {
@@ -199,7 +201,7 @@ function queryProblems() {
       message.error(`${error.code}: ${error.msg}`)
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 </script>

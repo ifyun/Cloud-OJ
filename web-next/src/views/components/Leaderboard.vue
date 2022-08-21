@@ -2,8 +2,11 @@
   <div class="wrap">
     <n-card :bordered="false">
       <n-space vertical>
+        <empty-data v-if="!loading && rankings.count === 0" />
         <n-data-table
-          :loading="pagination.loading"
+          v-else
+          size="small"
+          :loading="loading"
           :columns="rankingColumns"
           :data="rankings.data" />
         <n-pagination
@@ -32,6 +35,7 @@ import { UserAvatar } from "@/components"
 import { RankingApi } from "@/api/request"
 import { ErrorMsg, PagedData, Ranking } from "@/api/type"
 import { setTitle } from "@/utils"
+import EmptyData from "@/components/EmptyData.vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -39,9 +43,10 @@ const message = useMessage()
 
 const pagination = ref({
   page: 1,
-  pageSize: 15,
-  loading: true
+  pageSize: 15
 })
+
+const loading = ref<boolean>(true)
 
 const rankings = ref<PagedData<Ranking>>({
   data: [],
@@ -115,7 +120,7 @@ function queryRankings() {
       message.error(`${error.code}: ${error.msg}`)
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 </script>

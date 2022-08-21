@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group._204.oj.judge.config.AppConfig;
 import group._204.oj.judge.dao.*;
 import group._204.oj.judge.error.UnsupportedLanguageError;
+import group._204.oj.judge.model.Limit;
+import group._204.oj.judge.model.RunResult;
 import group._204.oj.judge.model.Runtime;
-import group._204.oj.judge.model.*;
+import group._204.oj.judge.model.Solution;
 import group._204.oj.judge.type.Language;
 import group._204.oj.judge.type.SolutionResult;
 import group._204.oj.judge.type.SolutionState;
@@ -76,15 +78,15 @@ public class Judgement {
         // 为当前事务禁用外键约束
         dbConfig.disableFKChecks();
 
-        Compile compile = compiler.compile(solution);
+        var compile = compiler.compile(solution);
         compileDao.add(compile);
 
         if (compile.getState() == 0) {
-            Limit limit = problemDao.getLimit(solution.getProblemId());
-            Runtime runtime = new Runtime(solution.getSolutionId());
+            var limit = problemDao.getLimit(solution.getProblemId());
+            var runtime = new Runtime(solution.getSolutionId());
             runtimeDao.add(runtime);
 
-            RunResult result = execute(solution, runtime, limit);
+            var result = execute(solution, runtime, limit);
             saveResult(solution, runtime, result, limit);
             runtimeDao.update(runtime);
         } else {
@@ -108,18 +110,18 @@ public class Judgement {
             return;
         }
 
-        String userId = solution.getUserId();
-        Integer problemId = solution.getProblemId();
-        Integer contestId = solution.getContestId();
+        var userId = solution.getUserId();
+        var problemId = solution.getProblemId();
+        var contestId = solution.getContestId();
 
-        Double passRate = result.getPassRate();
+        var passRate = result.getPassRate();
 
         if (Double.isNaN(passRate)) {
             passRate = 0d;
         }
 
         // 查询历史提交中的最高分
-        Double maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
+        var maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
 
         runtime.setTotal(result.getTotal());
         runtime.setPassed(result.getPassed());
@@ -178,17 +180,17 @@ public class Judgement {
     private RunResult run(ProcessBuilder cmd)
             throws RuntimeError, IOException, InterruptedException {
         RunResult result;
-        Process process = cmd.start();
+        var process = cmd.start();
 
         int exitValue = process.waitFor();
 
         if (exitValue == 0) {
             // 正常退出
-            String resultStr = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
+            var resultStr = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
             result = objectMapper.readValue(resultStr, RunResult.class);
         } else {
             // 非正常退出
-            String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
+            var stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
             if (exitValue == 1) {
                 throw new RuntimeError(stderr);
             } else {
@@ -205,23 +207,23 @@ public class Judgement {
      */
     private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
             throws UnsupportedLanguageError {
-        Language language = Language.get(solution.getLanguage());
+        var language = Language.get(solution.getLanguage());
 
         if (language == null) {
             throw new UnsupportedLanguageError("NULL");
         }
 
-        Integer cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
+        var cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
 
-        String solutionDir = appConfig.getCodeDir() + solution.getSolutionId();
-        ProcessBuilder builder = new ProcessBuilder();
+        var solutionDir = appConfig.getCodeDir() + solution.getSolutionId();
+        var builder = new ProcessBuilder();
         List<String> cmd = new ArrayList<>();
 
         cmd.add("/opt/bin/judge-runner");
 
-        long timeLimit = limit.getTimeout();
-        int outputLimit = limit.getOutputLimit();
-        int memoryLimit = limit.getMemoryLimit();
+        var timeLimit = limit.getTimeout();
+        var outputLimit = limit.getOutputLimit();
+        var memoryLimit = limit.getMemoryLimit();
 
         switch (language) {
             case C:
@@ -256,7 +258,7 @@ public class Judgement {
                 throw new UnsupportedLanguageError(language.toString());
         }
 
-        List<String> config = Arrays.asList(
+        var config = Arrays.asList(
                 "--time=" + timeLimit,
                 "--memory=" + memoryLimit,
                 "--output-size=" + outputLimit,
