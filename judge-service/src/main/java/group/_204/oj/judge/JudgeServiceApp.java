@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -27,7 +26,7 @@ public class JudgeServiceApp {
      */
     private static void extractRunner() {
         try {
-            InputStream inputStream = new ClassPathResource("bin/judge-runner").getInputStream();
+            var inputStream = new ClassPathResource("bin/judge-runner").getInputStream();
             File dir = new File("/opt/bin");
 
             if (!dir.exists() && !dir.mkdirs()) {
@@ -35,7 +34,7 @@ public class JudgeServiceApp {
                 System.exit(1);
             }
 
-            File file = new File("/opt/bin/judge-runner");
+            var file = new File("/opt/bin/judge-runner");
             Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             if (!file.setExecutable(true)) {
@@ -56,7 +55,7 @@ public class JudgeServiceApp {
             System.exit(1);
         }
 
-        String arch = System.getProperty("os.arch");
+        var arch = System.getProperty("os.arch");
         log.info("OS Arch: {}", arch);
 
         if (!arch.equals("amd64")) {
@@ -64,8 +63,8 @@ public class JudgeServiceApp {
             System.exit(1);
         }
 
-        Process p = Runtime.getRuntime().exec("id -u");
-        String uid = StringUtils.chomp(IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8));
+        var process = Runtime.getRuntime().exec("id -u");
+        var uid = StringUtils.chomp(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
 
         if (!uid.equals("0")) {
             log.error("Root permission required.");

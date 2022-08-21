@@ -64,16 +64,16 @@ public class UserService {
     }
 
     public Msg deleteUser(String userId) {
-        int status = userDao.delete(userId) == 1 ? 204 : 410;
+        var status = userDao.delete(userId) == 1 ? 204 : 410;
         return new Msg(status);
     }
 
     public HashMap<String, Object> getOverview(String userId, Integer year) {
-        List<HashMap<Integer, Integer>> preference = userDao.getLanguagePreference(userId);
-        List<HashMap<String, Integer>> activities = userDao.getActivities(userId, year);
-        HashMap<String, String> statistics = userDao.getResultStatistics(userId);
+        var preference = userDao.getLanguagePreference(userId);
+        var activities = userDao.getActivities(userId, year);
+        var statistics = userDao.getResultStatistics(userId);
 
-        HashMap<String, Object> overview = new HashMap<>();
+        var overview = new HashMap<String, Object>();
 
         overview.put("preference", preference);
         overview.put("statistics", statistics);

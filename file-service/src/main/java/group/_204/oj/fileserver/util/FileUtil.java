@@ -24,16 +24,16 @@ public class FileUtil {
     }
 
     public static boolean delFile(String filePath) {
-        File file = new File(filePath);
+        var file = new File(filePath);
         return !file.exists() || file.delete();
     }
 
     public static List<FileInfo> getFilesInfo(String path) {
-        try {
-            return Files.walk(Paths.get(path), Integer.MAX_VALUE)
+        try (var files = Files.walk(Paths.get(path), Integer.MAX_VALUE)) {
+            return files
                     .filter(p -> p.toFile().isFile())
                     .map(p -> {
-                        String relativePath = p.toString()
+                        var relativePath = p.toString()
                                 .replaceAll("\\\\", "/")
                                 .replace(path, "");
                         return new FileInfo(relativePath, p.toFile().lastModified());

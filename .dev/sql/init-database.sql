@@ -79,6 +79,7 @@ create table solution
         primary key,
     problem_id  int                                                                     null,
     contest_id  int                                                                     null,
+    title       varchar(64)                                                             not null,
     language    int                                                                     not null,
     type        int                                           default 0                 not null,
     state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'        not null,
@@ -237,4 +238,4 @@ VALUES (3, 'ROLE_PROBLEM_ADMIN');
 
 -- 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 3);
+VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 0);

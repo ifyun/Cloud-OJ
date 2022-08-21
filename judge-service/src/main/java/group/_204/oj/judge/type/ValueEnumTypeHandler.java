@@ -52,9 +52,9 @@ public class ValueEnumTypeHandler<E extends Enum<?> & BaseEnum> extends BaseType
     }
 
     private <T extends Enum<?> & BaseEnum> T valueOf(Class<T> enumClass, int value) {
-        T[] enumConstants = enumClass.getEnumConstants();
+        var enumConstants = enumClass.getEnumConstants();
 
-        for (T e : enumConstants) {
+        for (var e : enumConstants) {
             if (e.getValue() == value)
                 return e;
         }

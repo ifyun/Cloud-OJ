@@ -22,7 +22,7 @@ public class AsyncConfig {
 
     @Bean
     public Executor judgeExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        var executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix(THREAD_PREFIX);
         executor.setCorePoolSize(appConfig.getJudgePoolSize());
         executor.setMaxPoolSize(appConfig.getJudgePoolSize());
@@ -34,7 +34,7 @@ public class AsyncConfig {
 
     @Bean
     public HashMap<String, Integer> cpus() {
-        HashMap<String, Integer> cpus = new HashMap<>();
+        var cpus = new HashMap<String, Integer>();
 
         if (appConfig.getJudgePoolSize() == 1) {
             cpus.put(THREAD_PREFIX + 1, 0);

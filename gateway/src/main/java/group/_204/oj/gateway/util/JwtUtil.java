@@ -9,7 +9,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Date;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JwtUtil {
@@ -48,11 +47,11 @@ public class JwtUtil {
      * @return Subject or null
      */
     public static String getSubject(String jwt) {
-        String payload = new String(
+        var payload = new String(
                 Base64.getDecoder().decode(jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.')))
         );
 
-        Matcher matcher = Pattern.compile("\"sub\":(\"(.+?)\"|(\\d*))").matcher(payload);
+        var matcher = Pattern.compile("\"sub\":(\"(.+?)\"|(\\d*))").matcher(payload);
 
         if (matcher.find()) {
             return matcher.group(2);

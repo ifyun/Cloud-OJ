@@ -1,13 +1,8 @@
 <template>
-  <n-form
-    ref="loginForm"
-    size="large"
-    label-placement="left"
-    :model="user"
-    :rules="loginRules">
+  <n-form ref="loginForm" :model="user" :rules="loginRules">
     <input type="password" hidden autocomplete="new-password" />
-    <n-form-item path="username">
-      <n-input placeholder="ID" v-model:value="user.username">
+    <n-form-item label="用户名(ID)" path="username">
+      <n-input v-model:value="user.username">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <orcid />
@@ -15,12 +10,8 @@
         </template>
       </n-input>
     </n-form-item>
-    <n-form-item path="password">
-      <n-input
-        type="password"
-        :maxlength="16"
-        placeholder="输入密码"
-        v-model:value="user.password">
+    <n-form-item label="密码" path="password">
+      <n-input type="password" maxlength="16" v-model:value="user.password">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <lock />
@@ -28,7 +19,7 @@
         </template>
       </n-input>
     </n-form-item>
-    <n-form-item>
+    <n-form-item label-placement="left">
       <n-button
         style="width: 100%"
         type="primary"

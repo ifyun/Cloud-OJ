@@ -2,7 +2,6 @@ package group._204.oj.gateway.service;
 
 import group._204.oj.gateway.dao.UserDao;
 import group._204.oj.gateway.model.Role;
-import group._204.oj.gateway.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +32,7 @@ public class UserService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        User user = userDao.findUserById(username);
+        var user = userDao.findUserById(username);
 
         if (user != null) {
             int roleId = user.getRoleId();
@@ -49,7 +48,7 @@ public class UserService implements ReactiveUserDetailsService {
             user.setRoles(roles);
             return Mono.just(user);
         } else {
-            String error = String.format("User(%s) not found.", username);
+            var error = String.format("User(%s) not found.", username);
             log.error(error);
             return Mono.error(new UsernameNotFoundException(error));
         }

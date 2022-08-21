@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -47,20 +45,20 @@ public class AuthController {
 
         log.info("Login success, user={}.", authentication.getName());
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        var authorities = authentication.getAuthorities();
         StringBuilder authoritiesString = new StringBuilder();
 
-        for (GrantedAuthority authority : authorities) {
+        for (var authority : authorities) {
             authoritiesString.append(authority.getAuthority()).append(",");
         }
 
-        User user = (User) authentication.getPrincipal();
-        String userId = user.getUserId();
+        var user = (User) authentication.getPrincipal();
+        var userId = user.getUserId();
         // 更新 Secret
         log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
         user.setSecret(userDao.getSecret(userId));
         // 生成 JWT
-        Date expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
+        var expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
         String jwt = JwtUtil.createJwt(userId, authoritiesString, expireAt, user.getSecret());
 
         user.setToken(jwt);
@@ -75,8 +73,8 @@ public class AuthController {
      */
     @DeleteMapping(path = "logoff")
     public ResponseEntity<?> logoff(@RequestHeader String token) {
-        String userId = JwtUtil.getSubject(token);
-        String secret = userDao.getSecret(userId);
+        var userId = JwtUtil.getSubject(token);
+        var secret = userDao.getSecret(userId);
 
         try {
             JwtUtil.getClaims(token, secret);

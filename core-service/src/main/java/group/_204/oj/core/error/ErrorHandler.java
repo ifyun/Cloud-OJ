@@ -17,7 +17,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<String> sqlErrorHandler(SQLIntegrityConstraintViolationException e) {
-        int code = e.getErrorCode();
+        var code = e.getErrorCode();
         log.error("SQLIntegrityConstraintViolationException: code={}, message={}", code, e.getMessage());
 
         HttpStatus status;
