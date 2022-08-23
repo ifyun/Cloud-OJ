@@ -1,15 +1,15 @@
-export type LanguageOption = {
-  value: number
-  label: string
-  version: string
-}
-
 /**
  * 代码编辑器触发提交时的数据
  */
 export type SourceCode = {
   language: number
   code: string
+}
+
+export type LanguageOption = {
+  value: number
+  label: string
+  version: string
 }
 
 export const LanguageOptions: Array<LanguageOption> = [

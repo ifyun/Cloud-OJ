@@ -5,8 +5,8 @@
     </div>
     <div style="margin-left: 50px">
       <n-menu
-        mode="horizontal"
         v-model:value="$route.name"
+        mode="horizontal"
         :options="navMenuOptions" />
     </div>
     <div style="margin-left: auto">

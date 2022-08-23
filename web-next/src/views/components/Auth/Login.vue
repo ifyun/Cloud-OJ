@@ -1,7 +1,7 @@
 <template>
   <n-form ref="loginForm" :model="user" :rules="loginRules">
     <input type="password" hidden autocomplete="new-password" />
-    <n-form-item label="用户名(ID)" path="username">
+    <n-form-item label="用户名" path="username">
       <n-input v-model:value="user.username">
         <template #prefix>
           <n-icon class="input-prefix-icon">
@@ -11,7 +11,7 @@
       </n-input>
     </n-form-item>
     <n-form-item label="密码" path="password">
-      <n-input type="password" maxlength="16" v-model:value="user.password">
+      <n-input v-model:value="user.password" type="password" maxlength="16">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <lock />
@@ -51,8 +51,6 @@ import { UsernamePassword } from "@/api/type"
 import { Mutations } from "@/store"
 import { setTitle } from "@/utils"
 
-const md5 = require("crypto-js/md5")
-
 const loading = ref<boolean>(false)
 const store = useStore()
 const router = useRouter()
@@ -71,9 +69,9 @@ const loginRules: FormRules = {
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {
       if (!value) {
-        return new Error("请输入用户ID")
+        return new Error("请输入用户名")
       } else if (value.length < 4) {
-        return new Error("这么短不可能是ID")
+        return new Error("这么短不可能是用户名！")
       }
       return true
     }
@@ -85,7 +83,7 @@ const loginRules: FormRules = {
       if (!value) {
         return new Error("请输入密码")
       } else if (value.length < 4) {
-        return new Error("这么短不可能是密码")
+        return new Error("这么短不可能是密码！")
       }
       return true
     }
@@ -100,10 +98,7 @@ function login() {
   loginForm.value?.validate((errors: any) => {
     if (!errors) {
       loading.value = true
-      AuthApi.login({
-        username: user.value.username,
-        password: md5(user.value.password).toString()
-      })
+      AuthApi.login(user.value)
         .then((data) => {
           store.commit(Mutations.SAVE_TOKEN, data)
           router.push({ path: "/" })

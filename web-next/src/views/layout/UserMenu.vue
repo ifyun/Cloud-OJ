@@ -5,8 +5,8 @@
       trigger="click"
       :show-arrow="true"
       placement="bottom-end"
-      @select="userMenuSelect"
-      :options="userInfo.roleId === 1 ? userMenuOptions : adminMenuOptions">
+      :options="userInfo.roleId === 1 ? userMenuOptions : adminMenuOptions"
+      @select="userMenuSelect">
       <n-button text icon-placement="right" style="padding: 6px 0">
         {{ userInfo.name }}
         <template #icon>

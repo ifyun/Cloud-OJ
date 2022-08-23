@@ -36,8 +36,8 @@
     :y="point.y"
     :options="operations"
     :show="showOperations"
-    @select="operationSelect"
-    :on-clickoutside="hideOperation" />
+    :on-clickoutside="hideOperation"
+    @select="operationSelect" />
 </template>
 
 <script setup lang="tsx">
@@ -61,7 +61,7 @@ import {
   EditNoteRound as EditIcon,
   PlaylistAddRound as AddIcon
 } from "@vicons/material"
-import { Contest, ErrorMsg, PagedData, UserInfo } from "@/api/type"
+import { Contest, ErrorMsg, Page, UserInfo } from "@/api/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import { LanguageOptions } from "@/type"
 import { ContestApi } from "@/api/request"
@@ -174,7 +174,7 @@ const contestColumns: DataTableColumns<Contest> = [
 ]
 // endregion
 
-const contests = ref<PagedData<Contest>>({
+const contests = ref<Page<Contest>>({
   data: [],
   count: 0
 })

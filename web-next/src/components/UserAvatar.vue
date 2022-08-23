@@ -3,8 +3,8 @@
     round
     :src="url"
     :size="size"
-    @error="url = ''"
-    style="vertical-align: middle" />
+    style="vertical-align: middle"
+    @error="url = ''" />
 </template>
 
 <script setup lang="ts">

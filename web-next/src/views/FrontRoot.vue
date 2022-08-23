@@ -26,9 +26,9 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { useStore } from "vuex"
+import type { GlobalThemeOverrides } from "naive-ui"
 import {
   darkTheme,
-  GlobalThemeOverrides,
   NConfigProvider,
   NLayout,
   NLayoutContent,

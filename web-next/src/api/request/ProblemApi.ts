@@ -1,7 +1,8 @@
 import { buildHeaders, returnError } from "@/api/utils"
-import { PagedData, Problem, TestData, UserInfo } from "@/api/type"
+import type { Page, Problem, TestData, UserInfo } from "@/api/type"
 import ApiPath from "./ApiPath"
-import axios, { AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
+import axios from "axios"
 
 /**
  * 题目接口
@@ -20,8 +21,8 @@ const ProblemApi = {
     limit: number,
     keyword: string | null = null,
     userId: string | null = null
-  ): Promise<PagedData<Problem>> {
-    return new Promise<PagedData<Problem>>((resolve, reject) => {
+  ): Promise<Page<Problem>> {
+    return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM,
         method: "GET",
@@ -34,7 +35,7 @@ const ProblemApi = {
       })
         .then((res) => {
           if (res.status === 200) {
-            resolve(res.data as PagedData<Problem>)
+            resolve(res.data as Page<Problem>)
           } else {
             resolve({ data: [], count: 0 })
           }
@@ -50,8 +51,8 @@ const ProblemApi = {
     limit: number,
     keyword: string | null = null,
     userInfo: UserInfo
-  ): Promise<PagedData<Problem>> {
-    return new Promise<PagedData<Problem>>((resolve, reject) => {
+  ): Promise<Page<Problem>> {
+    return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM_ADMIN,
         method: "GET",
@@ -64,7 +65,7 @@ const ProblemApi = {
       })
         .then((res) => {
           if (res.status === 200) {
-            resolve(res.data as PagedData<Problem>)
+            resolve(res.data as Page<Problem>)
           } else {
             resolve({ data: [], count: 0 })
           }

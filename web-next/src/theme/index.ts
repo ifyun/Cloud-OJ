@@ -1,4 +1,4 @@
-import { GlobalThemeOverrides } from "naive-ui"
+import type { GlobalThemeOverrides } from "naive-ui"
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {

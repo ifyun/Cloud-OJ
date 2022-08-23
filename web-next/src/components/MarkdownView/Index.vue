@@ -3,8 +3,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import { useStore } from "vuex"
-import { KatexPlugin } from "@/components/MarkdownView/markdown-katex"
+import MarkdownIt from "markdown-it"
+import { KatexPlugin } from "./markdown-katex"
 import markdownItContainer from "markdown-it-container"
 import highlightJs from "highlight.js/lib/core"
 import markdown from "highlight.js/lib/languages/markdown"
@@ -12,7 +14,6 @@ import c from "highlight.js/lib/languages/c"
 import cpp from "highlight.js/lib/languages/cpp"
 import python from "highlight.js/lib/languages/python"
 import java from "highlight.js/lib/languages/java"
-import { computed } from "vue"
 
 highlightJs.registerLanguage("markdown", markdown)
 highlightJs.registerLanguage("c", c)
@@ -20,7 +21,6 @@ highlightJs.registerLanguage("cpp", cpp)
 highlightJs.registerLanguage("python", python)
 highlightJs.registerLanguage("java", java)
 
-const MarkdownIt = require("markdown-it")
 const md = new MarkdownIt({
   html: true,
   highlight: function (str: string, lang: string) {

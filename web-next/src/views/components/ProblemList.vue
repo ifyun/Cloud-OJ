@@ -5,11 +5,11 @@
         <n-space align="center">
           <n-input-group>
             <n-input
+              v-model:value="keyword"
               maxlength="10"
               show-count
               clearable
-              placeholder="输入题目名称、分类"
-              v-model:value="keyword">
+              placeholder="输入题目名称、分类">
               <template #prefix>
                 <n-icon>
                   <search-icon />
@@ -61,7 +61,7 @@ import {
 } from "naive-ui"
 import { Search as SearchIcon } from "@vicons/fa"
 import { ProblemApi } from "@/api/request"
-import { ErrorMsg, PagedData, Problem } from "@/api/type"
+import { ErrorMsg, Page, Problem } from "@/api/type"
 import { setTitle, TagUtil } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
@@ -140,7 +140,7 @@ const problemColumns: DataTableColumns<Problem> = [
 ]
 
 /* 题目数据 */
-const problems = ref<PagedData<Problem>>({
+const problems = ref<Page<Problem>>({
   data: [],
   count: 0
 })

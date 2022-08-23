@@ -32,7 +32,7 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { ErrorMsg, PagedData, Problem, UserInfo } from "@/api/type"
+import { ErrorMsg, Page, Problem, UserInfo } from "@/api/type"
 import { ContestApi } from "@/api/request"
 
 const props = defineProps<{ contestId: number }>()
@@ -42,7 +42,7 @@ const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 
-const problems = ref<PagedData<Problem>>({
+const problems = ref<Page<Problem>>({
   data: [],
   count: 0
 })

@@ -36,7 +36,7 @@ import {
   useMessage
 } from "naive-ui"
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMsg, PagedData } from "@/api/type"
+import { Contest, ErrorMsg, Page } from "@/api/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import { LanguageNames } from "@/type"
 import EmptyData from "@/components/EmptyData.vue"
@@ -51,7 +51,7 @@ const pagination = ref({
 
 const loading = ref<boolean>(true)
 
-const contests = ref<PagedData<Contest>>({
+const contests = ref<Page<Contest>>({
   data: [],
   count: 0
 })

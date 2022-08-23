@@ -1,6 +1,6 @@
 import { createStore } from "vuex"
 import { darkTheme } from "naive-ui"
-import { UserInfo } from "@/api/type"
+import type { UserInfo } from "@/api/type"
 import Mutations from "@/store/mutations"
 
 const THEME = "theme"

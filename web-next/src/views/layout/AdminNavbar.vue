@@ -1,12 +1,3 @@
-<template>
-  <div class="side-navbar">
-    <n-menu
-      :options="menuOptions"
-      :collapsed-icon-size="20"
-      v-model:value="$route.name" />
-  </div>
-</template>
-
 <script setup lang="tsx">
 import { RouterLink } from "vue-router"
 import { NIcon, NMenu } from "naive-ui"
@@ -60,3 +51,12 @@ const menuOptions = [
   }
 ]
 </script>
+
+<template>
+  <div class="side-navbar">
+    <n-menu
+      v-model:value="$route.name"
+      :options="menuOptions"
+      :collapsed-icon-size="20" />
+  </div>
+</template>

@@ -6,7 +6,7 @@
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
     <n-form-item path="userId">
-      <n-input placeholder="用户ID，必须是唯一的" v-model:value="user.userId">
+      <n-input v-model:value="user.userId" placeholder="用户ID，必须是唯一的">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <user-id-icon />
@@ -16,9 +16,9 @@
     </n-form-item>
     <n-form-item path="name">
       <n-input
+        v-model:value="user.name"
         placeholder="昵称"
         maxlength="16"
-        v-model:value="user.name"
         :input-props="{ autocomplete: 'off' }">
         <template #prefix>
           <n-icon class="input-prefix-icon">
@@ -29,10 +29,10 @@
     </n-form-item>
     <n-form-item path="password">
       <n-input
+        v-model:value="user.password"
         placeholder="密码"
         type="password"
         maxlength="16"
-        v-model:value="user.password"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>
           <n-icon class="input-prefix-icon">
@@ -43,10 +43,10 @@
     </n-form-item>
     <n-form-item path="confirmPassword">
       <n-input
+        v-model:value="user.confirmPassword"
         placeholder="确认密码"
         type="password"
         maxlength="16"
-        v-model:value="user.confirmPassword"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>
           <n-icon class="input-prefix-icon">
@@ -56,7 +56,7 @@
       </n-input>
     </n-form-item>
     <n-form-item path="email">
-      <n-input placeholder="邮箱 (可选)" v-model:value="user.email">
+      <n-input v-model:value="user.email" placeholder="邮箱 (可选)">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <mail-icon />
@@ -65,7 +65,7 @@
       </n-input>
     </n-form-item>
     <n-form-item path="section">
-      <n-input placeholder="学院/班级/部门 (可选)" v-model:value="user.section">
+      <n-input v-model:value="user.section" placeholder="学院/班级/部门 (可选)">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <building />

@@ -2,7 +2,7 @@
   font-family: inherit;
 
   &.light {
-    @import "~highlight.js/scss/github";
+    @import "highlight.js/scss/github";
   }
 
   & > *:first-child {
@@ -150,7 +150,7 @@
   }
 
   &.dark {
-    @import "~highlight.js/scss/github-dark";
+    @import "highlight.js/scss/github-dark";
 
     background-color: #18181c;
 

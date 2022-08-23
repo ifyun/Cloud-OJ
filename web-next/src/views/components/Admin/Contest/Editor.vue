@@ -25,10 +25,10 @@
         <n-tab-pane name="base-info" tab="竞赛设置">
           <n-spin :show="loading">
             <n-form
+              ref="contestForm"
               label-placement="left"
               :model="contest"
-              :rules="rules"
-              ref="contestForm">
+              :rules="rules">
               <n-grid :cols="2" x-gap="12">
                 <n-form-item-grid-item
                   :span="1"
@@ -45,18 +45,18 @@
                   label="时间范围"
                   path="timeRange">
                   <n-date-picker
-                    type="datetimerange"
                     v-model:value="contest.timeRange"
+                    type="datetimerange"
                     clearable
                     format="yyyy/MM/dd - HH:mm:ss" />
                 </n-form-item-grid-item>
               </n-grid>
               <n-form-item label="语言限制" path="languages">
                 <n-transfer
+                  v-model:value="languages"
                   source-title="不允许的语言"
                   target-title="允许的语言"
-                  :options="languageOptions"
-                  v-model:value="languages" />
+                  :options="languageOptions" />
               </n-form-item>
             </n-form>
           </n-spin>

@@ -1,4 +1,4 @@
-import { AxiosError } from "axios"
+import type { AxiosError } from "axios"
 import { ErrorMsg, UserInfo } from "@/api/type"
 
 function returnError(error: any): ErrorMsg {

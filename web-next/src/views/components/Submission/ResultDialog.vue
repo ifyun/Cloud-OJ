@@ -19,7 +19,7 @@
       :status="result.status"
       :title="result.title"
       :description="result.desc">
-      <template #footer v-if="showRetry">
+      <template v-if="showRetry" #footer>
         <n-button secondary size="small" type="primary" @click="retry">
           重试
         </n-button>

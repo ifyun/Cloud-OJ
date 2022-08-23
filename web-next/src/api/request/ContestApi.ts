@@ -1,7 +1,8 @@
-import { Contest, PagedData, Problem, UserInfo } from "@/api/type"
+import type { Contest, Page, Problem, UserInfo } from "@/api/type"
 import { buildHeaders, returnError } from "@/api/utils"
 import ApiPath from "./ApiPath"
-import axios, { AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
+import axios from "axios"
 
 const ContestApi = {
   /**
@@ -11,7 +12,7 @@ const ContestApi = {
     page: number,
     limit: number,
     userInfo: UserInfo | null = null
-  ): Promise<PagedData<Contest>> {
+  ): Promise<Page<Contest>> {
     let path: string
     let headers: any
 
@@ -23,7 +24,7 @@ const ContestApi = {
       headers = buildHeaders(userInfo)
     }
 
-    return new Promise<PagedData<Contest>>((resolve, reject) => {
+    return new Promise<Page<Contest>>((resolve, reject) => {
       axios({
         url: path,
         method: "GET",
@@ -98,8 +99,8 @@ const ContestApi = {
     page: number,
     limit: number,
     userInfo: UserInfo
-  ): Promise<PagedData<Problem>> {
-    return new Promise<PagedData<Problem>>((resolve, reject) => {
+  ): Promise<Page<Problem>> {
+    return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problems_not_in_contest/${contestId}`,
         method: "GET",

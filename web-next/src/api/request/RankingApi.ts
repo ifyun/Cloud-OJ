@@ -1,11 +1,11 @@
-import { PagedData, Ranking } from "@/api/type"
+import type { Page, Ranking } from "@/api/type"
 import { returnError } from "@/api/utils"
 import ApiPath from "./ApiPath"
 import axios from "axios"
 
 const RankingApi = {
-  get(page: number, limit: number): Promise<PagedData<Ranking>> {
-    return new Promise<PagedData<Ranking>>((resolve, reject) => {
+  get(page: number, limit: number): Promise<Page<Ranking>> {
+    return new Promise<Page<Ranking>>((resolve, reject) => {
       axios({
         url: ApiPath.RANKING,
         method: "GET",
@@ -16,7 +16,7 @@ const RankingApi = {
       })
         .then((res) => {
           if (res.status == 200) {
-            resolve(res.data as PagedData<Ranking>)
+            resolve(res.data as Page<Ranking>)
           } else {
             resolve({ data: [], count: 0 })
           }

@@ -68,8 +68,8 @@
     :y="point.y"
     :options="operations"
     :show="showOperations"
-    @select="operationSelect"
-    :on-clickoutside="hideOperation" />
+    :on-clickoutside="hideOperation"
+    @select="operationSelect" />
 </template>
 
 <script setup lang="tsx">
@@ -105,7 +105,7 @@ import {
   ManageSearchRound,
   PostAddRound as AddIcon
 } from "@vicons/material"
-import { ErrorMsg, PagedData, Problem, UserInfo } from "@/api/type"
+import { ErrorMsg, Page, Problem, UserInfo } from "@/api/type"
 import { renderIcon, setTitle, TagUtil } from "@/utils"
 import { ProblemApi } from "@/api/request"
 import { Mutations } from "@/store"
@@ -122,7 +122,7 @@ const pagination = ref({
   loading: true
 })
 
-const problems = ref<PagedData<Problem>>({
+const problems = ref<Page<Problem>>({
   data: [],
   count: 0
 })

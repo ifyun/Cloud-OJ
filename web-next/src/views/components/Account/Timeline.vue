@@ -18,14 +18,14 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { NH3, NTimeline, NTimelineItem } from "naive-ui"
 import { UserApi } from "@/api/request"
-import { JudgeResult, PagedData } from "@/api/type"
+import { JudgeResult, Page } from "@/api/type"
 import { LanguageNames, ResultTypes } from "@/type"
 
 const store = useStore()
 
 const userInfo = computed(() => store.state.userInfo)
 
-const solutions = ref<PagedData<JudgeResult>>({ data: [], count: 0 })
+const solutions = ref<Page<JudgeResult>>({ data: [], count: 0 })
 
 onBeforeMount(() => {
   UserApi.getSolutions(1, 5, userInfo.value).then((data) => {

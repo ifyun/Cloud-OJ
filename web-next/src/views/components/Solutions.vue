@@ -29,7 +29,7 @@ import {
 } from "naive-ui"
 import { CircleRound, CheckCircleFilled, ErrorRound } from "@vicons/material"
 import { UserApi } from "@/api/request"
-import { ErrorMsg, JudgeResult, PagedData } from "@/api/type"
+import { ErrorMsg, JudgeResult, Page } from "@/api/type"
 import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
 import moment from "moment"
 
@@ -49,7 +49,7 @@ const pagination = ref({
 const userInfo = computed(() => store.state.userInfo)
 
 const error = ref<ErrorMsg | null>(null)
-const solutions = ref<PagedData<JudgeResult>>({
+const solutions = ref<Page<JudgeResult>>({
   data: [],
   count: 0
 })
