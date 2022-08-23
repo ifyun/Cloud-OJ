@@ -214,9 +214,9 @@ function addTable(cols: number, rows: number) {
   const dividerCell = "|:---------:"
   const bodyCell = "|\t\t\t"
 
-  let header = []
-  let divider = []
-  let body = []
+  const header = []
+  const divider = []
+  const body = []
 
   for (let i = 0; i < cols; i += 1) {
     header.push(headCell)
@@ -228,7 +228,7 @@ function addTable(cols: number, rows: number) {
   divider.push("|")
   body.push("|")
 
-  let bodyRows = []
+  const bodyRows = []
 
   for (let i = 0; i < rows; i += 1) {
     bodyRows.push(body.join(""))
