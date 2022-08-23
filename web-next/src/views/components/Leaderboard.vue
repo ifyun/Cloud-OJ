@@ -33,7 +33,7 @@ import {
 } from "naive-ui"
 import { UserAvatar } from "@/components"
 import { RankingApi } from "@/api/request"
-import { ErrorMsg, PagedData, Ranking } from "@/api/type"
+import { ErrorMsg, Page, Ranking } from "@/api/type"
 import { setTitle } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
@@ -48,7 +48,7 @@ const pagination = ref({
 
 const loading = ref<boolean>(true)
 
-const rankings = ref<PagedData<Ranking>>({
+const rankings = ref<Page<Ranking>>({
   data: [],
   count: 0
 })

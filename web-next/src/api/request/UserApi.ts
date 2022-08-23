@@ -1,4 +1,4 @@
-import { JudgeResult, Overview, PagedData, User, UserInfo } from "@/api/type"
+import type { JudgeResult, Overview, Page, User, UserInfo } from "@/api/type"
 import { buildHeaders, returnError } from "@/api/utils"
 import ApiPath from "./ApiPath"
 import axios from "axios"
@@ -16,8 +16,8 @@ const UserApi = {
     limit: number,
     params: any,
     userInfo: UserInfo
-  ): Promise<PagedData<User>> {
-    return new Promise<PagedData<User>>((resolve, reject) => {
+  ): Promise<Page<User>> {
+    return new Promise<Page<User>>((resolve, reject) => {
       axios({
         url: ApiPath.USER_ADMIN,
         method: "GET",
@@ -81,7 +81,7 @@ const UserApi = {
     userInfo: UserInfo,
     searchParam?: { problemId?: number; title?: string }
   ) {
-    return new Promise<PagedData<JudgeResult>>((resolve, reject) => {
+    return new Promise<Page<JudgeResult>>((resolve, reject) => {
       axios({
         url: ApiPath.HISTORY,
         method: "GET",
@@ -99,7 +99,7 @@ const UserApi = {
       })
         .then((res) => {
           if (res.status === 200) {
-            resolve(res.data as PagedData<JudgeResult>)
+            resolve(res.data as Page<JudgeResult>)
           } else {
             resolve({ data: [], count: 0 })
           }

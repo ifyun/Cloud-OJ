@@ -20,14 +20,14 @@
       <n-layout-header class="header" position="absolute">
         <div class="admin-nav">
           <n-space align="center" size="small">
-            <n-button quaternary @click="collapse" style="padding: 0 6px">
+            <n-button quaternary style="padding: 0 6px" @click="collapse">
               <template #icon>
                 <n-icon>
                   <menu-open :class="{ rotate: collapsed }" />
                 </n-icon>
               </template>
             </n-button>
-            <n-button quaternary @click="reload" style="padding: 0 6px">
+            <n-button quaternary style="padding: 0 6px" @click="reload">
               <template #icon>
                 <n-icon>
                   <refresh-icon />

@@ -27,10 +27,10 @@
       <n-space class="editor-from" vertical size="small">
         <n-spin :show="loading">
           <n-form
+            ref="problemForm"
             :model="problem"
             label-placement="left"
-            :rules="rules"
-            ref="problemForm">
+            :rules="rules">
             <n-grid :cols="2" :x-gap="12">
               <n-form-item-grid-item label="题目名称" path="title" :span="1">
                 <n-input
@@ -99,7 +99,7 @@
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="分类/标签" path="tags">
-              <n-dynamic-tags type="primary" v-model:value="problem.tags" />
+              <n-dynamic-tags v-model:value="problem.tags" type="primary" />
             </n-form-item>
           </n-form>
         </n-spin>

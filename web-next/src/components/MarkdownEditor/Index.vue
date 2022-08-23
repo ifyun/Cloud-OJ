@@ -2,9 +2,9 @@
 <template>
   <div class="markdown-editor">
     <markdown-toolbar
+      style="margin-bottom: 2px"
       @click="toolbarClick"
-      @insertTable="insertTable"
-      style="margin-bottom: 2px" />
+      @insert-table="insertTable" />
     <textarea ref="editor" />
   </div>
 </template>

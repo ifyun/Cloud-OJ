@@ -9,10 +9,10 @@
               :options="searchTypes"
               style="width: 150px" />
             <n-input
+              v-model:value="keyword"
               clearable
               show-count
-              maxlength="15"
-              v-model:value="keyword" />
+              maxlength="15" />
             <n-button type="primary" @click="search">
               <template #icon>
                 <n-icon>
@@ -64,7 +64,7 @@ import {
 } from "@vicons/fa"
 import { PersonSearchRound as SearchIcon } from "@vicons/material"
 import { UserAvatar } from "@/components"
-import { ErrorMsg, PagedData, User, UserInfo } from "@/api/type"
+import { ErrorMsg, Page, User, UserInfo } from "@/api/type"
 import { UserApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import moment from "moment"
@@ -90,7 +90,7 @@ const searchTypes = [
 const searchType = ref<number>(1)
 const keyword = ref<string>("")
 
-const users = ref<PagedData<User>>({
+const users = ref<Page<User>>({
   data: [],
   count: 0
 })

@@ -238,4 +238,4 @@ VALUES (3, 'ROLE_PROBLEM_ADMIN');
 
 -- 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
-VALUES ('admin', '管理员', '$2a$10$t3dpgJd2ORY55peHhhXHPu8u/YlLJ16wcaWYQmDkvR2CtwB.Y/nTG', UUID(), 0);
+VALUES ('admin', '管理员', '$2a$10$i8D62CjX7/.z8juoUACG9ecqatDl9JkizB5XoA9UswPtb8WmnCAG6', UUID(), 0);

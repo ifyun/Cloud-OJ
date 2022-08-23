@@ -30,7 +30,6 @@ export class UserInfo {
   name?: string
   token?: string
   roleId = 0
-  roleName?: string
 }
 
 /**
@@ -98,7 +97,7 @@ export class Ranking {
 /**
  * 分页数据
  */
-export type PagedData<T> = {
+export type Page<T> = {
   data: T[]
   count: number
 }

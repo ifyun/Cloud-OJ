@@ -1,5 +1,5 @@
 import { buildHeaders, returnError } from "@/api/utils"
-import { JudgeResult, SubmitData, UserInfo } from "@/api/type"
+import type { JudgeResult, SubmitData, UserInfo } from "@/api/type"
 import ApiPath from "./ApiPath"
 import axios from "axios"
 

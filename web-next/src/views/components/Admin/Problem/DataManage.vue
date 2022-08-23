@@ -22,7 +22,7 @@
             :data="uploadData"
             accept=".in,.out"
             :disabled="disableUpload"
-            @beforeUpload="beforeUpload"
+            @before-upload="beforeUpload"
             @finish="handleUploadFinish">
             <n-upload-dragger style="width: 100%">
               <div>

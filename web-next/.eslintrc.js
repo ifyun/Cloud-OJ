@@ -1,22 +1,28 @@
 module.exports = {
   root: true,
   env: {
-    node: true,
-    "vue/setup-compiler-macros": true
+    browser: true,
+    node: true
   },
   extends: [
-    "plugin:vue/vue3-essential",
     "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:prettier/recommended",
     "@vue/typescript",
-    "plugin:prettier/recommended"
+    "prettier"
   ],
+  parser: "vue-eslint-parser",
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2022,
+    ecmaFeatures: {
+      jsx: true,
+      modules: true
+    },
+    sourceType: "module"
   },
+  plugins: ["vue", "prettier"],
   rules: {
     "vue/multi-word-component-names": "off",
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     semi: ["error", "never"]
   }

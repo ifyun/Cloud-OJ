@@ -1,7 +1,8 @@
 import { buildHeaders, returnError } from "@/api/utils"
-import { UsernamePassword, UserInfo } from "@/api/type"
+import type { UserInfo, UsernamePassword } from "@/api/type"
 import ApiPath from "./ApiPath"
-import axios, { AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
+import axios from "axios"
 
 /**
  * 授权验证接口

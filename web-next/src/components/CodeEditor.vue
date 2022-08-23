@@ -8,7 +8,7 @@
         v-model:value="language"
         :options="languageOptions"
         :render-label="renderLabel" />
-      <n-button type="primary" @click="submit" :loading="loading">
+      <n-button type="primary" :loading="loading" @click="submit">
         <template #icon>
           <n-icon>
             <submit-icon />
@@ -33,7 +33,8 @@ import {
   NSelect
 } from "naive-ui"
 import { PlayCircleRound as SubmitIcon } from "@vicons/material"
-import { SourceCode, LanguageOption, LanguageOptions } from "@/type"
+import type { LanguageOption, SourceCode } from "@/type"
+import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"

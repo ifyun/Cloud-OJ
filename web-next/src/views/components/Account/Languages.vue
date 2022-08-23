@@ -3,9 +3,9 @@
     <n-h3 strong style="margin-bottom: 12px">常用语言</n-h3>
     <div class="languages">
       <div
-        class="language-bar"
         v-for="item in data"
         :key="item.name"
+        class="language-bar"
         :style="{ flexGrow: item.percent, backgroundColor: item.color }" />
     </div>
     <div class="language-detail">
