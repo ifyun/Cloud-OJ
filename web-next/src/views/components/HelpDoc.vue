@@ -3,19 +3,23 @@
     <div class="help">
       <n-card :bordered="false">
         <n-h1>帮助文档</n-h1>
-        <n-alert type="info" title="提示">
+        <n-alert :bordered="false" type="info" title="提示">
           此文档中编程语言的编译器(解释器)及其版本仅表示表示默认版本，管理员可能使用了不同的版本。
         </n-alert>
         <n-h2>语言支持</n-h2>
         <n-data-table :columns="languageColumns" :data="languageData" />
         <n-p>
-          支持 SQL（SQLite），题目名称右边有 SQL 标签表示这是一道数据库题目。
+          支持 SQL(SQLite)，题目名称右边有 SQL 标签表示这是一道数据库题目。
         </n-p>
         <n-h2>注意事项</n-h2>
-        <n-alert type="warning" title="Java 语言特殊要求">
+        <n-alert :bordered="false" type="warning" title="Java 语言特殊要求">
           Java 语言的类名必须为 Solution，且不能使用 package 关键字！
         </n-alert>
-        <n-alert style="margin-top: 25px" type="warning" title="输入输出">
+        <n-alert
+          :bordered="false"
+          type="warning"
+          title="输入输出"
+          style="margin-top: 25px">
           <ul>
             <li>
               你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容
@@ -31,7 +35,11 @@
           :single-line="false"
           :columns="judgeColumns"
           :data="judgeData" />
-        <n-alert style="margin-top: 25px" type="info" title="内存与时间限制">
+        <n-alert
+          :bordered="false"
+          type="info"
+          title="内存与时间限制"
+          style="margin-top: 25px">
           <ul>
             <li>对于内存和时间超限，仅超限的那一组测试点为 0 分</li>
             <li>对于 Java/Kotlin/JavaScript 语言，内存限制按 2 倍计算</li>

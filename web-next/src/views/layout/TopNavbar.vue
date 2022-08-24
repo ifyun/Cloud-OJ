@@ -5,7 +5,7 @@
     </div>
     <div style="margin-left: 50px">
       <n-menu
-        v-model:value="$route.name"
+        v-model:value="routeName"
         mode="horizontal"
         :options="navMenuOptions" />
     </div>
@@ -24,8 +24,11 @@ import { NMenu, NSpace } from "naive-ui"
 import { Logo } from "@/components"
 import ThemeSwitch from "./ThemeSwitch.vue"
 import UserMenu from "./UserMenu.vue"
+import { computed } from "vue"
 
 const route = useRoute()
+
+const routeName = computed(() => route.name?.toString())
 
 const navMenuOptions = [
   {

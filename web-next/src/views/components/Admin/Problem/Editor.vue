@@ -155,11 +155,12 @@ import {
   HelpOutlineRound as HelpIcon,
   SaveOutlined as SaveIcon
 } from "@vicons/material"
-import { MarkdownEditor, MarkdownHelp, MarkdownView } from "@/components"
+import { MarkdownEditor, MarkdownView } from "@/components"
 import { ErrorMsg, Problem, UserInfo } from "@/api/type"
 import { ProblemApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import Mutations from "@/store/mutations"
+import MarkdownHelp from "./help.md?raw"
 
 const problemForm = ref<HTMLFormElement | null>(null)
 

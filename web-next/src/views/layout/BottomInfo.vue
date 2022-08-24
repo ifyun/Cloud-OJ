@@ -1,11 +1,23 @@
+<script setup lang="ts">
+import { NButton, NDivider, NIcon } from "naive-ui"
+import { Github as GithubIcon } from "@vicons/fa"
+</script>
+
 <template>
-  <div class="footer">
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 0;
+    ">
     <n-button
       text
       tag="a"
       href="https://github.com/imcloudfloating"
       target="_blank">
-      © Cloud Li
+      © Cloud
     </n-button>
     <n-divider vertical />
     <n-button
@@ -24,18 +36,3 @@
     <n-button text>MIT License</n-button>
   </div>
 </template>
-
-<script setup lang="ts">
-import { NButton, NDivider, NIcon } from "naive-ui"
-import { Github as GithubIcon } from "@vicons/fa"
-</script>
-
-<style scoped>
-.footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0;
-}
-</style>

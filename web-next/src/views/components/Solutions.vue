@@ -4,6 +4,13 @@
       :columns="columns"
       :data="solutions.data"
       :loading="pagination.loading" />
+    <n-pagination
+      v-model:page="pagination.page"
+      :page-size="pagination.pageSize"
+      :item-count="solutions.count"
+      @update:page="pageChange">
+      <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+    </n-pagination>
   </n-space>
 </template>
 
@@ -16,9 +23,10 @@ export default {
 <script setup lang="tsx">
 import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
+  NPagination,
   NSpace,
   NDataTable,
   NButton,
@@ -34,6 +42,7 @@ import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
 import moment from "moment"
 
 const store = useStore()
+const route = useRoute()
 const router = useRouter()
 
 withDefaults(defineProps<{ problemId: string | null }>(), {
@@ -150,6 +159,9 @@ const columns: DataTableColumns<JudgeResult> = [
 ]
 
 onBeforeMount(() => {
+  if (route.query.page) {
+    pagination.value.page = Number(route.query.page)
+  }
   querySolutions()
 })
 
@@ -160,5 +172,11 @@ function querySolutions() {
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (pagination.value.loading = false))
+}
+
+function pageChange(page: number) {
+  router.push({
+    query: { tab: "solutions", page }
+  })
 }
 </script>

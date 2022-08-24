@@ -1,6 +1,10 @@
 <template>
   <n-space v-if="isLoggedIn" align="center" size="small">
-    <n-avatar class="avatar" round :src="avatar" @error="avatar = undefined" />
+    <n-avatar
+      round
+      :src="avatar"
+      style="vertical-align: middle"
+      @error="avatar = ''" />
     <n-dropdown
       trigger="click"
       :show-arrow="true"
@@ -136,9 +140,3 @@ function exit() {
   })
 }
 </script>
-
-<style scoped>
-.avatar {
-  vertical-align: middle;
-}
-</style>
