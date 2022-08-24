@@ -11,7 +11,7 @@
     <div class="language-detail">
       <div v-for="item in data" :key="item.name">
         <div class="item">
-          <n-icon :color="item.color">
+          <n-icon :color="item.color" size="12">
             <circle-round />
           </n-icon>
           <n-text depth="1" strong>{{ item.name }}</n-text>
@@ -45,7 +45,7 @@ const props = defineProps<{ languages: Array<Language> }>()
 type LanguageItem = {
   name: string
   count: number
-  percent: string
+  percent: number
   color: string
 }
 
@@ -57,7 +57,7 @@ const data = computed<Array<LanguageItem>>(() => {
     items.push({
       name: LanguageNames[val.language],
       count: val.count,
-      percent: ((val.count / total) * 100).toFixed(1),
+      percent: Number(((val.count / total) * 100).toFixed(1)),
       color: colors[val.language]
     })
   })
@@ -93,18 +93,22 @@ const data = computed<Array<LanguageItem>>(() => {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
-  width: 210px;
+  justify-content: left;
+  width: 250px;
   margin-top: 10px;
+
+  *:nth-child(odd) {
+    margin-left: 0;
+  }
+
+  *:nth-child(even) {
+    margin-left: 24px;
+  }
 
   .item {
     display: flex;
     align-items: center;
     margin-top: 3px;
-
-    *:first-child {
-      margin-left: 0;
-    }
 
     *:nth-child(2) {
       margin-left: 10px;

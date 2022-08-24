@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import { RouterLink } from "vue-router"
+import { computed } from "vue"
+import { RouterLink, useRoute } from "vue-router"
 import { NIcon, NMenu } from "naive-ui"
 import {
   Book as BookIcon,
@@ -7,6 +8,9 @@ import {
   Users as UsersIcon
 } from "@vicons/fa"
 import { SettingsRound as SettingsIcon } from "@vicons/material"
+
+const route = useRoute()
+const routeName = computed(() => route.name?.toString())
 
 const menuOptions = [
   {
@@ -55,7 +59,7 @@ const menuOptions = [
 <template>
   <div class="side-navbar">
     <n-menu
-      v-model:value="$route.name"
+      v-model:value="routeName"
       :options="menuOptions"
       :collapsed-icon-size="20" />
   </div>

@@ -15,30 +15,27 @@
                   {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>
                 <n-space size="small">
-                  <badge label="分数" size="medium" color="#4EAA25">
+                  <n-tag type="success" size="small" round :bordered="false">
                     <template #icon>
-                      <question-circle />
+                      <n-icon :component="QuestionCircle" />
                     </template>
-                    {{ problem.score }}
-                  </badge>
-                  <badge label="CPU" size="medium" color="#0288D1">
+                    {{ problem.score }} 分
+                  </n-tag>
+                  <n-tag type="error" size="small" round :bordered="false">
                     <template #icon>
-                      <timer-outlined />
+                      <n-icon :component="TimerOutlined" />
                     </template>
-                    {{ problem.timeout }} 毫秒
-                  </badge>
-                  <badge label="RAM" size="medium" color="#4EAA25">
+                    时间限制 {{ problem.timeout }} ms
+                  </n-tag>
+                  <n-tag type="warning" size="small" round :bordered="false">
                     <template #icon>
-                      <memory-round />
+                      <n-icon :component="MemoryRound" />
                     </template>
-                    {{ problem.memoryLimit }} MB
-                  </badge>
-                  <badge label="输出" size="medium" color="#D14748">
-                    <template #icon>
-                      <file-alt />
-                    </template>
-                    {{ problem.outputLimit }} MB
-                  </badge>
+                    内存限制 {{ problem.memoryLimit }} MB
+                  </n-tag>
+                  <n-tag type="info" size="small" round :bordered="false">
+                    输出限制 {{ problem.outputLimit }} MB
+                  </n-tag>
                 </n-space>
                 <!-- 题目内容 -->
                 <markdown-view
@@ -75,16 +72,18 @@ import { useStore } from "vuex"
 import {
   NCard,
   NH2,
+  NIcon,
   NModal,
   NScrollbar,
   NSpace,
+  NTag,
   NTabPane,
   NTabs,
   useMessage
 } from "naive-ui"
-import { FileAlt, QuestionCircle } from "@vicons/fa"
+import { QuestionCircle } from "@vicons/fa"
 import { MemoryRound, TimerOutlined } from "@vicons/material"
-import { Badge, CodeEditor, ErrorResult, MarkdownView } from "@/components"
+import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
 import Skeleton from "./Skeleton.vue"
 import ResultDialog from "./ResultDialog.vue"
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"

@@ -24,7 +24,7 @@
           :page-size="pagination.pageSize"
           :item-count="contests.count"
           @update:page="pageChange">
-          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+          <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
     </n-card>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, nextTick, onBeforeMount, ref } from "vue"
+import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import {
@@ -86,9 +86,9 @@ const point = ref({
   y: 0
 })
 
-const rowProps = (row: Contest) => {
+const rowProps = (row: Contest): HTMLAttributes => {
   return {
-    onContextmenu: (e: PointerEvent) => {
+    onContextmenu: (e: MouseEvent) => {
       if ((e.target as Element).tagName !== "TD") {
         return
       }
