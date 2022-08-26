@@ -1,6 +1,5 @@
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2"
-  # Image tag
   WEB: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web
   GATEWAY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/gateway
   REGISTRY: registry.cn-hangzhou.aliyuncs.com/cloud_oj/registry
@@ -22,31 +21,16 @@ npm-build:
   stage: npm-build
   script:
     - cd web && ls
-    - npm config set registry https://registry.npm.taobao.org/
     - npm install
     - npm run build
     - cd ../ && cp -r web/dist .docker/web/
-  artifacts:
-    name: "Cloud-OJ_Dockerfile"
-    paths:
-      - .docker
 mvn-package:
   only:
     - tags
-  image: ghcr.io/imcloudfloating/maven-aliyun:3.8-openjdk-8
+  image: ghcr.io/imcloudfloating/maven-aliyun:3.8-openjdk-11
   stage: mvn-package
   script:
     - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
-    - cp -r gateway/target/*.jar .docker/gateway/
-    - cp -r registry/target/*.jar .docker/registry/
-    - cp -r file-service/target/*.jar .docker/file-service/
-    - cp -r core-service/target/*.jar .docker/core-service/
-    - cp -r judge-service/target/*.jar .docker/judge-service/
-    - du -h docker
-  artifacts:
-    name: "Cloud-OJ_Dockerfile"
-    paths:
-      - docker
 docker-build:
   only:
     - tags
@@ -54,9 +38,9 @@ docker-build:
   script:
     - docker -v
     - docker build -t $WEB .docker/web/
-    - docker build -t $GATEWAY .docker/gateway/
-    - docker build -t $REGISTRY .docker/registry/
-    - docker build -t $FILE_SERVICE .docker/file-service/
-    - docker build -t $MANAGER_SERVICE .docker/core-service/
-    - docker build -t $JUDGE_SERVICE .docker/judge-service/
+    - docker build -t $REGISTRY ./registry/
+    - docker build -t $GATEWAY ./gateway/
+    - docker build -t $FILE_SERVICE ./file-service/
+    - docker build -t $MANAGER_SERVICE ./core-service/
+    - docker build -t $JUDGE_SERVICE ./judge-service/
     - docker rmi $(docker images -q -f dangling=true) || true

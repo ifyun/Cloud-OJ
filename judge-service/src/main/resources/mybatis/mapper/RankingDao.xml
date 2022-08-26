@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="group._204.oj.judge.dao.RankingDao">
+<mapper namespace="cloud.oj.judge.dao.RankingDao">
     <!--更新用户分数信息 -->
     <insert id="update">
         replace into leaderboard(user_id, committed, passed, score, update_time)

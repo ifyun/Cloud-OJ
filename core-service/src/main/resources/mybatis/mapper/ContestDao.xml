@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="group._204.oj.core.dao.ContestDao">
+<mapper namespace="cloud.oj.core.dao.ContestDao">
     <select id="isContestEnded" resultType="java.lang.Boolean">
         select if(end_at &lt;= now(), true, false)
         from contest
@@ -20,7 +20,7 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getProblems" resultType="group._204.oj.core.model.Problem">
+    <select id="getProblems" resultType="cloud.oj.core.model.Problem">
         <choose>
             <when test="userId != null">
                 select cp.*, result
@@ -55,11 +55,11 @@
         from contest
         where contest_id = #{contestId}
     </select>
-    <insert id="addContest" parameterType="group._204.oj.core.model.Contest">
+    <insert id="addContest" parameterType="cloud.oj.core.model.Contest">
         insert into contest(contest_name, start_at, end_at, languages)
             value (#{contestName}, #{startAt}, #{endAt}, #{languages})
     </insert>
-    <update id="updateContest" parameterType="group._204.oj.core.model.Contest">
+    <update id="updateContest" parameterType="cloud.oj.core.model.Contest">
         update contest
         set contest_name = #{contestName},
             start_at     = #{startAt},

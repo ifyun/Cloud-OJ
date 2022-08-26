@@ -1,16 +1,4 @@
-server:
-  port: 8761
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
 logging:
-  file:
-    name: /tmp/cloud-oj/registry.log
   level:
     root: warn
+    cloud.oj: info

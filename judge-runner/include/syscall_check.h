@@ -1,5 +1,5 @@
-#ifndef RULES_H
-#define RULES_H 1
+#ifndef _SYSCALL_CHECKER_H
+#define _SYSCALL_CHECKER_H 1
 
 #include <sys/user.h>
 #include <string>
@@ -34,4 +34,4 @@ public:
     bool check(struct user_regs_struct *regs);
 };
 
-#endif //RULES_H
+#endif //_SYSCALL_CHECKER_H

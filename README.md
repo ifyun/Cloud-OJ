@@ -14,20 +14,20 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - 代码高亮
 - 可扩展判题服务
 
-## Language Supports
+## Supported languages
 
 - SQLite
-- C（gcc / std = c11）
-- C++（g++ / std=c++17）
-- Java（OpenJDK 1.8）
-- Python（3.5）
+- C
+- C++
+- Java
+- Python
 - Bash Shell
-- C#（Mono 3.6.2 / C# 5.0）
-- JavaScript（Node.js LTS）
-- Kotlin（1.4.10）
-- Go（1.15.7）
+- C#
+- JavaScript
+- Kotlin
+- Go
 
-## Screenshots
+## Preview
 
 <table>
 <tr>
@@ -36,22 +36,22 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 </tr>
 </table>
 
-## Build
+## Build & Debug
 
 需要以下组件:
 
 - CMake 3.16
 - Linux / WSL
-- Maven
+- Maven 3.8
 - OpenJDK 11+
 - Node.js v16
 
-## Credits
+## Technologies
 
 - [Spring](https://spring.io/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Boost](https://www.boost.org/)
-- [Vue](https://vuejs.org/)
+- [Vue 3](https://vuejs.org/)
 - [Naive UI](https://naiveui.com/)
 - [CodeMirror](https://codemirror.net/)
 - [KaTeX](https://katex.org/)

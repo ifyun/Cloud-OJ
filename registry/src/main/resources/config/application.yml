@@ -1,3 +1,5 @@
+server:
+  port: 8761
 spring:
   profiles:
     active: dev
@@ -14,3 +16,12 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

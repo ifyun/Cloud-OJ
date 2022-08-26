@@ -1,18 +1,3 @@
-server:
-  port: 8001
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-    hikari:
-      connection-timeout: 3000
-      maximum-pool-size: 10
-      max-lifetime: 30000
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
+logging:
+  level:
+    cloud.oj: debug

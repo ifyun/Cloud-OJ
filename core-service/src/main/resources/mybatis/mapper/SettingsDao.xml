@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="group._204.oj.core.dao.SettingsDao">
-    <select id="get" resultType="group._204.oj.core.model.Settings">
+<mapper namespace="cloud.oj.core.dao.SettingsDao">
+    <select id="get" resultType="cloud.oj.core.model.Settings">
         select *
         from settings
         where id = 0 for
         update;
     </select>
-    <update id="update" parameterType="group._204.oj.core.model.Settings">
+    <update id="update" parameterType="cloud.oj.core.model.Settings">
         update settings
         set icp                      = #{icp},
             icp_url                  = #{icpUrl},

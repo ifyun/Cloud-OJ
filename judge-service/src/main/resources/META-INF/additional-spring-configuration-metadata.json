@@ -2,7 +2,7 @@
   "properties": [
     {
       "name": "app",
-      "type": "group._204.oj.judge.config.AppConfig",
+      "type": "cloud.oj.judge.config.AppConfig",
       "description": "应用程序配置."
     },
     {
