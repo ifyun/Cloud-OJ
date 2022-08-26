@@ -1,21 +1,3 @@
-server:
-  port: 8000
-spring:
-  servlet:
-    multipart:
-      max-file-size: 128MB
-      max-request-size: 128MB
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: admin
-    password: admin
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka/
-app:
-  file-dir: /var/lib/cloud_oj/
+logging:
+  level:
+    cloud.oj: debug
