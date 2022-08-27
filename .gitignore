@@ -1,6 +1,9 @@
 dist/
 target/
-.vscode/
+
+### IntelliJ IDEA ###
 .idea/
-.gradle/
 *.iml
+
+### VS Code ###
+.vscode/
