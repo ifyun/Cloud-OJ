@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.oj.judge.dao.ProblemDao">
+    <select id="getLimit" resultType="cloud.oj.judge.entity.Limit">
+        select timeout, memory_limit, output_limit, score
+        from problem
+        where problem_id = #{problemId}
+    </select>
+    <select id="getSql" resultType="java.lang.String">
+        select `sql`
+        from problem
+        where problem_id = #{problemId}
+    </select>
+</mapper>

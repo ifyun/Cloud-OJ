@@ -25,18 +25,16 @@ else
   cd web
   npm install --loglevel info
   npm run build
-  cd ../
   # build services
+  cd ../services
   mvn clean -B package '-Dmaven.test.skip=true' --file pom.xml
-  cd target
-  mkdir web gateway registry file-service core-service judge-service
   cd ../
   # copy artifacts
   cp -r web/dist/* build/web/
-  cp -r gateway/target/*.jar target/gateway.jar
-  cp -r registry/target/*.jar target/registry.jar
-  cp -r file-service/target/*.jar target/file-service.jar
-  cp -r core-service/target/*.jar target/core-service.jar
-  cp -r judge-service/target/*.jar target/judge-service.jar
+  cp -r services/gateway/target/*.jar target/gateway.jar
+  cp -r services/registry/target/*.jar target/registry.jar
+  cp -r services/file-service/target/*.jar target/file-service.jar
+  cp -r services/core-service/target/*.jar target/core-service.jar
+  cp -r services/judge-service/target/*.jar target/judge-service.jar
   echo "=================================== Success ==================================="
 fi

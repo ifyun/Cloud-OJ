@@ -30,7 +30,7 @@ mvn-package:
   image: ghcr.io/imcloudfloating/maven-aliyun:3.8-openjdk-11
   stage: mvn-package
   script:
-    - mvn -B package '-Dmaven.test.skip=true' --file pom.xml
+    - cd services && mvn -B package '-Dmaven.test.skip=true' --file pom.xml
 docker-build:
   only:
     - tags
@@ -38,9 +38,9 @@ docker-build:
   script:
     - docker -v
     - docker build -t $WEB .docker/web/
-    - docker build -t $REGISTRY ./registry/
-    - docker build -t $GATEWAY ./gateway/
-    - docker build -t $FILE_SERVICE ./file-service/
-    - docker build -t $MANAGER_SERVICE ./core-service/
-    - docker build -t $JUDGE_SERVICE ./judge-service/
+    - docker build -t $REGISTRY services/registry/
+    - docker build -t $GATEWAY services/gateway/
+    - docker build -t $FILE_SERVICE services/file-service/
+    - docker build -t $MANAGER_SERVICE services/core-service/
+    - docker build -t $JUDGE_SERVICE services/judge-service/
     - docker rmi $(docker images -q -f dangling=true) || true

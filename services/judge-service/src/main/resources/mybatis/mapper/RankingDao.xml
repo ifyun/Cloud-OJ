@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.oj.judge.dao.RankingDao">
+    <insert id="incCommitted">
+        insert into leaderboard
+        set user_id   = #{userId},
+            committed = committed + 1
+        on duplicate key update committed = committed + 1
+    </insert>
+    <insert id="incCommittedForContest">
+        insert into leaderboard_contest
+        set user_id    = #{userId},
+            contest_id = #{contestId},
+            committed  = committed + 1
+        on duplicate key update committed = committed + 1
+    </insert>
+    <insert id="update">
+        replace into leaderboard(user_id, committed, passed, score, update_time)
+        select #{userId}                                     as user_id,
+               sum(committed)                                as committed,
+               count((case when (pass_rate = 1) then 1 end)) as passed,
+               sum(score)                                    as score,
+               from_unixtime(#{time})                        as update_time
+        from (select count(problem_id) as committed,
+                     max(pass_rate)    as pass_rate,
+                     max(score)        as score
+              from solution
+              where contest_id is null
+                and user_id = #{userId}
+              group by problem_id) as user_score;
+    </insert>
+    <insert id="updateForContest">
+        replace into leaderboard_contest(user_id, committed, passed, score, update_time)
+        select #{userId}                                     as user_id,
+               sum(committed)                                as committed,
+               count((case when (pass_rate = 1) then 1 end)) as passed,
+               sum(score)                                    as score,
+               from_unixtime(#{time})                        as update_time
+        from (select count(problem_id) as committed,
+                     max(pass_rate)    as pass_rate,
+                     max(score)        as score
+              from solution
+              where contest_id = #{contestId}
+                and user_id = #{userId}
+              group by problem_id) as user_score;
+    </insert>
+</mapper>

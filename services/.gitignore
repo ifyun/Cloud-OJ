@@ -1,9 +1,6 @@
-dist/
-target/
-
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iml
 
 ### VS Code ###
-.vscode/
+.vscode

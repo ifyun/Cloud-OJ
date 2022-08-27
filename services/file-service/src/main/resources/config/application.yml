@@ -1,0 +1,35 @@
+server:
+  port: 8082
+spring:
+  profiles:
+    active: dev
+  application:
+    name: file-service
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
+  rabbitmq:
+    host: ${RABBIT_URL:127.0.0.1}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:admin}
+    password: ${RABBIT_PASSWORD:admin}
+  jackson:
+    default-property-inclusion: non_null
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+app:
+  file-dir: /var/lib/cloud-oj/

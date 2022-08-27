@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.oj.judge.dao.CompileDao">
+    <select id="get" parameterType="cloud.oj.judge.entity.Compile">
+        select *
+        from compile
+        where solution_id = #{solutionId};
+    </select>
+
+    <insert id="add" parameterType="cloud.oj.judge.entity.Compile">
+        insert into compile (solution_id, state, info)
+        values (#{solutionId}, #{state}, #{info});
+    </insert>
+</mapper>
