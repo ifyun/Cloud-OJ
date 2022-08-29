@@ -5,10 +5,10 @@ import cloud.oj.judge.dao.DatabaseConfig;
 import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.dao.RuntimeDao;
 import cloud.oj.judge.dao.SolutionDao;
-import cloud.oj.judge.model.Runtime;
-import cloud.oj.judge.model.Solution;
-import cloud.oj.judge.type.SolutionResult;
-import cloud.oj.judge.type.SolutionState;
+import cloud.oj.judge.entity.Runtime;
+import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.enums.SolutionResult;
+import cloud.oj.judge.enums.SolutionState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +72,7 @@ public class SqlJudgement {
                 runtime.setPassed(r.correct ? 1 : 0);
                 runtime.setTime(r.time);
                 runtime.setMemory(0L);
-            } catch (InterruptedException | IOException e) {
+            } catch (IOException e) {
                 log.warn(e.getMessage());
                 runtime.setResult(SolutionResult.RE);
                 runtime.setInfo(e.getMessage());
@@ -82,7 +82,7 @@ public class SqlJudgement {
         solution.setState(SolutionState.JUDGED);
         solution.setResult(runtime.getResult());
         runtimeDao.update(runtime);
-        solutionDao.update(solution);
+        solutionDao.updateState(solution);
     }
 
     /**
@@ -94,7 +94,7 @@ public class SqlJudgement {
      * @param dbFile     数据库文件路径
      * @return {@link Result} 结果
      */
-    private Result judge(String userSql, String correctSql, String dbFile) throws InterruptedException, IOException {
+    private Result judge(String userSql, String correctSql, String dbFile) throws IOException {
         var correctOutput = exec(correctSql, dbFile);
         var userOutput = exec(userSql, dbFile);
 

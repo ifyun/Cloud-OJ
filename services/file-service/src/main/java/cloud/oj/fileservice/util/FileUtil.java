@@ -1,6 +1,6 @@
 package cloud.oj.fileservice.util;
 
-import cloud.oj.fileservice.model.FileInfo;
+import cloud.oj.fileservice.entity.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 

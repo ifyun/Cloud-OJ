@@ -1,3 +1,4 @@
 logging:
   level:
+    root: warn
     cloud.oj: debug

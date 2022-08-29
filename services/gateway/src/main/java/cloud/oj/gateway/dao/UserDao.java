@@ -1,6 +1,6 @@
 package cloud.oj.gateway.dao;
 
-import cloud.oj.gateway.model.User;
+import cloud.oj.gateway.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

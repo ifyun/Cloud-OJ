@@ -1,6 +1,6 @@
 package cloud.oj.judge.client;
 
-import cloud.oj.judge.model.FileInfo;
+import cloud.oj.judge.entity.FileInfo;
 import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -3,13 +3,13 @@ package cloud.oj.judge.component;
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.dao.*;
 import cloud.oj.judge.error.UnsupportedLanguageError;
-import cloud.oj.judge.model.Limit;
-import cloud.oj.judge.model.RunResult;
-import cloud.oj.judge.model.Runtime;
-import cloud.oj.judge.model.Solution;
-import cloud.oj.judge.type.Language;
-import cloud.oj.judge.type.SolutionResult;
-import cloud.oj.judge.type.SolutionState;
+import cloud.oj.judge.entity.Limit;
+import cloud.oj.judge.entity.RunResult;
+import cloud.oj.judge.entity.Runtime;
+import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.enums.Language;
+import cloud.oj.judge.enums.SolutionResult;
+import cloud.oj.judge.enums.SolutionState;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -92,7 +92,7 @@ public class Judgement {
         } else {
             solution.setResult(SolutionResult.CE);
             solution.setState(SolutionState.JUDGED);
-            solutionDao.update(solution);
+            solutionDao.updateState(solution);
         }
     }
 
@@ -106,7 +106,7 @@ public class Judgement {
         if (runtime.getResult() == SolutionResult.IE || runtime.getResult() == SolutionResult.RE) {
             solution.setResult(runtime.getResult());
             solution.setState(SolutionState.JUDGED);
-            solutionDao.update(solution);
+            solutionDao.updateState(solution);
             return;
         }
 
@@ -133,14 +133,21 @@ public class Judgement {
         solution.setScore(passRate * limit.getScore());
         solution.setState(SolutionState.JUDGED);
 
-        solutionDao.update(solution);
+        solutionDao.updateState(solution);
 
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
         if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
             if (contestId == null) {
                 rankingDao.update(userId, solution.getSubmitTime());
             } else {
-                rankingDao.updateContest(contestId, userId, solution.getSubmitTime());
+                rankingDao.updateForContest(contestId, userId, solution.getSubmitTime());
+            }
+        } else {
+            // 仅更新提交次数
+            if (contestId == null) {
+                rankingDao.incCommitted(userId);
+            } else {
+                rankingDao.incCommittedForContest(contestId, userId);
             }
         }
     }

@@ -1,7 +1,7 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SettingsDao;
-import cloud.oj.core.model.Settings;
+import cloud.oj.core.entity.Settings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

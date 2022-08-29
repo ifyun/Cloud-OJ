@@ -1,6 +1,6 @@
 package cloud.oj.core.dao;
 
-import cloud.oj.core.model.User;
+import cloud.oj.core.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;

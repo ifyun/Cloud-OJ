@@ -1,6 +1,6 @@
 package cloud.oj.core.controller;
 
-import cloud.oj.core.model.JudgeResult;
+import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.SolutionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("history")
-public class SolutionController implements CRUDController {
+public class SolutionController {
 
     @Resource
     private SolutionService solutionService;
@@ -20,20 +20,24 @@ public class SolutionController implements CRUDController {
     /**
      * 获取提交记录
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> getJudged(@RequestHeader String userId, Integer page, Integer limit,
                                        Integer problemId, String title) {
-        return buildGETResponse(solutionService.getHistories(userId, page, limit, problemId, title));
+        var solutions = PagedList.resolve(solutionService.getHistories(userId, page, limit, problemId, title));
+        return solutions.getCount() > 0 ?
+                ResponseEntity.ok(solutions)
+                : ResponseEntity.noContent().build();
     }
 
     /**
      * 获取判题结果
+     *
+     * @return {@link cloud.oj.core.entity.JudgeResult}
      */
     @GetMapping("{solutionId}")
     public ResponseEntity<?> getBySolutionId(@PathVariable String solutionId) {
-        JudgeResult result = solutionService.getBySolutionId(solutionId);
-        return result != null ?
-                ResponseEntity.ok(result) :
-                ResponseEntity.noContent().build();
+        return solutionService.getBySolutionId(solutionId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

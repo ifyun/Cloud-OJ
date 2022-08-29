@@ -5,18 +5,18 @@ spring:
     active: dev
   application:
     name: gateway
-  jackson:
-    default-property-inclusion: non_null
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?serverTimezone=Asia/Shanghai}
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?serverTimezone=UTC}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
     hikari:
       connection-timeout: 10000
       maximum-pool-size: ${DB_POOL_SIZE:10}
       max-lifetime: 30000
+  jackson:
+    default-property-inclusion: non_null
   cloud:
     gateway:
       routes:

@@ -1,11 +1,12 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.model.JudgeResult;
+import cloud.oj.core.entity.JudgeResult;
 import cloud.oj.core.dao.SolutionDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SolutionService {
@@ -23,7 +24,7 @@ public class SolutionService {
         }
     }
 
-    public JudgeResult getBySolutionId(String solutionId) {
-        return solutionDao.getResultBySolutionId(solutionId);
+    public Optional<JudgeResult> getBySolutionId(String solutionId) {
+        return Optional.ofNullable(solutionDao.getResultBySolutionId(solutionId));
     }
 }

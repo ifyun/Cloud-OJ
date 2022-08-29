@@ -1,6 +1,6 @@
 package cloud.oj.gateway.filter;
 
-import cloud.oj.gateway.model.UsernamePasswd;
+import cloud.oj.gateway.entity.UsernamePasswd;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.MediaType;

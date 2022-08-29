@@ -6,7 +6,6 @@ if docker ps -a | grep $NAME >/dev/null; then
 else
   docker run --name $NAME \
     -p 3306:3306 \
-    -e "TZ=Asia/Shanghai" \
     -e "MYSQL_ROOT_PASSWORD=root" \
     -e "MYSQL_ROOT_HOST=%" \
     -v "$PWD"/sql:/docker-entrypoint-initdb.d \

@@ -12,19 +12,20 @@
         </choose>
     </select>
     <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
-            parameterType="cloud.oj.judge.model.Solution">
-        insert into solution(solution_id, user_id, problem_id, contest_id, title, language, type)
+            parameterType="cloud.oj.judge.entity.Solution">
+        insert into solution(solution_id, user_id, problem_id, contest_id, title, language, type, submit_time)
         select #{solutionId},
                #{userId},
                #{problemId},
                #{contestId},
                title,
                #{language},
-               #{type}
+               #{type},
+               from_unixtime(#{submitTime})
         from problem
         where problem_id = #{problemId}
     </insert>
-    <update id="update" parameterType="cloud.oj.judge.model.Solution">
+    <update id="updateState" parameterType="cloud.oj.judge.entity.Solution">
         update solution
         set state     = #{state},
             result    = #{result},

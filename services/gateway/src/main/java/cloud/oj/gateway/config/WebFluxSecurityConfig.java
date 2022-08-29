@@ -3,6 +3,7 @@ package cloud.oj.gateway.config;
 import cloud.oj.gateway.filter.LoginFilter;
 import cloud.oj.gateway.filter.TokenVerifyFilter;
 import cloud.oj.gateway.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,9 @@ public class WebFluxSecurityConfig {
     @Resource
     private UserService userService;
 
+    @Resource
+    private ObjectMapper mapper;
+
     private static class Role {
         private static final String USER = "USER";
         private static final String UA = "USER_ADMIN";
@@ -41,7 +45,7 @@ public class WebFluxSecurityConfig {
 
     @Bean
     public LoginFilter loginFilter(ServerCodecConfigurer serverCodecConfigurer) {
-        return new LoginFilter(authenticationManager(), serverCodecConfigurer);
+        return new LoginFilter(authenticationManager(), serverCodecConfigurer, mapper);
     }
 
     @Bean

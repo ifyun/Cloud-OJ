@@ -1,5 +1,6 @@
 package cloud.oj.core.dao;
 
+import cloud.oj.core.entity.JudgeResult;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface RankingDao {
 
     List<List<?>> getContestRanking(int contestId, int start, int limit);
 
-    List<List<?>> getDetail(int contestId, String userId);
+    List<JudgeResult> getDetail(int contestId, String userId);
 }

@@ -29,11 +29,11 @@
         from user
         where user_id = #{userId};
     </select>
-    <insert id="add" parameterType="cloud.oj.core.model.User">
+    <insert id="add" parameterType="cloud.oj.core.entity.User">
         insert into `user`(user_id, name, password, secret, email, section, role_id)
             value (#{userId}, #{name}, #{password}, #{secret}, #{email}, #{section}, #{roleId})
     </insert>
-    <update id="update" parameterType="cloud.oj.core.model.User">
+    <update id="update" parameterType="cloud.oj.core.entity.User">
         update user
         set name = #{name},
         <choose>

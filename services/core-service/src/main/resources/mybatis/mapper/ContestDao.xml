@@ -20,7 +20,7 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getProblems" resultType="cloud.oj.core.model.Problem">
+    <select id="getProblems" resultType="cloud.oj.core.entity.Problem">
         <choose>
             <when test="userId != null">
                 select cp.*, result
@@ -55,15 +55,15 @@
         from contest
         where contest_id = #{contestId}
     </select>
-    <insert id="addContest" parameterType="cloud.oj.core.model.Contest">
+    <insert id="addContest" parameterType="cloud.oj.core.entity.Contest">
         insert into contest(contest_name, start_at, end_at, languages)
-            value (#{contestName}, #{startAt}, #{endAt}, #{languages})
+            value (#{contestName}, from_unixtime(#{startAt}), from_unixtime(#{endAt}), #{languages})
     </insert>
-    <update id="updateContest" parameterType="cloud.oj.core.model.Contest">
+    <update id="updateContest" parameterType="cloud.oj.core.entity.Contest">
         update contest
         set contest_name = #{contestName},
-            start_at     = #{startAt},
-            end_at       = #{endAt},
+            start_at     = from_unixtime(#{startAt}),
+            end_at       = from_unixtime(#{endAt}),
             languages    = #{languages}
         where contest_id = #{contestId}
     </update>

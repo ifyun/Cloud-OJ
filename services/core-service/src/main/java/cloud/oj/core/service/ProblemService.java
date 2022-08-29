@@ -2,14 +2,16 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.model.Msg;
-import cloud.oj.core.model.Problem;
+import cloud.oj.core.error.GenericException;
+import cloud.oj.core.entity.Problem;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,56 +46,69 @@ public class ProblemService {
         return problemDao.getWithState((page - 1) * limit, limit, userId, keyword);
     }
 
-    public Problem getSingle(int problemId) {
-        return problemDao.getSingle(problemId, false);
+    public Optional<Problem> getSingle(int problemId) {
+        return Optional.ofNullable(problemDao.getSingle(problemId, false));
     }
 
-    public Problem getSingleEnabled(int problemId) {
-        return problemDao.getSingle(problemId, true);
+    public Optional<Problem> getSingleEnabled(int problemId) {
+        return Optional.ofNullable(problemDao.getSingle(problemId, true));
     }
 
     @Transactional
-    public Msg update(Problem problem) {
+    public Integer update(Problem problem) {
         var contestId = problemDao.isInContest(problem.getProblemId());
 
         if (contestId != null && contestDao.getContest(contestId).isStarted()) {
-            return new Msg(400, "不能修改已开始竞赛中的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不能修改已开始竞赛中的题目");
         }
 
-        var status = problemDao.update(problem) == 1 ? 200 : 304;
-
-        return new Msg(status, null);
+        if (problemDao.update(problem) == 1) {
+            return HttpStatus.OK.value();
+        } else {
+            throw new GenericException(
+                    HttpStatus.NOT_MODIFIED.value(),
+                    String.format("题目 %d 更新失败", problem.getProblemId())
+            );
+        }
     }
 
     @Transactional
-    public Msg toggleEnable(int problemId, boolean enable) {
+    public Integer toggleEnable(int problemId, boolean enable) {
         if (enable) {
             var contestId = problemDao.isInContest(problemId);
 
             if (contestId != null && !contestDao.getContest(contestId).isEnded()) {
-                return new Msg(400, "不能开放未结束竞赛中的题目");
+                throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不能开放未结束竞赛中的题目");
             }
         }
 
-        var status = problemDao.toggleEnable(problemId, enable) == 1 ? 200 : 304;
-
-        return new Msg(status, null);
+        if (problemDao.toggleEnable(problemId, enable) == 1) {
+            return HttpStatus.OK.value();
+        } else {
+            throw new GenericException(
+                    HttpStatus.NOT_MODIFIED.value(),
+                    String.format("题目 %d 开放/关闭失败", problemId)
+            );
+        }
     }
 
-    public boolean add(Problem problem) {
-        var row = problemDao.add(problem);
-        log.info("Add Problem: id={}, title={}", problem.getProblemId(), problem.getTitle());
-        return row > 0;
+    public Integer add(Problem problem) {
+        if (problemDao.add(problem) == 1) {
+            return HttpStatus.CREATED.value();
+        } else {
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "请求数据可能不正确");
+        }
     }
 
-    public Msg delete(Integer problemId) {
+    public Integer delete(Integer problemId) {
         if (problemDao.isInContest(problemId) != null) {
-            return new Msg(400, "无法删除竞赛中的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "无法删除竞赛中的题目");
         }
 
-        var row = problemDao.delete(problemId);
-        var status = row == 1 ? 204 : 410;
-
-        return new Msg(status, null);
+        if (problemDao.delete(problemId) == 1) {
+            return HttpStatus.NO_CONTENT.value();
+        } else {
+            throw new GenericException(HttpStatus.GONE.value(), String.format("题目 %d 删除失败", problemId));
+        }
     }
 }

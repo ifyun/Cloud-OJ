@@ -1,7 +1,7 @@
 package cloud.oj.judge.receiver;
 
 import com.rabbitmq.client.Channel;
-import cloud.oj.judge.model.FileInfo;
+import cloud.oj.judge.entity.FileInfo;
 import cloud.oj.judge.service.DataSyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;

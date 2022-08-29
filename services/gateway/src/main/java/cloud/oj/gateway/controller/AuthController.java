@@ -1,9 +1,9 @@
 package cloud.oj.gateway.controller;
 
 import cloud.oj.gateway.dao.UserDao;
-import cloud.oj.gateway.model.Msg;
-import cloud.oj.gateway.model.User;
-import cloud.oj.gateway.util.JwtUtil;
+import cloud.oj.gateway.entity.User;
+import cloud.oj.gateway.error.ErrorMessage;
+import cloud.oj.gateway.filter.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -38,9 +39,10 @@ public class AuthController {
      * @return 登录成功返回 {@link User}，用户名或密码错误返回 401
      */
     @PostMapping(path = "login")
-    public ResponseEntity<?> login(Authentication authentication) {
+    public Mono<ResponseEntity<?>> login(Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            var status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return Mono.just(ResponseEntity.status(status).body(new ErrorMessage(status, "认证失败")));
         }
 
         log.info("Login success, user={}.", authentication.getName());
@@ -64,7 +66,7 @@ public class AuthController {
         user.setToken(jwt);
         user.setExpire(expireAt);
 
-        return ResponseEntity.ok(user);
+        return Mono.just(ResponseEntity.ok(user));
     }
 
     /**
@@ -72,18 +74,18 @@ public class AuthController {
      * <p>更新用户 secret 使 JWT 失效</p>
      */
     @DeleteMapping(path = "logoff")
-    public ResponseEntity<?> logoff(@RequestHeader String token) {
+    public Mono<ResponseEntity<?>> logoff(@RequestHeader String token) {
         var userId = JwtUtil.getSubject(token);
         var secret = userDao.getSecret(userId);
 
         try {
             JwtUtil.getClaims(token, secret);
-            log.info("Logout: user={}.", userId);
-            log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
-            return ResponseEntity.ok(new Msg("用户" + userId + "已退出"));
+            log.debug("Logoff: user={}.", userId);
+            log.debug("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
+            return Mono.just(ResponseEntity.ok("用户" + userId + "已退出"));
         } catch (JwtException | IllegalArgumentException e) {
             log.error(e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return Mono.just(ResponseEntity.badRequest().build());
         }
     }
 
@@ -94,7 +96,7 @@ public class AuthController {
      * @return <p>200：验证通过，40x：Token 无效</p>
      */
     @GetMapping(path = "verify")
-    public ResponseEntity<?> verify() {
-        return ResponseEntity.ok().build();
+    public Mono<ResponseEntity<?>> verify() {
+        return Mono.just(ResponseEntity.ok().build());
     }
 }

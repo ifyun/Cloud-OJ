@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.gateway.dao.UserDao">
-    <select id="findUserById" resultType="cloud.oj.gateway.model.User">
+    <select id="findUserById" resultType="cloud.oj.gateway.entity.User">
         select u.user_id, name, password, secret, email, section, r.*
         from user u
                  join role r on u.role_id = r.role_id

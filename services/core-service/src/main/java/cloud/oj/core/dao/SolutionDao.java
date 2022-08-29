@@ -1,6 +1,6 @@
 package cloud.oj.core.dao;
 
-import cloud.oj.core.model.JudgeResult;
+import cloud.oj.core.entity.JudgeResult;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

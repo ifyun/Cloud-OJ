@@ -1,7 +1,7 @@
 package cloud.oj.gateway.service;
 
 import cloud.oj.gateway.dao.UserDao;
-import cloud.oj.gateway.model.Role;
+import cloud.oj.gateway.entity.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,7 +48,7 @@ public class UserService implements ReactiveUserDetailsService {
             user.setRoles(roles);
             return Mono.just(user);
         } else {
-            var error = String.format("User(%s) not found.", username);
+            var error = String.format("User(id=%s) not found.", username);
             log.error(error);
             return Mono.error(new UsernameNotFoundException(error));
         }

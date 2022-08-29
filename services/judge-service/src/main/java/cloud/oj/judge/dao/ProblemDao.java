@@ -1,6 +1,6 @@
 package cloud.oj.judge.dao;
 
-import cloud.oj.judge.model.Limit;
+import cloud.oj.judge.entity.Limit;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

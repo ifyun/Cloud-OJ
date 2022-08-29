@@ -1,10 +1,10 @@
 package cloud.oj.judge.dao;
 
-import cloud.oj.judge.model.SourceCode;
+import cloud.oj.judge.entity.SourceCode;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface SourceCodeDao {
     SourceCode get(String solutionId);
-    int add(SourceCode sourceCode);
+    void add(SourceCode sourceCode);
 }

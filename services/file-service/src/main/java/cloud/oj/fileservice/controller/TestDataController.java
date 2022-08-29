@@ -1,7 +1,7 @@
 package cloud.oj.fileservice.controller;
 
 import cloud.oj.fileservice.service.NotifyService;
-import cloud.oj.fileservice.model.TestData;
+import cloud.oj.fileservice.entity.TestData;
 import cloud.oj.fileservice.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

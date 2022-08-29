@@ -1,6 +1,6 @@
 package cloud.oj.core.dao;
 
-import cloud.oj.core.model.Settings;
+import cloud.oj.core.entity.Settings;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

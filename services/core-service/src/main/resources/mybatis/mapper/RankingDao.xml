@@ -11,7 +11,7 @@
                      truncate(score, 2) as score
               from leaderboard
                        join user u on leaderboard.user_id = u.user_id
-              where u.role_id = 0
+              where u.role_id = 1
                 and score &gt; 0
               order by score desc, update_time) r,
              (select @ranking := #{start}) rn
@@ -29,14 +29,14 @@
               from leaderboard_contest
                        join user u on leaderboard_contest.user_id = u.user_id
               where contest_id = #{contestId}
-                and u.role_id = 0
+                and u.role_id = 1
                 and score &gt; 0
               order by score desc, update_time) r,
              (select @ranking := #{start}) rn
         limit #{start}, #{limit};
         select found_rows();
     </select>
-    <select id="getDetail" resultType="cloud.oj.core.model.JudgeResult">
+    <select id="getDetail" resultType="cloud.oj.core.entity.JudgeResult">
         select problem_id,
                title,
                max(pass_rate) as pass_rate,

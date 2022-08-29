@@ -1,18 +1,19 @@
 package cloud.oj.core.controller;
 
+import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.ContestService;
 import cloud.oj.core.service.SystemSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import cloud.oj.core.model.Contest;
 
 import javax.annotation.Resource;
 
 @Slf4j
 @RestController
 @RequestMapping("contest")
-public class ContestController implements CRUDController {
+public class ContestController {
 
     @Resource
     private ContestService contestService;
@@ -22,63 +23,95 @@ public class ContestController implements CRUDController {
 
     /**
      * 获取竞赛/作业
+     *
+     * @return 竞赛列表
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> contests(Integer page, Integer limit) {
+        PagedList contests;
         if (systemSettings.getSettings().isShowNotStartedContest())
-            return buildGETResponse(contestService.getAllContest(page, limit));
+            contests = PagedList.resolve(contestService.getAllContest(page, limit));
         else
-            return buildGETResponse(contestService.getStartedContest(page, limit));
+            contests = PagedList.resolve(contestService.getStartedContest(page, limit));
+        return contests.getCount() > 0 ?
+                ResponseEntity.ok(contests)
+                : ResponseEntity.noContent().build();
     }
 
     /**
      * 获取竞赛/作业的详细信息
+     *
+     * @return {@link cloud.oj.core.entity.Problem}
      */
     @GetMapping(path = "detail")
     public ResponseEntity<?> contest(Integer contestId) {
-        return buildGETResponse(contestService.getContest(contestId));
+        return contestService.getContest(contestId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
      * 获取所有竞赛/作业
+     *
+     * @return 竞赛列表
      */
     @GetMapping(path = "admin")
     public ResponseEntity<?> allContests(Integer page, Integer limit) {
-        return buildGETResponse(contestService.getAllContest(page, limit));
+        var contests = PagedList.resolve(contestService.getAllContest(page, limit));
+        return contests.getCount() > 0 ?
+                ResponseEntity.ok(contests)
+                : ResponseEntity.noContent().build();
     }
 
     /**
      * 从已开始的竞赛/作业中获取题目
+     *
+     * @return 题目列表
      */
     @GetMapping(path = "problem")
     public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, String userId) {
-        var results = contestService.getProblemsFromContest(userId, contestId, true);
-        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
+        var problems = contestService.getProblemsFromContest(userId, contestId, true);
+        return problems.isEmpty() ?
+                ResponseEntity.noContent().build()
+                : ResponseEntity.ok(problems);
     }
 
     /**
      * 从已开始的竞赛/作业中获取题目的详细信息
+     *
+     * @return {@link cloud.oj.core.entity.Problem}
      */
     @GetMapping(path = "problem/{contestId}/{problemId}")
     public ResponseEntity<?> getProblemInContest(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return buildGETResponse(contestService.getProblemInContest(contestId, problemId));
+        return contestService.getProblemInContest(contestId, problemId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
      * 从竞赛/作业中获取题目
+     *
+     * @return 返回题目列表
      */
     @GetMapping(path = "admin/problem")
     public ResponseEntity<?> getProblemsFromContest(Integer contestId) {
-        var results = contestService.getProblemsFromContest(null, contestId, false);
-        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
+        var problems = contestService.getProblemsFromContest(null, contestId, false);
+        return problems.isEmpty() ?
+                ResponseEntity.noContent().build()
+                : ResponseEntity.ok(problems);
     }
 
     /**
      * 获取不在竞赛/作业中的题目
+     *
+     * @return 题目列表
      */
     @GetMapping("admin/problems_not_in_contest/{contestId}")
     public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId, Integer page, Integer limit) {
-        return buildGETResponse(contestService.getProblemsNotInContest(contestId, page, limit));
+        var problems = PagedList.resolve(contestService.getProblemsNotInContest(contestId, page, limit));
+        return problems.getCount() > 0 ?
+                ResponseEntity.ok(problems)
+                : ResponseEntity.noContent().build();
     }
 
     /**
@@ -86,7 +119,7 @@ public class ContestController implements CRUDController {
      */
     @PostMapping(path = "admin")
     public ResponseEntity<?> addContest(@RequestBody Contest contest) {
-        return buildPOSTResponse(contestService.addContest(contest));
+        return ResponseEntity.status(contestService.addContest(contest)).build();
     }
 
     /**
@@ -94,7 +127,7 @@ public class ContestController implements CRUDController {
      */
     @PutMapping(path = "admin")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
-        return buildPUTResponse(contestService.updateContest(contest));
+        return ResponseEntity.status(contestService.updateContest(contest)).build();
     }
 
     /**
@@ -102,7 +135,7 @@ public class ContestController implements CRUDController {
      */
     @DeleteMapping(path = "admin/{contestId}")
     public ResponseEntity<?> deleteContest(@PathVariable Integer contestId) {
-        return buildDELETEResponse(contestService.deleteContest(contestId));
+        return ResponseEntity.status(contestService.deleteContest(contestId)).build();
     }
 
     /**
@@ -110,7 +143,7 @@ public class ContestController implements CRUDController {
      */
     @PostMapping(path = "admin/problem/{contestId}/{problemId}")
     public ResponseEntity<?> addProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return buildPOSTResponse(contestService.addProblemToContest(contestId, problemId));
+        return ResponseEntity.status(contestService.addProblemToContest(contestId, problemId)).build();
     }
 
     /**
@@ -118,6 +151,6 @@ public class ContestController implements CRUDController {
      */
     @DeleteMapping(path = "admin/problem/{contestId}/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return buildDELETEResponse(contestService.removeProblem(contestId, problemId));
+        return ResponseEntity.status(contestService.removeProblem(contestId, problemId)).build();
     }
 }

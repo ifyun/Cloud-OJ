@@ -160,7 +160,7 @@ create table runtime
 
 create table source_code
 (
-    code_id     int auto_increment
+    id          int auto_increment
         primary key,
     solution_id char(36) not null,
     code        text     not null,

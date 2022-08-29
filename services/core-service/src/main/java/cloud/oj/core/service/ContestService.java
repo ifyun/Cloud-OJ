@@ -2,13 +2,15 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.model.Contest;
-import cloud.oj.core.model.Msg;
-import cloud.oj.core.model.Problem;
+import cloud.oj.core.error.GenericException;
+import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.Problem;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContestService {
@@ -23,26 +25,42 @@ public class ContestService {
         return contestDao.getContests((page - 1) * limit, limit, false);
     }
 
-    public Contest getContest(int contestId) {
-        return contestDao.getContest(contestId);
+    public Optional<Contest> getContest(int contestId) {
+        return Optional.ofNullable(contestDao.getContest(contestId));
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {
         return contestDao.getContests((page - 1) * limit, limit, true);
     }
 
-    public boolean addContest(Contest contest) {
-        return contestDao.addContest(contest) == 1;
+    public Integer addContest(Contest contest) {
+        if (contestDao.addContest(contest) == 1) {
+            return HttpStatus.CREATED.value();
+        } else {
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "请求数据可能不正确");
+        }
     }
 
-    public Msg updateContest(Contest contest) {
-        var status = contestDao.updateContest(contest) == 1 ? 200 : 304;
-        return new Msg(status);
+    public Integer updateContest(Contest contest) {
+        if (contestDao.updateContest(contest) == 1) {
+            return HttpStatus.OK.value();
+        } else {
+            throw new GenericException(
+                    HttpStatus.NOT_MODIFIED.value(),
+                    String.format("竞赛 %d 更新失败", contest.getContestId())
+            );
+        }
     }
 
-    public Msg deleteContest(int contestId) {
-        int status = contestDao.deleteContest(contestId) == 1 ? 204 : 401;
-        return new Msg(status);
+    public Integer deleteContest(int contestId) {
+        if (contestDao.deleteContest(contestId) == 1) {
+            return HttpStatus.NO_CONTENT.value();
+        } else {
+            throw new GenericException(
+                    HttpStatus.GONE.value(),
+                    String.format("竞赛 %d 不存在", contestId)
+            );
+        }
     }
 
     public List<List<?>> getProblemsNotInContest(int contestId, int page, int limit) {
@@ -53,16 +71,23 @@ public class ContestService {
         return contestDao.getProblems(userId, contestId, onlyStarted);
     }
 
-    public Problem getProblemInContest(Integer contestId, Integer problemId) {
-        return problemDao.getSingleInContest(contestId, problemId);
+    public Optional<Problem> getProblemInContest(Integer contestId, Integer problemId) {
+        return Optional.ofNullable(problemDao.getSingleInContest(contestId, problemId));
     }
 
-    public boolean addProblemToContest(int contestId, int problemId) {
-        return contestDao.addProblem(contestId, problemId) == 1;
+    public Integer addProblemToContest(int contestId, int problemId) {
+        if (contestDao.addProblem(contestId, problemId) == 1){
+            return HttpStatus.CREATED.value();
+        } else {
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "无法添加题目");
+        }
     }
 
-    public Msg removeProblem(int contestId, int problemId) {
-        var status = contestDao.removeProblem(contestId, problemId) == 1 ? 204 : 410;
-        return new Msg(status);
+    public Integer removeProblem(int contestId, int problemId) {
+        if (contestDao.removeProblem(contestId, problemId) == 1) {
+            return HttpStatus.NO_CONTENT.value();
+        } else {
+            throw new GenericException(HttpStatus.GONE.value(), String.format("题目 %d 不存在", problemId));
+        }
     }
 }

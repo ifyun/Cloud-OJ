@@ -1,8 +1,10 @@
 package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.dao.UserDao;
-import cloud.oj.gateway.util.JwtUtil;
+import cloud.oj.gateway.error.ErrorMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -26,12 +28,17 @@ public class TokenVerifyFilter implements WebFilter {
     @Resource
     private UserDao userDao;
 
+    @Resource
+    private ObjectMapper mapper;
+
     /**
      * 验证 JWT
      * <p>先后在 Header 和 Query 中查找 JWT，若为空则跳过验证</p>
      */
+
     @Override
     @NonNull
+    @SneakyThrows
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         var request = exchange.getRequest();
         var path = request.getPath().toString();
@@ -41,49 +48,55 @@ public class TokenVerifyFilter implements WebFilter {
             return chain.filter(exchange);
         }
 
-        var jwt = request.getHeaders().getFirst("token");
+        var token = request.getHeaders().getFirst("token");
 
-        if (jwt == null) {
-            jwt = request.getQueryParams().getFirst("token");
+        if (token == null) {
+            token = request.getQueryParams().getFirst("token");
         }
 
-        if (jwt == null) {
+        if (token == null) {
             return chain.filter(exchange);
         }
 
         try {
-            var userId = JwtUtil.getSubject(jwt);
+            var userId = JwtUtil.getSubject(token);
 
             if (userId == null) {
-                throw new JwtException("不正确的JWT");
+                throw new JwtException("错误的Token");
             }
 
-            log.info("Verify JWT: [Path: {}, User: {}]", request.getPath(), userId);
+            log.debug("Verify token: [Path: {}, User: {}]", request.getPath(), userId);
 
             var secret = userDao.getSecret(userId);
-            var claims = JwtUtil.getClaims(jwt, secret);
+            var claims = JwtUtil.getClaims(token, secret);
 
             var authorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
+            var auth = new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
-            var token = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-
-            /* --------------- 添加权限到上下文 --------------- */
-            return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(token));
-        } catch (JwtException | IllegalArgumentException e) {
+            return chain.filter(
+                    exchange.mutate().request(
+                            request.mutate().header("userId", userId).build()
+                    ).build()
+            ).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+        } catch (JwtException | IllegalArgumentException | StringIndexOutOfBoundsException e) {
             var error = e.getMessage();
-            log.error("Verify JWT failed: {}", error);
+            log.error("Verify token failed: {}", error);
 
-            var response = exchange.getResponse();
-
-            if (error.contains("expired")) {
+            if (e instanceof StringIndexOutOfBoundsException) {
+                error = "错误的Token";
+            } else if (error.contains("expired")) {
                 error = "失效的Token";
             } else if (error.contains("signature")) {
                 error = "签名不匹配";
             }
 
-            var dataBuffer = response.bufferFactory().wrap(("{\"msg\":\"" + error + "\"}").getBytes());
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            var response = exchange.getResponse();
+            var status = HttpStatus.UNAUTHORIZED;
+            var errorMessage = new ErrorMessage(status, error);
+            var dataBuffer = response.bufferFactory().wrap(mapper.writeValueAsBytes(errorMessage));
+
+            response.setStatusCode(status);
             response.getHeaders().add("Content-Type", "application/json");
 
             return response.writeWith(Flux.just(dataBuffer));

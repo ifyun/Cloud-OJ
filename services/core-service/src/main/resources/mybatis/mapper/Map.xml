@@ -3,11 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Map">
     <resultMap id="Total" type="java.lang.Integer"/>
-    <resultMap id="User" type="cloud.oj.core.model.User"/>
-    <resultMap id="Problem" type="cloud.oj.core.model.Problem"/>
-    <resultMap id="Contest" type="cloud.oj.core.model.Contest"/>
-    <resultMap id="Ranking" type="cloud.oj.core.model.Ranking"/>
-    <resultMap id="JudgeResult" type="cloud.oj.core.model.JudgeResult">
+    <resultMap id="User" type="cloud.oj.core.entity.User"/>
+    <resultMap id="Problem" type="cloud.oj.core.entity.Problem"/>
+    <resultMap id="Contest" type="cloud.oj.core.entity.Contest"/>
+    <resultMap id="Ranking" type="cloud.oj.core.entity.Ranking"/>
+    <resultMap id="JudgeResult" type="cloud.oj.core.entity.JudgeResult">
         <result column="state_code" property="state"/>
         <result column="result_code" property="result"/>
     </resultMap>

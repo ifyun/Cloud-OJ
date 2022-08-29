@@ -2,10 +2,10 @@ package cloud.oj.judge.service;
 
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.dao.SourceCodeDao;
-import cloud.oj.judge.model.CommitData;
-import cloud.oj.judge.model.Solution;
-import cloud.oj.judge.model.SourceCode;
-import cloud.oj.judge.type.SolutionState;
+import cloud.oj.judge.enums.SolutionState;
+import cloud.oj.judge.entity.CommitData;
+import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.entity.SourceCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -54,7 +54,7 @@ public class SubmitService {
 
         solution.setSourceCode(commitData.getSourceCode());
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
-        solutionDao.update(solution);
+        solutionDao.updateState(solution);
 
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }

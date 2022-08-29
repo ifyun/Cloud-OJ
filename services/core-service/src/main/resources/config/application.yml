@@ -10,7 +10,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=Asia/Shanghai}
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj?allowMultiQueries=true&serverTimezone=UTC}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
     hikari:
@@ -19,8 +19,6 @@ spring:
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
 management:
   endpoints:
     web:
@@ -35,7 +33,7 @@ eureka:
     instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
   client:
     service-url:
-      defaultZone: http://${EUREKA_SERVER:127.0.0.1}/eureka/
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 mybatis:
   configuration:
     map-underscore-to-camel-case: on

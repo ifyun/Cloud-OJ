@@ -125,7 +125,7 @@
           and start_at &lt;= now()
           and problem_id = #{problemId}
     </select>
-    <insert id="add" parameterType="cloud.oj.core.model.Problem" useGeneratedKeys="true" keyColumn="problem_id"
+    <insert id="add" parameterType="cloud.oj.core.entity.Problem" useGeneratedKeys="true" keyColumn="problem_id"
             keyProperty="problemId">
         insert into problem(title,
                             description,
@@ -146,7 +146,7 @@
                    #{memoryLimit},
                    #{outputLimit})
     </insert>
-    <update id="update" parameterType="cloud.oj.core.model.Problem">
+    <update id="update" parameterType="cloud.oj.core.entity.Problem">
         update problem
         set title        = #{title},
             description  = #{description},

@@ -2,9 +2,9 @@ package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.error.UnsupportedLanguageError;
-import cloud.oj.judge.model.Compile;
-import cloud.oj.judge.model.Solution;
-import cloud.oj.judge.type.Language;
+import cloud.oj.judge.entity.Compile;
+import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.enums.Language;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
@@ -71,11 +71,11 @@ class Compiler {
 
         switch (language) {
             case C:
-                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=1", "-Wfatal-errors", "-lm",
+                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm",
                         "Solution.c", "-o", "Solution"};
                 break;
             case CPP:
-                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=1", "-Wfatal-errors", "-lm",
+                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm",
                         "Solution.cpp", "-o", "Solution"};
                 break;
             case JAVA:

@@ -2,9 +2,9 @@ package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.dao.SolutionDao;
-import cloud.oj.judge.model.Solution;
-import cloud.oj.judge.type.SolutionResult;
-import cloud.oj.judge.type.SolutionState;
+import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.enums.SolutionResult;
+import cloud.oj.judge.enums.SolutionState;
 import cloud.oj.judge.utils.FileCleaner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -58,7 +58,7 @@ public class JudgementAsync {
             log.error(e.getMessage());
             solution.setState(SolutionState.JUDGED);
             solution.setResult(SolutionResult.IE);
-            solutionDao.update(solution);
+            solutionDao.updateState(solution);
         } finally {
             callback.accept(null);
 

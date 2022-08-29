@@ -1,6 +1,6 @@
 package cloud.oj.fileservice.service;
 
-import cloud.oj.fileservice.model.FileInfo;
+import cloud.oj.fileservice.entity.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

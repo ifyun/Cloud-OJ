@@ -1,6 +1,6 @@
 package cloud.oj.core.controller;
 
-import cloud.oj.core.model.Settings;
+import cloud.oj.core.entity.Settings;
 import cloud.oj.core.service.SystemSettings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ public class SettingsController {
     /**
      * 获取系统设置
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> getSettings() {
         return ResponseEntity.ok(systemSettings.getSettings());
     }

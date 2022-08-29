@@ -4,7 +4,7 @@ import cloud.oj.judge.config.AppHealth;
 import feign.FeignException;
 import cloud.oj.judge.client.FileService;
 import cloud.oj.judge.config.AppConfig;
-import cloud.oj.judge.model.FileInfo;
+import cloud.oj.judge.entity.FileInfo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;

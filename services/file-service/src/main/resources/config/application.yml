@@ -5,8 +5,6 @@ spring:
     active: dev
   application:
     name: file-service
-  jackson:
-    default-property-inclusion: non_null
   servlet:
     multipart:
       max-file-size: 128MB
@@ -16,6 +14,8 @@ spring:
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:admin}
     password: ${RABBIT_PASSWORD:admin}
+  jackson:
+    default-property-inclusion: non_null
 management:
   endpoints:
     web:

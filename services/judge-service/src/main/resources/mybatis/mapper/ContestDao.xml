@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.judge.dao.ContestDao">
-    <select id="getContest" resultType="cloud.oj.judge.model.Contest">
+    <select id="getContest" resultType="cloud.oj.judge.entity.Contest">
         select contest_name,
                if(end_at &lt;= now(), true, false) as ended,
                languages
