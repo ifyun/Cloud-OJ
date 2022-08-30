@@ -2,12 +2,7 @@
 import { computed } from "vue"
 import { RouterLink, useRoute } from "vue-router"
 import { NIcon, NMenu } from "naive-ui"
-import {
-  Book as BookIcon,
-  Trophy as TrophyIcon,
-  Users as UsersIcon
-} from "@vicons/fa"
-import { SettingsRound as SettingsIcon } from "@vicons/material"
+import { Library, Options, People, School } from "@vicons/ionicons5"
 
 const route = useRoute()
 const routeName = computed(() => route.name?.toString())
@@ -20,7 +15,7 @@ const menuOptions = [
     key: "problem_admin",
     icon: () => (
       <NIcon>
-        <BookIcon />
+        <Library />
       </NIcon>
     )
   },
@@ -31,7 +26,7 @@ const menuOptions = [
     key: "contest_admin",
     icon: () => (
       <NIcon>
-        <TrophyIcon />
+        <School />
       </NIcon>
     )
   },
@@ -40,7 +35,7 @@ const menuOptions = [
     key: "user_admin",
     icon: () => (
       <NIcon>
-        <UsersIcon />
+        <People />
       </NIcon>
     )
   },
@@ -49,7 +44,7 @@ const menuOptions = [
     key: "settings",
     icon: () => (
       <NIcon>
-        <SettingsIcon />
+        <Options />
       </NIcon>
     )
   }

@@ -1,10 +1,6 @@
 <template>
   <n-space v-if="isLoggedIn" align="center" size="small">
-    <n-avatar
-      round
-      :src="avatar"
-      style="vertical-align: middle"
-      @error="avatar = ''" />
+    <user-avatar size="small" :user-id="userId" />
     <n-dropdown
       trigger="click"
       :show-arrow="true"
@@ -29,11 +25,10 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
+import { computed } from "vue"
 import { useStore } from "vuex"
 import { RouterLink, useRouter } from "vue-router"
 import {
-  NAvatar,
   NButton,
   NDropdown,
   NIcon,
@@ -41,6 +36,7 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
+import { UserAvatar } from "@/components"
 import {
   ArrowDropDownFilled as DropDownIcon,
   DashboardCustomizeRound as DashboardIcon,
@@ -49,14 +45,13 @@ import {
 import { HouseUser as UserHomeIcon } from "@vicons/fa"
 import { renderIcon } from "@/utils"
 import { AuthApi } from "@/api/request"
-import { ErrorMsg, UserInfo } from "@/api/type"
+import { ErrorMessage, UserInfo } from "@/api/type"
 import { Mutations } from "@/store"
 
 const store = useStore()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
-const avatar = ref<string>("")
 
 const userMenuOptions = [
   {
@@ -99,17 +94,13 @@ const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo
 })
 
+const userId = computed<string>(() => store.state.userInfo.userId)
+
 function userMenuSelect(key: string) {
   if (key === "exit") {
     exit()
   }
 }
-
-onBeforeMount(() => {
-  if (store.state.userInfo != null) {
-    avatar.value = `/api/file/image/avatar/${userInfo.value.userId}.png`
-  }
-})
 
 function login() {
   router.push({ name: "auth" })
@@ -120,8 +111,8 @@ function logoff() {
     .then(() => {
       message.success(`${userInfo.value.name} 已退出`)
     })
-    .catch((error: ErrorMsg) => {
-      message.warning(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.warning(err.toString())
     })
     .finally(() => {
       store.commit(Mutations.CLEAR_TOKEN)

@@ -19,7 +19,7 @@ import ResultsPanel from "./ResultsPanel.vue"
 import Heatmap from "./Heatmap.vue"
 import Timeline from "./Timeline.vue"
 import { UserApi } from "@/api/request"
-import { ErrorMsg, Overview } from "@/api/type"
+import { ErrorMessage, Overview } from "@/api/type"
 import moment from "moment"
 
 const props = defineProps<{ userId: string }>()
@@ -34,8 +34,8 @@ onBeforeMount(() => {
     .then((data) => {
       overview.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
 })
 </script>

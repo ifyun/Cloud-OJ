@@ -1,18 +1,18 @@
 import type { AxiosError } from "axios"
-import { ErrorMsg, UserInfo } from "@/api/type"
+import { ErrorMessage, UserInfo } from "@/api/type"
 
-function returnError(error: any): ErrorMsg {
+function resolveError(error: any): ErrorMessage {
   const err = error as AxiosError
   if (err.response) {
-    const msg =
-      typeof err.response.data === "undefined"
-        ? err.response.statusText
-        : (err.response.data as any).msg
-    return new ErrorMsg(err.response.status, msg)
+    if (err.response.data) {
+      return err.response.data as ErrorMessage
+    } else {
+      return new ErrorMessage(err.response.status, err.response.statusText)
+    }
   } else if (err.request) {
-    return new ErrorMsg(0, "请求失败")
+    return new ErrorMessage(0, "请求失败")
   } else {
-    return new ErrorMsg(-1, "请求失败")
+    return new ErrorMessage(-1, "请求失败")
   }
 }
 
@@ -29,4 +29,4 @@ function buildHeaders(userInfo: UserInfo): any {
   }
 }
 
-export { returnError, buildHeaders }
+export { resolveError, buildHeaders }

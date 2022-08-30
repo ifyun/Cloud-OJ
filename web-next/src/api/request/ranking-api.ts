@@ -1,6 +1,6 @@
 import type { Page, Ranking } from "@/api/type"
-import { returnError } from "@/api/utils"
-import ApiPath from "./ApiPath"
+import { resolveError } from "@/api/utils"
+import ApiPath from "./api-path"
 import axios from "axios"
 
 const RankingApi = {
@@ -22,7 +22,7 @@ const RankingApi = {
           }
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }

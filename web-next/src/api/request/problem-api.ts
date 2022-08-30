@@ -1,6 +1,6 @@
-import { buildHeaders, returnError } from "@/api/utils"
+import { buildHeaders, resolveError } from "@/api/utils"
 import type { Page, Problem, TestData, UserInfo } from "@/api/type"
-import ApiPath from "./ApiPath"
+import ApiPath from "./api-path"
 import type { AxiosResponse } from "axios"
 import axios from "axios"
 
@@ -41,7 +41,7 @@ const ProblemApi = {
           }
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -71,7 +71,7 @@ const ProblemApi = {
           }
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -106,7 +106,7 @@ const ProblemApi = {
           resolve(res.data as Problem)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -135,7 +135,7 @@ const ProblemApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -158,7 +158,7 @@ const ProblemApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -179,7 +179,7 @@ const ProblemApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -204,7 +204,7 @@ const ProblemApi = {
           }
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -233,7 +233,7 @@ const ProblemApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }

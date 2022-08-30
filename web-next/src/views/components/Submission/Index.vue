@@ -5,7 +5,7 @@
       style="height: 100%"
       content-style="overflow: hidden">
       <Skeleton v-if="loading" />
-      <ErrorResult v-else-if="!loading && errorMsg != null" :error="errorMsg" />
+      <ErrorResult v-else-if="!loading && error != null" :error="error" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
@@ -17,7 +17,7 @@
                 <n-space size="small">
                   <n-tag type="success" size="small" round :bordered="false">
                     <template #icon>
-                      <n-icon :component="QuestionCircle" />
+                      <n-icon :component="HelpCircle" />
                     </template>
                     {{ problem.score }} 分
                   </n-tag>
@@ -29,11 +29,14 @@
                   </n-tag>
                   <n-tag type="warning" size="small" round :bordered="false">
                     <template #icon>
-                      <n-icon :component="MemoryRound" />
+                      <n-icon :component="DataSaverOffRound" />
                     </template>
                     内存限制 {{ problem.memoryLimit }} MB
                   </n-tag>
                   <n-tag type="info" size="small" round :bordered="false">
+                    <template #icon>
+                      <n-icon :component="PrintRound" />
+                    </template>
                     输出限制 {{ problem.outputLimit }} MB
                   </n-tag>
                 </n-space>
@@ -81,14 +84,15 @@ import {
   NTabs,
   useMessage
 } from "naive-ui"
-import { QuestionCircle } from "@vicons/fa"
-import { MemoryRound, TimerOutlined } from "@vicons/material"
+import { HelpCircle } from "@vicons/ionicons5"
+import { DataSaverOffRound, PrintRound, TimerOutlined } from "@vicons/material"
 import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
 import Skeleton from "./Skeleton.vue"
 import ResultDialog from "./ResultDialog.vue"
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
-import { ErrorMsg, Problem, SubmitData, UserInfo } from "@/api/type"
+import { ErrorMessage, Problem, SubmitData, UserInfo } from "@/api/type"
 import { SourceCode } from "@/type"
+import { setTitle } from "@/utils"
 
 const store = useStore()
 const message = useMessage()
@@ -100,7 +104,7 @@ const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
 const loading = ref<boolean>(true)
 const showResult = ref<boolean>(false)
 const disableSubmit = ref<boolean>(false)
-const errorMsg = ref<ErrorMsg | null>(null)
+const error = ref<ErrorMessage | null>(null)
 
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
@@ -121,9 +125,9 @@ onBeforeMount(() => {
     problemId = Number(props.pid)
     queryProblem()
   } else {
-    errorMsg.value = {
-      code: 404,
-      msg: "无效的题目ID"
+    error.value = {
+      status: 404,
+      message: "无效的题目ID"
     }
 
     loading.value = false
@@ -137,14 +141,20 @@ function queryProblem() {
   if (contestId == null) {
     // 非竞赛题目
     ProblemApi.getSingle(problemId!, userInfo.value)
-      .then((data) => (problem.value = data))
-      .catch((err: ErrorMsg) => (errorMsg.value = err))
+      .then((data) => {
+        setTitle(data.title)
+        problem.value = data
+      })
+      .catch((err: ErrorMessage) => (error.value = err))
       .finally(() => (loading.value = false))
   } else {
     // 竞赛题目
     ContestApi.getProblem(contestId, problemId!, userInfo.value)
-      .then((data) => (problem.value = data))
-      .catch((err: ErrorMsg) => (errorMsg.value = err))
+      .then((data) => {
+        setTitle(data.title)
+        problem.value = data
+      })
+      .catch((err: ErrorMessage) => (error.value = err))
       .finally(() => (loading.value = false))
   }
 }
@@ -173,7 +183,7 @@ function submit(data: SourceCode) {
       solutionId.value = id
       showResult.value = true
     })
-    .catch((err: ErrorMsg) => {
+    .catch((err: ErrorMessage) => {
       message.error(err.toString())
     })
     .finally(() => {

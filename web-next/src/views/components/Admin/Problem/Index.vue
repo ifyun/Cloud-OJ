@@ -94,18 +94,15 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import {
-  FileArchive as FileIcon,
-  Search as SearchIcon,
-  Tags as TagsIcon
-} from "@vicons/fa"
+import { FileArchive as FileIcon, Tags as TagsIcon } from "@vicons/fa"
+import { Search as SearchIcon } from "@vicons/ionicons5"
 import {
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
   ManageSearchRound,
   PostAddRound as AddIcon
 } from "@vicons/material"
-import { ErrorMsg, Page, Problem, UserInfo } from "@/api/type"
+import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
 import { renderIcon, setTitle, TagUtil } from "@/utils"
 import { ProblemApi } from "@/api/request"
 import { Mutations } from "@/store"
@@ -350,7 +347,7 @@ function deleteProblem() {
           queryProblems()
           return true
         })
-        .catch((error: ErrorMsg) => {
+        .catch((error: ErrorMessage) => {
           message.error(error.toString())
           return false
         })
@@ -371,8 +368,8 @@ function queryProblems() {
     .then((data) => {
       problems.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       pagination.value.loading = false
@@ -388,8 +385,8 @@ function toggleIsEnable(p: Problem, value: boolean) {
       p.enable = value
       message.info(`${p.title} 已${value ? "开放" : "关闭"}`)
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
 }
 </script>

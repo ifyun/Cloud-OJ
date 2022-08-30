@@ -54,6 +54,7 @@ import {
   NPagination,
   NSpace,
   NTag,
+  NText,
   useMessage
 } from "naive-ui"
 import {
@@ -61,11 +62,14 @@ import {
   EditNoteRound as EditIcon,
   PlaylistAddRound as AddIcon
 } from "@vicons/material"
-import { Contest, ErrorMsg, Page, UserInfo } from "@/api/type"
+import moment from "moment"
+import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import { LanguageOptions } from "@/type"
 import { ContestApi } from "@/api/request"
 import Mutations from "@/store/mutations"
+
+const timeFmt = "yyyy-MM-DD HH:mm:ss"
 
 let selectedId: number | undefined
 
@@ -165,11 +169,15 @@ const contestColumns: DataTableColumns<Contest> = [
   },
   {
     title: "开始时间",
-    key: "startAt"
+    key: "startAt",
+    width: 200,
+    render: (row) => <NText>{moment.unix(row.startAt!).format(timeFmt)}</NText>
   },
   {
     title: "结束时间",
-    key: "endAt"
+    key: "endAt",
+    width: 200,
+    render: (row) => <NText>{moment.unix(row.endAt!).format(timeFmt)}</NText>
   }
 ]
 // endregion
@@ -214,8 +222,8 @@ function queryContests() {
     .then((data) => {
       contests.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       pagination.value.loading = false

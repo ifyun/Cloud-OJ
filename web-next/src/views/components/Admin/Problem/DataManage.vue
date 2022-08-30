@@ -62,6 +62,7 @@ import {
   NText,
   NUpload,
   NUploadDragger,
+  UploadFileInfo,
   useMessage
 } from "naive-ui"
 import {
@@ -72,7 +73,7 @@ import {
 import axios from "axios"
 import Mutations from "@/store/mutations"
 import { ProblemApi } from "@/api/request"
-import { ErrorMsg, Problem, TestData } from "@/api/type"
+import { ErrorMessage, Problem, TestData } from "@/api/type"
 
 const route = useRoute()
 const router = useRouter()
@@ -186,7 +187,7 @@ const headers = computed(() => {
   }
 })
 
-const uploadData = computed(() => {
+const uploadData = computed<any>(() => {
   if (problem.value == null) {
     return {}
   } else {
@@ -215,8 +216,8 @@ onBeforeMount(() => {
         problem.value = p
         queryData(p.problemId!)
       })
-      .catch((error: ErrorMsg) => {
-        message.error(error.toString())
+      .catch((err: ErrorMessage) => {
+        message.error(err.toString())
         loading.value = false
       })
   }
@@ -227,8 +228,8 @@ function queryData(id: number) {
     .then((data) => {
       testData.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false
@@ -239,8 +240,8 @@ function back() {
   router.back()
 }
 
-function beforeUpload({ file }: any) {
-  const fileName = file.name as string
+async function beforeUpload(data: { file: UploadFileInfo }) {
+  const fileName = data.file.name as string
   return fileName.endsWith(".in") || fileName.endsWith(".out")
 }
 
@@ -272,8 +273,8 @@ function deleteFile(fileName: string) {
     .then(() => {
       message.warning(`${fileName} 已删除`)
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       queryData(problem.value!.problemId!)

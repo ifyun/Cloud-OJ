@@ -33,13 +33,17 @@ import {
   NPagination,
   NSpace,
   NTag,
+  NText,
   useMessage
 } from "naive-ui"
+import moment from "moment-timezone"
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMsg, Page } from "@/api/type"
+import { Contest, ErrorMessage, Page } from "@/api/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import { LanguageNames } from "@/type"
 import EmptyData from "@/components/EmptyData.vue"
+
+const timeFmt = "yyyy/MM/DD HH:mm:ss"
 
 const router = useRouter()
 const message = useMessage()
@@ -112,11 +116,15 @@ const contestColumns: DataTableColumns<Contest> = [
   },
   {
     title: "开始时间",
-    key: "startAt"
+    key: "startAt",
+    width: 200,
+    render: (row) => <NText>{moment.unix(row.startAt!).format(timeFmt)}</NText>
   },
   {
     title: "结束时间",
-    key: "endAt"
+    key: "endAt",
+    width: 200,
+    render: (row) => <NText>{moment.unix(row.endAt!).format(timeFmt)}</NText>
   }
 ]
 
@@ -136,8 +144,8 @@ function queryContests() {
     .then((data) => {
       contests.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false

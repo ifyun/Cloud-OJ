@@ -19,7 +19,7 @@ export class User {
   roleId?: number
   email = ""
   section = ""
-  createAt = ""
+  createAt?: number
 }
 
 /**
@@ -32,20 +32,19 @@ export class UserInfo {
   roleId = 0
 }
 
-/**
- * axios 错误信息封装
- */
-export class ErrorMsg {
-  code: number
-  msg: string
+export class ErrorMessage {
+  timestamp?: number
+  status: number
+  error?: string
+  message: string
 
-  constructor(code: number, msg: string) {
-    this.code = code
-    this.msg = msg
+  constructor(status: number, msg: string) {
+    this.status = status
+    this.message = msg
   }
 
   toString() {
-    return `${this.code}: ${this.msg}`
+    return `${this.status}: ${this.message}`
   }
 }
 
@@ -66,7 +65,7 @@ export class Problem {
   category = ""
   tags: Array<string> = []
   enable = false
-  createAt = ""
+  createAt?: number
   score?: number
   timeout?: number
   memoryLimit?: number
@@ -74,15 +73,15 @@ export class Problem {
 }
 
 export class Contest {
-  contestId: number | undefined
+  contestId?: number
   contestName = ""
   languages = 0
   problemCount = 0
-  startAt = ""
-  endAt = ""
+  startAt?: number
+  endAt?: number
   started = false
   ended = false
-  timeRange?: Array<number>
+  timeRange?: [number, number]
 }
 
 export class Ranking {
@@ -122,7 +121,7 @@ export class JudgeResult {
   memory?: number
   passRate?: number
   errorInfo?: string
-  submitTime?: string
+  submitTime?: number
 }
 
 export type Language = {

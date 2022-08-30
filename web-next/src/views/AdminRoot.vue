@@ -98,8 +98,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
 
   return {
     Layout: {
-      siderColor: "#161B22FF",
-      siderColorInverted: "#161B22FF"
+      siderColor: "#161b22"
     }
   }
 })

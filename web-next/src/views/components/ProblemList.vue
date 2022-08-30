@@ -61,7 +61,7 @@ import {
 } from "naive-ui"
 import { Search as SearchIcon } from "@vicons/fa"
 import { ProblemApi } from "@/api/request"
-import { ErrorMsg, Page, Problem } from "@/api/type"
+import { ErrorMessage, Page, Problem } from "@/api/type"
 import { setTitle, TagUtil } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
@@ -197,8 +197,8 @@ function queryProblems() {
     .then((data) => {
       problems.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false

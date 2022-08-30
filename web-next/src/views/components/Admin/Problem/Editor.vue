@@ -156,7 +156,7 @@ import {
   SaveOutlined as SaveIcon
 } from "@vicons/material"
 import { MarkdownEditor, MarkdownView } from "@/components"
-import { ErrorMsg, Problem, UserInfo } from "@/api/type"
+import { ErrorMessage, Problem, UserInfo } from "@/api/type"
 import { ProblemApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import Mutations from "@/store/mutations"
@@ -301,8 +301,8 @@ function queryProblem(problemId: number) {
       }
       problem.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false
@@ -331,8 +331,8 @@ function save() {
       message.success(`${problem.value.title} 保存成功`)
       create.value && back()
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false

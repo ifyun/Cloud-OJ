@@ -3,6 +3,7 @@
     round
     :src="url"
     :size="size"
+    bordered
     style="vertical-align: middle"
     @error="url = ''" />
 </template>

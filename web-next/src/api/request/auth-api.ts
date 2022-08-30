@@ -1,6 +1,6 @@
-import { buildHeaders, returnError } from "@/api/utils"
+import { buildHeaders, resolveError } from "@/api/utils"
 import type { UserInfo, UsernamePassword } from "@/api/type"
-import ApiPath from "./ApiPath"
+import ApiPath from "./api-path"
 import type { AxiosResponse } from "axios"
 import axios from "axios"
 
@@ -27,7 +27,7 @@ class AuthApi {
           resolve(res.data as UserInfo)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }
@@ -48,7 +48,7 @@ class AuthApi {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }
@@ -70,7 +70,7 @@ class AuthApi {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }
