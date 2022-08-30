@@ -32,10 +32,10 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { ErrorMsg, Page, Problem, UserInfo } from "@/api/type"
+import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
 import { ContestApi } from "@/api/request"
 
-const props = defineProps<{ contestId: number }>()
+const props = defineProps<{ contestId?: number }>()
 
 const store = useStore()
 const router = useRouter()
@@ -159,7 +159,7 @@ function queryProblems() {
   pagination.value.loading = true
   const { page, pageSize } = pagination.value
   ContestApi.getProblemsNotInContest(
-    props.contestId,
+    props.contestId!,
     page,
     pageSize,
     userInfo.value
@@ -167,8 +167,8 @@ function queryProblems() {
     .then((data) => {
       problems.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       pagination.value.loading = false
@@ -183,8 +183,8 @@ function queryContestProblems() {
     .then((data) => {
       contestProblems.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
 }
 
@@ -201,12 +201,12 @@ function toSubmission(p: Problem) {
  * 将题目添加到当前竞赛
  */
 function addToContest(p: Problem) {
-  ContestApi.addProblem(props.contestId, p.problemId!, userInfo.value)
+  ContestApi.addProblem(props.contestId!, p.problemId!, userInfo.value)
     .then(() => {
       message.success(`[${p.title}] 已添加`)
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       refresh()
@@ -227,12 +227,12 @@ function handleRemove(p: Problem) {
  * 从竞赛中移除题目
  */
 function remove(p: Problem) {
-  ContestApi.removeProblem(props.contestId, p.problemId!, userInfo.value)
+  ContestApi.removeProblem(props.contestId!, p.problemId!, userInfo.value)
     .then(() => {
       message.warning(`[${p.title}] 已移除`)
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       refresh()

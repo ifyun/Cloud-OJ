@@ -7,8 +7,8 @@ create table contest
     contest_id   int auto_increment
         primary key,
     contest_name varchar(64)   null,
-    start_at     timestamp     not null comment '开始时间',
-    end_at       timestamp     not null comment '结束时间',
+    start_at     bigint        not null comment '开始时间',
+    end_at       bigint        not null comment '结束时间',
     languages    int default 0 not null comment '支持的语言范围'
 );
 
@@ -25,7 +25,7 @@ create table problem
     type         int        default 0                 not null comment '1 -> SQL',
     `sql`        text                                 null comment '正确的查询语句',
     enable       tinyint(1) default 0                 null comment '是否开放',
-    category     varchar(32)                          null comment '分类，多个用逗号分隔',
+    category     varchar(64)                          null comment '分类，多个用逗号分隔',
     create_at    datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
 );
 

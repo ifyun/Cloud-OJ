@@ -32,7 +32,7 @@ import {
   NInputGroupLabel,
   NSelect
 } from "naive-ui"
-import { PlayCircleRound as SubmitIcon } from "@vicons/material"
+import { PaperPlane as SubmitIcon } from "@vicons/ionicons5"
 import type { LanguageOption, SourceCode } from "@/type"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"

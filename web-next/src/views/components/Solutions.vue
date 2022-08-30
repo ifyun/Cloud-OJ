@@ -37,9 +37,9 @@ import {
 } from "naive-ui"
 import { CircleRound, CheckCircleFilled, ErrorRound } from "@vicons/material"
 import { UserApi } from "@/api/request"
-import { ErrorMsg, JudgeResult, Page } from "@/api/type"
+import { ErrorMessage, JudgeResult, Page } from "@/api/type"
 import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
-import moment from "moment"
+import moment from "moment-timezone"
 
 const store = useStore()
 const route = useRoute()
@@ -57,7 +57,7 @@ const pagination = ref({
 
 const userInfo = computed(() => store.state.userInfo)
 
-const error = ref<ErrorMsg | null>(null)
+const error = ref<ErrorMessage | null>(null)
 const solutions = ref<Page<JudgeResult>>({
   data: [],
   count: 0
@@ -144,12 +144,12 @@ const columns: DataTableColumns<JudgeResult> = [
         {{
           trigger: () => (
             <NButton text={true}>
-              {moment(row.submitTime).format("YYYY-MM-DD")}
+              {moment.unix(row.submitTime!).format("YYYY-MM-DD")}
             </NButton>
           ),
           default: () => (
             <NText italic={true}>
-              {moment(row.submitTime).format("HH:mm:ss")}
+              {moment.unix(row.submitTime!).format("HH:mm:ss")}
             </NText>
           )
         }}

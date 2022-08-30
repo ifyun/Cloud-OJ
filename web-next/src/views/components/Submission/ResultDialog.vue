@@ -3,9 +3,9 @@
     <!-- 错误 -->
     <n-result
       v-if="error != null"
-      :status="error"
-      :title="error.code"
-      :description="error.msg">
+      status="error"
+      :title="error.error"
+      :description="error.message">
       <template #footer>
         <n-button secondary size="small" type="primary" @click="retry">
           重试
@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex"
 import { NButton, NResult, NSpace, NText } from "naive-ui"
-import { ErrorMsg, JudgeResult, UserInfo } from "@/api/type"
+import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
 import { JudgeApi } from "@/api/request"
 import { computed, onMounted, ref } from "vue"
 
@@ -64,7 +64,7 @@ const Cost = (r: JudgeResult) => {
 
 const store = useStore()
 
-const error = ref<ErrorMsg | null>(null)
+const error = ref<ErrorMessage | null>(null)
 const result = ref<Result>({
   status: "418",
   title: "提交成功，正在等待结果"
@@ -109,7 +109,7 @@ function fetchResult(count: number) {
         setResult(data)
       }
     })
-    .catch((err: ErrorMsg) => {
+    .catch((err: ErrorMessage) => {
       error.value = err
       showRetry.value = true
     })

@@ -1,17 +1,16 @@
 package cloud.oj.core.service;
 
+import cloud.oj.core.dao.DatabaseConfig;
 import cloud.oj.core.dao.UserDao;
-import cloud.oj.core.error.GenericException;
 import cloud.oj.core.entity.User;
+import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -19,6 +18,9 @@ public class UserService {
 
     @Resource
     private UserDao userDao;
+
+    @Resource
+    private DatabaseConfig databaseConfig;
 
     private String newUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
@@ -82,7 +84,14 @@ public class UserService {
         }
     }
 
-    public HashMap<String, Object> getOverview(String userId, Integer year) {
+    @Transactional
+    public HashMap<String, Object> getOverview(String userId, Integer year, String tz) {
+        if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
+            databaseConfig.setTimezone(tz);
+        } else {
+            databaseConfig.setTimezone("Asia/Shanghai");
+        }
+
         var preference = userDao.getLanguagePreference(userId);
         var activities = userDao.getActivities(userId, year);
         var statistics = userDao.getResultStatistics(userId);

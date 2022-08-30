@@ -14,7 +14,7 @@
 import { onBeforeMount, ref } from "vue"
 import { NSpace, NText, useMessage } from "naive-ui"
 import { UserAvatar } from "@/components"
-import { ErrorMsg, User } from "@/api/type"
+import { ErrorMessage, User } from "@/api/type"
 import { UserApi } from "@/api/request"
 
 const message = useMessage()
@@ -27,8 +27,8 @@ onBeforeMount(() => {
     .then((data) => {
       profile.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
 })
 </script>

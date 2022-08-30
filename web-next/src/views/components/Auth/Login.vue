@@ -47,7 +47,7 @@ import {
 } from "naive-ui"
 import { Lock, Orcid } from "@vicons/fa"
 import { AuthApi } from "@/api/request"
-import { UsernamePassword } from "@/api/type"
+import { ErrorMessage, UsernamePassword } from "@/api/type"
 import { Mutations } from "@/store"
 import { setTitle } from "@/utils"
 
@@ -103,8 +103,8 @@ function login() {
           store.commit(Mutations.SAVE_TOKEN, data)
           router.push({ path: "/" })
         })
-        .catch((error) => {
-          message.error(`${error.code}: ${error.msg}`)
+        .catch((err: ErrorMessage) => {
+          message.error(err.toString())
         })
         .finally(() => {
           loading.value = false

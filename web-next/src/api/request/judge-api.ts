@@ -1,6 +1,6 @@
-import { buildHeaders, returnError } from "@/api/utils"
+import { buildHeaders, resolveError } from "@/api/utils"
 import type { JudgeResult, SubmitData, UserInfo } from "@/api/type"
-import ApiPath from "./ApiPath"
+import ApiPath from "./api-path"
 import axios from "axios"
 
 const JudgeApi = {
@@ -21,7 +21,7 @@ const JudgeApi = {
           resolve(res.data as string)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -44,7 +44,7 @@ const JudgeApi = {
           resolve(res.status === 204 ? null : (res.data as JudgeResult))
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }

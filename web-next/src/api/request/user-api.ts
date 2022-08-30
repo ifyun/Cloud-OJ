@@ -1,6 +1,6 @@
 import type { JudgeResult, Overview, Page, User, UserInfo } from "@/api/type"
-import { buildHeaders, returnError } from "@/api/utils"
-import ApiPath from "./ApiPath"
+import { buildHeaders, resolveError } from "@/api/utils"
+import ApiPath from "./api-path"
 import axios from "axios"
 
 const UserApi = {
@@ -33,7 +33,7 @@ const UserApi = {
           resolve(res.status === 200 ? res.data : { data: [], count: 0 })
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -51,7 +51,7 @@ const UserApi = {
           resolve(res.data as User)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -70,7 +70,7 @@ const UserApi = {
           resolve(res.data as Overview)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -105,7 +105,7 @@ const UserApi = {
           }
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }

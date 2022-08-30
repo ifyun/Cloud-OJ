@@ -54,7 +54,7 @@
               <n-form-item label="语言限制" path="languages">
                 <n-transfer
                   v-model:value="languages"
-                  source-title="不允许的语言"
+                  source-title="可用语言"
                   target-title="允许的语言"
                   :options="languageOptions" />
               </n-form-item>
@@ -92,9 +92,8 @@ import {
 } from "naive-ui"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
-import moment from "moment"
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMsg, UserInfo } from "@/api/type"
+import { Contest, ErrorMessage, UserInfo } from "@/api/type"
 import { LanguageOption, LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
 import Mutations from "@/store/mutations"
@@ -160,10 +159,9 @@ const contestForm = ref<HTMLFormElement | null>(null)
 watch(
   () => contest.value.timeRange,
   (value) => {
-    const fmt = "yyyy-MM-DD HH:mm:ss"
     const [start, end] = value!
-    contest.value.startAt = moment(start).format(fmt)
-    contest.value.endAt = moment(end).format(fmt)
+    contest.value.startAt = start / 1000
+    contest.value.endAt = end / 1000
   }
 )
 
@@ -197,14 +195,12 @@ function tabChange(tab: string) {
 function queryContest(contestId: number) {
   ContestApi.getById(contestId)
     .then((data) => {
-      data.timeRange = []
-      data.timeRange.push(Date.parse(data.startAt))
-      data.timeRange.push(Date.parse(data.endAt))
+      data.timeRange = [data.startAt! * 1000, data.endAt! * 1000]
       languages.value = LanguageUtil.toArray(data.languages)
       contest.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false
@@ -224,8 +220,8 @@ function save() {
     .then(() => {
       message.success(`${contest.value.contestName} 保存成功`)
     })
-    .catch((error: ErrorMsg) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
 }
 </script>

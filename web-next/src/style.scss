@@ -20,6 +20,10 @@
     z-index: 2;
   }
 
+  div[class="n-card"] {
+    box-shadow: 2px 0 8px #1d23290d;
+  }
+
   .main {
     top: var(--header-height);
 

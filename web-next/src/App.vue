@@ -33,7 +33,7 @@ import {
 } from "naive-ui"
 import themeOverrides from "@/theme"
 import { AuthApi } from "@/api/request"
-import { ErrorMsg } from "@/api/type"
+import { ErrorMessage } from "@/api/type"
 import { Mutations } from "@/store"
 
 const store = useStore()
@@ -52,10 +52,12 @@ const isLoggedIn = computed(() => {
 })
 
 onMounted(() => {
+  console.log("Timezone:", store.state.timezone)
+
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    AuthApi.verify(store.state.userInfo).catch((error: ErrorMsg) => {
-      if (error.code === 401) {
+    AuthApi.verify(store.state.userInfo).catch((error: ErrorMessage) => {
+      if (error.status === 401) {
         store.commit(Mutations.CLEAR_TOKEN)
         router.push({ name: "auth" })
       }

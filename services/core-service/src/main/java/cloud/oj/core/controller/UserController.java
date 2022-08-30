@@ -21,8 +21,8 @@ public class UserController {
      * @return {@link java.util.HashMap}
      */
     @GetMapping(path = "overview")
-    public ResponseEntity<?> getOverview(String userId, Integer year) {
-        return ResponseEntity.ok(userService.getOverview(userId, year));
+    public ResponseEntity<?> getOverview(String userId, Integer year, String tz) {
+        return ResponseEntity.ok(userService.getOverview(userId, year, tz));
     }
 
     /**

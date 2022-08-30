@@ -33,7 +33,7 @@ import {
 } from "naive-ui"
 import { UserAvatar } from "@/components"
 import { RankingApi } from "@/api/request"
-import { ErrorMsg, Page, Ranking } from "@/api/type"
+import { ErrorMessage, Page, Ranking } from "@/api/type"
 import { setTitle } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
@@ -116,8 +116,8 @@ function queryRankings() {
     .then((data) => {
       rankings.value = data
     })
-    .catch((error: ErrorMsg) => {
-      message.error(`${error.code}: ${error.msg}`)
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
     })
     .finally(() => {
       loading.value = false

@@ -55,6 +55,7 @@ import {
   NSelect,
   NSpace,
   NTag,
+  NText,
   useMessage
 } from "naive-ui"
 import {
@@ -64,7 +65,7 @@ import {
 } from "@vicons/fa"
 import { PersonSearchRound as SearchIcon } from "@vicons/material"
 import { UserAvatar } from "@/components"
-import { ErrorMsg, Page, User, UserInfo } from "@/api/type"
+import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
 import { UserApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import moment from "moment"
@@ -103,20 +104,31 @@ const pagination = ref({
 
 const columns: DataTableColumns<User> = [
   {
-    title: "ID",
-    key: "userId",
-    width: 150
+    title: "#",
+    key: "#",
+    align: "right",
+    width: 50,
+    render: (row, rowIndex: number) => (
+      <span>
+        {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
+      </span>
+    )
   },
   {
+    title: "ID",
+    key: "userId",
+    width: 140
+  },
+  {
+    key: "name",
     title: () => (
       <NSpace size="small" align="center">
         <NIcon style="display: flex">
           <UserIcon />
         </NIcon>
-        <span>用户名</span>
+        <NText>用户名称</NText>
       </NSpace>
     ),
-    key: "name",
     render: (row) => (
       <NSpace align="center">
         <UserAvatar size="small" userId={row.userId} />
@@ -127,34 +139,36 @@ const columns: DataTableColumns<User> = [
     )
   },
   {
+    key: "role",
+    align: "center",
     title: () => (
       <NSpace size="small" justify="center" align="center">
         <NIcon style="display: flex">
           <RoleIcon />
         </NIcon>
-        <span>权限</span>
+        <NText>权限</NText>
       </NSpace>
     ),
-    key: "role",
     render: (row) => (
       <NTag size="small" type={roles[row.roleId!].type as any}>
         {roles[row.roleId!].text}
       </NTag>
-    ),
-    align: "center"
+    )
   },
   {
+    key: "createAt",
+    align: "right",
     title: () => (
       <NSpace size="small" justify="end" align="center">
         <NIcon style="display: flex">
           <DateIcon />
         </NIcon>
-        <span>注册时间</span>
+        <NText>注册时间</NText>
       </NSpace>
     ),
-    key: "createAt",
-    align: "right",
-    render: (row) => <span>{moment(row.createAt).format("YYYY-MM-DD")}</span>
+    render: (row) => (
+      <span>{moment.unix(row.createAt!).format("yyyy/MM/DD")}</span>
+    )
   }
 ]
 
@@ -220,7 +234,7 @@ function queryUsers() {
     .then((data) => {
       users.value = data
     })
-    .catch((error: ErrorMsg) => {
+    .catch((error: ErrorMessage) => {
       message.error(error.toString())
     })
     .finally(() => {

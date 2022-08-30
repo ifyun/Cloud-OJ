@@ -49,7 +49,7 @@ import {
 } from "naive-ui"
 import { ErrorResult } from "@/components"
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMsg, Problem } from "@/api/type"
+import { Contest, ErrorMessage, Problem } from "@/api/type"
 import { LanguageUtil, stateTag } from "@/utils"
 
 const store = useStore()
@@ -59,7 +59,7 @@ const props = defineProps<{
   cid: string
 }>()
 
-const error = ref<ErrorMsg | null>(null)
+const error = ref<ErrorMessage | null>(null)
 const userInfo = computed(() => store.state.userInfo)
 
 const loading = ref<boolean>(false)

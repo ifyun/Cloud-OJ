@@ -8,12 +8,12 @@
     </select>
     <select id="getContests" resultMap="Map.Contest, Map.Total">
         select sql_calc_found_rows c.*,
-        if(start_at &lt;= now(), true, false) as started,
-        if(end_at &lt;= now(), true, false) as ended,
+        if(start_at &lt;= unix_timestamp(now()), true, false) as started,
+        if(end_at &lt;= unix_timestamp(now()), true, false) as ended,
         count(cp.problem_id) as problem_count
         from contest c left join `contest-problem` cp on c.contest_id = cp.contest_id
         <if test="onlyStarted">
-            where start_at &lt;= now()
+            where start_at &lt;= unix_timestamp(now())
         </if>
         group by c.contest_id
         order by started desc, ended
@@ -37,7 +37,7 @@
         </choose>
         where cp.contest_id = #{contestId}
         <if test="onlyStarted">
-            and cp.start_at &lt;= now()
+            and cp.start_at &lt;= unix_timestamp(now())
         </if>
     </select>
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">
@@ -50,20 +50,20 @@
     </select>
     <select id="getContest" resultMap="Map.Contest">
         select *,
-               if(start_at &lt;= now(), true, false) as started,
-               if(end_at &lt;= now(), true, false)   as ended
+               if(start_at &lt;= unix_timestamp(now()), true, false) as started,
+               if(end_at &lt;= unix_timestamp(now()), true, false)   as ended
         from contest
         where contest_id = #{contestId}
     </select>
     <insert id="addContest" parameterType="cloud.oj.core.entity.Contest">
         insert into contest(contest_name, start_at, end_at, languages)
-            value (#{contestName}, from_unixtime(#{startAt}), from_unixtime(#{endAt}), #{languages})
+            value (#{contestName}, #{startAt}, #{endAt}, #{languages})
     </insert>
     <update id="updateContest" parameterType="cloud.oj.core.entity.Contest">
         update contest
         set contest_name = #{contestName},
-            start_at     = from_unixtime(#{startAt}),
-            end_at       = from_unixtime(#{endAt}),
+            start_at     = #{startAt},
+            end_at       = #{endAt},
             languages    = #{languages}
         where contest_id = #{contestId}
     </update>

@@ -1,6 +1,6 @@
 import type { Contest, Page, Problem, UserInfo } from "@/api/type"
-import { buildHeaders, returnError } from "@/api/utils"
-import ApiPath from "./ApiPath"
+import { buildHeaders, resolveError } from "@/api/utils"
+import ApiPath from "./api-path"
 import type { AxiosResponse } from "axios"
 import axios from "axios"
 
@@ -38,7 +38,7 @@ const ContestApi = {
           resolve(res.status === 200 ? res.data : { data: [], count: 0 })
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -64,7 +64,7 @@ const ContestApi = {
           resolve(res.status === 200 ? res.data : [])
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -86,7 +86,7 @@ const ContestApi = {
           resolve(res.status === 200 ? res.data : [])
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -114,7 +114,7 @@ const ContestApi = {
           resolve(res.status === 200 ? res.data : { data: [], count: 0 })
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -137,7 +137,7 @@ const ContestApi = {
           resolve(res.data)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -159,7 +159,7 @@ const ContestApi = {
           resolve(res.data)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -186,7 +186,7 @@ const ContestApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -212,7 +212,7 @@ const ContestApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -234,7 +234,7 @@ const ContestApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   },
@@ -255,7 +255,7 @@ const ContestApi = {
           resolve(res)
         })
         .catch((error) => {
-          reject(returnError(error))
+          reject(resolveError(error))
         })
     })
   }
