@@ -23,4 +23,4 @@ jobs:
         distribution: 'microsoft'
         cache: maven
     - name: Build with Maven
-      run: mvn -B -P prod package '-Dmaven.test.skip=true' --file pom.xml
+      run: cd services && mvn -B package '-Dmaven.test.skip=true' --file pom.xml
