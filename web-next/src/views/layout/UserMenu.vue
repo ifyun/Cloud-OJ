@@ -19,7 +19,7 @@
   </n-space>
   <n-space v-else size="small">
     <n-button secondary type="primary" round size="small" @click="login">
-      注册登录
+      注册/登录
     </n-button>
   </n-space>
 </template>

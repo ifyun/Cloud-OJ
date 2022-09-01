@@ -1,6 +1,10 @@
 <template>
   <div class="admin-wrap">
-    <n-card :bordered="false">
+    <error-result
+      v-if="error != null"
+      :error="error"
+      style="margin-top: 48px" />
+    <n-card v-else :bordered="false">
       <n-space vertical size="large">
         <n-space>
           <n-button type="primary" secondary round>
@@ -18,7 +22,7 @@
           :row-props="rowProps"
           :columns="contestColumns"
           :data="contests.data"
-          :loading="pagination.loading" />
+          :loading="loading" />
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
@@ -54,15 +58,15 @@ import {
   NPagination,
   NSpace,
   NTag,
-  NText,
-  useMessage
+  NText
 } from "naive-ui"
 import {
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
   PlaylistAddRound as AddIcon
 } from "@vicons/material"
-import moment from "moment"
+import { ErrorResult } from "@/components"
+import moment from "moment-timezone"
 import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import { LanguageOptions } from "@/type"
@@ -75,12 +79,13 @@ let selectedId: number | undefined
 
 const store = useStore()
 const router = useRouter()
-const message = useMessage()
+
+const loading = ref<boolean>(true)
+const error = ref<ErrorMessage | null>(null)
 
 const pagination = ref({
   page: 1,
-  pageSize: 15,
-  loading: true
+  pageSize: 15
 })
 
 const showOperations = ref<boolean>(false)
@@ -217,16 +222,17 @@ function pageChange(page: number) {
 }
 
 function queryContests() {
+  loading.value = true
   const { page, pageSize } = pagination.value
   ContestApi.getAll(page, pageSize, userInfo.value)
     .then((data) => {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      message.error(err.toString())
+      error.value = err
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 </script>

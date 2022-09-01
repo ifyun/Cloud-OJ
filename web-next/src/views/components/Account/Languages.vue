@@ -14,8 +14,12 @@
           <n-icon :color="item.color" size="12">
             <circle-round />
           </n-icon>
-          <n-text depth="1" strong>{{ item.name }}</n-text>
-          <n-text depth="3">{{ item.percent }}%</n-text>
+          <n-text depth="1" strong style="margin-left: 12px">{{
+            item.name
+          }}</n-text>
+          <n-text depth="3" style="margin-left: 6px"
+            >{{ item.percent }}%</n-text
+          >
         </div>
       </div>
     </div>
@@ -27,18 +31,7 @@ import { computed } from "vue"
 import { NH3, NIcon, NText } from "naive-ui"
 import { CircleRound } from "@vicons/material"
 import { Language } from "@/api/type"
-import { LanguageNames } from "@/type"
-
-const colors = [
-  "#555555",
-  "#F34B7D",
-  "#B07219",
-  "#3572A5",
-  "#89E051",
-  "#F1E05A",
-  "#A97BFF",
-  "#00ADD8"
-]
+import { LanguageColors, LanguageNames } from "@/type"
 
 const props = defineProps<{ languages: Array<Language> }>()
 
@@ -58,7 +51,7 @@ const data = computed<Array<LanguageItem>>(() => {
       name: LanguageNames[val.language],
       count: val.count,
       percent: Number(((val.count / total) * 100).toFixed(1)),
-      color: colors[val.language]
+      color: LanguageColors[val.language]
     })
   })
 
@@ -109,14 +102,6 @@ const data = computed<Array<LanguageItem>>(() => {
     display: flex;
     align-items: center;
     margin-top: 3px;
-
-    *:nth-child(2) {
-      margin-left: 10px;
-    }
-
-    *:nth-child(3) {
-      margin-left: 6px;
-    }
   }
 }
 </style>

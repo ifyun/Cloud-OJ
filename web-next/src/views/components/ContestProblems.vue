@@ -1,4 +1,3 @@
-<!-- 竞赛题目组件 -->
 <template>
   <div v-if="error == null" class="wrap">
     <n-card :bordered="false" :segmented="{ content: true }">
@@ -20,7 +19,7 @@
           <n-text v-else strong>{{ contest.contestName }}</n-text>
         </n-space>
         <n-data-table
-          :bordered="false"
+          size="small"
           :columns="columns"
           :data="problems"
           :loading="loading" />
@@ -50,7 +49,7 @@ import {
 import { ErrorResult } from "@/components"
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
-import { LanguageUtil, stateTag } from "@/utils"
+import { LanguageUtil, setTitle, stateTag } from "@/utils"
 
 const store = useStore()
 const router = useRouter()
@@ -120,6 +119,7 @@ function queryContest(cid: number) {
   loading.value = true
   ContestApi.getById(cid)
     .then((data) => {
+      setTitle(data.contestName)
       contest.value = data
       if (data.languages < 511) {
         languages.value = LanguageUtil.toArray(data.languages)

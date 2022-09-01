@@ -1,6 +1,10 @@
 <template>
   <div class="admin-wrap">
-    <n-card :bordered="false">
+    <error-result
+      v-if="error != null"
+      :error="error"
+      style="margin-top: 48px" />
+    <n-card v-else :bordered="false">
       <n-space vertical size="large">
         <n-space align="center" justify="space-between">
           <n-space align="center">
@@ -50,7 +54,7 @@
           :row-props="rowProps"
           :columns="problemColumns"
           :data="problems.data"
-          :loading="pagination.loading" />
+          :loading="loading" />
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
@@ -102,6 +106,7 @@ import {
   ManageSearchRound,
   PostAddRound as AddIcon
 } from "@vicons/material"
+import { ErrorResult } from "@/components"
 import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
 import { renderIcon, setTitle, TagUtil } from "@/utils"
 import { ProblemApi } from "@/api/request"
@@ -113,10 +118,12 @@ const store = useStore()
 const message = useMessage()
 const dialog = useDialog()
 
+const loading = ref<boolean>(true)
+const error = ref<ErrorMessage | null>(null)
+
 const pagination = ref({
   page: 1,
-  pageSize: 20,
-  loading: true
+  pageSize: 20
 })
 
 const problems = ref<Page<Problem>>({
@@ -362,17 +369,17 @@ function deleteProblem() {
  * 获取题目数据
  */
 function queryProblems() {
-  pagination.value.loading = true
+  loading.value = true
   const { page, pageSize } = pagination.value
   ProblemApi.getAll(page, pageSize, keyword.value, userInfo.value)
     .then((data) => {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      message.error(err.toString())
+      error.value = err
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 

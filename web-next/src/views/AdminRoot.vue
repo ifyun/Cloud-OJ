@@ -7,7 +7,7 @@
       <n-layout-sider
         class="aside"
         collapse-mode="width"
-        width="170"
+        width="160"
         :native-scrollbar="false"
         :collapsed="collapsed">
         <div>
@@ -125,7 +125,7 @@ function collapse() {
 
 <style scoped lang="scss">
 .admin-nav {
-  height: 60px;
+  height: var(--header-height);
   padding: 0 var(--layout-padding);
   display: flex;
   align-items: center;

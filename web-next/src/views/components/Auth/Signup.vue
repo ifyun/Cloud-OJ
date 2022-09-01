@@ -6,7 +6,7 @@
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
     <n-form-item path="userId">
-      <n-input v-model:value="user.userId" placeholder="用户ID，必须是唯一的">
+      <n-input v-model:value="user.userId" placeholder="用户名（字母和数字）">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <user-id-icon />
@@ -113,6 +113,7 @@ const signupRules: FormRules = {
       } else if (value.length < 6) {
         return new Error("至少 6 个字符!")
       }
+
       return true
     }
   },
@@ -125,6 +126,7 @@ const signupRules: FormRules = {
       } else if (value.length < 2) {
         return new Error("至少 2 个字符!")
       }
+
       return true
     }
   },
@@ -132,11 +134,16 @@ const signupRules: FormRules = {
     required: true,
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {
+      const regx = /^[a-zA-Z0-9_.-]*$/
+
       if (!value) {
         return new Error("请输入密码")
       } else if (value.length < 6) {
         return new Error("至少 6 位!")
+      } else if (!regx.test(value)) {
+        return new Error("包含非法字符")
       }
+
       return true
     }
   },

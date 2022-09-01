@@ -41,6 +41,7 @@ export class ErrorMessage {
   constructor(status: number, msg: string) {
     this.status = status
     this.message = msg
+    this.error = msg
   }
 
   toString() {

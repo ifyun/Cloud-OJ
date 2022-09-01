@@ -1,6 +1,6 @@
 :root {
   --layout-padding: 12px;
-  --header-height: 60px;
+  --header-height: 50px;
   --primary-color: #18a058;
 }
 
@@ -24,6 +24,14 @@
     box-shadow: 2px 0 8px #1d23290d;
   }
 
+  nav[class="n-breadcrumb"] {
+    line-height: normal;
+  }
+
+  td[class="n-data-table-td"] {
+    vertical-align: middle;
+  }
+
   .main {
     top: var(--header-height);
 
@@ -45,6 +53,7 @@
     .footer {
       margin-top: auto;
       width: 100%;
+      background-color: transparent;
     }
   }
 
