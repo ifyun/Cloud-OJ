@@ -4,7 +4,7 @@
     content-style="display: flex; flex-direction: column">
     <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
       <n-layout-header>
-        <app-logo style="height: 48px" />
+        <app-logo style="height: 50px" />
       </n-layout-header>
     </n-config-provider>
     <n-layout-content embedded>

@@ -1,6 +1,8 @@
 <template>
   <div class="wrap">
-    <n-card :bordered="false">
+    <error-result v-if="error != null" :error="error" />
+    <empty-data v-else-if="noContent" style="margin-top: 48px" />
+    <n-card v-else :bordered="false">
       <n-space vertical size="large">
         <n-space align="center">
           <n-input-group>
@@ -22,9 +24,7 @@
             {{ keywordTag }}
           </n-tag>
         </n-space>
-        <empty-data v-if="!loading && problems.count === 0" />
         <n-data-table
-          v-else
           size="small"
           :bordered="false"
           :columns="problemColumns"
@@ -56,10 +56,10 @@ import {
   NInputGroup,
   NPagination,
   NSpace,
-  NTag,
-  useMessage
+  NTag
 } from "naive-ui"
 import { Search as SearchIcon } from "@vicons/fa"
+import { ErrorResult } from "@/components"
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { setTitle, TagUtil } from "@/utils"
@@ -68,7 +68,6 @@ import EmptyData from "@/components/EmptyData.vue"
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const message = useMessage()
 
 const pagination = ref({
   page: 1,
@@ -76,6 +75,7 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
+const error = ref<ErrorMessage | null>(null)
 
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
@@ -152,6 +152,10 @@ const theme = computed(() => {
   return store.state.theme
 })
 
+const noContent = computed<boolean>(
+  () => !loading.value && problems.value.count === 0
+)
+
 onBeforeMount(() => {
   setTitle("练习")
 
@@ -198,7 +202,7 @@ function queryProblems() {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      message.error(err.toString())
+      error.value = err
     })
     .finally(() => {
       loading.value = false

@@ -1,6 +1,10 @@
 <template>
   <div class="admin-wrap">
-    <n-card :bordered="false">
+    <error-result
+      v-if="error != null"
+      :error="error"
+      style="margin-top: 48px" />
+    <n-card v-else :bordered="false">
       <n-space vertical size="large">
         <n-space>
           <n-input-group>
@@ -26,7 +30,7 @@
         <n-data-table
           :columns="columns"
           :data="users.data"
-          :loading="pagination.loading" />
+          :loading="loading" />
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
@@ -55,8 +59,7 @@ import {
   NSelect,
   NSpace,
   NTag,
-  NText,
-  useMessage
+  NText
 } from "naive-ui"
 import {
   CalendarCheck as DateIcon,
@@ -64,7 +67,7 @@ import {
   UserTag as UserIcon
 } from "@vicons/fa"
 import { PersonSearchRound as SearchIcon } from "@vicons/material"
-import { UserAvatar } from "@/components"
+import { ErrorResult, UserAvatar } from "@/components"
 import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
 import { UserApi } from "@/api/request"
 import { setTitle } from "@/utils"
@@ -81,7 +84,9 @@ const roles = [
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const message = useMessage()
+
+const loading = ref<boolean>(true)
+const error = ref<ErrorMessage | null>(null)
 
 const searchTypes = [
   { label: "用户 ID", value: 1 },
@@ -98,8 +103,7 @@ const users = ref<Page<User>>({
 
 const pagination = ref({
   page: 1,
-  pageSize: 15,
-  loading: true
+  pageSize: 15
 })
 
 const columns: DataTableColumns<User> = [
@@ -225,6 +229,7 @@ function pageChange(page: number) {
 }
 
 function queryUsers() {
+  loading.value = true
   UserApi.getAll(
     pagination.value.page,
     pagination.value.pageSize,
@@ -234,11 +239,11 @@ function queryUsers() {
     .then((data) => {
       users.value = data
     })
-    .catch((error: ErrorMessage) => {
-      message.error(error.toString())
+    .catch((err: ErrorMessage) => {
+      error.value = err
     })
     .finally(() => {
-      pagination.value.loading = false
+      loading.value = false
     })
 }
 </script>

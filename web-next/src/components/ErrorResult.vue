@@ -1,8 +1,8 @@
 <template>
   <n-result
-    class="error-result"
+    style="margin-top: 48px"
     size="large"
-    status="error"
+    status="info"
     :title="title"
     :description="desc">
     <template #footer>要不刷新一下试试？</template>
@@ -22,20 +22,15 @@ const title = ref<string>("")
 const desc = ref<string>("")
 
 watch(
-  props.error,
+  () => props.error,
   (value) => {
     if (typeof value === "undefined") {
       return
     }
-    title.value = value.error!
+
+    title.value = `${value.status} ${value.error!}`
     desc.value = value.message
   },
   { immediate: true, deep: true }
 )
 </script>
-
-<style scoped>
-.error-result {
-  margin-top: 24px;
-}
-</style>

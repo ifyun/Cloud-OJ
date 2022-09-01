@@ -1,10 +1,10 @@
 <template>
   <div class="wrap">
-    <n-card :bordered="false">
+    <error-result v-if="error != null" :error="error" />
+    <empty-data v-else-if="noContent" style="margin-top: 48px" />
+    <n-card v-else :bordered="false">
       <n-space vertical size="large">
-        <empty-data v-if="!loading && contests.count === 0" />
         <n-data-table
-          v-else
           size="small"
           :loading="loading"
           :columns="contestColumns"
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="tsx">
-import { onBeforeMount, ref } from "vue"
+import { computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 import {
   DataTableColumns,
@@ -33,9 +33,9 @@ import {
   NPagination,
   NSpace,
   NTag,
-  NText,
-  useMessage
+  NText
 } from "naive-ui"
+import { ErrorResult } from "@/components"
 import moment from "moment-timezone"
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Page } from "@/api/type"
@@ -46,7 +46,6 @@ import EmptyData from "@/components/EmptyData.vue"
 const timeFmt = "yyyy/MM/DD HH:mm:ss"
 
 const router = useRouter()
-const message = useMessage()
 
 const pagination = ref({
   page: 1,
@@ -54,11 +53,16 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
+const error = ref<ErrorMessage | null>(null)
 
 const contests = ref<Page<Contest>>({
   data: [],
   count: 0
 })
+
+const noContent = computed<boolean>(
+  () => !loading.value && contests.value.count === 0
+)
 
 const contestColumns: DataTableColumns<Contest> = [
   {
@@ -145,16 +149,10 @@ function queryContests() {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      message.error(err.toString())
+      error.value = err
     })
     .finally(() => {
       loading.value = false
     })
 }
 </script>
-
-<style>
-td[class="n-data-table-td"] {
-  vertical-align: middle;
-}
-</style>
