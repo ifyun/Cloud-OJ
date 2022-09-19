@@ -14,11 +14,6 @@ namespace io = boost::iostreams;
 
 const char *status_str[] = {"AC", "WA", "TLE", "MLE", "OLE", "PA"};
 
-/**
- * @brief 从指定目录获取测试数据文件的路径
- * @param path 测试数据目录
- * @param ext 扩展名(.in | .out)
- */
 std::vector<std::string> Utils::get_files(const std::string &path, const std::string &ext) {
     std::vector<std::string> files;
     DIR *dir = opendir(path.c_str());
@@ -29,8 +24,8 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
 
     struct dirent *d_ent;
 
-    char self[3] = ".";
-    char parent[6] = "..";
+    const char *self = ".";
+    const char *parent = "..";
 
     while ((d_ent = readdir(dir)) != nullptr) {
         // Exclude "." and ".."
@@ -51,14 +46,11 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     }
 
     std::sort(files.begin(), files.end());
+    closedir(dir);
 
     return files;
 }
 
-/**
- * @brief 计算结果、通过率
- * @return 判题结果的 JSON 字符串
- */
 std::string Utils::calc_results(const std::vector<Result> &results) {
     int status;
     long time = 0, memory = 0;
@@ -93,6 +85,7 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
     std::stringstream ss;
 
     ss << "{\n"
+       << "  " << R"("code": )" << 0 << ",\n"
        << "  " << R"("status": )" << status << ",\n"
        << "  " << R"("result": ")" << status_str[status] << R"(",)" << "\n"
        << "  " << R"("total": )" << total << ",\n"
@@ -105,17 +98,11 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
     return ss.str();
 }
 
-/**
- * @brief 返回去除文件末尾所有空格/换行符后的偏移量
- * @param path 文件路径
- * @return 偏移量
- */
 __off_t Utils::get_rtrim_offset(const std::string &path) {
-    int fd;
     __off_t offset;
     char buf;
+    int fd = open(path.c_str(), O_RDONLY, 0644);
 
-    fd = open(path.c_str(), O_RDONLY);
     offset = lseek(fd, -2, SEEK_END);
 
     read(fd, &buf, sizeof(buf));
@@ -135,10 +122,6 @@ __off_t Utils::get_rtrim_offset(const std::string &path) {
     return offset;
 }
 
-/**
- * @brief 比较文件
- * @return @c true - 不同, @c false - 相同
- */
 bool Utils::diff(const std::string &user_output, const std::string &expect_output) {
     auto offset1 = get_rtrim_offset(user_output);
     auto offset2 = get_rtrim_offset(expect_output);
@@ -147,23 +130,34 @@ bool Utils::diff(const std::string &user_output, const std::string &expect_outpu
     io::mapped_file_source file2(expect_output, offset2);
 
     if (file1.size() != file2.size()) {
+        file1.close();
+        file2.close();
         return true;
     } else {
+        file1.close();
+        file2.close();
         return !std::equal(file1.data(), file1.data() + file1.size(), file2.data());
     }
 }
 
-/**
- * @brief 将结果写入文件(result.json)
- */
-std::string Utils::write_result(const std::vector<Result> &results) {
-    std::string res = calc_results(results);
+void Utils::write_result(RTN &rtn, const std::vector<Result> &results, const std::string &work_dir) {
     std::ofstream of;
+    std::string res;
 
-    of.open("result.json", std::ios_base::out | std::ios_base::trunc);
+    if (rtn.code == 0) {
+        res = calc_results(results);
+    } else {
+        std::ostringstream ss;
+        ss << "{\n"
+           << "  " << R"("code": )" << rtn.code << ",\n"
+           << "  " << R"("error": ")" << rtn.err << "\"\n"
+           << "}\n";
+        res = ss.str();
+    }
 
+    of.open(work_dir + "/result.json", std::ios_base::out | std::ios_base::trunc);
     of << res;
     of.close();
 
-    return res;
+    rtn.result = res;
 }

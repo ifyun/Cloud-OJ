@@ -1,5 +1,4 @@
 .idea
 .vscode
 *.iml
-build
-cmake-build-*
+cmake-build*
