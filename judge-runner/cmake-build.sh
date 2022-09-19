@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
-build_x64="cmake-build-release-x64"
+build_dir="cmake-build-release"
 
-if [ -d ${build_x64} ]; then
-  rm -rf ${build_x64}
+if [ -d ${build_dir} ]; then
+  rm -rf ${build_dir}
 fi
 
-mkdir ${build_x64}
+mkdir ${build_dir}
 
-cd ${build_x64}
+cd ${build_dir}
 cmake -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_SYSTEM_NAME=Linux \
   -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
@@ -18,4 +18,10 @@ cmake -DCMAKE_BUILD_TYPE=Release \
 
 cd ../
 
-cmake --build ./cmake-build-release-x64 --target all
+if [ "$1" == "install" ]; then
+  cmake --build ${build_dir} --target all install
+  ln -sf /opt/cloud-oj/bin/judge /usr/bin/judge
+  ln -sf /opt/cloud-oj/bin/judged /usr/bin/judged
+else
+  cmake --build ${build_dir} --target all
+fi
