@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-alpine
+FROM openjdk:17-slim-bullseye
 COPY ./target/*.jar /app/registry.jar
 WORKDIR /app
 EXPOSE 8761

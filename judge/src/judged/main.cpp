@@ -26,7 +26,7 @@ void sig_handler(int sig) {
         ERROR("%s", strerror(errno));
     } else if (sig == SIGINT || sig == SIGTERM) {
         // 处理 Ctrl + C 和 SIGTERM，关闭线程池并退出
-        INFO("%s", "stopping judged by SIGINT/SIGTERM");
+        INFO("\n%s", "stopping judged by SIGINT/SIGTERM");
         close(sfd);
         pool->destroy();
         delete pool;

@@ -5,11 +5,11 @@ if [ "$1" == "clean" ]; then
   if [ -d "target" ]; then
     rm -rf target
   fi
-  if [ -d "judge-runner/cmake-build-debug" ]; then
-    rm -rf judge-runner/cmake-build-debug
+  if [ -d "judge/cmake-build-debug" ]; then
+    rm -rf judge/cmake-build-debug
   fi
-  if [ -d "judge-runner/cmake-build-release" ]; then
-    rm -rf judge-runner/cmake-build-release
+  if [ -d "judge/cmake-build-release" ]; then
+    rm -rf judge/cmake-build-release
   fi
   if [ -d "web/dist" ]; then
     rm -rf web/dist

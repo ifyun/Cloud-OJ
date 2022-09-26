@@ -3,15 +3,15 @@ services:
   registry:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/registry:latest
     networks:
-      - cloud-oj-net
+      - cloud-oj
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
   file_service:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/file-service:latest
     networks:
-      - oj-net
+      - cloud-oj
     volumes:
-      - "/var/lib/cloud_oj:/var/lib/cloud_oj"
+      - "/var/lib/cloud-oj:/var/lib/cloud-oj"
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
       EUREKA_SERVER: "registry:8761"
@@ -22,7 +22,7 @@ services:
   gateway:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/gateway:latest
     networks:
-      - cloud-oj-net
+      - cloud-oj
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
       EUREKA_SERVER: "registry:8761"
@@ -34,7 +34,7 @@ services:
   core_service:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/core-service:latest
     networks:
-      - cloud-oj-net
+      - cloud-oj
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
       EUREKA_SERVER: "registry:8761"
@@ -46,9 +46,9 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/judge-service:latest
     privileged: true
     networks:
-      - cloud-oj-net
+      - cloud-oj
     volumes:
-      - "/var/lib/cloud_oj:/var/lib/cloud_oj"
+      - "/var/lib/cloud-oj:/var/lib/cloud-oj"
     environment:
       JVM_OPTS: "-Xms128m -Xmx128m"
       EUREKA_SERVER: "registry:8761"
@@ -64,7 +64,7 @@ services:
   web:
     image: registry.cn-hangzhou.aliyuncs.com/cloud_oj/web:latest
     networks:
-      - cloud-oj-net
+      - cloud-oj
     ports:
       - "80:80"
     # - "443:443"
@@ -77,8 +77,5 @@ services:
     # SSL_CERT: "ssl_cert.pem"
     # SSL_KEY: "ssl_key.key"
 networks:
-  cloud-oj-net:
+  cloud-oj:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 10.16.0.0/16
