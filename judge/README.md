@@ -20,7 +20,7 @@ OJ 判题程序。
 ## install
 
 ```bash
-sudo ./cmake-build.sh install
+sudo ./build install
 ```
 - 可执行文件将被复制到 `/opt/cloud-oj/bin` 目录
 - 同时会在 `/usr/bin` 目录创建符号链接

@@ -2,7 +2,6 @@ package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.dao.*;
-import cloud.oj.judge.error.UnsupportedLanguageError;
 import cloud.oj.judge.entity.Limit;
 import cloud.oj.judge.entity.RunResult;
 import cloud.oj.judge.entity.Runtime;
@@ -10,20 +9,23 @@ import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.enums.Language;
 import cloud.oj.judge.enums.SolutionResult;
 import cloud.oj.judge.enums.SolutionState;
+import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.net.StandardProtocolFamily;
+import java.net.UnixDomainSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -59,8 +61,13 @@ public class Judgement {
     @Resource
     private HashMap<String, Integer> cpus;
 
-    private static class RuntimeError extends Exception {
-        RuntimeError(String msg) {
+    private static final int RE = 1;
+    private static final int IE = 2;
+
+    private final static UnixDomainSocketAddress addr = UnixDomainSocketAddress.of("/var/run/judge.sock");
+
+    private static class InternalError extends Exception {
+        InternalError(String msg) {
             super(msg);
         }
     }
@@ -161,14 +168,27 @@ public class Judgement {
         RunResult result = null;
 
         try {
-            String testDataDir = appConfig.getFileDir() + "test_data/" + solution.getProblemId();
-            ProcessBuilder cmd = buildCommand(solution, limit, testDataDir);
-            result = run(cmd);
-        } catch (RuntimeError e) {
-            log.warn("Runtime Error: {}", e.getMessage());
-            runtime.setInfo(e.getMessage());
-            runtime.setResult(SolutionResult.RE);
-        } catch (InterruptedException | IOException | UnsupportedLanguageError e) {
+            var testDataDir = appConfig.getFileDir() + "test_data/" + solution.getProblemId();
+            var argv = buildCommand(solution, limit, testDataDir);
+            var buf = ByteBuffer.allocate(2048);
+            var channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+            channel.connect(addr);
+            channel.write(ByteBuffer.wrap(argv.getBytes()));
+            channel.read(buf);
+            channel.close();
+            buf.flip();
+            var bytes = new byte[buf.remaining()];
+            buf.get(bytes);
+            result = objectMapper.readValue(bytes, RunResult.class);
+
+            if (result.getCode() == RE) {
+                log.warn("Runtime Error: {}", result.getError());
+                runtime.setInfo(result.getError());
+                runtime.setResult(SolutionResult.RE);
+            } else if (result.getCode() == IE) {
+                throw new InternalError(result.getError());
+            }
+        } catch (IOException | InternalError | UnsupportedLanguageError e) {
             log.warn("Judge Error: {}", e.getMessage());
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
@@ -179,40 +199,9 @@ public class Judgement {
     }
 
     /**
-     * 调用判题程序执行
-     *
-     * @param cmd 命令 & 参数
-     * @return 运行结果 {@link RunResult}
-     */
-    private RunResult run(ProcessBuilder cmd)
-            throws RuntimeError, IOException, InterruptedException {
-        RunResult result;
-        var process = cmd.start();
-
-        int exitValue = process.waitFor();
-
-        if (exitValue == 0) {
-            // 正常退出
-            var resultStr = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-            result = objectMapper.readValue(resultStr, RunResult.class);
-        } else {
-            // 非正常退出
-            var stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
-            if (exitValue == 1) {
-                throw new RuntimeError(stderr);
-            } else {
-                throw new InterruptedException(stderr);
-            }
-        }
-
-        process.destroy();
-        return result;
-    }
-
-    /**
      * 生成命令
      */
-    private ProcessBuilder buildCommand(Solution solution, Limit limit, String testDataDir)
+    private String buildCommand(Solution solution, Limit limit, String dataDir)
             throws UnsupportedLanguageError {
         var language = Language.get(solution.getLanguage());
 
@@ -220,63 +209,49 @@ public class Judgement {
             throw new UnsupportedLanguageError("NULL");
         }
 
-        var cpu = cpus.get(Thread.currentThread().getName());   // 获取与当前线程绑定的 CPU ID
+        var argv = new ArrayList<>();
 
-        var solutionDir = appConfig.getCodeDir() + solution.getSolutionId();
-        var builder = new ProcessBuilder();
-        List<String> cmd = new ArrayList<>();
-
-        cmd.add("/opt/bin/judge-runner");
-
+        var cpu = cpus.get(Thread.currentThread().getName());
+        var workDir = appConfig.getCodeDir() + solution.getSolutionId();
         var timeLimit = limit.getTimeout();
-        var outputLimit = limit.getOutputLimit();
         var memoryLimit = limit.getMemoryLimit();
+        var outputLimit = limit.getOutputLimit();
 
         switch (language) {
-            case C:
-            case CPP:
-            case GO:
-                cmd.add("--cmd=./Solution");
-                break;
-            case JAVA:
+            case C, CPP, GO -> argv.add("--cmd=./Solution");
+            case JAVA -> {
                 memoryLimit <<= 1;
-                cmd.add("--cmd=java@Solution");
-                break;
-            case KOTLIN:
+                argv.add("--cmd=java@Solution");
+            }
+            case KOTLIN -> {
                 timeLimit <<= 1;
                 memoryLimit <<= 1;
-                cmd.add("--cmd=kotlin@SolutionKt");
-                break;
-            case JAVA_SCRIPT:
+                argv.add("--cmd=kotlin@SolutionKt");
+            }
+            case JAVA_SCRIPT -> {
                 memoryLimit <<= 1;
-                cmd.add("--cmd=node@Solution.js");
-                break;
-            case PYTHON:
-                cmd.add("--cmd=python3@Solution.py");
-                break;
-            case BASH:
-                cmd.add("--cmd=sh@Solution.sh");
-                break;
-            case C_SHARP:
+                argv.add("--cmd=node@Solution.js");
+            }
+            case PYTHON -> argv.add("--cmd=python3@Solution.py");
+            case BASH -> argv.add("--cmd=sh@Solution.sh");
+            case C_SHARP -> {
                 memoryLimit <<= 1;
-                cmd.add("--cmd=mono@Solution.exe");
-                break;
-            default:
-                throw new UnsupportedLanguageError(language.toString());
+                argv.add("--cmd=mono@Solution.exe");
+            }
+            default -> throw new UnsupportedLanguageError(language.toString());
         }
 
         var config = Arrays.asList(
                 "--time=" + timeLimit,
-                "--memory=" + memoryLimit,
-                "--output-size=" + outputLimit,
-                "--workdir=" + solutionDir,
-                "--data=" + testDataDir,
+                "--ram=" + memoryLimit,
+                "--output=" + outputLimit,
+                "--work-dir=" + workDir,
+                "--data=" + dataDir,
                 "--lang=" + solution.getLanguage(),
                 "--cpu=" + (cpu == null ? 0 : cpu)
         );
 
-        cmd.addAll(config);
-        builder.command(cmd);
-        return builder;
+        argv.addAll(config);
+        return StringUtils.join(argv, " ");
     }
 }

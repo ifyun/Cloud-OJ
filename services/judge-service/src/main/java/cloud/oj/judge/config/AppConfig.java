@@ -1,6 +1,8 @@
 package cloud.oj.judge.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -8,8 +10,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 
-@Data
 @Slf4j
+@Getter
+@Setter
+@NoArgsConstructor
 @Component
 @ConfigurationProperties("app")
 public class AppConfig {

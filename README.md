@@ -10,7 +10,6 @@
 Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js。
 
 - 支持 Docker 部署
-- 支持 SQL 判题（SQLite）
 - 代码高亮
 - 可扩展判题服务
 

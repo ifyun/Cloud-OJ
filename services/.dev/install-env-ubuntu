@@ -7,9 +7,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 curl -sL https://deb.nodesource.com/setup_lts.x | bash - &&
-  libs="sqlite3 gcc g++ python3 openjdk-11-jdk mono-devel nodejs" &&
   apt-get update &&
-  apt-get install -y --no-install-recommends "$libs" &&
+  apt-get install -y --no-install-recommends sqlite3 gcc g++ python3 openjdk-17-jdk mono-devel nodejs &&
   apt-get clean
 
 if [ -d "/usr/share/kotlinc" ]; then
@@ -28,7 +27,7 @@ if [ -d "/usr/local/go" ]; then
 fi
 
 curl -LJO \
-  https://golang.google.cn/dl/go1.19.linux-amd64.tar.gz &&
+  https://go.dev/dl/go1.19.linux-amd64.tar.gz &&
   tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz &&
   ln -s /usr/local/go/bin/go /usr/bin/go &&
   rm go1.19.linux-amd64.tar.gz

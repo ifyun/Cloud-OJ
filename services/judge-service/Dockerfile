@@ -1,4 +1,6 @@
-FROM openjdk:11-jdk-bullseye
+FROM openjdk:17-bullseye
+COPY ./bin/* /usr/bin/
+COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./target/*.jar /app/judge-service.jar
 # Install Golang
 RUN curl -LJO \
@@ -15,10 +17,9 @@ RUN curl -LJO \
     && rm kotlin-compiler-1.7.10.zip
 RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
-    && libs="sqlite3 gcc g++ python3 mono-devel nodejs" \
     && apt-get update \
-    && apt-get install -y --no-install-recommends $libs \
+    && apt-get install -y --no-install-recommends sqlite3 gcc g++ python3 mono-devel nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 EXPOSE 8083
-CMD ["java", "${JVM_OPTS}", "-jar", "judge-service.jar"]
+CMD ./entrypoint.sh

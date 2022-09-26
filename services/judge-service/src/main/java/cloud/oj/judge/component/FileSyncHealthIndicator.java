@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 @Component
 @ConditionalOnBean(DataSyncService.class)
-public class TestDataSyncHealthIndicator implements HealthIndicator {
+public class FileSyncHealthIndicator implements HealthIndicator {
 
     @Resource
     private AppHealth appHealth;

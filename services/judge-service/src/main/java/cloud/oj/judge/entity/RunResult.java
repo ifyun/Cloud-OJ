@@ -10,6 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RunResult {
+    private Integer code;
+    private String error;
     private Integer status;
     private String result;
     private Integer total;

@@ -42,7 +42,7 @@ import { JudgeApi } from "@/api/request"
 import { computed, onMounted, ref } from "vue"
 
 class Result {
-  status: string
+  status: any
   title: string
   desc?: string
   error?: string
@@ -104,7 +104,7 @@ function fetchResult(count: number) {
   JudgeApi.getResult(props.solutionId, userInfo.value)
     .then((data) => {
       if (data == null || data.state !== JUDGED) {
-        setTimeout(() => fetchResult(count + 1), 1000)
+        setTimeout(() => fetchResult(count + 1), 500)
       } else {
         setResult(data)
       }

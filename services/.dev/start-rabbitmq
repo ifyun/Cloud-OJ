@@ -10,5 +10,5 @@ else
     -e "RABBITMQ_DEFAULT_USER=admin" \
     -e "RABBITMQ_DEFAULT_PASS=admin" \
     -v rabbitmq-cloudoj:/var/lib/rabbitmq/mnesia \
-    -d rabbitmq:3.10.7-management
+    -d rabbitmq:3.10-management-alpine
 fi
