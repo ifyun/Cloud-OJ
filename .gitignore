@@ -6,4 +6,4 @@ target/
 *.iml
 
 ### VS Code ###
-.vscode/
+.vscode/*
