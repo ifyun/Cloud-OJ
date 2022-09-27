@@ -3,6 +3,7 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <cstdio>
 #include <cerrno>
 #include <csignal>

@@ -1,7 +1,7 @@
 /// 判题程序入口
 /// @author Cloud
 #include <iostream>
-#include <csignal>
+#include <unistd.h>
 #include "runner.h"
 #include "options.h"
 
