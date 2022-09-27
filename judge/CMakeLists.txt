@@ -22,10 +22,10 @@ if (Boost_FOUND)
     MESSAGE(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
     MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
-
     add_executable(judge src/common.cpp ${JUDGE})
     add_executable(judged src/common.cpp ${JUDGED})
     target_link_libraries(judge ${Boost_LIBRARIES})
+    target_link_libraries(judged pthread)
 endif ()
 
 install(
