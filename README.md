@@ -1,11 +1,13 @@
 # Cloud OJ
 
+![Codacy Badge](https://img.shields.io/codacy/grade/3fb7e4c059c5431799b8863218750095?logo=codacy)
+![CMake Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/CMake?label=cmake%20build&logo=cmake&logoColor=blue)
+![Maven Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?label=maven%20build&logo=apache-maven&logoColor=red)
+![Vite Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Node.js%20CI?label=vite%20build&logo=vite)
+![Platform](https://img.shields.io/badge/platform-linux--64-blueviolet?logo=linux&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?logo=github)
 ![Top Languages](https://img.shields.io/github/languages/top/imcloudfloating/Cloud-OJ?logo=github)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?logo=github)
-![Codacy Badge](https://api.codacy.com/project/badge/Grade/3fb7e4c059c5431799b8863218750095)
-![License](https://img.shields.io/github/license/imcloudfloating/Cloud-OJ)
-![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ)
+![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?logo=github)
 
 Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js。
 
@@ -13,9 +15,8 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - 代码高亮
 - 可扩展判题服务
 
-## Supported languages
+## Supported Languages
 
-- SQLite
 - C
 - C++
 - Java
@@ -39,10 +40,10 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 需要以下组件:
 
-- CMake 3.16
+- CMake 3.16+
 - Linux / WSL
 - Maven 3.8
-- OpenJDK 11+
+- OpenJDK 17+
 - Node.js v16
 
 ## Technologies
