@@ -1,4 +1,5 @@
 FROM openjdk:17-bullseye
+COPY ./target/lib/* /app/lib/
 COPY ./bin/* /usr/bin/
 COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./target/*.jar /app/judge-service.jar
@@ -19,7 +20,8 @@ RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
     && apt-get install -y --no-install-recommends sqlite3 gcc g++ python3 mono-devel nodejs \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /app/entrypoint.sh
 WORKDIR /app
 EXPOSE 8083
 CMD ./entrypoint.sh

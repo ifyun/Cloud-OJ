@@ -60,6 +60,8 @@ eureka:
     prefer-ip-address: true
     instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
   client:
+    healthcheck:
+      enabled: true
     service-url:
       defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 mybatis:

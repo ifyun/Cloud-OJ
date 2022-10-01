@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
+# clean
 if [ "$1" == "clean" ]; then
-  mvn clean
+  cd services && mvn clean && cd ..
   if [ -d "target" ]; then
     rm -rf target
   fi
@@ -14,27 +15,53 @@ if [ "$1" == "clean" ]; then
   if [ -d "web/dist" ]; then
     rm -rf web/dist
   fi
-else
-  echo "=============================== Cloud OJ Build ================================"
-  if [ ! -d "target" ]; then
-    mkdir target
-  else
-    rm -rf target/*
-  fi
-  # build web
-  cd web
-  npm install --loglevel info
-  npm run build
-  # build services
-  cd ../services
-  mvn clean -B package '-Dmaven.test.skip=true' --file pom.xml
-  cd ../
-  # copy artifacts
-  cp -r web/dist/* build/web/
-  cp -r services/gateway/target/*.jar target/gateway.jar
-  cp -r services/registry/target/*.jar target/registry.jar
-  cp -r services/file-service/target/*.jar target/file-service.jar
-  cp -r services/core-service/target/*.jar target/core-service.jar
-  cp -r services/judge-service/target/*.jar target/judge-service.jar
-  echo "=================================== Success ==================================="
+  exit 0
 fi
+# build
+if [ -d "target" ]; then
+  rm -rf target/*
+fi
+echo "build start."
+# build web
+cd web
+npm install --loglevel info
+npm run build
+# build services
+cd ../services
+mvn clean -B package '-Dmaven.test.skip=true' --file pom.xml
+cd ..
+# archive artifacts
+mkdir -p target/web
+mkdir -p target/services/lib
+mv web/dist/* target/web/
+mv services/gateway/target/*.jar target/services/gateway.jar
+mv services/registry/target/*.jar target/services/registry.jar
+mv services/file-service/target/*.jar target/services/file-service.jar
+mv services/core-service/target/*.jar target/services/core-service.jar
+mv services/judge-service/target/*.jar target/services/judge-service.jar
+# copy dependencies
+mv -n \
+  services/gateway/target/lib/* \
+  services/registry/target/lib/* \
+  services/file-service/target/lib/* \
+  services/core-service/target/lib/* \
+  services/judge-service/target/lib/* \
+  target/services/lib/
+cp -r services/judge-service/bin target/
+cp .deploy/conf/*.conf target/
+# shellcheck disable=SC2035
+cd target && tar --owner=0 --group=0 --mode=755 -cvf cloud-oj-linux64.tar.gz *
+touch target/setup
+tee target/setup <<EOF > /dev/null
+#!/bin/bash
+set -e
+sudo useradd judge
+sudo mkdir -p /opt/cloud-oj
+sudo mkdir -p /var/lib/cloud-oj
+sudo chown judge /var/lib/cloud-oj
+sudo tar -xvf cloud-oj-linux64.tar.gz -C /opt/cloud-oj/
+sudo ln -s /opt/cloud-oj/bin/judge /usr/bin/judge
+sudo ln -s /opt/cloud-oj/bin/judged /usr/bin/judged
+EOF
+cd ..
+echo "build complete."
