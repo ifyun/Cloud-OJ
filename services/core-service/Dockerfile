@@ -1,4 +1,5 @@
 FROM openjdk:17-slim-bullseye
+COPY ./target/lib/* /app/lib/
 COPY ./target/*.jar /app/core-service.jar
 WORKDIR /app
 EXPOSE 8081

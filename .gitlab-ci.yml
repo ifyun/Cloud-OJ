@@ -21,7 +21,7 @@ npm-build:
   stage: npm-build
   script:
     - cd web && ls
-    - npm install
+    - npm ci
     - npm run build
 mvn-package:
   only:
@@ -29,7 +29,7 @@ mvn-package:
   image: ghcr.io/imcloudfloating/maven-aliyun:3.8-openjdk-17
   stage: mvn-package
   script:
-    - cd services && mvn -B package '-Dmaven.test.skip=true' --file pom.xml
+    - cd services && mvn clean -B package '-Dmaven.test.skip=true' --file pom.xml
 docker-build:
   only:
     - tags

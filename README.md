@@ -38,7 +38,7 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 ## Build & Debug
 
-需要以下组件:
+需要以下环境:
 
 - CMake 3.16+
 - Linux / WSL
