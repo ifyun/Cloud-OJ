@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-# clean
+# clean && exit
 if [ "$1" == "clean" ]; then
   cd services && mvn clean && cd ..
   if [ -d "target" ]; then
@@ -17,21 +17,35 @@ if [ "$1" == "clean" ]; then
   fi
   exit 0
 fi
-# build
+
+echo "build start."
+cd judge
+./build
+cd ../web
+npm install
+npm run build
+cd ../services
+mvn clean -B package '-Dmaven.test.skip=true'
+cd ..
+# build images
+if [ "$1" == "docker-image" ]; then
+  mkdir services/judge-service/target/bin
+  cp judge/cmake-build-release/{judge,judged} services/judge-service/target/bin/
+  docker build -t cloudoj-web web
+  docker build -t cloudoj-registry services/registry
+  docker build -t cloudoj-gateway services/gateway
+  docker build -t cloudoj-storage services/file-service
+  docker build -t cloudoj-core services/core-service
+  docker build -t cloudoj-judge services/judge-service
+  exit 0
+fi
+
+# archive artifacts
 if [ -d "target" ]; then
   rm -rf target/*
 fi
-echo "build start."
-# build web
-cd web
-npm install --loglevel info
-npm run build
-# build services
-cd ../services
-mvn clean -B package '-Dmaven.test.skip=true' --file pom.xml
-cd ..
-# archive artifacts
 mkdir -p target/web
+mkdir -p target/bin
 mkdir -p target/services/lib
 mv web/dist/* target/web/
 mv services/gateway/target/*.jar target/services/gateway.jar
@@ -47,21 +61,22 @@ mv -n \
   services/core-service/target/lib/* \
   services/judge-service/target/lib/* \
   target/services/lib/
-cp -r services/judge-service/bin target/
+cp judge/cmake-build-release/{judge,judged} target/bin/
 cp .deploy/conf/*.conf target/
+# create setup script
 # shellcheck disable=SC2035
 cd target && tar --owner=0 --group=0 --mode=755 -cvf cloud-oj-linux64.tar.gz *
-touch target/setup
-tee target/setup <<EOF > /dev/null
+touch setup
+tee setup <<EOF >/dev/null
 #!/bin/bash
 set -e
-sudo useradd judge
+sudo useradd judge || true
 sudo mkdir -p /opt/cloud-oj
 sudo mkdir -p /var/lib/cloud-oj
 sudo chown judge /var/lib/cloud-oj
 sudo tar -xvf cloud-oj-linux64.tar.gz -C /opt/cloud-oj/
-sudo ln -s /opt/cloud-oj/bin/judge /usr/bin/judge
-sudo ln -s /opt/cloud-oj/bin/judged /usr/bin/judged
+sudo ln -sf /opt/cloud-oj/bin/judge /usr/bin/judge
+sudo ln -sf /opt/cloud-oj/bin/judged /usr/bin/judged
 EOF
 cd ..
 echo "build complete."

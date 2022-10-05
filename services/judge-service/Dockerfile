@@ -1,8 +1,4 @@
 FROM openjdk:17-bullseye
-COPY ./target/lib/* /app/lib/
-COPY ./bin/* /usr/bin/
-COPY ./entrypoint.sh /app/entrypoint.sh
-COPY ./target/*.jar /app/judge-service.jar
 # Install Golang
 RUN curl -LJO \
     https://go.dev/dl/go1.19.linux-amd64.tar.gz \
@@ -15,7 +11,11 @@ RUN curl -LJO \
     && unzip -d /usr/share kotlin-compiler-1.7.10.zip \
     && ln -s /usr/share/kotlinc/bin/kotlinc /usr/bin/kotlinc \
     && ln -s /usr/share/kotlinc/bin/kotlin /usr/bin/kotlin \
-    && rm kotlin-compiler-1.7.10.zip
+    && rm kotlin-compiler-1.7.10.zip \
+COPY ./entrypoint.sh /app/entrypoint.sh
+COPY ./target/lib/* /app/lib/
+COPY ./target/bin/* /usr/bin/
+COPY ./target/*.jar /app/judge-service.jar
 RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
