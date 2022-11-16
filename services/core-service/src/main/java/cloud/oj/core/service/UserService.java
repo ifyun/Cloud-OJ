@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Slf4j
@@ -87,9 +90,10 @@ public class UserService {
     @Transactional
     public HashMap<String, Object> getOverview(String userId, Integer year, String tz) {
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
-            databaseConfig.setTimezone(tz);
+            var offset = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
+            databaseConfig.setTimezone(offset);
         } else {
-            databaseConfig.setTimezone("Asia/Shanghai");
+            databaseConfig.setTimezone("+8:00");
         }
 
         var preference = userDao.getLanguagePreference(userId);

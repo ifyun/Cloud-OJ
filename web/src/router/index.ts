@@ -26,9 +26,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/auth",
+      path: "/auth/:tab",
       name: "auth",
-      component: Auth
+      component: Auth,
+      props: (route) => ({
+        tab: route.params.tab
+      })
     },
     {
       path: "/",

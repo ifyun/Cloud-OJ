@@ -44,6 +44,13 @@ export class ErrorMessage {
     this.error = msg
   }
 
+  static from(data: any): ErrorMessage {
+    const obj = new ErrorMessage(data.status, data.message)
+    obj.timestamp = data.timestamp
+    obj.error = data.error
+    return obj
+  }
+
   toString() {
     return `${this.status}: ${this.message}`
   }

@@ -9,7 +9,7 @@
     </n-config-provider>
     <n-layout-content embedded>
       <div v-if="checked" style="width: 320px; margin: 24px auto 0 auto">
-        <n-tabs type="line" default-value="login">
+        <n-tabs type="line" :value="tab" animated @update:value="tabChange">
           <n-tab-pane name="login" tab="登录">
             <login />
           </n-tab-pane>
@@ -48,7 +48,6 @@ import { AuthApi } from "@/api/request"
 
 const store = useStore()
 const router = useRouter()
-
 const checked = ref<boolean>(false)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
@@ -64,6 +63,8 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
   }
 })
 
+withDefaults(defineProps<{ tab: string }>(), { tab: "login" })
+
 onBeforeMount(async () => {
   if (store.state.userInfo != null) {
     try {
@@ -76,4 +77,8 @@ onBeforeMount(async () => {
     checked.value = true
   }
 })
+
+function tabChange(tab: string) {
+  router.push({ params: { tab } })
+}
 </script>
