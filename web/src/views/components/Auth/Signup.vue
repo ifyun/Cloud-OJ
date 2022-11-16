@@ -2,6 +2,7 @@
   <n-form
     ref="signupForm"
     label-placement="left"
+    :disabled="loading"
     :model="user"
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
@@ -88,7 +89,16 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
-import { FormRules, NButton, NForm, NFormItem, NIcon, NInput } from "naive-ui"
+import { useRouter } from "vue-router"
+import {
+  FormRules,
+  NButton,
+  NForm,
+  NFormItem,
+  NIcon,
+  NInput,
+  useMessage
+} from "naive-ui"
 import {
   Building,
   Envelope as MailIcon,
@@ -96,8 +106,12 @@ import {
   Orcid as UserIdIcon,
   User as UserIcon
 } from "@vicons/fa"
-import { User } from "@/api/type"
+import { ErrorMessage, User } from "@/api/type"
 import { setTitle } from "@/utils"
+import { UserApi } from "@/api/request"
+
+const router = useRouter()
+const message = useMessage()
 
 const loading = ref<boolean>(false)
 const user = ref<User>(new User())
@@ -181,9 +195,20 @@ onMounted(() => {
 })
 
 function signup() {
+  loading.value = true
   signupForm.value?.validate((errors: any) => {
     if (!errors) {
-      // TODO 完成注册功能
+      UserApi.save(user.value, null, true)
+        .then(() => {
+          message.success("注册成功")
+          router.push({ params: { tab: "login" } })
+        })
+        .catch((err: ErrorMessage) => {
+          message.error(err.toString())
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }

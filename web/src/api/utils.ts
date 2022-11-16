@@ -5,7 +5,7 @@ function resolveError(error: any): ErrorMessage {
   const err = error as AxiosError
   if (err.response) {
     if (err.response.data) {
-      return err.response.data as ErrorMessage
+      return ErrorMessage.from(err.response.data)
     } else {
       return new ErrorMessage(err.response.status, err.response.statusText)
     }
@@ -16,7 +16,7 @@ function resolveError(error: any): ErrorMessage {
   }
 }
 
-function buildHeaders(userInfo: UserInfo): any {
+function buildHeaders(userInfo: UserInfo | null): any {
   if (userInfo == null) {
     return {
       "Content-Type": "application/json"

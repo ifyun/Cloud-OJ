@@ -38,6 +38,19 @@ const UserApi = {
     })
   },
 
+  save(user: User, userInfo: UserInfo | null, create: boolean = false) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: create ? ApiPath.USER : ApiPath.USER_ADMIN,
+        method: create ? "POST" : "PUT",
+        headers: buildHeaders(userInfo),
+        data: JSON.stringify(user)
+      })
+        .then((res) => resolve(res))
+        .catch((error) => reject(resolveError(error)))
+    })
+  },
+
   getProfile(userId: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       axios({

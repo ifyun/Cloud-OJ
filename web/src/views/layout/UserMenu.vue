@@ -103,7 +103,7 @@ function userMenuSelect(key: string) {
 }
 
 function login() {
-  router.push({ name: "auth" })
+  router.push({ name: "auth", params: { tab: "login" } })
 }
 
 function logoff() {
