@@ -1,9 +1,9 @@
 # Cloud OJ
 
 ![Codacy Badge](https://img.shields.io/codacy/grade/3fb7e4c059c5431799b8863218750095?logo=codacy)
-![CMake Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/CMake?label=cmake%20build&logo=cmake&logoColor=blue)
-![Maven Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Java%20CI%20with%20Maven?label=maven%20build&logo=apache-maven&logoColor=red)
-![Vite Build](https://img.shields.io/github/workflow/status/imcloudfloating/Cloud-OJ/Node.js%20CI?label=vite%20build&logo=vite)
+![CMake Build](https://img.shields.io/github/actions/workflow/status/imcloudfloating/Cloud-OJ/cmake.yml?label=cmake%20build&logo=cmake&logoColor=blue)
+![Maven Build](https://img.shields.io/github/actions/workflow/status/imcloudfloating/Cloud-OJ/maven.yml?label=maven%20build&logo=apache-maven&logoColor=red)
+![Vite Build](https://img.shields.io/github/actions/workflow/status/imcloudfloating/Cloud-OJ/node.js.yml?label=vite%20build&logo=vite)
 ![Platform](https://img.shields.io/badge/platform-linux--64-blueviolet?logo=linux&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/imcloudfloating/Cloud-OJ?logo=github)
 ![Top Languages](https://img.shields.io/github/languages/top/imcloudfloating/Cloud-OJ?logo=github)
