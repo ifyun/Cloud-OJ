@@ -1,7 +1,7 @@
 /// judged 线程池
 /// @author Cloud
-#ifndef _THREAD_POOL_H
-#define _THREAD_POOL_H 1
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H 1
 
 #include <queue>
 #include <condition_variable>
@@ -59,4 +59,4 @@ public:
     void destroy();
 };
 
-#endif //_THREAD_POOL_H
+#endif // THREAD_POOL_H

@@ -49,7 +49,7 @@
         </div>
       </n-layout-header>
       <n-layout-content
-        class="main"
+        class="main admin"
         position="absolute"
         :embedded="true"
         :native-scrollbar="false"

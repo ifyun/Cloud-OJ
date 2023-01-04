@@ -1,7 +1,7 @@
 /// 系统调用检查工具类
 /// @author Cloud
-#ifndef _SYSCALL_CHECKER_H
-#define _SYSCALL_CHECKER_H 1
+#ifndef SYSCALL_CHECKER_H
+#define SYSCALL_CHECKER_H 1
 
 #include <sys/user.h>
 #include <set>
@@ -30,4 +30,4 @@ public:
     int check(struct user_regs_struct *regs);
 };
 
-#endif //_SYSCALL_CHECKER_H
+#endif // SYSCALL_CHECKER_H

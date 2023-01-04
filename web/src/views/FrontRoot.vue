@@ -1,14 +1,14 @@
 <template>
-  <n-layout position="absolute">
+  <n-layout position="absolute" :native-scrollbar="false">
     <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
-      <n-layout-header class="header" position="absolute">
+      <n-layout-header class="header">
         <top-navbar />
       </n-layout-header>
     </n-config-provider>
     <n-layout-content
       class="main"
-      position="absolute"
-      :embedded="true"
+      :class="classes"
+      :position="position"
       :native-scrollbar="false"
       content-style="display: flex; flex-direction: column">
       <router-view v-slot="{ Component }" :key="$route.fullPath">
@@ -24,8 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref, watch } from "vue"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 import type { GlobalThemeOverrides } from "naive-ui"
 import {
   darkTheme,
@@ -37,6 +38,7 @@ import {
 } from "naive-ui"
 import { BottomInfo, TopNavbar } from "@/views/layout"
 
+const router = useRouter()
 const store = useStore()
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
@@ -50,4 +52,22 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
     }
   }
 })
+
+const position = ref<"static" | "absolute">("static")
+const classes = ref<string>("")
+
+// 监听路由，如果是提交页面，改为绝对定位
+watch(
+  () => router.currentRoute.value.name,
+  (value) => {
+    if (value === "submission") {
+      position.value = "absolute"
+      classes.value = value
+    } else {
+      position.value = "static"
+      classes.value = ""
+    }
+  },
+  { immediate: true }
+)
 </script>

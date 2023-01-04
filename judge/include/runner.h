@@ -1,5 +1,5 @@
-#ifndef _RUNNER_H
-#define _RUNNER_H 1
+#ifndef RUNNER_H
+#define RUNNER_H 1
 
 #include <string>
 #include "syscall_check.h"
@@ -88,4 +88,4 @@ public:
     RTN judge();
 };
 
-#endif //_RUNNER_H
+#endif // RUNNER_H

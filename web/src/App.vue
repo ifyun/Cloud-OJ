@@ -5,9 +5,9 @@
     :theme-overrides="themeOverrides"
     :locale="zhCN"
     :date-locale="dateZhCN">
+    <n-global-style />
     <n-dialog-provider>
       <n-message-provider>
-        <n-global-style />
         <router-view
           v-if="!reload"
           v-slot="{ Component }"

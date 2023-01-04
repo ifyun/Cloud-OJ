@@ -1,7 +1,7 @@
 /// 文件工具类
 /// @author Cloud
-#ifndef _UTILS_H
-#define _UTILS_H 1
+#ifndef UTILS_H
+#define UTILS_H 1
 
 #include <vector>
 #include <string>
@@ -39,4 +39,4 @@ public:
     static void write_result(RTN &rtn, const std::vector<Result> &results, const std::string& work_dir);
 };
 
-#endif //_UTILS_H
+#endif // UTILS_H
