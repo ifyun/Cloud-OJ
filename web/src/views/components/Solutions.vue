@@ -123,7 +123,7 @@ const columns: DataTableColumns<JudgeResult> = [
         <NIcon color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText depth="1" style="margin-left: 6px" italic={true}>
+        <NText depth="1" style="margin-left: 6px">
           {LanguageNames[row.language!]}
         </NText>
       </div>

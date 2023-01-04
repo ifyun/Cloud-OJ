@@ -4,10 +4,7 @@
       <logo :size="40" />
     </div>
     <div style="margin-left: 50px">
-      <n-menu
-        v-model:value="routeName"
-        mode="horizontal"
-        :options="navMenuOptions" />
+      <n-menu :value="routeName" mode="horizontal" :options="navMenuOptions" />
     </div>
     <div style="margin-left: auto">
       <n-space size="large" align="center">

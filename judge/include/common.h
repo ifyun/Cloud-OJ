@@ -1,5 +1,5 @@
-#ifndef _COMMON_H
-#define _COMMON_H 1
+#ifndef COMMON_H
+#define COMMON_H 1
 
 #define RUNTIME_ERROR 1
 #define JUDGE_ERROR 2
@@ -12,4 +12,4 @@
 */
 void split(char **arr, char *str, const char *separator);
 
-#endif
+#endif // COMMON_H

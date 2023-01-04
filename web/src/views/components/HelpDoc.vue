@@ -128,11 +128,11 @@ const languageData = [
   { lang: "C++", compiler: "g++", version: "std=c++17" },
   { lang: "Java", compiler: "OpenJDK", version: "1.8" },
   { lang: "Python", compiler: "python3", version: "3.5" },
-  { lang: "Bash", compiler: "-", version: "-" },
-  { lang: "C#", compiler: "Mono", version: "4.6.2 (C# 5.0)" },
-  { lang: "JavaScript", compiler: "Node.js", version: "LTS (14.x)" },
-  { lang: "Kotlin", compiler: "-", version: "1.4.10" },
-  { lang: "Go", compiler: "-", version: "1.15.7" }
+  { lang: "Bash Shell", compiler: "-", version: "-" },
+  { lang: "C#", compiler: "Mono", version: "C# 5.0" },
+  { lang: "JavaScript", compiler: "Node.js", version: "16.x" },
+  { lang: "Kotlin", compiler: "-", version: "1.7.10" },
+  { lang: "Go", compiler: "-", version: "1.19" }
 ]
 
 const judgeColumns = [

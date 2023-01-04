@@ -22,11 +22,17 @@ public class FileServerConfig extends WebMvcConfigurationSupport {
             fileDir += '/';
         }
 
-       if (new File(fileDir).mkdirs()) {
-           log.info("Create {} successful", fileDir);
-       } else {
-           log.error("Failed to create {}", fileDir);
-       }
+        var dir = new File(fileDir);
+
+        if (dir.exists()) {
+            return;
+        }
+
+        if (dir.mkdirs()) {
+            log.info("Create {} successful", fileDir);
+        } else {
+            log.error("Failed to create {}", fileDir);
+        }
     }
 
     @Override
