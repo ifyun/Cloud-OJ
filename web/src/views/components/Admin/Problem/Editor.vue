@@ -328,7 +328,7 @@ function save() {
   loading.value = true
   ProblemApi.save(problem.value, userInfo.value, create.value)
     .then(() => {
-      message.success(`${problem.value.title} 保存成功`)
+      message.success(`${problem.value.title} 已保存`)
       create.value && back()
     })
     .catch((err: ErrorMessage) => {
