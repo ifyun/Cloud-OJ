@@ -108,7 +108,7 @@ import {
 } from "@vicons/material"
 import { ErrorResult } from "@/components"
 import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
-import { renderIcon, setTitle, TagUtil } from "@/utils"
+import { renderIcon, setTitle } from "@/utils"
 import { ProblemApi } from "@/api/request"
 import { Mutations } from "@/store"
 
@@ -225,10 +225,7 @@ const problemColumns: DataTableColumns<Problem> = [
       }
       const tags = row.category.split(",")
       return tags.map((tag) => (
-        <NTag
-          class="tag"
-          size="small"
-          color={TagUtil.getColor(tag, theme.value)}>
+        <NTag class="tag" size="small" type="primary" round bordered={false}>
           {tag}
         </NTag>
       ))
@@ -255,10 +252,6 @@ const problemColumns: DataTableColumns<Problem> = [
 ]
 
 // endregion
-
-const theme = computed(() => {
-  return store.state.theme
-})
 
 const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo

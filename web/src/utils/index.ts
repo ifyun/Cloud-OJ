@@ -45,6 +45,5 @@ function stateTag(c: Contest): StateTag {
   }
 }
 
-export { default as TagUtil } from "./TagUtil"
 export { default as LanguageUtil } from "./LanguageUtil"
 export { stateTag }

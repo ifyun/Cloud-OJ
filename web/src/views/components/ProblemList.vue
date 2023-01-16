@@ -44,7 +44,6 @@
 
 <script setup lang="tsx">
 import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
@@ -62,10 +61,9 @@ import { Search as SearchIcon } from "@vicons/fa"
 import { ErrorResult } from "@/components"
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
-import { setTitle, TagUtil } from "@/utils"
+import { setTitle } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -122,10 +120,7 @@ const problemColumns: DataTableColumns<Problem> = [
       const tags = row.category.split(",")
       return tags.map((tag) => {
         return (
-          <NTag
-            class="tag"
-            size="small"
-            color={TagUtil.getColor(tag, theme.value)}>
+          <NTag class="tag" size="small" type="primary" round bordered={false}>
             {tag}
           </NTag>
         )
@@ -147,10 +142,6 @@ const problems = ref<Page<Problem>>({
 
 const keyword = ref<string>("")
 const keywordTag = ref<string | null>(null)
-
-const theme = computed(() => {
-  return store.state.theme
-})
 
 const noContent = computed<boolean>(
   () => !loading.value && problems.value.count === 0
