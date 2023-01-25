@@ -1,11 +1,19 @@
 #!/bin/bash
 set -e
+GREEN="\e[32m"
+RED="\e[31m"
+CLR="\e[0m"
+CONF_DIR="/etc/cloud-oj"
+DATA_DIR="/var/lib/cloud-oj"
+INSTALL_DIR="/usr/local/cloud-oj"
+ORIGINAL_DIR=$(pwd)
+SCRIPT=$(readlink -f "$0")
+WORKING_DIR=$(dirname "${SCRIPT}")
+# make sure working directory is correct
+cd "${WORKING_DIR}"
 # clean && exit
 if [ "$1" == "clean" ]; then
   cd services && mvn clean && cd ..
-  if [ -d "target" ]; then
-    rm -rf target
-  fi
   if [ -d "judge/cmake-build-debug" ]; then
     rm -rf judge/cmake-build-debug
   fi
@@ -15,68 +23,89 @@ if [ "$1" == "clean" ]; then
   if [ -d "web/dist" ]; then
     rm -rf web/dist
   fi
+  echo -e "${GREEN}CLEAN COMPLETE.${CLR}"
+  cd "${ORIGINAL_DIR}"
   exit 0
 fi
 
-echo "build start."
-cd judge
-./build
-cd ../web
-npm install
-npm run build
-cd ../services
-mvn clean -B package '-Dmaven.test.skip=true'
-cd ..
-# build images
-if [ "$1" == "docker-image" ]; then
-  mkdir services/judge-service/target/bin
-  cp judge/cmake-build-release/{judge,judged} services/judge-service/target/bin/
+# build
+echo -e "${GREEN}BUILD START...${CLR}"
+if cd judge && bash build; then
+  cd ..
+else
+  cd "${ORIGINAL_DIR}"
+  echo -e "${RED}CMAKE BUILD FAILED.${CLR}"
+  exit 1
+fi
+if cd web && npm install && npm run build; then
+  cd ..
+else
+  cd "${ORIGINAL_DIR}"
+  echo -e "${RED}NPM BUILD FAILED.${CLR}"
+  exit 1
+fi
+if cd services && mvn clean -B package '-Dmaven.test.skip=true'; then
+  cd ..
+else
+  cd "${ORIGINAL_DIR}"
+  echo -e "${RED}MAVEN BUILD FAILED.${CLR}"
+  exit 1
+fi
+echo -e "${GREEN}BUILD COMPLETE.${CLR}"
+
+# build docker images
+if [ "$1" == "docker" ]; then
+  echo -e "${GREEN}DOCKER BUILD...${CLR}"
+  mkdir services/judge/target/bin
+  cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
   docker build -t cloudoj-web web
   docker build -t cloudoj-registry services/registry
   docker build -t cloudoj-gateway services/gateway
-  docker build -t cloudoj-storage services/file-service
-  docker build -t cloudoj-core services/core-service
-  docker build -t cloudoj-judge services/judge-service
+  docker build -t cloudoj-storage services/storage
+  docker build -t cloudoj-core services/core
+  docker build -t cloudoj-judge services/judge
+  docker images | grep cloudoj
+  sudo mkdir ${INSTALL_DIR}/docker/sql
+  sudo cp -r deploy/docker/* ${INSTALL_DIR}/
+  sudo cp dev/sql/* ${INSTALL_DIR}/sql/
+  echo -e "${GREEN}DOCKER BUILD COMPLETE.${CLR}"
+  cd "${ORIGINAL_DIR}"
   exit 0
 fi
 
-# archive artifacts
-if [ -d "target" ]; then
-  rm -rf target/*
+# install to /usr/local
+if [ "$1" == "install" ]; then
+  echo -e "${GREEN}INSTALL...${CLR}"
+  sudo useradd judge || true
+  sudo mkdir -p ${INSTALL_DIR}/web
+  sudo mkdir -p ${INSTALL_DIR}/bin
+  sudo mkdir -p ${INSTALL_DIR}/services/lib
+  sudo mkdir -p ${CONF_DIR}
+  sudo mkdir -p ${DATA_DIR}
+  sudo chown judge ${DATA_DIR}
+  # judge, judged
+  sudo cp judge/cmake-build-release/{judge,judged} ${INSTALL_DIR}/bin/
+  sudo ln -sf ${INSTALL_DIR}/bin/judge /usr/local/bin/judge
+  sudo ln -sf ${INSTALL_DIR}/bin/judged /usr/local/bin/judged
+  # web and services
+  sudo cp -r web/dist/* ${INSTALL_DIR}/web/
+  sudo cp services/gateway/target/*.jar ${INSTALL_DIR}/services/gateway.jar
+  sudo cp services/registry/target/*.jar ${INSTALL_DIR}/services/registry.jar
+  sudo cp services/storage/target/*.jar ${INSTALL_DIR}/services/storage.jar
+  sudo cp services/core/target/*.jar ${INSTALL_DIR}/services/core.jar
+  sudo cp services/judge/target/*.jar ${INSTALL_DIR}/services/judge.jar
+  # dependencies
+  sudo cp -rn \
+    services/gateway/target/lib/* \
+    services/registry/target/lib/* \
+    services/storage/target/lib/* \
+    services/core/target/lib/* \
+    services/judge/target/lib/* \
+    ${INSTALL_DIR}/services/lib/
+  sudo apt-get install -y nginx supervisor rabbitmq-server mysql-server
+  # supervisor and nginx conf
+  sudo cp -r deploy/conf/*.conf ${CONF_DIR}/
+  sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default
+  echo -e "${GREEN}INSTALL COMPLETE.${CLR}"
 fi
-mkdir -p target/web
-mkdir -p target/bin
-mkdir -p target/services/lib
-mv web/dist/* target/web/
-mv services/gateway/target/*.jar target/services/gateway.jar
-mv services/registry/target/*.jar target/services/registry.jar
-mv services/file-service/target/*.jar target/services/file-service.jar
-mv services/core-service/target/*.jar target/services/core-service.jar
-mv services/judge-service/target/*.jar target/services/judge-service.jar
-# copy dependencies
-mv -n \
-  services/gateway/target/lib/* \
-  services/registry/target/lib/* \
-  services/file-service/target/lib/* \
-  services/core-service/target/lib/* \
-  services/judge-service/target/lib/* \
-  target/services/lib/
-cp judge/cmake-build-release/{judge,judged} target/bin/
-cp .deploy/conf/*.conf target/
-# create setup script
-# shellcheck disable=SC2035
-cd target && tar --owner=0 --group=0 --mode=755 -cvf cloud-oj-linux64.tar.gz *
-touch setup
-tee setup <<EOF >/dev/null
-#!/bin/bash
-set -e
-sudo useradd judge || true
-sudo mkdir -p /opt/cloud-oj
-sudo mkdir -p /var/lib/cloud-oj
-sudo chown judge /var/lib/cloud-oj
-sudo tar -xvf cloud-oj-linux64.tar.gz -C /opt/cloud-oj/
-sudo ln -sf /opt/cloud-oj/bin/judge /usr/bin/judge
-sudo ln -sf /opt/cloud-oj/bin/judged /usr/bin/judged
-EOF
-cd ..
-echo "build complete."
+cd "${ORIGINAL_DIR}"

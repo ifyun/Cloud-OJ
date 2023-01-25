@@ -1,0 +1,11 @@
+logging:
+  level:
+    root: warn
+    cloud.oj: info
+  file: /tmp/cloud-oj/${spring.application.name}.log
+app:
+  code-dir: /tmp/code/
+  file-dir: /var/lib/cloud-oj/
+  file-sync: ${FILE_SYNC:false}
+  auto-clean-solution: ${AUTO_CLEAN_SOLUTION:true}
+  judge-pool-size: ${JUDGE_POOL_SIZE:8}

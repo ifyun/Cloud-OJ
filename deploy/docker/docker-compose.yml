@@ -1,0 +1,108 @@
+version: "3.7"
+services:
+  registry:
+    image: cloud-oj-registry
+    networks:
+      - cloud-oj
+    volumes:
+      - "log:/tmp/cloud-oj"
+    environment:
+      JVM_OPTS: "-Xms64m -Xmx64m"
+  storage:
+    image: cloud-oj-storage
+    networks:
+      - cloud-oj
+    volumes:
+      - "/var/lib/cloud-oj:/var/lib/cloud-oj"
+      - "log:/tmp/cloud-oj"
+    environment:
+      JVM_OPTS: "-Xms64m -Xmx64m"
+      EUREKA_SERVER: "registry:8761"
+      RABBIT_URL: rabbitmq
+      RABBIT_PORT: ${RABBIT_PORT}
+      RABBIT_USER: ${RABBIT_USER}
+      RABBIT_PASSWORD: ${RABBIT_PASSWD}
+  gateway:
+    image: cloud-oj-gateway
+    networks:
+      - cloud-oj
+    volumes:
+      - "log:/tmp/cloud-oj"
+    environment:
+      JVM_OPTS: "-Xms64m -Xmx64m"
+      EUREKA_SERVER: "registry:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_POOL_SIZE: 5
+      TOKEN_VALID_TIME: 4
+  core:
+    image: cloud-oj-core
+    networks:
+      - cloud-oj
+    volumes:
+      - "log:/tmp/cloud-oj"
+    environment:
+      JVM_OPTS: "-Xms64m -Xmx64m"
+      EUREKA_SERVER: "registry:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj?allowMultiQueries=true"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_POOL_SIZE: 5
+  judge:
+    image: cloud-oj-judge
+    privileged: true
+    networks:
+      - cloud-oj
+    volumes:
+      - "/var/lib/cloud-oj:/var/lib/cloud-oj"
+      - "log:/tmp/cloud-oj"
+    environment:
+      JVM_OPTS: "-Xms128m -Xmx128m"
+      EUREKA_SERVER: "registry:8761"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_POOL_SIZE: 5
+      RABBIT_URL: rabbitmq
+      RABBIT_PORT: ${RABBIT_PORT}
+      RABBIT_USER: ${RABBIT_USER}
+      RABBIT_PASSWORD: ${RABBIT_PASSWD}
+      JUDGE_POOL_SIZE: 4
+  web:
+    image: cloud-oj-web
+    networks:
+      - cloud-oj
+    ports:
+      - "80:80"
+    environment:
+      API_HOST: "gateway:8080"
+  mysql:
+    image: mysql:8.0
+    networks:
+      - cloud-oj
+    volumes:
+      - "./sql:/docker-entrypoint-initdb.d"
+      - "mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWD}
+      MYSQL_ROOT_HOST: "%"
+  rabbitmq:
+    image: rabbitmq:3.11-management-alpine
+    hostname: rabbitmq
+    networks:
+      - cloud-oj
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWD}
+    ports:
+      - "15672:15672"
+    volumes:
+      - "rabbitmq:/var/lib/rabbitmq/mnesia"
+networks:
+  cloud-oj:
+    driver: bridge
+volumes:
+  mysql:
+  rabbitmq:
+  log:
