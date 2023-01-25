@@ -20,9 +20,9 @@
     </properties>
     <modules>
         <module>registry</module>
-        <module>file-service</module>
-        <module>core-service</module>
-        <module>judge-service</module>
+        <module>storage</module>
+        <module>core</module>
+        <module>judge</module>
         <module>gateway</module>
     </modules>
     <dependencyManagement>

@@ -17,13 +17,9 @@ cmake -B ${build_dir} \
   -G "Unix Makefiles"
 
 if [ "$1" == "install" ]; then
-  if [ "$(id -u)" -ne 0 ]; then
-    echo "Permission required."
-    exit 1
-  fi
-  cmake --build ${build_dir} --target all install
-  ln -sf /opt/cloud-oj/bin/judge /usr/bin/judge
-  ln -sf /opt/cloud-oj/bin/judged /usr/bin/judged
+  sudo cmake --build ${build_dir} --target all install
+  sudo ln -sf /usr/local/cloud-oj/bin/judge /usr/local/bin/judge
+  sudo ln -sf /usr/local/cloud-oj/bin/judged /usr/local/bin/judged
 else
   cmake --build ${build_dir} --target all
 fi

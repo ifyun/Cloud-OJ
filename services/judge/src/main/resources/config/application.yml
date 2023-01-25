@@ -1,0 +1,45 @@
+server:
+  port: 8083
+spring:
+  profiles:
+    active: dev
+  application:
+    name: judge
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/cloud_oj}?allowMultiQueries=true&serverTimezone=UTC
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+  rabbitmq:
+    host: ${RABBIT_URL:127.0.0.1}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER:admin}
+    password: ${RABBIT_PASSWORD:admin}
+    listener:
+      simple:
+        acknowledge-mode: manual
+  jackson:
+    default-property-inclusion: non_null
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
+  client:
+    healthcheck:
+      enabled: true
+    service-url:
+      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: on
+    default-enum-type-handler: cloud.oj.judge.enums.ValueEnumTypeHandler
+  mapper-locations: classpath:mybatis/mapper/*.xml

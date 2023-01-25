@@ -1,4 +1,0 @@
-logging:
-  level:
-    root: warn
-    cloud.oj: info
