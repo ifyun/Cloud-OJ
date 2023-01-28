@@ -3,8 +3,12 @@ import { ErrorMessage, UserInfo } from "@/api/type"
 
 function resolveError(error: any): ErrorMessage {
   const err = error as AxiosError
+  console.log(err)
   if (err.response) {
-    if (err.response.data) {
+    if (
+      err.response.data &&
+      err.response.headers["content-type"] === "application/json"
+    ) {
       return ErrorMessage.from(err.response.data)
     } else {
       return new ErrorMessage(err.response.status, err.response.statusText)
@@ -12,7 +16,7 @@ function resolveError(error: any): ErrorMessage {
   } else if (err.request) {
     return new ErrorMessage(0, "请求失败")
   } else {
-    return new ErrorMessage(-1, "请求失败")
+    return new ErrorMessage(-1, err.message)
   }
 }
 

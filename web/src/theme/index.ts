@@ -34,6 +34,10 @@ const themeOverrides: GlobalThemeOverrides = {
     textColorHoverWarning: "#FFFFFFE0",
     textColorError: "#FFFFFFE0",
     textColorHoverError: "#FFFFFFE0"
+  },
+  Switch: {
+    railColorActive: "#18A058FF",
+    loadingColor: "#18A058FF"
   }
 }
 
