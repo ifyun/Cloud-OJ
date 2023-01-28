@@ -106,6 +106,7 @@ import {
   Orcid as UserIdIcon,
   User as UserIcon
 } from "@vicons/fa"
+import { hashSync } from "bcryptjs"
 import { ErrorMessage, User } from "@/api/type"
 import { setTitle } from "@/utils"
 import { UserApi } from "@/api/request"
@@ -198,12 +199,14 @@ function signup() {
   loading.value = true
   signupForm.value?.validate((errors: any) => {
     if (!errors) {
+      user.value.password = hashSync(user.value.password!, 10)
       UserApi.save(user.value, null, true)
         .then(() => {
           message.success("注册成功")
           router.push({ params: { tab: "login" } })
         })
         .catch((err: ErrorMessage) => {
+          user.value.password = ""
           message.error(err.toString())
         })
         .finally(() => {
