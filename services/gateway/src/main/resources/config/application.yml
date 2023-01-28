@@ -21,19 +21,19 @@ spring:
     gateway:
       routes:
         - id: core
-          uri: lb://core-service
+          uri: lb://core
           filters:
             - StripPrefix=2
           predicates:
             - Path=/api/core/**
         - id: judge
-          uri: lb://judge-service
+          uri: lb://judge
           filters:
             - StripPrefix=2
           predicates:
             - Path=/api/judgement/**
         - id: file
-          uri: lb://file-service
+          uri: lb://storage
           filters:
             - StripPrefix=2
           predicates:
