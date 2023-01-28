@@ -13,7 +13,15 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 - 可直接安装或 Docker 运行
 - 代码高亮
+- 亮色/暗色主题
 - 可扩展的判题节点
+
+<table>
+<tr>
+    <td><img src="./.assets/light.png" alt="light"></td>
+    <td><img src="./.assets/dark.png" alt="dark"></td>
+</tr>
+</table>
 
 ## 语言支持
 
