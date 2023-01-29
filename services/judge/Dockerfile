@@ -15,7 +15,7 @@ RUN curl -LJO \
 COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./target/lib/* /app/lib/
 COPY ./target/bin/* /usr/bin/
-COPY ./target/*.jar /app/judge-service.jar
+COPY ./target/*.jar /app/judge.jar
 RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
