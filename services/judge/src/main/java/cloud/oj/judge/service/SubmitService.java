@@ -43,7 +43,6 @@ public class SubmitService {
                 commitData.getProblemId(),
                 commitData.getContestId(),
                 commitData.getLanguage(),
-                commitData.getType(),
                 commitData.getSubmitTime()
         );
 
