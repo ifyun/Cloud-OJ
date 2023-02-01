@@ -20,17 +20,15 @@ public class Solution {
     private double passRate;
     private double score;
     private String sourceCode;
-    private Integer type;
     private Long submitTime;
 
     public Solution(String solutionId, String userId, Integer problemId, Integer contestId,
-                    Integer language, Integer type, Long submitTime) {
+                    Integer language, Long submitTime) {
         this.solutionId = solutionId;
         this.userId = userId;
         this.problemId = problemId;
         this.contestId = contestId;
         this.language = language;
-        this.type = type;
         this.submitTime = submitTime;
     }
 }
