@@ -17,13 +17,11 @@ public class Problem {
     private Integer passed;
     private String title;
     private String description;
-    private String sql;
     private String category;
     private Long timeout;
     private Integer memoryLimit;
     private Integer outputLimit;
     private Integer languages;
-    private Integer type;
     private Integer score;
     private Boolean enable;
     private Long createAt;

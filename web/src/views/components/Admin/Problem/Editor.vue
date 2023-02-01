@@ -39,16 +39,6 @@
                   show-count
                   clearable />
               </n-form-item-grid-item>
-              <n-form-item-grid-item label="题目类型" path="type" :span="1">
-                <n-radio-group v-model:value="problem.type">
-                  <n-radio-button :disabled="disableType" :value="0">
-                    程序设计
-                  </n-radio-button>
-                  <n-radio-button :disabled="disableType" :value="1">
-                    SQL(SQLite)
-                  </n-radio-button>
-                </n-radio-group>
-              </n-form-item-grid-item>
             </n-grid>
             <n-grid :cols="4" :x-gap="12">
               <n-form-item-grid-item label="题目分数" path="score" :span="1">
@@ -144,8 +134,6 @@ import {
   NInput,
   NInputNumber,
   NPageHeader,
-  NRadioButton,
-  NRadioGroup,
   NScrollbar,
   NSpace,
   NSpin,
@@ -244,10 +232,6 @@ const title = computed<string>(() => {
   } else {
     return `${problem.value.problemId}. ${problem.value.title}`
   }
-})
-
-const disableType = computed<boolean>(() => {
-  return !create.value
 })
 
 watch(title, (value) => {

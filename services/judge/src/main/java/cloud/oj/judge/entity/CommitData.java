@@ -14,6 +14,5 @@ public class CommitData {
     private Integer contestId;
     private String sourceCode;
     private Integer language;
-    private Integer type;
     private Long submitTime;
 }

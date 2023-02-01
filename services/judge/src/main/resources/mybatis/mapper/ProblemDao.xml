@@ -12,4 +12,9 @@
         from problem
         where problem_id = #{problemId}
     </select>
+    <select id="isOpen" resultType="java.lang.Boolean">
+        select enable
+        from problem
+        where problem_id = #{problemId}
+    </select>
 </mapper>
