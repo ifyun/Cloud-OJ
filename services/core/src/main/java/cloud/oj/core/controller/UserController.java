@@ -55,6 +55,7 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<?> addUser(@RequestBody User user) {
+        user.setRoleId(1);
         return ResponseEntity.status(userService.addUser(user)).build();
     }
 
