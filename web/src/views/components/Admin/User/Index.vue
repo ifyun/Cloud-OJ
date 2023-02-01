@@ -203,7 +203,7 @@ onBeforeMount(() => {
 
   if ("searchType" in query) {
     const val = Number(query.searchType)
-    searchType.value = val in [1, 2] ? val : 1
+    searchType.value = val === 1 || val === 2 ? val : 1
   }
 
   queryUsers()
@@ -219,8 +219,8 @@ function pageChange(page: number) {
   const query: any = { page }
 
   if (keyword.value.length > 0) {
-    query.keyword = keyword
-    query.searchType = searchType
+    query.keyword = keyword.value
+    query.searchType = searchType.value
   }
 
   router.push({
@@ -233,7 +233,7 @@ function queryUsers() {
   UserApi.getAll(
     pagination.value.page,
     pagination.value.pageSize,
-    searchParams,
+    searchParams.value,
     userInfo.value
   )
     .then((data) => {
