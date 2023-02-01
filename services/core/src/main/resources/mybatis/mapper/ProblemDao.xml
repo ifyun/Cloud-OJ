@@ -5,7 +5,6 @@
     <select id="getAll" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows p.problem_id,
                                    p.title,
-                                   p.type,
                                    p.enable,
                                    if(c.contest_name is not null,
                                       concat_ws(',', c.contest_name, p.category),
@@ -26,7 +25,6 @@
     <select id="getAllEnabled" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows p.problem_id,
                                    p.title,
-                                   p.type,
                                    p.enable,
                                    if(c.contest_name is not null,
                                       concat_ws(',', c.contest_name, p.category),
@@ -47,7 +45,6 @@
     <select id="getWithState" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows p.problem_id,
                                    p.title,
-                                   p.type,
                                    p.enable,
                                    if(c.contest_name is not null,
                                       concat_ws(',', c.contest_name, p.category),
@@ -76,27 +73,10 @@
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="backup" resultMap="Map.Problem">
-        select problem_id,
-               title,
-               type,
-               `sql`,
-               description,
-               timeout,
-               memory_limit,
-               score,
-               category
-        from problem for
-        update
-    </select>
     <select id="getSingle" resultMap="Map.Problem">
         select problem_id,
                title,
-               type,
                description,
-               <if test="enable == false">
-                   `sql`,
-               </if>
                timeout,
                memory_limit,
                output_limit,
@@ -112,7 +92,6 @@
     <select id="getSingleInContest" resultMap="Map.Problem">
         select problem_id,
                title,
-               type,
                description,
                timeout,
                memory_limit,
@@ -129,8 +108,6 @@
             keyProperty="problemId">
         insert into problem(title,
                             description,
-                            type,
-                            `sql`,
                             category,
                             score,
                             timeout,
@@ -138,8 +115,6 @@
                             output_limit)
             value (#{title},
                    #{description},
-                   #{type},
-                   #{sql},
                    #{category},
                    #{score},
                    #{timeout},
@@ -150,7 +125,6 @@
         update problem
         set title        = #{title},
             description  = #{description},
-            `sql`        = #{sql},
             score        = #{score},
             timeout      = #{timeout},
             memory_limit = #{memoryLimit},

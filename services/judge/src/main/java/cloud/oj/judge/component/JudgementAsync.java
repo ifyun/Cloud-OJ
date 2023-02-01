@@ -25,9 +25,6 @@ public class JudgementAsync {
     private Judgement judgement;
 
     @Resource
-    private SqlJudgement sqlJudgement;
-
-    @Resource
     private SolutionDao solutionDao;
 
     @Resource
@@ -47,11 +44,7 @@ public class JudgementAsync {
     @Async("judgeExecutor")
     public void judge(Solution solution, Consumer<Void> callback) {
         try {
-            if (solution.getType() == 0) {
-                judgement.judge(solution);
-            } else {
-                sqlJudgement.judge(solution);
-            }
+            judgement.judge(solution);
             log.info("Judged: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         } catch (Exception e) {
             // 判题发生异常，将结果设置为内部错误

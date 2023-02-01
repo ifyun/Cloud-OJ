@@ -126,12 +126,12 @@ const languageColumns = [
 const languageData = [
   { lang: "C", compiler: "gcc", version: "std=c11" },
   { lang: "C++", compiler: "g++", version: "std=c++17" },
-  { lang: "Java", compiler: "OpenJDK", version: "1.8" },
-  { lang: "Python", compiler: "python3", version: "3.5" },
+  { lang: "Java", compiler: "OpenJDK", version: "17(Level 1.8)" },
+  { lang: "Python", compiler: "python3", version: "3.x" },
   { lang: "Bash Shell", compiler: "-", version: "-" },
   { lang: "C#", compiler: "Mono", version: "C# 5.0" },
-  { lang: "JavaScript", compiler: "Node.js", version: "16.x" },
-  { lang: "Kotlin", compiler: "-", version: "1.7.10" },
+  { lang: "JavaScript", compiler: "Node.js", version: "LTS" },
+  { lang: "Kotlin", compiler: "-", version: "1.7.x" },
   { lang: "Go", compiler: "-", version: "1.19" }
 ]
 

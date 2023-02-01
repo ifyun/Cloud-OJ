@@ -1,6 +1,7 @@
 package cloud.oj.judge.controller;
 
 import cloud.oj.judge.dao.ContestDao;
+import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,9 @@ public class CommitController {
     private ContestDao contestDao;
 
     @Resource
+    private ProblemDao problemDao;
+
+    @Resource
     private RabbitTemplate rabbitTemplate;
 
     @Resource
@@ -40,7 +44,7 @@ public class CommitController {
     public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
         var contestId = data.getContestId();
 
-        if (data.getSourceCode().isEmpty()) {
+        if (data.getSourceCode().trim().isEmpty()) {
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "代码为空");
         }
 
@@ -56,6 +60,10 @@ public class CommitController {
 
             if ((languages & 1 << lang) != 1 << lang) {
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不允许使用该语言");
+            }
+        } else {
+            if (!problemDao.isOpen(data.getProblemId())) {
+                throw new GenericException(HttpStatus.FORBIDDEN.value(), "未开放，不允许提交");
             }
         }
 

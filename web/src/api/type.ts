@@ -68,7 +68,6 @@ export class Problem {
   problemId?: number
   title = ""
   description = ""
-  type = 0
   languages: number | null = null
   category = ""
   tags: Array<string> = []
