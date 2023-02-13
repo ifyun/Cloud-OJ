@@ -7,11 +7,6 @@
         from problem
         where problem_id = #{problemId}
     </select>
-    <select id="getSql" resultType="java.lang.String">
-        select `sql`
-        from problem
-        where problem_id = #{problemId}
-    </select>
     <select id="isOpen" resultType="java.lang.Boolean">
         select enable
         from problem

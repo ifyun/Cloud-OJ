@@ -31,8 +31,9 @@
               group by problem_id) as user_score;
     </insert>
     <insert id="updateForContest">
-        replace into leaderboard_contest(user_id, committed, passed, score, update_time)
+        replace into leaderboard_contest(user_id, contest_id, committed, passed, score, update_time)
         select #{userId}                                     as user_id,
+               #{contestId}                                  as contest_id,
                sum(committed)                                as committed,
                count((case when (pass_rate = 1) then 1 end)) as passed,
                sum(score)                                    as score,
