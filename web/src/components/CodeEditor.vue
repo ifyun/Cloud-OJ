@@ -17,14 +17,14 @@
         提交运行
       </n-button>
     </n-input-group>
-    <div class="editor-wrapper">
+    <div class="editor-wrapper" :class="theme">
       <textarea ref="editor" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onMounted, ref, watch } from "vue"
 import {
   NButton,
   NIcon,
@@ -46,7 +46,9 @@ import "codemirror/mode/javascript/javascript.js"
 import "codemirror/mode/sql/sql.js"
 import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/addon/edit/closebrackets.js"
+import "codemirror/theme/ttcn.css"
 import "codemirror/theme/material-darker.css"
+import store from "@/store"
 
 // CodeMirror 语言模式
 const Modes = [
@@ -65,16 +67,16 @@ const renderLabel = (option: LanguageOption) => {
   return [option.label]
 }
 
-const cmOptions: EditorConfiguration = {
+const cmOptions = ref<EditorConfiguration>({
   mode: Modes[0],
-  theme: "material-darker",
   tabSize: 4,
   smartIndent: true,
   indentUnit: 4,
   lineNumbers: true,
   matchBrackets: true,
-  autoCloseBrackets: true
-}
+  autoCloseBrackets: true,
+  scrollbarStyle: "overlay"
+})
 
 const language = ref<number>(0) // 当前选中的语言ID
 const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
@@ -102,6 +104,10 @@ const emit = defineEmits<{
   (e: "submit", value: SourceCode): void
 }>()
 
+const theme = computed<string>(() =>
+  store.state.theme != null ? "dark" : "light"
+)
+
 watch(
   () => props.availableLanguages,
   (val) => {
@@ -118,18 +124,31 @@ watch(
   { immediate: true }
 )
 
+watch(
+  theme,
+  (val) => {
+    if (val === "light") {
+      cmOptions.value.theme = "ttcn"
+    } else {
+      cmOptions.value.theme = "material-darker"
+    }
+  },
+  { immediate: true }
+)
+
 watch(language, (val) => {
-  cmOptions.mode = Modes[val]
+  cmOptions.value.mode = Modes[val]
 })
 
 watch(
-  () => cmOptions,
+  cmOptions,
   (val) => {
     nextTick(() => {
       cmEditor!.setOption("mode", val.mode)
       cmEditor!.setOption("theme", val.theme)
     })
-  }
+  },
+  { deep: true, immediate: true }
 )
 
 watch(
@@ -142,7 +161,7 @@ watch(
 )
 
 onMounted(() => {
-  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions)
+  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions.value)
   cmEditor.setValue(props.value)
 })
 
@@ -159,7 +178,7 @@ function submit() {
 
   .editor-wrapper {
     margin-top: 5px;
-    flex: auto;
+    height: calc(100% - 34px);
   }
 }
 </style>
@@ -170,6 +189,13 @@ function submit() {
     height: 100%;
     font-size: 14px;
     font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+  }
+
+  &.dark {
+    .CodeMirror-overlayscroll-horizontal div,
+    .CodeMirror-overlayscroll-vertical div {
+      background: #333333;
+    }
   }
 }
 </style>

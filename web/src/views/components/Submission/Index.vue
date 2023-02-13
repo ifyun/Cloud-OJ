@@ -127,7 +127,7 @@ onBeforeMount(() => {
   } else {
     error.value = {
       status: 404,
-      message: "无效的题目ID"
+      message: "找不到题目"
     }
 
     loading.value = false
