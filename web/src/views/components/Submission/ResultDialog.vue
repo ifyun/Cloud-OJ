@@ -79,7 +79,7 @@ const props = defineProps<{
 }>()
 
 onMounted(() => {
-  fetchResult(0)
+  setTimeout(() => fetchResult(0), 100)
 })
 
 function retry() {
@@ -112,6 +112,9 @@ function fetchResult(count: number) {
     .catch((err: ErrorMessage) => {
       error.value = err
       showRetry.value = true
+      if (err.status === 404) {
+        error.value.message = "你的提交可能还未写入数据库"
+      }
     })
 }
 

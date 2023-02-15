@@ -46,8 +46,14 @@ export class ErrorMessage {
 
   static from(data: any): ErrorMessage {
     const obj = new ErrorMessage(data.status, data.message)
-    obj.timestamp = data.timestamp
+
+    if (!data.message) {
+      obj.message = data.error
+    }
+
     obj.error = data.error
+    obj.timestamp = data.timestamp
+
     return obj
   }
 
