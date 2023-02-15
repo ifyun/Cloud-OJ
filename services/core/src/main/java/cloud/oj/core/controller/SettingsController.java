@@ -2,17 +2,20 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.Settings;
 import cloud.oj.core.service.SystemSettings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("settings")
 public class SettingsController {
 
-    @Resource
-    private SystemSettings systemSettings;
+    private final SystemSettings systemSettings;
+
+    @Autowired
+    public SettingsController(SystemSettings systemSettings) {
+        this.systemSettings = systemSettings;
+    }
 
     /**
      * 获取系统设置

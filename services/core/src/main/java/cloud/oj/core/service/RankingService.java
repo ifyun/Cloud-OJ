@@ -2,12 +2,12 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.RankingDao;
-import cloud.oj.core.error.GenericException;
 import cloud.oj.core.entity.JudgeResult;
+import cloud.oj.core.error.GenericException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -16,14 +16,18 @@ import java.util.List;
 @Service
 public class RankingService {
 
-    @Resource
-    private RankingDao rankingDao;
+    private final RankingDao rankingDao;
 
-    @Resource
-    private ContestDao contestDao;
+    private final ContestDao contestDao;
 
-    @Resource
-    private SystemSettings systemSettings;
+    private final SystemSettings systemSettings;
+
+    @Autowired
+    public RankingService(RankingDao rankingDao, ContestDao contestDao, SystemSettings systemSettings) {
+        this.rankingDao = rankingDao;
+        this.contestDao = contestDao;
+        this.systemSettings = systemSettings;
+    }
 
     public List<List<?>> getRanking(int page, int limit) {
         return rankingDao.getRanking((page - 1) * limit, limit);

@@ -1,18 +1,18 @@
 package cloud.oj.judge.receiver;
 
-import com.rabbitmq.client.Channel;
 import cloud.oj.judge.entity.FileInfo;
 import cloud.oj.judge.service.DataSyncService;
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,8 +21,12 @@ import java.util.Map;
 @ConditionalOnBean(DataSyncService.class)
 public class SyncNotifyReceiver {
 
-    @Resource
-    private DataSyncService dataSyncService;
+    private final DataSyncService dataSyncService;
+
+    @Autowired
+    public SyncNotifyReceiver(DataSyncService dataSyncService) {
+        this.dataSyncService = dataSyncService;
+    }
 
     @RabbitHandler
     @RabbitListener(bindings = @QueueBinding(

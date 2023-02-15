@@ -6,6 +6,7 @@ import cloud.oj.gateway.error.ErrorMessage;
 import cloud.oj.gateway.filter.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,8 +24,12 @@ public class AuthController {
     @Value("${app.token-valid-time:4}")
     private int tokenValidTime;
 
-    @Resource
-    private UserDao userDao;
+    private final UserDao userDao;
+
+    @Autowired
+    public AuthController(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     private String newUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");

@@ -2,20 +2,23 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.RankingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-
 @RestController
 @RequestMapping("ranking")
 public class RankingController {
 
-    @Resource
-    private RankingService rankingService;
+    private final RankingService rankingService;
+
+    @Autowired
+    public RankingController(RankingService rankingService) {
+        this.rankingService = rankingService;
+    }
 
     /**
      * 获取排行榜

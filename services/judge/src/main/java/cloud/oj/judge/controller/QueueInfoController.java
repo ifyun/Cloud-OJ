@@ -6,20 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 @Slf4j
 @RestController
 @RequestMapping("admin/queue_info")
 public class QueueInfoController {
 
-    @Resource
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    public QueueInfoController(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @Data
     @NoArgsConstructor

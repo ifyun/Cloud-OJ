@@ -3,17 +3,20 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("user")
 public class UserController {
 
-    @Resource
-    private UserService userService;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * 获取统计信息

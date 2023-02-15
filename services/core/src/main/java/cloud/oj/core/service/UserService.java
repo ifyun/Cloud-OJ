@@ -5,11 +5,11 @@ import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -18,11 +18,15 @@ import java.util.*;
 @Service
 public class UserService {
 
-    @Resource
-    private UserDao userDao;
+    private final UserDao userDao;
 
-    @Resource
-    private DatabaseConfig databaseConfig;
+    private final DatabaseConfig databaseConfig;
+
+    @Autowired
+    public UserService(UserDao userDao, DatabaseConfig databaseConfig) {
+        this.userDao = userDao;
+        this.databaseConfig = databaseConfig;
+    }
 
     private String newUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");

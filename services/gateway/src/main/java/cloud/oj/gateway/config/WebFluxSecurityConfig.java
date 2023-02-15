@@ -4,6 +4,7 @@ import cloud.oj.gateway.filter.LoginFilter;
 import cloud.oj.gateway.filter.TokenVerifyFilter;
 import cloud.oj.gateway.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,8 +21,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
 import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
-import javax.annotation.Resource;
-
 /**
  * Spring Security 配置
  */
@@ -30,11 +29,15 @@ import javax.annotation.Resource;
 @EnableReactiveMethodSecurity
 public class WebFluxSecurityConfig {
 
-    @Resource
-    private UserService userService;
+    private final UserService userService;
 
-    @Resource
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
+
+    @Autowired
+    public WebFluxSecurityConfig(UserService userService, ObjectMapper mapper) {
+        this.userService = userService;
+        this.mapper = mapper;
+    }
 
     private static class Role {
         private static final String USER = "USER";

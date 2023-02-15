@@ -2,10 +2,9 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.SolutionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * 提交记录/判题结果接口
@@ -14,8 +13,12 @@ import javax.annotation.Resource;
 @RequestMapping("history")
 public class SolutionController {
 
-    @Resource
-    private SolutionService solutionService;
+    private final SolutionService solutionService;
+
+    @Autowired
+    public SolutionController(SolutionService solutionService) {
+        this.solutionService = solutionService;
+    }
 
     /**
      * 获取提交记录

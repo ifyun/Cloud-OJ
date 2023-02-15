@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,18 +18,16 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
-
 /**
  * JWT Token 验证过滤器
  */
 @Slf4j
 public class TokenVerifyFilter implements WebFilter {
 
-    @Resource
+    @Autowired
     private UserDao userDao;
 
-    @Resource
+    @Autowired
     private ObjectMapper mapper;
 
     /**

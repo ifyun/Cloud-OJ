@@ -2,24 +2,28 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.error.GenericException;
 import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.Problem;
+import cloud.oj.core.error.GenericException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ContestService {
 
-    @Resource
-    private ContestDao contestDao;
+    private final ContestDao contestDao;
 
-    @Resource
-    private ProblemDao problemDao;
+    private final ProblemDao problemDao;
+
+    @Autowired
+    public ContestService(ContestDao contestDao, ProblemDao problemDao) {
+        this.contestDao = contestDao;
+        this.problemDao = problemDao;
+    }
 
     public List<List<?>> getAllContest(int page, int limit) {
         return contestDao.getContests((page - 1) * limit, limit, false);
@@ -76,7 +80,7 @@ public class ContestService {
     }
 
     public Integer addProblemToContest(int contestId, int problemId) {
-        if (contestDao.addProblem(contestId, problemId) == 1){
+        if (contestDao.addProblem(contestId, problemId) == 1) {
             return HttpStatus.CREATED.value();
         } else {
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "无法添加题目");

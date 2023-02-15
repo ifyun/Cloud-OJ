@@ -1,18 +1,22 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.entity.JudgeResult;
 import cloud.oj.core.dao.SolutionDao;
+import cloud.oj.core.entity.JudgeResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class SolutionService {
 
-    @Resource
-    private SolutionDao solutionDao;
+    private final SolutionDao solutionDao;
+
+    @Autowired
+    public SolutionService(SolutionDao solutionDao) {
+        this.solutionDao = solutionDao;
+    }
 
     public List<List<?>> getHistories(String userId, int page, int limit, Integer problemId, String title) {
         if (problemId != null) {

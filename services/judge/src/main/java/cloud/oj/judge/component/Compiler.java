@@ -1,15 +1,15 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
-import cloud.oj.judge.error.UnsupportedLanguageError;
 import cloud.oj.judge.entity.Compile;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.enums.Language;
+import cloud.oj.judge.error.UnsupportedLanguageError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,10 +20,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 class Compiler {
 
-    @Resource
-    private AppConfig appConfig;
+    private final AppConfig appConfig;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
+
+    @Autowired
+    public Compiler(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
 
     private static class CompileError extends Exception {
         CompileError(String msg) {
@@ -70,32 +74,19 @@ class Compiler {
         String[] cmd;
 
         switch (language) {
-            case C:
-                cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm",
-                        "Solution.c", "-o", "Solution"};
-                break;
-            case CPP:
-                cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm",
-                        "Solution.cpp", "-o", "Solution"};
-                break;
-            case JAVA:
-                cmd = new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"};
-                break;
-            case C_SHARP:
-                cmd = new String[]{"mcs", "Solution.cs"};
-                break;
-            case KOTLIN:
-                cmd = new String[]{"kotlinc", "Solution.kt"};
-                break;
-            case GO:
-                cmd = new String[]{"go", "build", "Solution.go"};
-                break;
-            case PYTHON:
-            case BASH:
-            case JAVA_SCRIPT:
+            case C -> cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm",
+                    "Solution.c", "-o", "Solution"};
+            case CPP -> cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm",
+                    "Solution.cpp", "-o", "Solution"};
+            case JAVA ->
+                    cmd = new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"};
+            case C_SHARP -> cmd = new String[]{"mcs", "Solution.cs"};
+            case KOTLIN -> cmd = new String[]{"kotlinc", "Solution.kt"};
+            case GO -> cmd = new String[]{"go", "build", "Solution.go"};
+            case PYTHON, BASH, JAVA_SCRIPT -> {
                 return new Compile(solutionId, 0);
-            default:
-                throw new UnsupportedLanguageError(language.toString());
+            }
+            default -> throw new UnsupportedLanguageError(language.toString());
         }
 
         try {

@@ -2,34 +2,37 @@ package cloud.oj.judge.service;
 
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.dao.SourceCodeDao;
-import cloud.oj.judge.enums.SolutionState;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SourceCode;
+import cloud.oj.judge.enums.SolutionState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 
 @Slf4j
 @Service
 public class SubmitService {
 
-    @Resource
-    private SolutionDao solutionDao;
+    private final SolutionDao solutionDao;
 
-    @Resource
-    private SourceCodeDao sourceCodeDao;
+    private final SourceCodeDao sourceCodeDao;
 
-    @Resource
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    @Resource
-    private Queue judgeQueue;
+    private final Queue judgeQueue;
+
+    @Autowired
+    public SubmitService(SolutionDao solutionDao, SourceCodeDao sourceCodeDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
+        this.solutionDao = solutionDao;
+        this.sourceCodeDao = sourceCodeDao;
+        this.rabbitTemplate = rabbitTemplate;
+        this.judgeQueue = judgeQueue;
+    }
 
     /**
      * 保存提交到数据库
