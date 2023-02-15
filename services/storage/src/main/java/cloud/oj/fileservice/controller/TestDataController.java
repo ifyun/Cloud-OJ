@@ -1,16 +1,16 @@
 package cloud.oj.fileservice.controller;
 
-import cloud.oj.fileservice.service.NotifyService;
 import cloud.oj.fileservice.entity.TestData;
+import cloud.oj.fileservice.service.NotifyService;
 import cloud.oj.fileservice.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +23,12 @@ public class TestDataController {
     @Value("${app.file-dir}")
     private String fileDir;
 
-    @Resource
-    private NotifyService notifyService;
+    private final NotifyService notifyService;
+
+    @Autowired
+    public TestDataController(NotifyService notifyService) {
+        this.notifyService = notifyService;
+    }
 
     /**
      * 获取所有测试数据文件和最后修改时间

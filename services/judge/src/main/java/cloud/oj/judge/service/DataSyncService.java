@@ -5,14 +5,14 @@ import feign.FeignException;
 import cloud.oj.judge.client.FileService;
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.entity.FileInfo;
+import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,21 +28,21 @@ import java.util.stream.Collectors;
 @Service
 @ConditionalOnProperty(prefix = "app", name = "file-sync")
 public class DataSyncService {
+    private final String dataDir;
 
-    @Resource
-    private AppConfig appConfig;
+    private final FileService fileService;
 
-    private String dataDir;
+    private final AppHealth appHealth;
 
-    @Resource
-    private FileService fileService;
-
-    @Resource
-    private AppHealth appHealth;
+    @Autowired
+    public DataSyncService(AppConfig appConfig, FileService fileService, AppHealth appHealth) {
+        this.fileService = fileService;
+        this.appHealth = appHealth;
+        dataDir = appConfig.getFileDir() + "test_data";
+    }
 
     @PostConstruct
     private void init() {
-        dataDir = appConfig.getFileDir() + "test_data";
         syncAllFiles();
     }
 
@@ -54,7 +54,7 @@ public class DataSyncService {
         try {
             var remoteFiles = fileService.dataList();
 
-            if (remoteFiles == null) {
+            if (remoteFiles == null || remoteFiles.isEmpty()) {
                 return;
             }
 

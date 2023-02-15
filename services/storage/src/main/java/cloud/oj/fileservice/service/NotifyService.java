@@ -4,10 +4,10 @@ import cloud.oj.fileservice.entity.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.File;
 
 @Service
@@ -17,16 +17,20 @@ public class NotifyService {
     @Value("${app.file-dir}")
     private String fileDir;
 
-    @Resource
-    private FanoutExchange testDataExchange;
+    private final FanoutExchange testDataExchange;
 
-    @Resource
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    public NotifyService(FanoutExchange testDataExchange, RabbitTemplate rabbitTemplate) {
+        this.testDataExchange = testDataExchange;
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     /**
      * 发送广播通知测试数据改变
      *
-     * @param file 测试数据文件
+     * @param file      测试数据文件
      * @param isDeleted 是否删除
      */
     public void notifyTestData(File file, boolean isDeleted) {

@@ -2,19 +2,19 @@ package cloud.oj.judge.receiver;
 
 import cloud.oj.judge.component.JudgementAsync;
 import cloud.oj.judge.config.RabbitConfig;
-import cloud.oj.judge.service.SubmitService;
-import com.rabbitmq.client.Channel;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.service.SubmitService;
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
 
@@ -25,11 +25,15 @@ import java.util.Map;
 @Component
 public class SolutionReceiver {
 
-    @Resource
-    private SubmitService submitService;
+    private final SubmitService submitService;
 
-    @Resource
-    private JudgementAsync judgementAsync;
+    private final JudgementAsync judgementAsync;
+
+    @Autowired
+    public SolutionReceiver(SubmitService submitService, JudgementAsync judgementAsync) {
+        this.submitService = submitService;
+        this.judgementAsync = judgementAsync;
+    }
 
     /**
      * 监听判题队列

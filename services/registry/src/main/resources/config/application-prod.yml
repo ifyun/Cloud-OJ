@@ -2,4 +2,5 @@ logging:
   level:
     root: warn
     cloud.oj: info
-  file: /tmp/cloud-oj/${spring.application.name}.log
+  file:
+    name: /tmp/cloud-oj/${spring.application.name}.log

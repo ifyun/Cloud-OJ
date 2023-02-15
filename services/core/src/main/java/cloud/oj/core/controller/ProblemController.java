@@ -3,10 +3,9 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ProblemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * 题目管理接口
@@ -15,8 +14,12 @@ import javax.annotation.Resource;
 @RequestMapping("problem")
 public class ProblemController {
 
-    @Resource
-    private ProblemService problemService;
+    private final ProblemService problemService;
+
+    @Autowired
+    public ProblemController(ProblemService problemService) {
+        this.problemService = problemService;
+    }
 
     /**
      * 获取所有开放的题目

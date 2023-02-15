@@ -6,29 +6,33 @@ import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.enums.SolutionResult;
 import cloud.oj.judge.enums.SolutionState;
 import cloud.oj.judge.utils.FileCleaner;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.function.Consumer;
 
 @Slf4j
 @Component
 public class JudgementAsync {
 
-    @Resource
-    private AppConfig appConfig;
+    private final AppConfig appConfig;
 
-    @Resource
-    private Judgement judgement;
+    private final Judgement judgement;
 
-    @Resource
-    private SolutionDao solutionDao;
+    private final SolutionDao solutionDao;
 
-    @Resource
-    private FileCleaner fileCleaner;
+    private final FileCleaner fileCleaner;
+
+    @Autowired
+    public JudgementAsync(AppConfig appConfig, Judgement judgement, SolutionDao solutionDao, FileCleaner fileCleaner) {
+        this.appConfig = appConfig;
+        this.judgement = judgement;
+        this.solutionDao = solutionDao;
+        this.fileCleaner = fileCleaner;
+    }
 
     @PostConstruct
     void init() {

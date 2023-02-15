@@ -3,7 +3,6 @@ import { ErrorMessage, UserInfo } from "@/api/type"
 
 function resolveError(error: any): ErrorMessage {
   const err = error as AxiosError
-  console.log(err)
   if (err.response) {
     if (
       err.response.data &&

@@ -2,25 +2,29 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.error.GenericException;
 import cloud.oj.core.entity.Problem;
+import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class ProblemService {
-    @Resource
-    private ProblemDao problemDao;
+    private final ProblemDao problemDao;
 
-    @Resource
-    private ContestDao contestDao;
+    private final ContestDao contestDao;
+
+    @Autowired
+    public ProblemService(ProblemDao problemDao, ContestDao contestDao) {
+        this.problemDao = problemDao;
+        this.contestDao = contestDao;
+    }
 
     public List<List<?>> getAllEnabled(String keyword, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {

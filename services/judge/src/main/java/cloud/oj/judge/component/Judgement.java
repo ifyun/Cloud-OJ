@@ -13,11 +13,11 @@ import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
@@ -31,40 +31,46 @@ import java.util.HashMap;
 @Component
 public class Judgement {
 
-    @Resource
-    private AppConfig appConfig;
+    private final AppConfig appConfig;
 
-    @Resource
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Resource
-    private RuntimeDao runtimeDao;
+    private final RuntimeDao runtimeDao;
 
-    @Resource
-    private CompileDao compileDao;
+    private final CompileDao compileDao;
 
-    @Resource
-    private ProblemDao problemDao;
+    private final ProblemDao problemDao;
 
-    @Resource
-    private SolutionDao solutionDao;
+    private final SolutionDao solutionDao;
 
-    @Resource
-    private RankingDao rankingDao;
+    private final RankingDao rankingDao;
 
-    @Resource
-    private DatabaseConfig dbConfig;
+    private final DatabaseConfig dbConfig;
 
-    @Resource
-    private Compiler compiler;
+    private final Compiler compiler;
 
-    @Resource
-    private HashMap<String, Integer> cpus;
+    private final HashMap<String, Integer> cpus;
 
     private static final int RE = 1;
     private static final int IE = 2;
 
     private final static UnixDomainSocketAddress addr = UnixDomainSocketAddress.of("/var/run/judge.sock");
+
+    @Autowired
+    public Judgement(AppConfig appConfig, ObjectMapper objectMapper, RuntimeDao runtimeDao, CompileDao compileDao,
+                     ProblemDao problemDao, SolutionDao solutionDao, RankingDao rankingDao, DatabaseConfig dbConfig,
+                     Compiler compiler, HashMap<String, Integer> cpus) {
+        this.appConfig = appConfig;
+        this.objectMapper = objectMapper;
+        this.runtimeDao = runtimeDao;
+        this.compileDao = compileDao;
+        this.problemDao = problemDao;
+        this.solutionDao = solutionDao;
+        this.rankingDao = rankingDao;
+        this.dbConfig = dbConfig;
+        this.compiler = compiler;
+        this.cpus = cpus;
+    }
 
     private static class InternalError extends Exception {
         InternalError(String msg) {

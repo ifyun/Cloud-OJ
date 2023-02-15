@@ -5,21 +5,24 @@ import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.ContestService;
 import cloud.oj.core.service.SystemSettings;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 @Slf4j
 @RestController
 @RequestMapping("contest")
 public class ContestController {
 
-    @Resource
-    private ContestService contestService;
+    private final ContestService contestService;
 
-    @Resource
-    private SystemSettings systemSettings;
+    private final SystemSettings systemSettings;
+
+    @Autowired
+    public ContestController(ContestService contestService, SystemSettings systemSettings) {
+        this.contestService = contestService;
+        this.systemSettings = systemSettings;
+    }
 
     /**
      * 获取竞赛/作业
@@ -29,10 +32,12 @@ public class ContestController {
     @GetMapping
     public ResponseEntity<?> contests(Integer page, Integer limit) {
         PagedList contests;
-        if (systemSettings.getSettings().isShowNotStartedContest())
+        if (systemSettings.getSettings().isShowNotStartedContest()) {
             contests = PagedList.resolve(contestService.getAllContest(page, limit));
-        else
+        } else {
             contests = PagedList.resolve(contestService.getStartedContest(page, limit));
+        }
+
         return contests.getCount() > 0 ?
                 ResponseEntity.ok(contests)
                 : ResponseEntity.noContent().build();

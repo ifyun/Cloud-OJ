@@ -3,13 +3,13 @@ package cloud.oj.gateway.service;
 import cloud.oj.gateway.dao.UserDao;
 import cloud.oj.gateway.entity.Role;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +18,7 @@ import java.util.List;
 @Service
 public class UserService implements ReactiveUserDetailsService {
 
-    @Resource
-    private UserDao userDao;
+    private final UserDao userDao;
 
     private static final List<Role> ROLE_LIST = new ArrayList<>() {
         {
@@ -29,6 +28,11 @@ public class UserService implements ReactiveUserDetailsService {
             add(new Role(3, "ROLE_PROBLEM_ADMIN"));
         }
     };
+
+    @Autowired
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {

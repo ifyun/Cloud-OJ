@@ -7,6 +7,7 @@ import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 
 /**
@@ -25,17 +25,21 @@ import java.util.UUID;
 @RequestMapping("/commit")
 public class CommitController {
 
-    @Resource
-    private ContestDao contestDao;
+    private final ContestDao contestDao;
 
-    @Resource
-    private ProblemDao problemDao;
+    private final ProblemDao problemDao;
 
-    @Resource
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    @Resource
-    private Queue commitQueue;
+    private final Queue commitQueue;
+
+    @Autowired
+    public CommitController(ContestDao contestDao, ProblemDao problemDao, RabbitTemplate rabbitTemplate, Queue commitQueue) {
+        this.contestDao = contestDao;
+        this.problemDao = problemDao;
+        this.rabbitTemplate = rabbitTemplate;
+        this.commitQueue = commitQueue;
+    }
 
     /**
      * 提交代码
