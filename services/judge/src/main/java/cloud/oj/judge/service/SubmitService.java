@@ -5,7 +5,7 @@ import cloud.oj.judge.dao.SourceCodeDao;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SourceCode;
-import cloud.oj.judge.enums.SolutionState;
+import cloud.oj.judge.component.SolutionState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

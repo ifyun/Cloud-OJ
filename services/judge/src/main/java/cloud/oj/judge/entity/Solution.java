@@ -1,7 +1,6 @@
 package cloud.oj.judge.entity;
 
-import cloud.oj.judge.enums.SolutionResult;
-import cloud.oj.judge.enums.SolutionState;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,8 +14,8 @@ public class Solution {
     private Integer contestId;
     private String userId;
     private Integer language;
-    private SolutionState state;
-    private SolutionResult result;
+    private Integer state;
+    private Integer result;
     private double passRate;
     private double score;
     private String sourceCode;
@@ -30,5 +29,23 @@ public class Solution {
         this.contestId = contestId;
         this.language = language;
         this.submitTime = submitTime;
+    }
+
+    @JsonGetter
+    public Integer getStateValue() {
+        if (state == null) {
+            return null;
+        }
+
+        return state - 1;
+    }
+
+    @JsonGetter
+    public Integer getResultValue() {
+        if (result == null) {
+            return null;
+        }
+
+        return result - 1;
     }
 }

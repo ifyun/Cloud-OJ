@@ -73,7 +73,6 @@ public class WebFluxSecurityConfig {
                 .pathMatchers("/core-service/**").denyAll()
                 .pathMatchers("/judge-service/**").denyAll()
                 .pathMatchers("/file-server/**").denyAll()
-                .pathMatchers("/api/core/backup").hasRole(Role.PA)
                 .pathMatchers(HttpMethod.GET, "/api/core/user/profile").permitAll()
                 .pathMatchers(HttpMethod.PUT, "/api/core/user/profile").hasRole(Role.USER)
                 .pathMatchers("/api/core/user/admin/**").hasRole(Role.UA)

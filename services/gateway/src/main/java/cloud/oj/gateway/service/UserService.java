@@ -37,7 +37,6 @@ public class UserService implements ReactiveUserDetailsService {
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         var user = userDao.findUserById(username);
-
         if (user != null) {
             int roleId = user.getRoleId();
             List<Role> roles;

@@ -1,6 +1,5 @@
 package cloud.oj.judge.entity;
 
-import cloud.oj.judge.enums.SolutionResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class Runtime {
     private Integer passed;
     private Long time;
     private Long memory;
-    private SolutionResult result;
+    private Integer result;
     private String info;
 
     public Runtime(String solutionId) {

@@ -1,4 +1,4 @@
-package cloud.oj.judge.enums;
+package cloud.oj.judge.component;
 
 public enum Language {
     C(0, ".c"),

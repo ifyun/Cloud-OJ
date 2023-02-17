@@ -83,7 +83,8 @@ onMounted(() => {
 })
 
 function retry() {
-  fetchResult(0)
+  setTimeout(() => fetchResult(0), 100)
+  error.value = null
   result.value = {
     status: "418",
     title: "重新获取中"
@@ -106,6 +107,7 @@ function fetchResult(count: number) {
       if (data == null || data.state !== JUDGED) {
         setTimeout(() => fetchResult(count + 1), 500)
       } else {
+        showRetry.value = false
         setResult(data)
       }
     })

@@ -6,9 +6,6 @@ import cloud.oj.judge.entity.Limit;
 import cloud.oj.judge.entity.RunResult;
 import cloud.oj.judge.entity.Runtime;
 import cloud.oj.judge.entity.Solution;
-import cloud.oj.judge.enums.Language;
-import cloud.oj.judge.enums.SolutionResult;
-import cloud.oj.judge.enums.SolutionState;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +113,7 @@ public class Judgement {
      * @param result {@link RunResult}
      */
     private void saveResult(Solution solution, Runtime runtime, RunResult result, Limit limit) {
-        if (runtime.getResult() == SolutionResult.IE || runtime.getResult() == SolutionResult.RE) {
+        if (runtime.getResult().equals(SolutionResult.IE) || runtime.getResult().equals(SolutionResult.RE)) {
             solution.setResult(runtime.getResult());
             solution.setState(SolutionState.JUDGED);
             solutionDao.updateState(solution);
@@ -141,7 +138,7 @@ public class Judgement {
         runtime.setTime(result.getTime());
         runtime.setMemory(result.getMemory());
 
-        solution.setResult(SolutionResult.getByString(result.getResult()));
+        solution.setResult(SolutionResult.fromString(result.getResult()));
         solution.setPassRate(passRate);
         solution.setScore(passRate * limit.getScore());
         solution.setState(SolutionState.JUDGED);
@@ -200,6 +197,7 @@ public class Judgement {
             runtime.setInfo(e.getMessage());
         }
 
+        runtime.setResult(SolutionResult.AC);
         runtimeDao.update(runtime);
         return result;
     }
