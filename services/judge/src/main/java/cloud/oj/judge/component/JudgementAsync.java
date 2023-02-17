@@ -3,8 +3,6 @@ package cloud.oj.judge.component;
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Solution;
-import cloud.oj.judge.enums.SolutionResult;
-import cloud.oj.judge.enums.SolutionState;
 import cloud.oj.judge.utils.FileCleaner;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

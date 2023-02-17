@@ -3,7 +3,6 @@ package cloud.oj.judge.component;
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.entity.Compile;
 import cloud.oj.judge.entity.Solution;
-import cloud.oj.judge.enums.Language;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -14,11 +13,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 class Compiler {
+    private static final Map<Language, String[]> CMD = Map.of(
+            Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.c", "-o", "Solution"},
+            Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.cpp", "-o", "Solution"},
+            Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"},
+            Language.C_SHARP, new String[]{"mcs", "Solution.cs"},
+            Language.KOTLIN, new String[]{"kotlinc", "Solution.kt"},
+            Language.GO, new String[]{"go", "build", "Solution.go"}
+    );
 
     private final AppConfig appConfig;
 
@@ -71,26 +79,13 @@ class Compiler {
         }
 
         var solutionDir = appConfig.getCodeDir() + solutionId;
-        String[] cmd;
-
-        switch (language) {
-            case C -> cmd = new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm",
-                    "Solution.c", "-o", "Solution"};
-            case CPP -> cmd = new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm",
-                    "Solution.cpp", "-o", "Solution"};
-            case JAVA ->
-                    cmd = new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"};
-            case C_SHARP -> cmd = new String[]{"mcs", "Solution.cs"};
-            case KOTLIN -> cmd = new String[]{"kotlinc", "Solution.kt"};
-            case GO -> cmd = new String[]{"go", "build", "Solution.go"};
-            case PYTHON, BASH, JAVA_SCRIPT -> {
-                return new Compile(solutionId, 0);
-            }
-            default -> throw new UnsupportedLanguageError(language.toString());
-        }
 
         try {
-            processBuilder.command(cmd);
+            if (language == Language.PYTHON || language == Language.BASH || language == Language.JAVA_SCRIPT) {
+                return new Compile(solutionId, 0);
+            }
+
+            processBuilder.command(CMD.get(language));
             processBuilder.directory(new File(solutionDir));
 
             var process = processBuilder.start();
@@ -106,11 +101,11 @@ class Compiler {
                 process.destroy();
                 throw new InterruptedException("编译超时(10s).");
             }
-        } catch (IOException | InterruptedException e) {
-            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
-            return new Compile(solutionId, -1, "内部错误.");
-        } catch (CompileError e) {
-            log.error("Compile error: solutionId={}, error={}", solutionId, e.getMessage());
+        } catch (IOException e) {
+            log.error("Compile Error({}): {}", solutionId, e.getMessage());
+            return new Compile(solutionId, -1, "编译器可能不存在.");
+        } catch (InterruptedException | CompileError e) {
+            log.error("Compile Error({}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -124,7 +119,7 @@ class Compiler {
         var solutionDir = new File(appConfig.getCodeDir() + solutionId);
 
         if (!solutionDir.mkdirs()) {
-            log.error("Cannot create dir {}.", solutionDir.getName());
+            log.error("创建目录失败: {}.", solutionDir.getName());
             return "";
         }
 
@@ -139,7 +134,7 @@ class Compiler {
 
                 return sourceFile.getPath();
             } else {
-                log.error("Cannot creat file {}.", sourceFile.getName());
+                log.error("创建文件失败: {}.", sourceFile.getName());
             }
         } catch (IOException e) {
             log.error(e.getMessage());

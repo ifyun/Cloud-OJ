@@ -41,5 +41,4 @@ eureka:
 mybatis:
   configuration:
     map-underscore-to-camel-case: on
-    default-enum-type-handler: cloud.oj.judge.enums.ValueEnumTypeHandler
   mapper-locations: classpath:mybatis/mapper/*.xml
