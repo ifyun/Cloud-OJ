@@ -8,14 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 
 @Slf4j
 @Getter
 @Setter
-@Component
+@Configuration
 @ConfigurationProperties("app")
 public class AppConfig {
     @Resource
@@ -51,9 +51,10 @@ public class AppConfig {
             judgePoolSize = 1;
         }
 
-        log.info("Data dir: {}", fileDir);
-        log.info("Code dir: {}", codeDir);
-        log.info("Judge Pool Size: {}.", judgePoolSize);
+        log.info("测试数据目录: {}", fileDir);
+        log.info("临时代码目录: {}", codeDir);
+        log.info("JUDGE线程数: {}", judgePoolSize);
+        log.info("自动删除判题产物: {}", autoCleanSolution);
 
         createDir(fileDir + "test_data");
         createDir(codeDir);
@@ -63,7 +64,7 @@ public class AppConfig {
         File dir = new File(path);
 
         if (!dir.exists() && !dir.mkdirs()) {
-            log.error("Create {} failed.", path);
+            log.error("创建目录失败: {}", path);
             SpringApplication.exit(applicationContext, () -> -1);
         }
     }
