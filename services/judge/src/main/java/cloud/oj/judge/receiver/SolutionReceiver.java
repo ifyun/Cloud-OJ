@@ -41,7 +41,7 @@ public class SolutionReceiver {
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
-        judgementAsync.judge(solution, (Void) -> {
+        judgementAsync.judge(solution, () -> {
             try {
                 channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
             } catch (IOException e) {

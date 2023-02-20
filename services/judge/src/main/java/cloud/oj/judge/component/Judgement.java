@@ -83,8 +83,7 @@ public class Judgement {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void judge(Solution solution) {
-        log.info("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
-
+        log.debug("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
         // 为当前事务禁用外键约束
         dbConfig.disableFKChecks();
 
@@ -185,19 +184,20 @@ public class Judgement {
             result = objectMapper.readValue(bytes, RunResult.class);
 
             if (result.getCode() == RE) {
-                log.warn("Runtime Error: {}", result.getError());
+                log.info("运行错误({}): {}", solution.getSolutionId(), result.getError());
                 runtime.setInfo(result.getError());
                 runtime.setResult(SolutionResult.RE);
             } else if (result.getCode() == IE) {
+                log.info("内部错误({}): {}", solution.getSolutionId(), result.getError());
                 throw new InternalError(result.getError());
             }
         } catch (IOException | InternalError | UnsupportedLanguageError e) {
-            log.warn("Judge Error: {}", e.getMessage());
+            log.info("内部错误({}): {}", solution.getSolutionId(), e.getMessage());
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
         }
 
-        runtime.setResult(SolutionResult.AC);
+        runtime.setResult(0);
         runtimeDao.update(runtime);
         return result;
     }

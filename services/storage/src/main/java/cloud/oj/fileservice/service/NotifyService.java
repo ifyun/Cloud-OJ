@@ -30,7 +30,7 @@ public class NotifyService {
     /**
      * 发送广播通知测试数据改变
      *
-     * @param file      测试数据文件
+     * @param file      测试数据文件 {@link File}
      * @param isDeleted 是否删除
      */
     public void notifyTestData(File file, boolean isDeleted) {

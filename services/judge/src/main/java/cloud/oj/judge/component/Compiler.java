@@ -102,10 +102,10 @@ class Compiler {
                 throw new InterruptedException("编译超时(10s).");
             }
         } catch (IOException e) {
-            log.error("Compile Error({}): {}", solutionId, e.getMessage());
+            log.error("编译错误({}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, "编译器可能不存在.");
         } catch (InterruptedException | CompileError e) {
-            log.error("Compile Error({}): {}", solutionId, e.getMessage());
+            log.error("编译错误({}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -119,27 +119,24 @@ class Compiler {
         var solutionDir = new File(appConfig.getCodeDir() + solutionId);
 
         if (!solutionDir.mkdirs()) {
-            log.error("创建目录失败: {}.", solutionDir.getName());
+            log.error("创建目录失败: {}", solutionDir.getName());
             return "";
         }
 
         var sourceFile = new File(solutionDir + "/Solution" + Language.getExt(language));
 
         try {
-            if (sourceFile.exists() || sourceFile.createNewFile()) {
-                var writer = new FileWriter(sourceFile, false);
-                writer.write(source);
-                writer.flush();
-                writer.close();
+            //noinspection ResultOfMethodCallIgnored
+            sourceFile.createNewFile();
+            var writer = new FileWriter(sourceFile, false);
+            writer.write(source);
+            writer.flush();
+            writer.close();
 
-                return sourceFile.getPath();
-            } else {
-                log.error("创建文件失败: {}.", sourceFile.getName());
-            }
+            return sourceFile.getPath();
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("创建文件失败({}): {}", sourceFile.getName(), e.getMessage());
+            return "";
         }
-
-        return "";
     }
 }

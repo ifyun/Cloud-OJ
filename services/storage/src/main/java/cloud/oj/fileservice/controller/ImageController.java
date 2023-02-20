@@ -1,7 +1,8 @@
 package cloud.oj.fileservice.controller;
 
-import cloud.oj.fileservice.util.FileUtil;
+import cloud.oj.fileservice.service.FileService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,13 @@ public class ImageController {
     @Value("${app.file-dir}")
     private String fileDir;
 
+    private final FileService fileService;
+
+    @Autowired
+    public ImageController(FileService fileService) {
+        this.fileService = fileService;
+    }
+
     /**
      * 上传头像
      */
@@ -29,7 +37,7 @@ public class ImageController {
         var avatar = new File(avatarDir + userId + ".png");
 
         try {
-            FileUtil.writeFile(file, avatar);
+            fileService.writeFile(file, avatar);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
             log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());
@@ -57,7 +65,7 @@ public class ImageController {
         var image = new File(imageDir + fileName);
 
         try {
-            FileUtil.writeFile(file, image);
+            fileService.writeFile(file, image);
             return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
         } catch (IOException e) {
             log.error("上传题目图片失败, path: {}, error: {}", image.getAbsolutePath(), e.getMessage());
@@ -77,7 +85,7 @@ public class ImageController {
         var logo = new File(dir + "favicon.png");
 
         try {
-            FileUtil.writeFile(file, logo);
+            fileService.writeFile(file, logo);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
             log.error("上传Logo失败, path: {}, error: {}", logo.getAbsolutePath(), e.getMessage());
@@ -87,7 +95,7 @@ public class ImageController {
 
     @DeleteMapping(path = "logo")
     public ResponseEntity<?> deleteLogo() {
-        if (FileUtil.delFile(fileDir + "image/favicon.png")) {
+        if (fileService.delFile(fileDir + "image/favicon.png")) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(500).build();
