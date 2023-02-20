@@ -59,10 +59,10 @@ public class DataSyncService {
             while (!synced) {
                 try {
                     Thread.sleep(30000);
+                    synced = syncAllFiles();
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    log.error(e.getMessage());
                 }
-                synced = syncAllFiles();
             }
 
             log.info("全部测试数据已同步");
@@ -74,6 +74,15 @@ public class DataSyncService {
      */
     public boolean syncAllFiles() {
         try {
+            localFiles(fileInfo -> {
+                var path = URLEncoder.encode(fileInfo.getPath(), StandardCharsets.UTF_8);
+                var remoteFile = fileClient.getFileInfo(path).block();
+                // 文件在本地存在，在远程不存在，删除
+                if (remoteFile == null) {
+                    deleteFile(fileInfo.getPath());
+                }
+            });
+
             var osPipe = new PipedOutputStream();
             var isPipe = new PipedInputStream(osPipe);
             var reader = new BufferedReader(new InputStreamReader(isPipe));
@@ -107,21 +116,11 @@ public class DataSyncService {
                 var localFile = new File(dataDir + remoteFile.getPath());
 
                 // 文件在远程存在，在本地不存/不相同，下载
-                if (!localFile.exists() || localFile.lastModified() != remoteFile.getLastModified()) {
-                    if (!downloadFile(remoteFile.getPath(), remoteFile.getLastModified())) {
-                        return false;
-                    }
+                if ((!localFile.exists() || localFile.lastModified() != remoteFile.getLastModified())
+                        && !downloadFile(remoteFile.getPath(), remoteFile.getLastModified())) {
+                    return false;
                 }
             }
-
-            localFiles(fileInfo -> {
-                var path = URLEncoder.encode(fileInfo.getPath(), StandardCharsets.UTF_8);
-                var remoteFile = fileClient.getFileInfo(path).block();
-                // 文件在本地存在，在远程不存在，删除
-                if (remoteFile == null) {
-                    deleteFile(fileInfo.getPath());
-                }
-            });
 
             appHealth.setFileSynced(true);
             return true;
