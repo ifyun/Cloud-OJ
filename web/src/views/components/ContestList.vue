@@ -133,7 +133,7 @@ const contestColumns: DataTableColumns<Contest> = [
 ]
 
 onBeforeMount(() => {
-  setTitle("竞赛")
+  setTitle("竞赛 & 练习")
   queryContests()
 })
 

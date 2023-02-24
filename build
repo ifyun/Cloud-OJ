@@ -15,13 +15,13 @@ cd "${WORKING_DIR}"
 if [ "$1" == "clean" ]; then
   cd services && mvn clean && cd ..
   if [ -d "judge/cmake-build-debug" ]; then
-    rm -rf judge/cmake-build-debug
+    rm -r judge/cmake-build-debug
   fi
   if [ -d "judge/cmake-build-release" ]; then
-    rm -rf judge/cmake-build-release
+    rm -r judge/cmake-build-release
   fi
   if [ -d "web/dist" ]; then
-    rm -rf web/dist
+    rm -r web/dist
   fi
   echo -e "${GREEN}CLEAN COMPLETE.${CLR}"
   cd "${ORIGINAL_DIR}"
