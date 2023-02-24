@@ -110,6 +110,7 @@ function logoff() {
   AuthApi.logoff(userInfo.value)
     .then(() => {
       message.success(`${userInfo.value.name} 已退出`)
+      login()
     })
     .catch((err: ErrorMessage) => {
       message.warning(err.toString())

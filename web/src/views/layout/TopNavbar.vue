@@ -33,7 +33,7 @@ const navMenuOptions = [
     key: "problems"
   },
   {
-    label: () => <RouterLink to={{ name: "contests" }}>竞赛 & 作业</RouterLink>,
+    label: () => <RouterLink to={{ name: "contests" }}>竞赛 & 练习</RouterLink>,
     key: "contests"
   },
   {

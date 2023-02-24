@@ -18,8 +18,8 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 <table>
 <tr>
-    <td><img src="./.assets/light.png" alt="light"></td>
-    <td><img src="./.assets/dark.png" alt="dark"></td>
+  <td><img src="./.assets/light.png" alt="light"></td>
+  <td><img src="./.assets/dark.png" alt="dark"></td>
 </tr>
 </table>
 
@@ -143,8 +143,20 @@ environment:
 - [Boost](https://www.boost.org/)
 - [Vue 3](https://vuejs.org/)
 - [Naive UI](https://naiveui.com/)
-- [CodeMirror](https://codemirror.net/)
+- [CodeMirror 5](https://codemirror.net/5/)
 - [KaTeX](https://katex.org/)
 - [Apache Echarts](https://echarts.apache.org/)
 - [highlight.js](https://highlightjs.org/)
 - [markdown-it](https://github.com/markdown-it/)
+
+---
+
+Thanks JetBrains for
+[CLion](https://www.jetbrains.com/clion/),
+[IntelliJ IDEA](https://www.jetbrains.com/idea/),
+[WebStorm](https://www.jetbrains.com/webstorm/)
+licenses.
+
+<a href="https://www.jetbrains.com/">
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" alt="JetBrains Logo.">
+</a>

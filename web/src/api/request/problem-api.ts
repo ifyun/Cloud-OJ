@@ -88,7 +88,7 @@ const ProblemApi = {
   ): Promise<Problem> {
     let path: string, headers: any
 
-    if (userInfo == null) {
+    if (userInfo == null || userInfo.roleId == 1) {
       path = ApiPath.PROBLEM
       headers = null
     } else {
