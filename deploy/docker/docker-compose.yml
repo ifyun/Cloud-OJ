@@ -31,7 +31,7 @@ services:
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_HOST: "mysql:3306"
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWD}
       DB_POOL_SIZE: 5
@@ -45,7 +45,7 @@ services:
     environment:
       JVM_OPTS: "-Xms64m -Xmx64m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj?allowMultiQueries=true"
+      MYSQL_HOST: "mysql:3306"
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWD}
       DB_POOL_SIZE: 5
@@ -60,7 +60,7 @@ services:
     environment:
       JVM_OPTS: "-Xms128m -Xmx128m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_URL: "jdbc:mysql://mysql:3306/cloud_oj"
+      MYSQL_HOST: "mysql:3306"
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWD}
       DB_POOL_SIZE: 5
