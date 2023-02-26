@@ -39,11 +39,11 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 需要以下环境:
 
-- Ubuntu 22.04+
+- Debian 11 / Ubuntu 22.04
 - CMake 3.16+
 - Maven 3.8+
-- OpenJDK 17+
-- Node.js v16+
+- OpenJDK 17
+- Node.js v16
 
 执行以下脚本可以安装环境：
 

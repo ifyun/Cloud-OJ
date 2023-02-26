@@ -1,6 +1,6 @@
 create database cloud_oj character set utf8mb4;
 use cloud_oj;
-set character set utf8;
+set character set utf8mb4;
 
 create table contest
 (
@@ -68,8 +68,8 @@ create table user
 create index user_name_index
     on user (name);
 
-create index user_section_index
-    on user (section);
+create index user_create_at_index
+    on user (create_at);
 
 create table solution
 (
@@ -111,7 +111,7 @@ create table leaderboard
 );
 
 create index leaderboard_index
-    on leaderboard (user_id asc, committed asc, passed asc, score desc, update_time asc);
+    on leaderboard (score desc, update_time asc);
 
 -- 竞赛排名
 create table leaderboard_contest
@@ -125,10 +125,10 @@ create table leaderboard_contest
     update_time timestamp default CURRENT_TIMESTAMP null
 );
 
-create index leaderboard_contest_update_time_index
-    on leaderboard_contest (update_time);
+create index leaderboard_contest_index
+    on leaderboard_contest (contest_id, score desc, update_time asc);
 
-create table compile
+create table if not exists compile
 (
     id          int auto_increment
         primary key,
@@ -213,7 +213,6 @@ create table settings
     icp                      varchar(64) default '' not null,
     icp_url                  varchar(64) default '' not null,
     site_name                varchar(16) default '' not null,
-    hide_logo                tinyint(1)  default 1  null,
     show_ranking_after_ended tinyint(1)  default 0  null,
     show_not_started_contest tinyint(1)  default 0  null
 );
@@ -234,3 +233,6 @@ VALUES (3, 'ROLE_PROBLEM_ADMIN');
 -- 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
 VALUES ('admin', '管理员', '$2a$10$i8D62CjX7/.z8juoUACG9ecqatDl9JkizB5XoA9UswPtb8WmnCAG6', UUID(), 0);
+
+INSERT INTO settings (id)
+VALUES (0);

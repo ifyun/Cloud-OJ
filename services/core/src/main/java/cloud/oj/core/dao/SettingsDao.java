@@ -8,6 +8,4 @@ public interface SettingsDao {
     Settings get();
 
     int update(Settings settings);
-
-    int createDefault();
 }
