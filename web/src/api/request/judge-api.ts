@@ -12,7 +12,7 @@ const JudgeApi = {
   submit(data: SubmitData, userInfo: UserInfo): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       axios({
-        url: ApiPath.COMMIT,
+        url: userInfo.roleId == 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT,
         method: "POST",
         headers: buildHeaders(userInfo),
         data: JSON.stringify(data, (k, v) => v ?? undefined)
@@ -36,7 +36,7 @@ const JudgeApi = {
   ): Promise<JudgeResult | null> {
     return new Promise<JudgeResult | null>((resolve, reject) => {
       axios({
-        url: `${ApiPath.HISTORY}/${solutionId}`,
+        url: `${ApiPath.SOLUTION}/${solutionId}`,
         method: "GET",
         headers: buildHeaders(userInfo)
       })

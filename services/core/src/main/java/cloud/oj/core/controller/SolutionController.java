@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * 提交记录/判题结果接口
  */
 @RestController
-@RequestMapping("history")
+@RequestMapping("solution")
 public class SolutionController {
 
     private final SolutionService solutionService;
@@ -24,9 +24,9 @@ public class SolutionController {
      * 获取提交记录
      */
     @GetMapping
-    public ResponseEntity<?> getJudged(@RequestHeader String userId, Integer page, Integer limit,
-                                       Integer problemId, String title) {
-        var solutions = PagedList.resolve(solutionService.getHistories(userId, page, limit, problemId, title));
+    public ResponseEntity<?> getAll(@RequestHeader String userId, Integer page, Integer limit,
+                                    Integer problemId, String title) {
+        var solutions = PagedList.resolve(solutionService.getSolutions(userId, page, limit, problemId, title));
         return solutions.getCount() > 0 ?
                 ResponseEntity.ok(solutions)
                 : ResponseEntity.noContent().build();

@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -22,8 +21,7 @@ import java.util.UUID;
  */
 @Slf4j
 @RestController
-@RequestMapping("/commit")
-public class CommitController {
+public class SubmitController {
 
     private final ContestDao contestDao;
 
@@ -34,18 +32,14 @@ public class CommitController {
     private final Queue commitQueue;
 
     @Autowired
-    public CommitController(ContestDao contestDao, ProblemDao problemDao, RabbitTemplate rabbitTemplate, Queue commitQueue) {
+    public SubmitController(ContestDao contestDao, ProblemDao problemDao, RabbitTemplate rabbitTemplate, Queue commitQueue) {
         this.contestDao = contestDao;
         this.problemDao = problemDao;
         this.rabbitTemplate = rabbitTemplate;
         this.commitQueue = commitQueue;
     }
 
-    /**
-     * 提交代码
-     */
-    @PostMapping()
-    public ResponseEntity<?> commitCode(@RequestBody CommitData data) {
+    private ResponseEntity<?> submitCode(CommitData data, boolean isAdmin) {
         var contestId = data.getContestId();
 
         if (data.getSourceCode().trim().isEmpty()) {
@@ -59,14 +53,14 @@ public class CommitController {
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(), "当前竞赛已结束");
             }
 
-            var lang = data.getLanguage();
+            var lang = 1 << data.getLanguage();
             var languages = contest.getLanguages();
 
-            if ((languages & 1 << lang) != 1 << lang) {
+            if ((languages & lang) != lang) {
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不允许使用该语言");
             }
         } else {
-            if (!problemDao.isOpen(data.getProblemId())) {
+            if (!isAdmin && !problemDao.isOpen(data.getProblemId())) {
                 throw new GenericException(HttpStatus.FORBIDDEN.value(), "未开放，不允许提交");
             }
         }
@@ -76,5 +70,21 @@ public class CommitController {
         rabbitTemplate.convertAndSend(commitQueue.getName(), data);
 
         return ResponseEntity.accepted().body(data.getSolutionId());
+    }
+
+    /**
+     * 提交代码，普通用户
+     */
+    @PostMapping("submit")
+    public ResponseEntity<?> submit(@RequestBody CommitData data) {
+        return submitCode(data, false);
+    }
+
+    /**
+     * 提交代码，管理员
+     */
+    @PostMapping("admin/submit")
+    public ResponseEntity<?> adminSubmit(@RequestBody CommitData data) {
+        return submitCode(data, true);
     }
 }

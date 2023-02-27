@@ -31,8 +31,8 @@ spring:
           filters:
             - StripPrefix=2
           predicates:
-            - Path=/api/judgement/**
-        - id: file
+            - Path=/api/judge/**
+        - id: storage
           uri: lb://storage
           filters:
             - StripPrefix=2
@@ -47,6 +47,8 @@ spring:
       discovery:
         locator:
           enabled: true
+      observability:
+        enabled: false
 management:
   endpoints:
     web:

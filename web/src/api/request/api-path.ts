@@ -17,9 +17,10 @@ const ApiPath = {
   CONTEST_RANKING_ADMIN: "/api/core/ranking/admin/contest",
   CONTEST_SCORE_DETAIL: "/api/core/ranking/admin/contest/detail",
   RANKING: "/api/core/ranking",
-  HISTORY: "/api/core/history",
-  COMMIT: "/api/judgement/commit",
-  QUEUE_INFO: "/api/judgement/admin/queue_info",
+  SOLUTION: "/api/core/solution",
+  SUBMIT: "/api/judge/submit",
+  ADMIN_SUBMIT: "/api/judge/submit",
+  QUEUE_INFO: "/api/judge/admin/queue_info",
   PROFILE: "/api/core/user/profile",
   OVERVIEW: "/api/core/user/overview",
   SETTINGS: "/api/core/settings"

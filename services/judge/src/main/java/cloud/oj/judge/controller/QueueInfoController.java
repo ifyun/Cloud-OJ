@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("admin/queue_info")
+@RequestMapping("admin")
 public class QueueInfoController {
 
     private final RabbitTemplate rabbitTemplate;
@@ -35,7 +35,7 @@ public class QueueInfoController {
     /**
      * 获取消息队列信息
      */
-    @GetMapping()
+    @GetMapping("queue_info")
     public ResponseEntity<?> getQueueInfo() {
         var queueInfo = new QueueInfo(
                 getMessageCount(RabbitConfig.COMMIT_QUEUE),

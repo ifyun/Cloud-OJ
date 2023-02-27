@@ -18,7 +18,7 @@ public class SolutionService {
         this.solutionDao = solutionDao;
     }
 
-    public List<List<?>> getHistories(String userId, int page, int limit, Integer problemId, String title) {
+    public List<List<?>> getSolutions(String userId, int page, int limit, Integer problemId, String title) {
         if (problemId != null) {
             return solutionDao.getHistoryByProblemId(userId, (page - 1) * limit, limit, problemId);
         } else if (title != null && !title.isEmpty()) {
