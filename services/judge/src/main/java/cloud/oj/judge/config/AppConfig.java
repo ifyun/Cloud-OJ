@@ -43,12 +43,8 @@ public class AppConfig {
 
         var cpuCores = Runtime.getRuntime().availableProcessors();
 
-        if (judgePoolSize >= cpuCores) {
+        if (judgePoolSize >= cpuCores || judgePoolSize <= 0) {
             judgePoolSize = cpuCores - 1;
-        }
-
-        if (judgePoolSize == 0) {
-            judgePoolSize = 1;
         }
 
         log.info("测试数据目录: {}", fileDir);

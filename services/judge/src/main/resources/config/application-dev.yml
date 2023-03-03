@@ -7,4 +7,4 @@ app:
   file-dir: /var/lib/cloud-oj-sync/
   file-sync: true
   auto-clean-solution: false
-  judge-pool-size: 8
+  judge-pool-size: 4

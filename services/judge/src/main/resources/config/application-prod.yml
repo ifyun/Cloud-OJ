@@ -9,4 +9,4 @@ app:
   file-dir: /var/lib/cloud-oj/
   file-sync: ${FILE_SYNC:false}
   auto-clean-solution: ${AUTO_CLEAN_SOLUTION:true}
-  judge-pool-size: ${JUDGE_POOL_SIZE:8}
+  judge-pool-size: ${JUDGE_POOL_SIZE:0}

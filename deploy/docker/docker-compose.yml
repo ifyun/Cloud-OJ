@@ -68,7 +68,7 @@ services:
       RABBIT_PORT: ${RABBIT_PORT}
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
-      JUDGE_POOL_SIZE: 4
+      JUDGE_POOL_SIZE: 0
   web:
     image: cloud-oj-web
     networks:
