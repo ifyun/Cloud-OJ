@@ -39,7 +39,7 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 
 需要以下环境:
 
-- Debian 11 / Ubuntu 22.04
+- Linux
 - CMake 3.16+
 - Maven 3.8+
 - OpenJDK 17
@@ -59,16 +59,16 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 ./build install
 ```
 
-以上命令将项目安装到 `/usr/local/cloud-oj`，同时安装 nginx、 supervisor、rabbitmq-server、mysql-server。
+以上命令将项目安装到 `/usr/local/cloud-oj`，同时安装 nginx、 supervisor、rabbitmq-server、mariadb-server。
 
 - 测试数据位置：`/var/lib/cloud-oj`
 - 配置文件位置：`/etc/cloud-oj`
 
 你需要手动执行以下操作：
 
-1. 设置 MySQL 用户和密码，使用 `dev/sql` 目录中的脚本初始化数据库
+1. 设置 MariaBD 用户和密码，使用 `dev/sql` 目录中的脚本初始化数据库
 2. 创建 RabbitMQ 用户，并赋予 `administrator` 权限
-3. 在 `/etc/cloud-oj/supervisord.conf` 文件中设置 MySQL、RabbitMQ 用户和密码
+3. 在 `/etc/cloud-oj/supervisord.conf` 文件中设置 MariaDB、RabbitMQ 用户和密码
 
 运行：
 
@@ -100,7 +100,7 @@ cd /usr/local/cloud-oj
 docker-compose up -d
 ```
 
-> 首次运行时，你可以在 `.env` 文件中修改 MySQL 和 RabbitMQ 的用户名和密码。
+> 首次运行时，你可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码。
 
 部分端口未映射到宿主机，如有必要可参考下表：
 
@@ -108,9 +108,9 @@ docker-compose up -d
 |----------|-------------|
 | registry | 8761        |
 | gateway  | 8080        |
-| core     | 8081        |
-| storage  | 8082        |
-| judge    | 8083        |
+| core     | 8180        |
+| storage  | 8280        |
+| judge    | 8380        |
 | mysql    | 3306        |
 | rabbitmq | 5672, 15672 |
 
@@ -139,6 +139,7 @@ environment:
 ## Technologies
 
 - [Spring](https://spring.io/)
+- [MariaDB](https://mariadb.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Boost](https://www.boost.org/)
 - [Vue 3](https://vuejs.org/)

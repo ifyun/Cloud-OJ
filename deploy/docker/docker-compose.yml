@@ -29,11 +29,11 @@ services:
     volumes:
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms64m -Xmx64m"
+      JVM_OPTS: "-Xms128m -Xmx128m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_HOST: "mysql:3306"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_HOST: "mariadb:3306"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWD}
       DB_POOL_SIZE: 5
       TOKEN_VALID_TIME: 4
   core:
@@ -43,11 +43,11 @@ services:
     volumes:
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms64m -Xmx64m"
+      JVM_OPTS: "-Xms128m -Xmx128m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_HOST: "mysql:3306"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_HOST: "mariadb:3306"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWD}
       DB_POOL_SIZE: 5
   judge:
     image: cloud-oj-judge
@@ -58,11 +58,11 @@ services:
       - "/var/lib/cloud-oj:/var/lib/cloud-oj"
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms128m -Xmx128m"
+      JVM_OPTS: "-Xms256m -Xmx256m"
       EUREKA_SERVER: "registry:8761"
-      MYSQL_HOST: "mysql:3306"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWD}
+      DB_HOST: "mariadb:3306"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWD}
       DB_POOL_SIZE: 5
       RABBIT_URL: rabbitmq
       RABBIT_PORT: ${RABBIT_PORT}
@@ -77,16 +77,16 @@ services:
       - "80:80"
     environment:
       API_HOST: "gateway:8080"
-  mysql:
-    image: mysql:8.0
+  mariadb:
+    image: mariadb:latest
     networks:
       - cloud-oj
     volumes:
       - "./sql:/docker-entrypoint-initdb.d"
-      - "mysql:/var/lib/mysql"
+      - "mariadb:/var/lib/mysql"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWD}
-      MYSQL_ROOT_HOST: "%"
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWD}
+      MARIADB_ROOT_HOST: "%"
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
     hostname: rabbitmq
@@ -103,6 +103,6 @@ networks:
   cloud-oj:
     driver: bridge
 volumes:
-  mysql:
+  mariadb:
   rabbitmq:
   log:

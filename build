@@ -77,11 +77,7 @@ fi
 if [ "$1" == "install" ]; then
   echo -e "${GREEN}INSTALL...${CLR}"
   sudo useradd judge || true
-  sudo mkdir -p ${INSTALL_DIR}/web
-  sudo mkdir -p ${INSTALL_DIR}/bin
-  sudo mkdir -p ${INSTALL_DIR}/services/lib
-  sudo mkdir -p ${CONF_DIR}
-  sudo mkdir -p ${DATA_DIR}
+  sudo mkdir -p ${INSTALL_DIR}/web ${INSTALL_DIR}/bin ${INSTALL_DIR}/services/lib ${CONF_DIR} ${DATA_DIR}
   sudo chown judge ${DATA_DIR}
   # judge, judged
   sudo cp judge/cmake-build-release/{judge,judged} ${INSTALL_DIR}/bin/
@@ -102,7 +98,7 @@ if [ "$1" == "install" ]; then
     services/core/target/lib/* \
     services/judge/target/lib/* \
     ${INSTALL_DIR}/services/lib/
-  sudo apt-get install -y nginx supervisor rabbitmq-server mysql-server
+  sudo apt-get install -y nginx supervisor rabbitmq-server mariadb-server
   # supervisor and nginx conf
   sudo cp -r deploy/conf/*.conf ${CONF_DIR}/
   sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default

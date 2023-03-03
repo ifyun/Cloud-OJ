@@ -96,7 +96,7 @@ const UserApi = {
   ) {
     return new Promise<Page<JudgeResult>>((resolve, reject) => {
       axios({
-        url: ApiPath.HISTORY,
+        url: ApiPath.SOLUTION,
         method: "GET",
         headers: {
           "Content-Type": "application/json",

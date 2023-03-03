@@ -7,10 +7,10 @@ spring:
     name: gateway
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
     hikari:
       connection-timeout: 10000
       maximum-pool-size: ${DB_POOL_SIZE:10}

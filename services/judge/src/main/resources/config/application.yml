@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8380
 spring:
   profiles:
     active: dev
@@ -7,10 +7,10 @@ spring:
     name: judge
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_HOST:localhost:3306}/cloud_oj?allowMultiQueries=true&serverTimezone=UTC
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?allowMultiQueries=true&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
   rabbitmq:
     host: ${RABBIT_URL:127.0.0.1}
     port: ${RABBIT_PORT:5672}

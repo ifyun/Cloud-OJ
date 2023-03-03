@@ -23,5 +23,5 @@ RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && chmod +x /app/entrypoint.sh
 WORKDIR /app
-EXPOSE 8083
+EXPOSE 8380
 CMD ./entrypoint.sh
