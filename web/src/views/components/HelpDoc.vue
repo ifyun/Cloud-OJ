@@ -3,17 +3,11 @@
     <div class="help">
       <n-card :bordered="false">
         <n-h1>帮助文档</n-h1>
-        <n-alert :bordered="false" type="info" title="提示">
-          此文档中编程语言的编译器(解释器)及其版本仅表示表示默认版本，管理员可能使用了不同的版本。
-        </n-alert>
         <n-h2>语言支持</n-h2>
         <n-data-table :columns="languageColumns" :data="languageData" />
-        <n-p>
-          支持 SQL(SQLite)，题目名称右边有 SQL 标签表示这是一道数据库题目。
-        </n-p>
         <n-h2>注意事项</n-h2>
-        <n-alert :bordered="false" type="warning" title="Java 语言特殊要求">
-          Java 语言的类名必须为 Solution，且不能使用 package 关键字！
+        <n-alert :bordered="false" type="warning" title="Java 特殊要求">
+          Java 的类名必须为 Solution，且不能使用 package 关键字！
         </n-alert>
         <n-alert
           :bordered="false"
@@ -76,8 +70,7 @@ import {
   NDataTable,
   NH1,
   NH2,
-  NH3,
-  NP
+  NH3
 } from "naive-ui"
 import highlightJs from "highlight.js/lib/core"
 import cpp from "highlight.js/lib/languages/cpp"
