@@ -58,7 +58,7 @@ create table user
     secret    char(36)                            not null comment '秘钥，用于生成 jwt',
     email     varchar(32)                         null,
     section   varchar(16)                         null,
-    role_id   int       default 0                 not null,
+    role_id   int       default 1                 not null,
     create_at timestamp default CURRENT_TIMESTAMP null,
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)

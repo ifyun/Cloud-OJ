@@ -63,13 +63,13 @@ public class FileService {
         var dir = new File(testDataDir + problemId);
 
         if (!dir.exists() && !dir.mkdirs()) {
-            log.error("无法创建目录 {}", dir.getName());
+            log.error("无法创建目录 {}", dir.getAbsolutePath());
             return ResponseEntity.status(500).body("无法创建目录.");
         }
 
         for (MultipartFile file : files) {
             var fileName = file.getOriginalFilename();
-            var dest = new File(dir + "/" + fileName);
+            var dest = new File(dir.getAbsolutePath() + "/" + fileName);
 
             try {
                 file.transferTo(dest);

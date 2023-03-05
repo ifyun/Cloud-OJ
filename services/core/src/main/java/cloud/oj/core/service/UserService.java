@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public Integer addUser(User user) {
-        user.setRoleId(0);
+        user.setRoleId(1);
         user.setSecret(newUUID());
         if (userDao.add(user) == 1) {
             return HttpStatus.CREATED.value();

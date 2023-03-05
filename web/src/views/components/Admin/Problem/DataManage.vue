@@ -12,7 +12,7 @@
             :loading="loading"
             :columns="columns"
             :data="testData" />
-          <n-alert type="warning" title="注意换行符">
+          <n-alert type="info" title="注意换行符" :bordered="false">
             文件中的换行符必须为 LF，不能使用 CRLF。
           </n-alert>
           <n-upload

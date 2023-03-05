@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,10 +12,6 @@ import java.io.File;
 @Service
 @Slf4j
 public class NotifyService {
-
-    @Value("${app.file-dir}")
-    private String fileDir;
-
     private final FanoutExchange testDataExchange;
 
     private final RabbitTemplate rabbitTemplate;
@@ -34,8 +29,9 @@ public class NotifyService {
      * @param isDeleted 是否删除
      */
     public void notifyTestData(File file, boolean isDeleted) {
-        var path = file.getAbsolutePath().replace(fileDir + "test_data", "");
-        var fileInfo = new FileInfo(path, file.lastModified(), isDeleted);
+        var path = file.getAbsolutePath();
+        var rPath = path.substring(path.indexOf("test_data") + 9).replaceAll("\\\\", "/");
+        var fileInfo = new FileInfo(rPath, file.lastModified(), isDeleted);
         rabbitTemplate.convertAndSend(testDataExchange.getName(), "", fileInfo);
         log.info(fileInfo.toString());
     }

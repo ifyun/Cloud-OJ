@@ -10,8 +10,8 @@ import java.util.Date;
 public class Problem {
     private Integer contestId;
     private String contestName;
-    private Date startAt;
-    private Date endAt;
+    private Long startAt;
+    private Long endAt;
     private Integer problemId;
     private Integer result;
     private Integer passed;

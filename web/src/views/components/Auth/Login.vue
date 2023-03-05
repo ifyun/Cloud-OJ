@@ -101,7 +101,11 @@ function login() {
       AuthApi.login(user.value)
         .then((data) => {
           store.commit(Mutations.SAVE_TOKEN, data)
-          router.push({ path: "/" })
+          if (store.state.userInfo.userId == 1) {
+            router.push({ path: "/" })
+          } else {
+            router.push({ path: "/problem_admin" })
+          }
         })
         .catch((err: ErrorMessage) => {
           message.error(err.toString())

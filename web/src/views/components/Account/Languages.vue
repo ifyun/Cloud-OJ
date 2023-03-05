@@ -1,6 +1,10 @@
 <template>
   <div>
     <n-h3 strong style="margin-bottom: 12px">常用语言</n-h3>
+    <n-empty
+      v-if="data.length === 0"
+      description="没有记录"
+      style="margin-top: 42px" />
     <div class="languages">
       <div
         v-for="item in data"
@@ -14,12 +18,12 @@
           <n-icon :color="item.color" size="12">
             <circle-round />
           </n-icon>
-          <n-text depth="1" strong style="margin-left: 12px">{{
-            item.name
-          }}</n-text>
+          <n-text depth="1" strong style="margin-left: 12px"
+            >{{ item.name }}
+          </n-text>
           <n-text depth="3" style="margin-left: 6px"
-            >{{ item.percent }}%</n-text
-          >
+            >{{ item.percent }}%
+          </n-text>
         </div>
       </div>
     </div>
@@ -28,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { NH3, NIcon, NText } from "naive-ui"
+import { NEmpty, NH3, NIcon, NText } from "naive-ui"
 import { CircleRound } from "@vicons/material"
 import { Language } from "@/api/type"
 import { LanguageColors, LanguageNames } from "@/type"

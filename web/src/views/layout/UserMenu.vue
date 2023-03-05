@@ -55,7 +55,7 @@ const dialog = useDialog()
 
 const userMenuOptions = [
   {
-    label: "个人中心",
+    label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
     key: "account",
     icon: renderIcon(UserHomeIcon)
   },

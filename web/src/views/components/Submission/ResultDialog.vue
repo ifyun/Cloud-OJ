@@ -112,10 +112,11 @@ function fetchResult(count: number) {
       }
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
-      showRetry.value = true
       if (err.status === 404) {
-        error.value.message = "你的提交可能还未写入数据库"
+        setTimeout(() => fetchResult(count + 1), 500)
+      } else {
+        error.value = err
+        showRetry.value = true
       }
     })
 }
