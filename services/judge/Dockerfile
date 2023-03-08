@@ -16,10 +16,10 @@ COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./target/lib/* /app/lib/
 COPY ./target/bin/* /usr/bin/
 COPY ./target/*.jar /app/judge.jar
-RUN sed -i "s/deb.debian.org/mirrors.163.com/g" /etc/apt/sources.list \
+RUN sed -i "s/deb.debian.org/mirrors.ustc.edu.cn/g" /etc/apt/sources.list \
     && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update \
-    && apt-get install -y --no-install-recommends sqlite3 gcc g++ python3 mono-devel nodejs \
+    && apt-get install -y --no-install-recommends gcc g++ mono-devel nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && chmod +x /app/entrypoint.sh
 WORKDIR /app

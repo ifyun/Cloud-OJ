@@ -9,8 +9,14 @@ INSTALL_DIR="/usr/local/cloud-oj"
 ORIGINAL_DIR=$(pwd)
 SCRIPT=$(readlink -f "$0")
 WORKING_DIR=$(dirname "${SCRIPT}")
+
+function has_command() {
+  which "$1" &>/dev/null
+}
+
 # make sure working directory is correct
 cd "${WORKING_DIR}"
+
 # clean && exit
 if [ "$1" == "clean" ]; then
   cd services && mvn clean && cd ..
@@ -65,9 +71,11 @@ if [ "$1" == "docker" ]; then
   docker build -t cloudoj-core services/core
   docker build -t cloudoj-judge services/judge
   docker images | grep cloudoj
-  sudo mkdir ${INSTALL_DIR}/docker/sql
-  sudo cp -r deploy/docker/* ${INSTALL_DIR}/
-  sudo cp dev/sql/* ${INSTALL_DIR}/sql/
+  if [ ! -d "${INSTALL_DIR}/sql" ]; then
+    sudo mkdir -p ${INSTALL_DIR}/sql
+    sudo cp dev/sql/* ${INSTALL_DIR}/sql/
+    sudo cp -r dev/docker/* ${INSTALL_DIR}/
+  fi
   echo -e "${GREEN}DOCKER BUILD COMPLETE.${CLR}"
   cd "${ORIGINAL_DIR}"
   exit 0
@@ -98,9 +106,19 @@ if [ "$1" == "install" ]; then
     services/core/target/lib/* \
     services/judge/target/lib/* \
     ${INSTALL_DIR}/services/lib/
-  sudo apt-get install -y nginx supervisor rabbitmq-server mariadb-server
+  programs="nginx supervisor rabbitmq-server mariadb-server"
+  if has_command apt-get; then
+    sudo apt-get install -y "${programs}"
+  elif has_command dnf; then
+    sudo dnf install -y "${programs}"
+  fi
+  sudo cat dev/sql/schema.sql | sudo mariadb -u root
+  sudo mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
+  sudo rabbitmqctl add_user admin admin
+  sudo rabbitmqctl set_user_tags admin administrator
+  sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
   # supervisor and nginx conf
-  sudo cp -r deploy/conf/*.conf ${CONF_DIR}/
+  sudo cp -r dev/conf/*.conf ${CONF_DIR}/
   sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default
   echo -e "${GREEN}INSTALL COMPLETE.${CLR}"
 fi

@@ -212,7 +212,6 @@ create table settings
         primary key,
     icp                      varchar(64) default '' not null,
     icp_url                  varchar(64) default '' not null,
-    site_name                varchar(16) default '' not null,
     show_ranking_after_ended tinyint(1)  default 0  null,
     show_not_started_contest tinyint(1)  default 0  null
 );

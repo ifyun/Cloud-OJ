@@ -1,37 +1,28 @@
 #!/bin/bash
 set -e
-curl -sL https://deb.nodesource.com/setup_lts.x | sudo bash -
-sudo apt-get update
-# install build environment
-sudo apt-get install -y --no-install-recommends \
-  wget \
-  build-essential \
-  cmake \
-  libboost-iostreams-dev \
-  libboost-program-options-dev \
-  openjdk-17-jdk-headless \
-  maven \
-  nodejs
+function has_command() {
+  which "$1" &>/dev/null
+}
 
-if [ "$1" == "build-only" ]; then
-  exit 0
+if has_command apt-get; then
+  curl -sL https://deb.nodesource.com/setup_lts.x | sudo bash -
+  sudo apt-get update
+  sudo apt-get install -y \
+    gcc \
+    g++ \
+    cmake \
+    libboost-iostreams-dev \
+    libboost-program-options-dev \
+    maven \
+    openjdk-17-jdk-headless \
+    nodejs
+elif has_command dnf; then
+  sudo dnf install -y \
+    gcc \
+    g++ \
+    cmake \
+    boost-devel \
+    maven \
+    java-17-openjdk-devel \
+    nodejs
 fi
-
-sudo apt-get install -y --no-install-recommends python3 mono-devel
-
-wget https://github.com/JetBrains/kotlin/releases/download/v1.7.10/kotlin-compiler-1.7.10.zip -P /tmp
-if [ -d "/usr/share/kotlinc" ]; then
-  sudo rm -rf /usr/share/kotlinc/*
-fi
-sudo unzip -d /usr/share /tmp/kotlin-compiler-1.7.10.zip
-sudo ln -s /usr/share/kotlinc/bin/kotlinc /usr/bin/kotlinc
-sudo ln -s /usr/share/kotlinc/bin/kotlin /usr/bin/kotlin
-rm /tmp/kotlin-compiler-1.7.10.zip
-
-wget https://go.dev/dl/go1.19.linux-amd64.tar.gz -P /tmp
-if [ -d "/usr/local/go" ]; then
-  sudo rm -rf /usr/local/go/*
-fi
-sudo tar -C /usr/local -xzf /tmp/go1.19.linux-amd64.tar.gz
-sudo ln -s /usr/local/go/bin/go /usr/bin/go
-rm /tmp/go1.19.linux-amd64.tar.gz
