@@ -8,8 +8,7 @@ if has_command apt-get; then
   curl -sL https://deb.nodesource.com/setup_lts.x | sudo bash -
   sudo apt-get update
   sudo apt-get install -y \
-    gcc \
-    g++ \
+    build-essential \
     cmake \
     libboost-iostreams-dev \
     libboost-program-options-dev \
@@ -21,6 +20,7 @@ elif has_command dnf; then
     gcc \
     g++ \
     cmake \
+    make \
     boost-devel \
     maven \
     java-17-openjdk-devel \
