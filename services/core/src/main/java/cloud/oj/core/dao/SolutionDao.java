@@ -7,11 +7,11 @@ import java.util.List;
 
 @Mapper
 public interface SolutionDao {
-    JudgeResult getResultBySolutionId(String solutionId);
+    JudgeResult getSolutionById(String solutionId);
 
-    List<List<?>> getHistory(String userId, int start, int limit);
+    List<List<?>> getSolutionsByUser(String userId, int start, int limit);
 
-    List<List<?>> getHistoryByProblemId(String userId, int start, int limit, Integer problemId);
+    List<List<?>> getSolutionsByProblemId(String userId, int start, int limit, Integer problemId);
 
-    List<List<?>> getHistoryByTitle(String userId, int start, int limit, String title);
+    List<List<?>> getSolutionsByTitle(String userId, int start, int limit, String title);
 }

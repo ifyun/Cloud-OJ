@@ -21,7 +21,7 @@
       :description="result.desc">
       <template v-if="showRetry" #footer>
         <n-button secondary size="small" type="primary" @click="retry">
-          重试
+          重新获取
         </n-button>
       </template>
     </n-result>
@@ -55,8 +55,6 @@ class Result {
   }
 }
 
-const JUDGED = 0
-
 const Cost = (r: JudgeResult) => {
   const { time, memory } = r
   return `运行时间: ${time} ms，内存占用: ${memory} KB`
@@ -67,7 +65,7 @@ const store = useStore()
 const error = ref<ErrorMessage | null>(null)
 const result = ref<Result>({
   status: "418",
-  title: "提交成功，正在等待结果"
+  title: "提交成功，正在获取结果"
 })
 
 const showRetry = ref<boolean>(false)
@@ -79,11 +77,11 @@ const props = defineProps<{
 }>()
 
 onMounted(() => {
-  setTimeout(() => fetchResult(0), 100)
+  fetchResult()
 })
 
 function retry() {
-  setTimeout(() => fetchResult(0), 100)
+  fetchResult()
   error.value = null
   result.value = {
     status: "418",
@@ -93,31 +91,28 @@ function retry() {
 
 /**
  * 获取结果
- * @param count 轮询次数
  */
-function fetchResult(count: number) {
-  if (count > 15) {
-    result.value = new Result("info", "没有获取到结果")
-    showRetry.value = true
-    return
-  }
-
+function fetchResult() {
   JudgeApi.getResult(props.solutionId, userInfo.value)
     .then((data) => {
-      if (data == null || data.state !== JUDGED) {
-        setTimeout(() => fetchResult(count + 1), 500)
+      if (data!.state !== 0) {
+        result.value = {
+          status: "418",
+          title: "在队列中，等待判题"
+        }
+        setTimeout(fetchResult, 200)
       } else {
         showRetry.value = false
-        setResult(data)
+        setResult(data!)
       }
     })
     .catch((err: ErrorMessage) => {
       if (err.status === 404) {
-        setTimeout(() => fetchResult(count + 1), 500)
+        result.value = new Result("info", "没有获取到结果")
       } else {
         error.value = err
-        showRetry.value = true
       }
+      showRetry.value = true
     })
 }
 

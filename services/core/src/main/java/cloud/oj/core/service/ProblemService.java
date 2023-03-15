@@ -42,14 +42,6 @@ public class ProblemService {
         return problemDao.getAll((page - 1) * limit, limit, keyword);
     }
 
-    public List<List<?>> getAllWithState(String keyword, String userId, int page, int limit) {
-        if (keyword == null || keyword.isEmpty()) {
-            problemDao.getWithState((page - 1) * limit, limit, userId, null);
-        }
-
-        return problemDao.getWithState((page - 1) * limit, limit, userId, keyword);
-    }
-
     public Optional<Problem> getSingle(int problemId) {
         return Optional.ofNullable(problemDao.getSingle(problemId, false));
     }

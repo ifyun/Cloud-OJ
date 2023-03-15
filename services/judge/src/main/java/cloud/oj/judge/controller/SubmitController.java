@@ -1,11 +1,11 @@
 package cloud.oj.judge.controller;
 
+import cloud.oj.judge.config.RabbitConfig;
 import cloud.oj.judge.dao.ContestDao;
 import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,14 +29,11 @@ public class SubmitController {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final Queue commitQueue;
-
     @Autowired
-    public SubmitController(ContestDao contestDao, ProblemDao problemDao, RabbitTemplate rabbitTemplate, Queue commitQueue) {
+    public SubmitController(ContestDao contestDao, ProblemDao problemDao, RabbitTemplate rabbitTemplate) {
         this.contestDao = contestDao;
         this.problemDao = problemDao;
         this.rabbitTemplate = rabbitTemplate;
-        this.commitQueue = commitQueue;
     }
 
     private ResponseEntity<?> submitCode(CommitData data, boolean isAdmin) {
@@ -67,7 +64,7 @@ public class SubmitController {
 
         data.setSolutionId(UUID.randomUUID().toString());
         data.setSubmitTime(System.currentTimeMillis() / 1000);
-        rabbitTemplate.convertAndSend(commitQueue.getName(), data);
+        rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
 
         return ResponseEntity.accepted().body(data.getSolutionId());
     }

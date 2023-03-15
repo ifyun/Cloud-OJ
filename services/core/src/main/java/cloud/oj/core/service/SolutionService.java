@@ -2,11 +2,13 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.JudgeResult;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class SolutionService {
@@ -20,15 +22,30 @@ public class SolutionService {
 
     public List<List<?>> getSolutions(String userId, int page, int limit, Integer problemId, String title) {
         if (problemId != null) {
-            return solutionDao.getHistoryByProblemId(userId, (page - 1) * limit, limit, problemId);
+            return solutionDao.getSolutionsByProblemId(userId, (page - 1) * limit, limit, problemId);
         } else if (title != null && !title.isEmpty()) {
-            return solutionDao.getHistoryByTitle(userId, (page - 1) * limit, limit, title);
+            return solutionDao.getSolutionsByTitle(userId, (page - 1) * limit, limit, title);
         } else {
-            return solutionDao.getHistory(userId, (page - 1) * limit, limit);
+            return solutionDao.getSolutionsByUser(userId, (page - 1) * limit, limit);
         }
     }
 
+    @SneakyThrows
     public Optional<JudgeResult> getBySolutionId(String solutionId) {
-        return Optional.ofNullable(solutionDao.getResultBySolutionId(solutionId));
+        var count = 15;
+        JudgeResult result;
+
+        while (count > 0) {
+            result = solutionDao.getSolutionById(solutionId);
+
+            if (result != null) {
+                return Optional.of(result);
+            }
+
+            TimeUnit.SECONDS.sleep(1);
+            count--;
+        }
+
+        return Optional.empty();
     }
 }

@@ -12,8 +12,6 @@ public interface ProblemDao {
 
     List<List<?>> getAllEnabled(int start, int limit, String keyword);
 
-    List<List<?>> getWithState(int start, int limit, String userId, String keyword);
-
     Problem getSingle(Integer problemId, boolean enable);
 
     Problem getSingleInContest(Integer contestId, Integer problemId);

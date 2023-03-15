@@ -24,15 +24,12 @@ public class ProblemController {
     /**
      * 获取所有开放的题目
      *
-     * @param userId  若不为空，可以获取题目的判题结果
      * @param keyword 关键字
      * @return 题目列表
      */
     @GetMapping
-    public ResponseEntity<?> getAllEnable(String userId, String keyword, Integer page, Integer limit) {
-        var problems = userId == null || userId.isEmpty() ?
-                PagedList.resolve(problemService.getAllEnabled(keyword, page, limit))
-                : PagedList.resolve(problemService.getAllWithState(keyword, userId, page, limit));
+    public ResponseEntity<?> getAllEnable(String keyword, Integer page, Integer limit) {
+        var problems = PagedList.resolve(problemService.getAllEnabled(keyword, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)
                 : ResponseEntity.noContent().build();
