@@ -1,3 +1,5 @@
+eureka:
+  environment: prod
 logging:
   level:
     root: warn
