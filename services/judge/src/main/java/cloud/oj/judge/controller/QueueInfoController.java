@@ -2,8 +2,9 @@ package cloud.oj.judge.controller;
 
 import cloud.oj.judge.config.RabbitConfig;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,13 @@ public class QueueInfoController {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     private static class QueueInfo {
-        private int inCommitQueue = 0;
-        private int inJudgeQueue = 0;
+        private int submit = 0;
+        private int judge = 0;
     }
 
     /**
@@ -38,7 +40,7 @@ public class QueueInfoController {
     @GetMapping("queue_info")
     public ResponseEntity<?> getQueueInfo() {
         var queueInfo = new QueueInfo(
-                getMessageCount(RabbitConfig.COMMIT_QUEUE),
+                getMessageCount(RabbitConfig.SUBMIT_QUEUE),
                 getMessageCount(RabbitConfig.JUDGE_QUEUE)
         );
 

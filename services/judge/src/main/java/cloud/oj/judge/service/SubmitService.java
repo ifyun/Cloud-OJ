@@ -1,12 +1,13 @@
 package cloud.oj.judge.service;
 
+import cloud.oj.judge.component.SolutionState;
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.dao.SourceCodeDao;
 import cloud.oj.judge.entity.CommitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SourceCode;
-import cloud.oj.judge.component.SolutionState;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,10 @@ public class SubmitService {
 
     /**
      * 保存提交到数据库
-     * <p>隔离级别：读未提交</p>
+     * <p>隔离级别：读提交</p>
      */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
-    public void submit(CommitData commitData) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void submit(CommitData commitData) throws AmqpException {
         var solution = new Solution(
                 commitData.getSolutionId(),
                 commitData.getUserId(),

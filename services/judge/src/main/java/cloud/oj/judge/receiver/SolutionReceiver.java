@@ -54,13 +54,14 @@ public class SolutionReceiver {
      * 监听提交队列
      */
     @RabbitHandler
-    @RabbitListener(queues = RabbitConfig.COMMIT_QUEUE)
-    public void handleSubmission(@Payload CommitData data, @Headers Map<String, Object> headers, Channel channel) {
-        submitService.submit(data);
+    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE)
+    public void handleSubmission(@Payload CommitData data,
+                                 @Headers Map<String, Object> headers, Channel channel) throws IOException {
         try {
+            submitService.submit(data);
             channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
-        } catch (IOException e) {
-            log.error(e.getMessage());
+        } catch (Exception e) {
+            channel.basicNack((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false, true);
         }
     }
 }

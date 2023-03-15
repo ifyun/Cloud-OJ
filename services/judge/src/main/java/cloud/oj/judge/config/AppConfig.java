@@ -25,7 +25,7 @@ public class AppConfig {
 
     private boolean autoCleanSolution = true;
 
-    private int judgePoolSize = 4;
+    private int judgePoolSize = 0;
 
     private String fileDir = "/var/lib/cloud-oj/";
 
@@ -47,13 +47,13 @@ public class AppConfig {
             judgePoolSize = cpuCores - 1;
         }
 
+        createDir(fileDir + "test_data");
+        createDir(codeDir);
+
         log.info("测试数据目录: {}", fileDir);
         log.info("临时代码目录: {}", codeDir);
         log.info("JUDGE线程数: {}", judgePoolSize);
         log.info("自动删除判题产物: {}", autoCleanSolution);
-
-        createDir(fileDir + "test_data");
-        createDir(codeDir);
     }
 
     private void createDir(String path) {
