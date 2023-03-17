@@ -106,12 +106,14 @@ if [ "$1" == "install" ]; then
     services/core/target/lib/* \
     services/judge/target/lib/* \
     ${INSTALL_DIR}/services/lib/
-  programs="nginx supervisor rabbitmq-server mariadb-server"
+  programs="unzip nginx supervisor rabbitmq-server mariadb-server"
   if has_command apt-get; then
     sudo apt-get install -y "${programs}"
   elif has_command dnf; then
     sudo dnf install -y "${programs}"
   fi
+  curl -LJo /tmp/consul.zip https://releases.hashicorp.com/consul/1.15.1/consul_1.15.1_linux_amd64.zip
+  sudo unzip -d /usr/bin /tmp/consul.zip && rm /tmp/consul.zip
   sudo cat dev/sql/schema.sql | sudo mariadb -u root
   sudo mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
   sudo rabbitmqctl add_user admin admin

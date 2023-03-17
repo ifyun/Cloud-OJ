@@ -1,5 +1,14 @@
 version: "3"
 services:
+  consul:
+    image: consul:latest
+    command:
+      - "agent"
+      - "-dev"
+      - "-client=0.0.0.0"
+      - "-log-level=err"
+    ports:
+      - "8500:8500"
   mariadb:
     image: mariadb:latest
     ports:

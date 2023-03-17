@@ -1,6 +1,0 @@
-eureka:
-  environment: dev
-logging:
-  level:
-    root: warn
-    cloud.oj: debug

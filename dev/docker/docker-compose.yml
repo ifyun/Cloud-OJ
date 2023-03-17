@@ -1,36 +1,53 @@
 version: "3.7"
 services:
-  registry:
-    image: cloud-oj-registry
+  consul:
+    image: consul:latest
+    command:
+      - "agent"
+      - "-server"
+      - "-ui"
+      - "-bind=127.0.0.1"
+      - "-retry-join=127.0.0.1"
+      - "-bootstrap-expect=1"
+      - "-client=0.0.0.0"
+      - "-log-level=err"
     networks:
       - cloud-oj
+    ports:
+      - "8500:8500"
     volumes:
-      - "log:/tmp/cloud-oj"
-    environment:
-      JVM_OPTS: "-Xms64m -Xmx64m"
+      - "consul:/consul/data"
   storage:
     image: cloud-oj-storage
+    depends_on:
+      - "consul"
+      - "mariadb"
+      - "rabbitmq"
     networks:
       - cloud-oj
     volumes:
       - "/var/lib/cloud-oj:/var/lib/cloud-oj"
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms64m -Xmx64m"
-      EUREKA_SERVER: "registry:8761"
+      JVM_OPTS: "-Xmx100m"
+      CONSUL_HOST: "consul"
       RABBIT_URL: rabbitmq
       RABBIT_PORT: ${RABBIT_PORT}
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
   gateway:
     image: cloud-oj-gateway
+    depends_on:
+      - "consul"
+      - "mariadb"
+      - "rabbitmq"
     networks:
       - cloud-oj
     volumes:
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms128m -Xmx128m"
-      EUREKA_SERVER: "registry:8761"
+      JVM_OPTS: "-Xmx200m"
+      CONSUL_HOST: "consul"
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
@@ -38,13 +55,17 @@ services:
       TOKEN_VALID_TIME: 4
   core:
     image: cloud-oj-core
+    depends_on:
+      - "consul"
+      - "mariadb"
+      - "rabbitmq"
     networks:
       - cloud-oj
     volumes:
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms128m -Xmx128m"
-      EUREKA_SERVER: "registry:8761"
+      JVM_OPTS: "-Xmx200m"
+      CONSUL_HOST: "consul"
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
@@ -52,14 +73,18 @@ services:
   judge:
     image: cloud-oj-judge
     privileged: true
+    depends_on:
+      - "consul"
+      - "mariadb"
+      - "rabbitmq"
     networks:
       - cloud-oj
     volumes:
       - "/var/lib/cloud-oj:/var/lib/cloud-oj"
       - "log:/tmp/cloud-oj"
     environment:
-      JVM_OPTS: "-Xms256m -Xmx256m"
-      EUREKA_SERVER: "registry:8761"
+      JVM_OPTS: "-Xmx300m"
+      CONSUL_HOST: "consul"
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
@@ -103,6 +128,7 @@ networks:
   cloud-oj:
     driver: bridge
 volumes:
+  consul:
   mariadb:
   rabbitmq:
   log:

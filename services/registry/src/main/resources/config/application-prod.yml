@@ -1,8 +1,0 @@
-eureka:
-  environment: prod
-logging:
-  level:
-    root: warn
-    cloud.oj: info
-  file:
-    name: /tmp/cloud-oj/${spring.application.name}.log

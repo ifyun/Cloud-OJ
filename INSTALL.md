@@ -38,6 +38,12 @@
 sudo supervidsord -c /etc/cloud-oj/supervisord.conf
 ```
 
+完整的语言支持需要安装以下软件包：
+
+- [kotlin-compiler](https://github.com/JetBrains/kotlin/releases)
+- [mono-devel](https://www.mono-project.com/)
+- [go](https://go.dev/)
+
 ## Docker 运行
 
 安装 Docker 并构建镜像：

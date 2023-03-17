@@ -12,7 +12,7 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
   rabbitmq:
-    host: ${RABBIT_URL:127.0.0.1}
+    host: ${RABBIT_URL:localhost}
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:admin}
     password: ${RABBIT_PASSWORD:admin}
@@ -21,6 +21,12 @@ spring:
         acknowledge-mode: manual
   jackson:
     default-property-inclusion: non_null
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        query-passing: true
 management:
   endpoints:
     web:
@@ -29,15 +35,6 @@ management:
   endpoint:
     health:
       show-details: always
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${SERVICE_HOST:${spring.cloud.client.ip-address}}:${SERVICE_PORT:${server.port}}
-  client:
-    healthcheck:
-      enabled: true
-    service-url:
-      defaultZone: http://${EUREKA_SERVER:127.0.0.1:8761}/eureka/
 mybatis:
   configuration:
     map-underscore-to-camel-case: on

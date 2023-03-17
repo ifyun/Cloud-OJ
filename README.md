@@ -42,6 +42,7 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 ## Technologies
 
 - [Spring](https://spring.io/)
+- [Consul](https://www.consul.io/)
 - [MariaDB](https://mariadb.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Boost](https://www.boost.org/)
