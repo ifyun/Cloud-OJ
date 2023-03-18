@@ -67,12 +67,11 @@ docker-compose up -d
 
 | Service  | Port(s)     |
 |----------|-------------|
-| registry | 8761        |
 | gateway  | 8080        |
 | core     | 8180        |
 | storage  | 8280        |
 | judge    | 8380        |
-| mysql    | 3306        |
+| mariadb  | 3306        |
 | rabbitmq | 5672, 15672 |
 
 ## 开启 HTTPS
