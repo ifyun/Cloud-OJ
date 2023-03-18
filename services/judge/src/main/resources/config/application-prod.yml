@@ -1,9 +1,7 @@
 logging:
   level:
-    root: warn
+    root: info
     cloud.oj: info
-  file:
-    name: /tmp/cloud-oj/${spring.application.name}.log
 app:
   code-dir: /tmp/code/
   file-dir: /var/lib/cloud-oj/

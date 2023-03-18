@@ -27,7 +27,6 @@ services:
       - cloud-oj
     volumes:
       - "/var/lib/cloud-oj:/var/lib/cloud-oj"
-      - "log:/tmp/cloud-oj"
     environment:
       JVM_OPTS: "-Xmx100m"
       CONSUL_HOST: "consul"
@@ -43,8 +42,6 @@ services:
       - "rabbitmq"
     networks:
       - cloud-oj
-    volumes:
-      - "log:/tmp/cloud-oj"
     environment:
       JVM_OPTS: "-Xmx200m"
       CONSUL_HOST: "consul"
@@ -61,8 +58,6 @@ services:
       - "rabbitmq"
     networks:
       - cloud-oj
-    volumes:
-      - "log:/tmp/cloud-oj"
     environment:
       JVM_OPTS: "-Xmx200m"
       CONSUL_HOST: "consul"
@@ -81,7 +76,6 @@ services:
       - cloud-oj
     volumes:
       - "/var/lib/cloud-oj:/var/lib/cloud-oj"
-      - "log:/tmp/cloud-oj"
     environment:
       JVM_OPTS: "-Xmx300m"
       CONSUL_HOST: "consul"
@@ -131,4 +125,3 @@ volumes:
   consul:
   mariadb:
   rabbitmq:
-  log:
