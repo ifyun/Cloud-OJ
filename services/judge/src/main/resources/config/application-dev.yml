@@ -1,3 +1,9 @@
+spring:
+  cloud:
+    consul:
+      discovery:
+        heartbeat:
+          enabled: true
 logging:
   level:
     root: warn

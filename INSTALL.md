@@ -9,17 +9,44 @@
 - Node.js v18
 - Boost
 
-> 推荐使用 Debian(Ubuntu)、Fedora 发行版。
-
-可使用以下脚本安装环境：
-
-```bash
-./dev/install-env
-```
-
 ## 直接安装
 
-下载源码，在项目根目录运行：
+强烈建议使用 Docker 运行，无论是单机运行或是扩展服务都比较方便。
+
+### 安装构建环境
+
+Debian 系列：
+
+```bash
+curl -sL https://deb.nodesource.com/setup_lts.x | sudo bash -
+sudo apt-get update
+sudo apt-get install -y \
+  build-essential \
+  cmake \
+  libboost-iostreams-dev \
+  libboost-program-options-dev \
+  maven \
+  openjdk-17-jdk-headless \
+  nodejs
+```
+
+Fedora 系列：
+
+```bash
+sudo dnf install -y \
+  gcc \
+  g++ \
+  cmake \
+  make \
+  boost-devel \
+  maven \
+  java-17-openjdk-devel \
+  nodejs
+```
+
+### Build & Install
+
+下载源码，运行：
 
 ```bash
 ./build install
@@ -38,21 +65,25 @@
 sudo supervidsord -c /etc/cloud-oj/supervisord.conf
 ```
 
-完整的语言支持需要安装以下软件包：
+完整的语言支持还需要安装以下软件包：
 
 - [kotlin-compiler](https://github.com/JetBrains/kotlin/releases)
 - [mono-devel](https://www.mono-project.com/)
 - [go](https://go.dev/)
 
+> 系统默认管理员账号和密码均为 `admin`。
+
 ## Docker 运行
 
-安装 Docker 并构建镜像：
+构建过程在容器中运行，你只需要安装好 Docker 即可。
+
+> 宿主机的 `~/.m2` 目录会映射到构建环境的容器中，你可以创建 `~/.m2/settings.xml` 来设置 Maven 中央仓库的镜像。
 
 ```bash
 ./build docker
 ```
 
-构建完成后，编排文件将复制到 `/usr/local/cloud-oj/docker` 目录。
+构建完成后，编排文件将复制到 `/usr/local/cloud-oj` 目录。
 
 运行：
 
@@ -95,3 +126,45 @@ environment:
 开启 HTTPS 后，80 端口会重定向到 443。
 
 若是直接安装，在 `/etc/cloud-oj/nginx.conf` 中配置。
+
+## 环境变量说明
+
+`TOKEN_VALID_TIME`
+
+- JWT 有效时间，默认值为 `4`，单位：小时
+- 服务：gateway
+
+`JUDGE_POOLE_SIZE`
+
+- 判题线程数量，默认值(最大值)为逻辑处理器数量，建议根据内存大小来设置
+- 服务：judge
+
+`FILE_SYNC`
+
+- 是否开启文件同步，当你扩展一个 judge 节点时，设置为 `true`
+- 服务：judge
+
+`API_HOST`
+
+- gateway 服务的地址 + 端口
+- 服务：web（仅容器使用）
+
+`JVM_OPTS`
+
+- Java 虚拟机参数，eg: -Xmx500m
+- 服务：全部（仅容器使用）
+
+`CONSUL_HOST`
+
+- Consul 注册中心的地址，默认为 `localhost`
+- 服务：全部
+
+`USE_IP`
+
+- 使用 IP 地址注册服务，默认值为 `false`
+- 服务：所有
+
+`SERVICE_IP`
+
+- `USE_IP` 为 `true` 时生效，可以指定该服务的 IP 地址，默认值为 `spring.cloud.client.ip-address`
+- 服务：所有

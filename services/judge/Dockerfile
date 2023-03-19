@@ -11,7 +11,7 @@ RUN curl -LJO \
     && unzip -d /usr/share kotlin-compiler-1.7.10.zip \
     && ln -s /usr/share/kotlinc/bin/kotlinc /usr/bin/kotlinc \
     && ln -s /usr/share/kotlinc/bin/kotlin /usr/bin/kotlin \
-    && rm kotlin-compiler-1.7.10.zip \
+    && rm kotlin-compiler-1.7.10.zip
 COPY ./entrypoint.sh /app/entrypoint.sh
 COPY ./target/lib/* /app/lib/
 COPY ./target/bin/* /usr/bin/

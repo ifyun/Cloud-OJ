@@ -18,7 +18,7 @@ services:
     volumes:
       - "consul:/consul/data"
   storage:
-    image: cloud-oj-storage
+    image: cloudoj-storage
     depends_on:
       - "consul"
       - "mariadb"
@@ -35,7 +35,7 @@ services:
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
   gateway:
-    image: cloud-oj-gateway
+    image: cloudoj-gateway
     depends_on:
       - "consul"
       - "mariadb"
@@ -51,7 +51,7 @@ services:
       DB_POOL_SIZE: 5
       TOKEN_VALID_TIME: 4
   core:
-    image: cloud-oj-core
+    image: cloudoj-core
     depends_on:
       - "consul"
       - "mariadb"
@@ -66,7 +66,7 @@ services:
       DB_PASSWORD: ${DB_PASSWD}
       DB_POOL_SIZE: 5
   judge:
-    image: cloud-oj-judge
+    image: cloudoj-judge
     privileged: true
     depends_on:
       - "consul"
@@ -89,7 +89,7 @@ services:
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
       JUDGE_POOL_SIZE: 0
   web:
-    image: cloud-oj-web
+    image: cloudoj-web
     networks:
       - cloud-oj
     ports:
@@ -97,11 +97,10 @@ services:
     environment:
       API_HOST: "gateway:8080"
   mariadb:
-    image: mariadb:latest
+    image: cloudoj-mariadb
     networks:
       - cloud-oj
     volumes:
-      - "./sql:/docker-entrypoint-initdb.d"
       - "mariadb:/var/lib/mysql"
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_PASSWD}

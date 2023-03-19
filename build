@@ -1,8 +1,5 @@
 #!/bin/bash
 set -e
-GREEN="\e[32m"
-RED="\e[31m"
-CLR="\e[0m"
 CONF_DIR="/etc/cloud-oj"
 DATA_DIR="/var/lib/cloud-oj"
 INSTALL_DIR="/usr/local/cloud-oj"
@@ -14,12 +11,25 @@ function has_command() {
   which "$1" &>/dev/null
 }
 
+function info() {
+  echo -e "\e[32m$1\e[0m"
+}
+
+function err() {
+  echo -e "\e[31m$1\e[0m"
+}
+
 # make sure working directory is correct
 cd "${WORKING_DIR}"
 
 # clean && exit
 if [ "$1" == "clean" ]; then
-  cd services && mvn clean && cd ..
+  if has_command mvn; then
+    cd services && mvn clean && cd ..
+  else
+    err "command 'mvn' not found."
+    exit 1
+  fi
   if [ -d "judge/cmake-build-debug" ]; then
     rm -r judge/cmake-build-debug
   fi
@@ -29,61 +39,61 @@ if [ "$1" == "clean" ]; then
   if [ -d "web/dist" ]; then
     rm -r web/dist
   fi
-  echo -e "${GREEN}CLEAN COMPLETE.${CLR}"
+  info "CLEAN COMPLETE."
+  cd "${ORIGINAL_DIR}"
+  exit 0
+fi
+
+# build docker images
+if [ "$1" == "docker" ]; then
+  docker build - -t build-env <Dockerfile
+  docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build
+  info "DOCKER BUILD START."
+  mkdir -p services/judge/target/bin
+  cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
+  docker build -t cloudoj-web web
+  docker build -t cloudoj-gateway services/gateway
+  docker build -t cloudoj-storage services/storage
+  docker build -t cloudoj-core services/core
+  docker build -t cloudoj-judge services/judge
+  docker build -t cloudoj-mariadb dev/sql
+  docker images | grep cloudoj
+  if [ ! -d "${INSTALL_DIR}/sql" ]; then
+    sudo cp -r dev/docker/* ${INSTALL_DIR}/
+  fi
+  info "DOCKER BUILD COMPLETE."
   cd "${ORIGINAL_DIR}"
   exit 0
 fi
 
 # build
-echo -e "${GREEN}BUILD START...${CLR}"
+info "BUILD START..."
 if cd judge && bash build; then
   cd ..
 else
   cd "${ORIGINAL_DIR}"
-  echo -e "${RED}CMAKE BUILD FAILED.${CLR}"
-  exit 1
-fi
-if cd web && npm install && npm run build; then
-  cd ..
-else
-  cd "${ORIGINAL_DIR}"
-  echo -e "${RED}NPM BUILD FAILED.${CLR}"
+  err "CMAKE BUILD FAILED."
   exit 1
 fi
 if cd services && mvn clean -B package '-Dmaven.test.skip=true'; then
   cd ..
 else
   cd "${ORIGINAL_DIR}"
-  echo -e "${RED}MAVEN BUILD FAILED.${CLR}"
+  err "MAVEN BUILD FAILED."
   exit 1
 fi
-echo -e "${GREEN}BUILD COMPLETE.${CLR}"
-
-# build docker images
-if [ "$1" == "docker" ]; then
-  echo -e "${GREEN}DOCKER BUILD...${CLR}"
-  mkdir services/judge/target/bin
-  cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
-  docker build -t cloudoj-web web
-  docker build -t cloudoj-registry services/registry
-  docker build -t cloudoj-gateway services/gateway
-  docker build -t cloudoj-storage services/storage
-  docker build -t cloudoj-core services/core
-  docker build -t cloudoj-judge services/judge
-  docker images | grep cloudoj
-  if [ ! -d "${INSTALL_DIR}/sql" ]; then
-    sudo mkdir -p ${INSTALL_DIR}/sql
-    sudo cp dev/sql/* ${INSTALL_DIR}/sql/
-    sudo cp -r dev/docker/* ${INSTALL_DIR}/
-  fi
-  echo -e "${GREEN}DOCKER BUILD COMPLETE.${CLR}"
+if cd web && npm install && npm run build; then
+  cd ..
+else
   cd "${ORIGINAL_DIR}"
-  exit 0
+  err "NPM BUILD FAILED."
+  exit 1
 fi
+info "BUILD COMPLETE."
 
 # install to /usr/local
 if [ "$1" == "install" ]; then
-  echo -e "${GREEN}INSTALL...${CLR}"
+  info "INSTALL TO LOCAL."
   sudo useradd judge || true
   sudo mkdir -p ${INSTALL_DIR}/web ${INSTALL_DIR}/bin ${INSTALL_DIR}/services/lib ${CONF_DIR} ${DATA_DIR}
   sudo chown judge ${DATA_DIR}
@@ -94,14 +104,12 @@ if [ "$1" == "install" ]; then
   # web and services
   sudo cp -r web/dist/* ${INSTALL_DIR}/web/
   sudo cp services/gateway/target/*.jar ${INSTALL_DIR}/services/gateway.jar
-  sudo cp services/registry/target/*.jar ${INSTALL_DIR}/services/registry.jar
   sudo cp services/storage/target/*.jar ${INSTALL_DIR}/services/storage.jar
   sudo cp services/core/target/*.jar ${INSTALL_DIR}/services/core.jar
   sudo cp services/judge/target/*.jar ${INSTALL_DIR}/services/judge.jar
   # dependencies
   sudo cp -rn \
     services/gateway/target/lib/* \
-    services/registry/target/lib/* \
     services/storage/target/lib/* \
     services/core/target/lib/* \
     services/judge/target/lib/* \
@@ -122,6 +130,6 @@ if [ "$1" == "install" ]; then
   # supervisor and nginx conf
   sudo cp -r dev/conf/*.conf ${CONF_DIR}/
   sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default
-  echo -e "${GREEN}INSTALL COMPLETE.${CLR}"
+  info "INSTALL COMPLETE."
 fi
 cd "${ORIGINAL_DIR}"
