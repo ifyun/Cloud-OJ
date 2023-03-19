@@ -1,4 +1,4 @@
-FROM openjdk:17-bullseye
+FROM openjdk:17-slim-bullseye
 # Install Golang
 RUN curl -LJO \
     https://go.dev/dl/go1.19.linux-amd64.tar.gz \
