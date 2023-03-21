@@ -13,8 +13,8 @@ class AuthApi {
    *
    * @param user {@link User}
    */
-  login(user: UsernamePassword): Promise<UserInfo> {
-    return new Promise<UserInfo>((resolve, reject) => {
+  login(user: UsernamePassword): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       axios({
         url: ApiPath.LOGIN,
         method: "POST",
@@ -24,7 +24,7 @@ class AuthApi {
         data: JSON.stringify(user)
       })
         .then((res) => {
-          resolve(res.data as UserInfo)
+          resolve(res.data)
         })
         .catch((error) => {
           reject(resolveError(error))

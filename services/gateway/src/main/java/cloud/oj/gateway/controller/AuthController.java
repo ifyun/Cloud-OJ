@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
@@ -64,13 +63,9 @@ public class AuthController {
         log.info("Update secret: [user: {}, success: {}]", userId, userDao.updateSecret(userId, newUUID()) == 1);
         user.setSecret(userDao.getSecret(userId));
         // 生成 JWT
-        var expireAt = new Date(System.currentTimeMillis() + tokenValidTime * 3600000L);
-        String jwt = JwtUtil.createJwt(userId, authoritiesString, expireAt, user.getSecret());
+        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime, user.getSecret());
 
-        user.setToken(jwt);
-        user.setExpire(expireAt);
-
-        return Mono.just(ResponseEntity.ok(user));
+        return Mono.just(ResponseEntity.ok(jwt));
     }
 
     /**

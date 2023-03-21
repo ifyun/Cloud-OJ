@@ -1,6 +1,5 @@
 package cloud.oj.gateway.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,15 +25,10 @@ public class User implements UserDetails {
 
     private String email;
 
-    private String token;
-
     private int roleId;
 
     @JsonIgnore
     private List<Role> roles;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date expire;
 
     @Override
     @JsonIgnore

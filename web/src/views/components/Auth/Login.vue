@@ -99,8 +99,8 @@ function login() {
     if (!errors) {
       loading.value = true
       AuthApi.login(user.value)
-        .then((data) => {
-          store.commit(Mutations.SAVE_TOKEN, data)
+        .then((token) => {
+          store.commit(Mutations.SAVE_TOKEN, token)
           if (store.state.userInfo.roleId == 1) {
             router.push({ path: "/" })
           } else {

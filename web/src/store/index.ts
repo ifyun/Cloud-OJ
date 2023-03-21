@@ -10,11 +10,20 @@ const TOKEN = "userToken"
 const theme = localStorage.getItem(THEME)
 const token = localStorage.getItem(TOKEN)
 
+function resolveToken(token: string): UserInfo {
+  const userInfo: UserInfo = JSON.parse(
+    decodeURIComponent(escape(window.atob(token.split(".")[1])))
+  )
+  userInfo.token = token
+  userInfo.userId = userInfo.sub
+  return userInfo
+}
+
 const store = createStore({
   state: {
     timezone: moment.tz.guess(),
     theme: theme === "dark" ? darkTheme : null,
-    userInfo: token == null ? null : (JSON.parse(token) as UserInfo),
+    userInfo: token == null ? null : resolveToken(token),
     reload: false,
     breadcrumb: null,
     menuCollapsed: false
@@ -29,9 +38,9 @@ const store = createStore({
         localStorage.removeItem(THEME)
       }
     },
-    [Mutations.SAVE_TOKEN](state: any, userInfo: UserInfo) {
-      localStorage.setItem(TOKEN, JSON.stringify(userInfo))
-      state.userInfo = userInfo
+    [Mutations.SAVE_TOKEN](state: any, token: string) {
+      localStorage.setItem(TOKEN, token)
+      state.userInfo = resolveToken(token)
     },
     [Mutations.CLEAR_TOKEN](state: any) {
       localStorage.removeItem(TOKEN)

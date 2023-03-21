@@ -1,5 +1,6 @@
 package cloud.oj.gateway.filter;
 
+import cloud.oj.gateway.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,12 +17,19 @@ public class JwtUtil {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public static String createJwt(String userId, Object authorities, Date expiration, String secret) {
+    public static String createJwt(User user, Object authorities, Integer validTime, String secret) {
+        var now = System.currentTimeMillis();
+        var expire = now + validTime * 3600000L;
+
         return Jwts.builder()
-                .claim("authorities", authorities)
                 .setIssuer("Cloud OJ")
-                .setSubject(userId)
-                .setExpiration(expiration)
+                .setSubject(user.getUserId())
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(expire))
+                .claim("name", user.getName())
+                .claim("email", user.getEmail())
+                .claim("roleId", user.getRoleId())
+                .claim("authorities", authorities)
                 .signWith(stringToSecretKey(secret))
                 .compact();
     }

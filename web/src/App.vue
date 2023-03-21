@@ -60,7 +60,7 @@ onMounted(() => {
       console.log(error)
       if (error.status === 401) {
         store.commit(Mutations.CLEAR_TOKEN)
-        router.push({ path: "/auth/login" })
+        router.push({ name: "auth", params: { tab: "login" } })
       }
     })
   }

@@ -117,7 +117,7 @@ function logoff() {
     })
     .finally(() => {
       store.commit(Mutations.CLEAR_TOKEN)
-      router.push({ name: "auth" })
+      router.push({ name: "auth", params: { tab: "login" } })
     })
 }
 

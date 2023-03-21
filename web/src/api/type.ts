@@ -28,8 +28,13 @@ export class User {
 export class UserInfo {
   userId?: string
   name?: string
+  email?: string
   token?: string
   roleId = 0
+
+  set sub(value: string) {
+    this.userId = value
+  }
 }
 
 export class ErrorMessage {
