@@ -48,7 +48,7 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
 
   return {
     Layout: {
-      headerColor: "#2b2d30"
+      headerColor: "#15171c"
     }
   }
 })

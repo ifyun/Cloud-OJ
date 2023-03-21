@@ -110,21 +110,6 @@ public class FileService {
         }
     }
 
-
-    public void writeFile(MultipartFile src, File dst) throws IOException {
-        if (!dst.exists() && !dst.mkdirs()) {
-            throw new IOException(String.format("无法创建目录, path: %s.", dst.getAbsolutePath()));
-        }
-
-        src.transferTo(dst);
-        log.info("文件已保存, path={}.", dst.getAbsolutePath());
-    }
-
-    public boolean delFile(String filePath) {
-        var file = new File(filePath);
-        return !file.exists() || file.delete();
-    }
-
     public void getFilesInfo(OutputStream os) {
         var dir = fileDir + "test_data";
         try (var files = Files.walk(Paths.get(dir), Integer.MAX_VALUE)) {

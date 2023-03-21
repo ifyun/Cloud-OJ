@@ -57,9 +57,10 @@ onMounted(() => {
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
     AuthApi.verify(store.state.userInfo).catch((error: ErrorMessage) => {
+      console.log(error)
       if (error.status === 401) {
         store.commit(Mutations.CLEAR_TOKEN)
-        router.push({ name: "auth" })
+        router.push({ path: "/auth/login" })
       }
     })
   }

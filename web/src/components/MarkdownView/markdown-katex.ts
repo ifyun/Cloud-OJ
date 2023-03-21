@@ -1,5 +1,5 @@
 import katex from "katex"
-import "katex/dist/katex.min.css"
+import "katex/dist/katex.css"
 
 /**
  * markdown-it KaTex 插件

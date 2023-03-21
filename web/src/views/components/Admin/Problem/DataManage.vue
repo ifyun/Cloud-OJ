@@ -18,9 +18,9 @@
           <n-upload
             action="/api/file/test_data"
             multiple
+            accept=".in,.out"
             :headers="headers"
             :data="uploadData"
-            accept=".in,.out"
             :disabled="disableUpload"
             @before-upload="beforeUpload"
             @finish="handleUploadFinish">

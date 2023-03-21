@@ -9,9 +9,19 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import { computed, nextTick, onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
+import {
+  NIcon,
+  NText,
+  NUpload,
+  NUploadDragger,
+  UploadFileInfo,
+  UploadInst,
+  useDialog
+} from "naive-ui"
+import { ArchiveRound as ArchiveIcon } from "@vicons/material"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ayu-dark.css"
@@ -24,6 +34,7 @@ import MarkdownToolbar from "./Toolbar.vue"
 import debounce from "lodash/debounce"
 
 const store = useStore()
+const dialog = useDialog()
 
 let cmEditor: Editor | null = null
 const cmOptions: EditorConfiguration = {
@@ -56,6 +67,16 @@ const emit = defineEmits<{
 }>()
 
 const theme = computed(() => store.state.theme)
+const fileCount = ref<number>(0)
+const uploaded = ref<boolean>(false)
+const uploadRef = ref<UploadInst | null>(null)
+
+const headers = computed(() => {
+  return {
+    userId: store.state.userInfo.userId,
+    token: store.state.userInfo.token
+  }
+})
 
 watch(
   () => props.readOnly,
@@ -127,6 +148,12 @@ function toolbarClick(key: string) {
       break
     case "ol":
       addSymbol("1. ", true)
+      break
+    case "img_link":
+      addImage(true)
+      break
+    case "img_upload":
+      addImage(false)
       break
     default:
       return
@@ -252,6 +279,56 @@ function addTable(cols: number, rows: number) {
   head.line += rows + 2
   cmEditor?.setCursor(head)
   cmEditor?.focus()
+}
+
+function addImage(link: boolean) {
+  if (link) {
+    addSymbol("![]()", true)
+    const head = cmEditor?.getCursor()!
+    head.ch -= 1
+    cmEditor?.setCursor(head)
+  } else {
+    uploaded.value = false
+    fileCount.value = 0
+    dialog.create({
+      title: "上传图片",
+      showIcon: false,
+      maskClosable: false,
+      autoFocus: false,
+      content: () => (
+        <NUpload
+          ref={uploadRef}
+          action="/api/file/image/problem"
+          headers={headers.value}
+          showRetryButton={false}
+          accept=".jpg,.png,.svg"
+          onChange={fileListChange}
+          onFinish={uploadFinish}>
+          <NUploadDragger>
+            <div style="margin-bottom: 12px">
+              <NIcon size="48" depth="3">
+                <ArchiveIcon />
+              </NIcon>
+            </div>
+            <NText>点击或者拖动文件到该区域来上传</NText>
+          </NUploadDragger>
+        </NUpload>
+      )
+    })
+  }
+}
+
+function fileListChange(options: { fileList: UploadFileInfo[] }) {
+  fileCount.value = options.fileList.length
+}
+
+function uploadFinish(options: {
+  file: UploadFileInfo
+  event?: ProgressEvent
+}) {
+  uploaded.value = true
+  let name = (options.event?.target as XMLHttpRequest).response
+  addSymbol(`![](/api/file/image/problem/${name})`, true)
 }
 </script>
 

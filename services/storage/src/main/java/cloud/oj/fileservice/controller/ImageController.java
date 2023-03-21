@@ -1,8 +1,6 @@
 package cloud.oj.fileservice.controller;
 
-import cloud.oj.fileservice.service.FileService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +19,6 @@ public class ImageController {
     @Value("${app.file-dir}")
     private String fileDir;
 
-    private final FileService fileService;
-
-    @Autowired
-    public ImageController(FileService fileService) {
-        this.fileService = fileService;
-    }
-
     /**
      * 上传头像
      */
@@ -37,7 +28,7 @@ public class ImageController {
         var avatar = new File(avatarDir + userId + ".png");
 
         try {
-            fileService.writeFile(file, avatar);
+            file.transferTo(avatar);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
             log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());
@@ -56,48 +47,25 @@ public class ImageController {
             return ResponseEntity.badRequest().build();
         }
 
-        var imageDir = fileDir + "image/problem/";
+        var dir = new File(fileDir + "image/problem/");
+
+        if (!dir.exists() && !dir.mkdirs()) {
+            log.error("无法创建目录 {}", dir.getAbsolutePath());
+            return ResponseEntity.status(500).body("无法创建目录.");
+        }
+
         var ext = originalName.substring(originalName.lastIndexOf("."));
         var fileName = UUID.randomUUID().toString()
                 .replaceAll("-", "")
                 .substring(15) + ext;
 
-        var image = new File(imageDir + fileName);
+        var image = new File(dir.getAbsolutePath() + "/" + fileName);
 
         try {
-            fileService.writeFile(file, image);
+            file.transferTo(image);
             return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
         } catch (IOException e) {
             log.error("上传题目图片失败, path: {}, error: {}", image.getAbsolutePath(), e.getMessage());
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @PostMapping(path = "logo")
-    public ResponseEntity<?> uploadLogo(@RequestParam MultipartFile file) {
-        var originalName = file.getOriginalFilename();
-
-        if (originalName == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        var dir = fileDir + "image/";
-        var logo = new File(dir + "favicon.png");
-
-        try {
-            fileService.writeFile(file, logo);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (IOException e) {
-            log.error("上传Logo失败, path: {}, error: {}", logo.getAbsolutePath(), e.getMessage());
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @DeleteMapping(path = "logo")
-    public ResponseEntity<?> deleteLogo() {
-        if (fileService.delFile(fileDir + "image/favicon.png")) {
-            return ResponseEntity.noContent().build();
-        } else {
             return ResponseEntity.status(500).build();
         }
     }
