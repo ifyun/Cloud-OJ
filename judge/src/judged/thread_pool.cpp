@@ -26,7 +26,7 @@ ThreadPool::ThreadPool(int size) {
         threads.push_back(std::move(th));
     }
 
-    INFO("create pool, size=%d", size);
+    INFO("pool(size=%d) created", size);
 }
 
 void ThreadPool::destroy() {
@@ -36,7 +36,7 @@ void ThreadPool::destroy() {
         th.join();
     }
 
-    INFO("all threads(%d) have exited", threads.size());
+    INFO("pool(size=%d) exit", threads.size());
 }
 
 void ThreadPool::push_task(ThreadArgs args) {
@@ -51,7 +51,7 @@ void ThreadPool::push_task(ThreadArgs args) {
 }
 
 void *ThreadPool::take_task(int i) {
-    thread_name("judge-" + std::to_string(i));
+    thread_name("JUDGE-" + std::to_string(i));
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
         // 队列为空时阻塞
@@ -128,7 +128,6 @@ void ThreadPool::exec(int &cfd, char *argv[]) {
         char buf[BUF_SIZE];
 
         waitpid(pid, &state, 0);
-        INFO("judge(fd=%d) exit: %d", cfd, state);
 
         if ((read_size = read(pip[0], buf, BUF_SIZE)) == -1) {
             char res[32];

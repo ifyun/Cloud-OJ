@@ -15,10 +15,9 @@ static inline void print_log(int type, const char *str) {
     time_now();
 
     if (type == 0) {
-        fprintf(stdout, "%s  INFO [%10s] %s.\n", TIME, thread_name().c_str(), str);
-        fflush(stdout);
+        fprintf(stdout, "%s  INFO [%10s] %s\n", TIME, thread_name().c_str(), str);
     } else {
-        fprintf(stderr, "%s ERROR [%10s] %s.\n", TIME, thread_name().c_str(), str);
+        fprintf(stderr, "%s ERROR [%10s] %s\n", TIME, thread_name().c_str(), str);
     }
 }
 

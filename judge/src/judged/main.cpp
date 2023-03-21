@@ -27,7 +27,7 @@ void sig_handler(int sig) {
         ERROR("%s", strerror(errno));
     } else if (sig == SIGINT || sig == SIGTERM) {
         // 处理 Ctrl + C 和 SIGTERM，关闭线程池并退出
-        INFO("\n%s", "stopping judged by SIGINT/SIGTERM");
+        INFO("%s", "stopped - SIGINT/SIGTERM");
         close(sfd);
         pool->destroy();
         delete pool;
@@ -78,7 +78,7 @@ int main() {
         exit(errno);
     }
 
-    INFO("judged start, listen %s", SV_SOCK_PATH);
+    INFO("started - listen %s", SV_SOCK_PATH);
 
     chmod(SV_SOCK_PATH, 0777);
     signal(SIGPIPE, sig_handler);
@@ -91,11 +91,11 @@ int main() {
         cfd = accept(sfd, nullptr, nullptr);
 
         if (cfd == -1) {
-            ERROR("%s", strerror(errno));
+            ERROR("accept: %s", strerror(errno));
+            pool->destroy();
             exit(errno);
         }
 
-        INFO("connected: socket=%d", cfd);
         pool->push_task(ThreadArgs(cfd));
     }
 }
