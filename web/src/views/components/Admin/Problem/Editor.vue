@@ -1,9 +1,7 @@
 <template>
   <div class="problem-editor">
-    <n-card
-      :bordered="false"
-      style="height: 100%"
-      content-style="height: 100%; display: flex; flex-direction: column">
+    <div
+      style="height: 100%; margin: 4px; display: flex; flex-direction: column">
       <n-page-header class="page-header" @back="back">
         <template #title>{{ title }}</template>
         <template #extra>
@@ -107,7 +105,7 @@
           </n-scrollbar>
         </div>
       </div>
-    </n-card>
+    </div>
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
     <n-drawer-content :native-scrollbar="false" body-content-style="padding: 0">
@@ -123,7 +121,6 @@ import { useStore } from "vuex"
 import {
   FormRules,
   NButton,
-  NCard,
   NDrawer,
   NDrawerContent,
   NDynamicTags,

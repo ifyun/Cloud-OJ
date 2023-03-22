@@ -2,7 +2,7 @@
   <div class="wrap">
     <error-result v-if="error != null" :error="error" />
     <empty-data v-else-if="noContent" style="margin-top: 48px" />
-    <n-card v-else :bordered="false">
+    <div v-else>
       <n-space vertical>
         <n-data-table
           size="small"
@@ -13,9 +13,10 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="rankings.count"
+          simple
           @update:page="pageChange" />
       </n-space>
-    </n-card>
+    </div>
   </div>
 </template>
 
@@ -24,7 +25,6 @@ import { computed, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
-  NCard,
   NDataTable,
   NPagination,
   NSpace,

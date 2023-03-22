@@ -2,7 +2,7 @@
   <div class="wrap">
     <error-result v-if="error != null" :error="error" />
     <empty-data v-else-if="noContent" style="margin-top: 48px" />
-    <n-card v-else :bordered="false">
+    <div v-else>
       <n-space vertical size="large">
         <n-data-table
           size="small"
@@ -13,11 +13,12 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="contests.count"
+          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
-    </n-card>
+    </div>
   </div>
 </template>
 
@@ -27,7 +28,6 @@ import { useRouter } from "vue-router"
 import {
   DataTableColumns,
   NButton,
-  NCard,
   NDataTable,
   NIcon,
   NPagination,

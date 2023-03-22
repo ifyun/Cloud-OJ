@@ -4,7 +4,7 @@
       v-if="error != null"
       :error="error"
       style="margin-top: 48px" />
-    <n-card v-else :bordered="false">
+    <div v-else>
       <n-space vertical size="large">
         <n-space align="center" justify="space-between">
           <n-space align="center">
@@ -59,11 +59,12 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="problems.count"
+          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
-    </n-card>
+    </div>
   </div>
   <n-dropdown
     trigger="manual"
@@ -84,7 +85,6 @@ import {
   DataTableColumns,
   NButton,
   NButtonGroup,
-  NCard,
   NDataTable,
   NDropdown,
   NFormItem,
@@ -98,7 +98,7 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { FileArchive as FileIcon, Tags as TagsIcon } from "@vicons/fa"
+import { FileArchive as FileIcon } from "@vicons/fa"
 import { Search as SearchIcon } from "@vicons/ionicons5"
 import {
   DeleteForeverRound as DelIcon,
@@ -210,15 +210,9 @@ const problemColumns: DataTableColumns<Problem> = [
     )
   },
   {
-    title: () => (
-      <NSpace size="small" justify="start" align="center">
-        <NIcon style="display: flex">
-          <TagsIcon />
-        </NIcon>
-        <span>分类</span>
-      </NSpace>
-    ),
+    title: "分类",
     key: "category",
+    align: "center",
     render: (row) => {
       if (row.category === "") {
         return ""
@@ -244,8 +238,9 @@ const problemColumns: DataTableColumns<Problem> = [
     render: (row) => (
       <NSwitch
         value={row.enable}
+        round={false}
         onUpdateValue={(value) => toggleIsEnable(row, value)}>
-        {{ checked: () => "开放", unchecked: () => "关闭" }}
+        {{ checked: () => "开放", unchecked: () => "禁用" }}
       </NSwitch>
     )
   }

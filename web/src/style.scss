@@ -1,6 +1,6 @@
 :root {
   --layout-padding: 12px;
-  --header-height: 56px;
+  --header-height: 57px;
   --primary-color: #18a058;
 }
 
@@ -11,17 +11,11 @@
   height: 100%;
 
   .header {
-    box-shadow: 0 1px 4px #00152914;
     z-index: 1;
   }
 
   .aside {
-    box-shadow: 2px 0 8px #1d23290d;
     z-index: 2;
-  }
-
-  div[class="n-card"] {
-    box-shadow: 2px 0 8px #1d23290d;
   }
 
   nav[class="n-breadcrumb"] {
@@ -33,14 +27,17 @@
   }
 
   .main {
-    &.submission,
+    &.submission {
+      min-height: 100%;
+    }
+
     &.admin {
       top: var(--header-height);
     }
 
     .wrap {
       width: 1100px;
-      padding: var(--layout-padding) 0;
+      padding: calc(var(--layout-padding) * 2) 0;
       margin: 0 auto;
     }
 

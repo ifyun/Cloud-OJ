@@ -1,6 +1,6 @@
 <template>
   <div v-if="error == null" class="wrap">
-    <n-card :bordered="false" :segmented="{ content: true }">
+    <div>
       <n-space vertical size="large">
         <n-space align="center">
           <n-skeleton v-if="contestState == null" round width="120" />
@@ -24,7 +24,7 @@
           :data="problems"
           :loading="loading" />
       </n-space>
-    </n-card>
+    </div>
   </div>
   <div v-else>
     <error-result :error="error" />
@@ -38,7 +38,6 @@ import { useRouter } from "vue-router"
 import {
   DataTableColumns,
   NButton,
-  NCard,
   NDataTable,
   NIcon,
   NSkeleton,

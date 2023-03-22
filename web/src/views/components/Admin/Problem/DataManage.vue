@@ -1,9 +1,6 @@
 <template>
   <div class="test-data-div">
-    <n-card
-      :bordered="false"
-      style="height: 100%"
-      content-style="height: 100%; display: flex; flex-direction: column">
+    <div style="margin: 4px">
       <n-page-header @back="back">
         <template #title>{{ title }}</template>
         <n-space vertical size="large">
@@ -40,7 +37,7 @@
           </n-upload>
         </n-space>
       </n-page-header>
-    </n-card>
+    </div>
   </div>
 </template>
 
@@ -52,7 +49,6 @@ import {
   DataTableColumns,
   NAlert,
   NButton,
-  NCard,
   NDataTable,
   NIcon,
   NP,

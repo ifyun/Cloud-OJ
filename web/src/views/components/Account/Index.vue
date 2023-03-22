@@ -1,6 +1,6 @@
 <template>
   <div style="width: 1100px; padding: var(--layout-padding) 0; margin: 0 auto">
-    <n-card :bordered="false">
+    <n-card>
       <template #cover>
         <user-profile :user-id="userId" style="padding: 12px 24px" />
       </template>

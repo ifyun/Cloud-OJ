@@ -4,7 +4,7 @@
       v-if="error != null"
       :error="error"
       style="margin-top: 48px" />
-    <n-card v-else :bordered="false">
+    <div v-else style="margin: 4px">
       <n-space vertical size="large">
         <n-space>
           <n-input-group>
@@ -35,11 +35,12 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="users.count"
+          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
-    </n-card>
+    </div>
   </div>
 </template>
 
@@ -50,7 +51,6 @@ import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
   NButton,
-  NCard,
   NDataTable,
   NIcon,
   NInput,

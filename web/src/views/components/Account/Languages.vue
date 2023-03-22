@@ -71,17 +71,20 @@ const data = computed<Array<LanguageItem>>(() => {
 .languages {
   display: flex;
   flex-direction: row;
-  height: 12px;
+  height: 10px;
 
   .language-bar {
+    margin-left: 1px;
+
     &:first-child {
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
+      margin-left: 0;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
     }
 
     &:last-child {
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
     }
   }
 }

@@ -1,6 +1,7 @@
 <template>
   <n-space vertical>
     <n-data-table
+      :bordered="false"
       :columns="columns"
       :data="solutions.data"
       :loading="pagination.loading" />
@@ -8,6 +9,7 @@
       v-model:page="pagination.page"
       :page-size="pagination.pageSize"
       :item-count="solutions.count"
+      simple
       @update:page="pageChange">
       <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
     </n-pagination>

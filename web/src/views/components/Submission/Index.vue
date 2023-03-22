@@ -1,9 +1,6 @@
 <template>
   <div class="submission">
-    <n-card
-      :bordered="false"
-      style="height: 100%"
-      content-style="overflow: hidden">
+    <n-card style="height: 100%" content-style="overflow: hidden">
       <Skeleton v-if="loading" />
       <ErrorResult v-else-if="!loading && error != null" :error="error" />
       <div v-else class="content">
@@ -198,14 +195,31 @@ function submit(data: SourceCode) {
   border-top: 1px solid #f7f7f7;
   border-right: 1px solid #f7f7f7;
   border-bottom: 1px solid #f7f7f7;
+
+  .CodeMirror-gutters {
+    border: none;
+  }
+}
+
+.cm-s-material-darker {
+  .CodeMirror-scroll {
+    background-color: #161b22;
+  }
+
+  .CodeMirror-gutter {
+    background-color: #161b22;
+  }
+
+  .CodeMirror-linenumber {
+    background-color: #161b22;
+  }
 }
 </style>
 
 <style scoped lang="scss">
 .submission {
   width: calc(100% - var(--layout-padding) * 2);
-  height: calc(100% - var(--header-height) - var(--layout-padding) * 2);
-  min-height: 720px;
+  min-height: 1000px;
   padding: var(--layout-padding);
 
   .content {

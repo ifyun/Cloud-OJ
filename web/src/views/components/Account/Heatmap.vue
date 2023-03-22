@@ -1,5 +1,7 @@
 <template>
-  <div id="heatmap" style="width: 100%; height: 210px"></div>
+  <div style="display: flex; justify-content: center">
+    <div id="heatmap" style="width: 800px; height: 180px" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -31,7 +33,7 @@ const light = {
     },
     splitLine: {
       lineStyle: {
-        color: "#000000"
+        color: "#EFEFF5"
       }
     }
   },
@@ -43,8 +45,8 @@ const light = {
 const dark = {
   calendar: {
     itemStyle: {
-      color: "#282930",
-      borderColor: "#18181C"
+      color: "#161b22",
+      borderColor: "#0d1117"
     },
     dayLabel: {
       color: "#FFFFFF"
@@ -57,7 +59,7 @@ const dark = {
     },
     splitLine: {
       lineStyle: {
-        color: "#FFFFFF"
+        color: "#21262D"
       }
     }
   },
@@ -81,10 +83,10 @@ let heatmap: EChartsType | null = null
 const option: ECOption = {
   calendar: {
     top: 24,
-    left: 120,
-    right: 70,
+    left: 50,
+    right: 0,
     range: props.year,
-    cellSize: ["auto", 16],
+    cellSize: ["auto", 14],
     dayLabel: {
       firstDay: 1,
       nameMap: "EN"
@@ -93,9 +95,9 @@ const option: ECOption = {
       show: true
     },
     splitLine: {
-      show: false,
+      show: true,
       lineStyle: {
-        width: 0.2
+        width: 0.5
       }
     },
     itemStyle: {

@@ -31,7 +31,7 @@ import {
   NMessageProvider,
   zhCN
 } from "naive-ui"
-import themeOverrides from "@/theme"
+import { themeOverrides } from "@/theme"
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { Mutations } from "@/store"

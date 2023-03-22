@@ -29,7 +29,7 @@ const routeName = computed(() => route.name?.toString())
 
 const navMenuOptions = [
   {
-    label: () => <RouterLink to={{ name: "problems" }}>练习</RouterLink>,
+    label: () => <RouterLink to={{ name: "problems" }}>题目</RouterLink>,
     key: "problems"
   },
   {

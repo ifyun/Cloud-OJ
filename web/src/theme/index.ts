@@ -41,4 +41,43 @@ const themeOverrides: GlobalThemeOverrides = {
   }
 }
 
-export default themeOverrides
+const themeOverridesDark: GlobalThemeOverrides = {
+  common: {
+    borderColor: "#21262DFF"
+  },
+  Layout: {
+    headerColor: "#161B22FF",
+    headerBorderColor: "#161B22FF",
+    siderColor: "#161B22FF",
+    color: "#0D1117FF"
+  },
+  Button: {
+    colorTertiary: "#161B22FF"
+  },
+  Input: {
+    color: "#161B22FF"
+  },
+  Card: {
+    color: "#00000000"
+  },
+  Drawer: {
+    color: "#0D1117FF"
+  },
+  Dropdown: {
+    color: "#161B22FF"
+  },
+  Table: {
+    thColor: "#161b22FF",
+    tdColor: "#00000000"
+  },
+  DataTable: {
+    thColor: "#161b22FF",
+    tdColor: "#00000000",
+    tdColorHover: "#161b22FF"
+  },
+  Transfer: {
+    listColor: "#161b22FF"
+  }
+}
+
+export { themeOverrides, themeOverridesDark }

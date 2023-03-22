@@ -1,5 +1,5 @@
 <template>
-  <n-switch v-model:value="isDarkTheme" size="small">
+  <n-switch v-model:value="isDarkTheme" size="small" :rail-style="railStyle">
     <template #checked>
       <n-icon color="#FCE100">
         <dark-icon />
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, CSSProperties } from "vue"
 import { useStore } from "vuex"
 import { NIcon, NSwitch } from "naive-ui"
 import { DarkModeRound as DarkIcon } from "@vicons/material"
@@ -30,4 +30,16 @@ const isDarkTheme = computed<boolean>({
     store.commit(Mutations.CHANGE_THEME, value ? "dark" : "light")
   }
 })
+
+function railStyle({ checked }: { checked: boolean }) {
+  const style: CSSProperties = { boxShadow: "none" }
+
+  if (checked) {
+    style.background = "#26292f"
+  } else {
+    style.background = "#dbdbdb"
+  }
+
+  return style
+}
 </script>

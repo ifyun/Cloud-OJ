@@ -152,7 +152,10 @@
   &.dark {
     @import "highlight.js/scss/github-dark";
 
-    background-color: #18181c;
+    --code-block-color: #161b22;
+    --code-line-color: #343942;
+    --table-header-color: #161b22;
+    --table-border-color: #21262d;
 
     h1,
     h2,
@@ -168,20 +171,20 @@
       border: 1px solid #26262a;
 
       thead {
-        background-color: #26262a;
+        background-color: var(--table-header-color);
       }
 
       td {
-        border-top: 1px solid #26262a;
+        border-top: 1px solid var(--table-border-color);
       }
     }
 
     p code {
-      background-color: #26262a;
+      background-color: var(--code-line-color);
     }
 
     pre {
-      background-color: #26262a;
+      background-color: var(--code-block-color);
 
       &.math-block {
         background-color: transparent;
@@ -193,7 +196,7 @@
     }
 
     .markdown-alert {
-      background-color: #26262a;
+      background-color: var(--code-block-color);
     }
   }
 }

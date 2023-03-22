@@ -1,71 +1,67 @@
 <template>
   <div class="contest-editor">
-    <n-card :bordered="false">
-      <n-page-header
-        class="page-header"
-        :subtitle="subtitle"
-        @back="router.back()">
-        <template #title>{{ title }}</template>
-        <template #extra>
-          <n-button
-            v-if="showSaveButton"
-            round
-            secondary
-            type="primary"
-            size="small"
-            @click="handleSave">
-            <template #icon>
-              <save-icon />
-            </template>
-            保存
-          </n-button>
-        </template>
-      </n-page-header>
-      <n-tabs type="line" default-value="base-info" @update:value="tabChange">
-        <n-tab-pane name="base-info" tab="竞赛设置">
-          <n-spin :show="loading">
-            <n-form
-              ref="contestForm"
-              label-placement="left"
-              :model="contest"
-              :rules="rules">
-              <n-grid :cols="2" x-gap="12">
-                <n-form-item-grid-item
-                  :span="1"
-                  label="竞赛名称"
-                  path="contestName">
-                  <n-input
-                    v-model:value="contest.contestName"
-                    maxlength="24"
-                    show-count
-                    clearable />
-                </n-form-item-grid-item>
-                <n-form-item-grid-item
-                  :span="1"
-                  label="时间范围"
-                  path="timeRange">
-                  <n-date-picker
-                    v-model:value="contest.timeRange"
-                    type="datetimerange"
-                    clearable
-                    format="yyyy/MM/dd - HH:mm:ss" />
-                </n-form-item-grid-item>
-              </n-grid>
-              <n-form-item label="语言限制" path="languages">
-                <n-transfer
-                  v-model:value="languages"
-                  source-title="可用语言"
-                  target-title="允许的语言"
-                  :options="languageOptions" />
-              </n-form-item>
-            </n-form>
-          </n-spin>
-        </n-tab-pane>
-        <n-tab-pane v-if="!create" name="problems" tab="题目管理">
-          <problem-manage :contest-id="contest.contestId" />
-        </n-tab-pane>
-      </n-tabs>
-    </n-card>
+    <n-page-header
+      class="page-header"
+      :subtitle="subtitle"
+      @back="router.back()">
+      <template #title>{{ title }}</template>
+      <template #extra>
+        <n-button
+          v-if="showSaveButton"
+          round
+          secondary
+          type="primary"
+          size="small"
+          @click="handleSave">
+          <template #icon>
+            <save-icon />
+          </template>
+          保存
+        </n-button>
+      </template>
+    </n-page-header>
+    <n-tabs type="line" default-value="base-info" @update:value="tabChange">
+      <n-tab-pane name="base-info" tab="竞赛设置">
+        <n-spin :show="loading">
+          <n-form
+            ref="contestForm"
+            label-placement="top"
+            :model="contest"
+            :rules="rules">
+            <n-grid :cols="2" x-gap="12">
+              <n-form-item-grid-item
+                :span="1"
+                label="竞赛名称"
+                path="contestName">
+                <n-input
+                  v-model:value="contest.contestName"
+                  maxlength="24"
+                  show-count
+                  clearable />
+              </n-form-item-grid-item>
+              <n-form-item-grid-item
+                :span="1"
+                label="时间范围"
+                path="timeRange">
+                <n-date-picker
+                  v-model:value="contest.timeRange"
+                  type="datetimerange"
+                  clearable
+                  format="yyyy/MM/dd - HH:mm:ss" />
+              </n-form-item-grid-item>
+            </n-grid>
+            <n-form-item label="语言限制" path="languages">
+              <n-transfer
+                v-model:value="languages"
+                :options="languageOptions" />
+            </n-form-item>
+          </n-form>
+        </n-spin>
+      </n-tab-pane>
+      <n-tab-pane v-if="!create" name="problems" tab="题目管理">
+        <problem-manage :contest-id="contest.contestId" />
+      </n-tab-pane>
+    </n-tabs>
   </div>
 </template>
 
@@ -76,7 +72,6 @@ import { useRoute, useRouter } from "vue-router"
 import {
   FormRules,
   NButton,
-  NCard,
   NDatePicker,
   NForm,
   NFormItem,
@@ -241,8 +236,6 @@ function save() {
 
 <style lang="scss">
 .contest-editor {
-  .n-transfer .n-transfer-list .n-transfer-list-body {
-    height: 320px;
-  }
+  margin: 4px;
 }
 </style>

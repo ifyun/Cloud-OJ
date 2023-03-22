@@ -1,60 +1,56 @@
 <template>
   <n-config-provider :hljs="highlightJs">
     <div class="help">
-      <n-card :bordered="false">
-        <n-h1>帮助文档</n-h1>
-        <n-h2>语言支持</n-h2>
-        <n-data-table :columns="languageColumns" :data="languageData" />
-        <n-h2>注意事项</n-h2>
-        <n-alert :bordered="false" type="warning" title="Java 特殊要求">
-          Java 的类名必须为 Solution，且不能使用 package 关键字！
-        </n-alert>
-        <n-alert
-          :bordered="false"
-          type="warning"
-          title="输入输出"
-          style="margin-top: 25px">
-          <ul>
-            <li>
-              你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容
-            </li>
-            <li>
-              你的程序必须从标准输入流(stdin)读取输入，并将结果输出到标准输出流(stdout)
-            </li>
-            <li>请确保：在所有内容全部输出后，末尾至少包含一个换行符</li>
-          </ul>
-        </n-alert>
-        <n-h2>判题相关</n-h2>
-        <n-data-table
-          :single-line="false"
-          :columns="judgeColumns"
-          :data="judgeData" />
-        <n-alert
-          :bordered="false"
-          type="info"
-          title="内存与时间限制"
-          style="margin-top: 25px">
-          <ul>
-            <li>对于内存和时间超限，仅超限的那一组测试点为 0 分</li>
-            <li>对于 Java/Kotlin/JavaScript 语言，内存限制按 2 倍计算</li>
-            <li>对于 Kotlin 语言，时间限制按 2 倍计算</li>
-          </ul>
-        </n-alert>
-        <n-h2>示例</n-h2>
-        <span>A + B</span>
-        <p>输入：在一行中给出两个数 A，B，以空格分隔，输出：A + B 的值。</p>
-        <n-h3>C++ 示例</n-h3>
-        <n-card>
-          <n-code language="cpp" :code="cppSample" />
-        </n-card>
-        <n-h3>Python 示例</n-h3>
-        <n-card>
-          <n-code language="py" :code="pySample" />
-        </n-card>
-        <n-h3>Java 示例</n-h3>
-        <n-card>
-          <n-code language="java" :code="javaSample" />
-        </n-card>
+      <n-h1 style="margin-bottom: 0">帮助文档</n-h1>
+      <n-h2>语言支持</n-h2>
+      <n-data-table :columns="languageColumns" :data="languageData" />
+      <n-h2>注意事项</n-h2>
+      <n-alert :bordered="false" type="warning" title="Java 特殊要求">
+        Java 的类名必须为 Solution，且不能使用 package 关键字！
+      </n-alert>
+      <n-alert
+        :bordered="false"
+        type="warning"
+        title="输入输出"
+        style="margin-top: 25px">
+        <ul>
+          <li>你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容</li>
+          <li>
+            你的程序必须从标准输入流(stdin)读取输入，并将结果输出到标准输出流(stdout)
+          </li>
+          <li>请确保：在所有内容全部输出后，末尾至少包含一个换行符</li>
+        </ul>
+      </n-alert>
+      <n-h2>判题相关</n-h2>
+      <n-data-table
+        :single-line="false"
+        :columns="judgeColumns"
+        :data="judgeData" />
+      <n-alert
+        :bordered="false"
+        type="info"
+        title="内存与时间限制"
+        style="margin-top: 25px">
+        <ul>
+          <li>对于内存和时间超限，仅超限的那一组测试点为 0 分</li>
+          <li>对于 Java/Kotlin/JavaScript 语言，内存限制按 2 倍计算</li>
+          <li>对于 Kotlin 语言，时间限制按 2 倍计算</li>
+        </ul>
+      </n-alert>
+      <n-h2>示例</n-h2>
+      <span>A + B</span>
+      <p>输入：在一行中给出两个数 A，B，以空格分隔，输出：A + B 的值。</p>
+      <n-h3>C++ 示例</n-h3>
+      <n-card>
+        <n-code language="cpp" :code="cppSample" />
+      </n-card>
+      <n-h3>Python 示例</n-h3>
+      <n-card>
+        <n-code language="py" :code="pySample" />
+      </n-card>
+      <n-h3>Java 示例</n-h3>
+      <n-card>
+        <n-code language="java" :code="javaSample" />
       </n-card>
     </div>
   </n-config-provider>

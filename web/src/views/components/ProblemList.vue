@@ -2,7 +2,7 @@
   <div class="wrap">
     <error-result v-if="error != null" :error="error" />
     <empty-data v-else-if="noContent" style="margin-top: 48px" />
-    <n-card v-else :bordered="false">
+    <div v-else>
       <n-space vertical size="large">
         <n-space align="center">
           <n-input-group>
@@ -26,7 +26,6 @@
         </n-space>
         <n-data-table
           size="small"
-          :bordered="false"
           :columns="problemColumns"
           :data="problems.data"
           :loading="loading" />
@@ -34,11 +33,12 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="problems.count"
+          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
       </n-space>
-    </n-card>
+    </div>
   </div>
 </template>
 
@@ -48,7 +48,6 @@ import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
   NButton,
-  NCard,
   NDataTable,
   NIcon,
   NInput,
@@ -113,6 +112,7 @@ const problemColumns: DataTableColumns<Problem> = [
   {
     title: "分类",
     key: "category",
+    align: "center",
     render: (row) => {
       if (row.category === "") {
         return ""
@@ -148,7 +148,7 @@ const noContent = computed<boolean>(
 )
 
 onBeforeMount(() => {
-  setTitle("练习")
+  setTitle("题目")
 
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)
