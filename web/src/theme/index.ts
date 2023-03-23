@@ -23,18 +23,6 @@ const themeOverrides: GlobalThemeOverrides = {
     errorColorPressed: "#DD6161FF",
     errorColorSuppl: "rgba(245, 108, 108, 1)"
   },
-  Button: {
-    textColorPrimary: "#FFFFFFE0",
-    textColorHoverPrimary: "#FFFFFFE0",
-    textColorSuccess: "#FFFFFFE0",
-    textColorHoverSuccess: "#FFFFFFE0",
-    textColorInfo: "#FFFFFFE0",
-    textColorHoverInfo: "#FFFFFFE0",
-    textColorWarning: "#FFFFFFE0",
-    textColorHoverWarning: "#FFFFFFE0",
-    textColorError: "#FFFFFFE0",
-    textColorHoverError: "#FFFFFFE0"
-  },
   Switch: {
     railColorActive: "#18A058FF",
     loadingColor: "#18A058FF"
@@ -49,10 +37,15 @@ const themeOverridesDark: GlobalThemeOverrides = {
     headerColor: "#161B22FF",
     headerBorderColor: "#161B22FF",
     siderColor: "#161B22FF",
+    siderBorderColor: "#161B22FF",
     color: "#0D1117FF"
   },
   Button: {
     colorTertiary: "#161B22FF"
+  },
+  Switch: {
+    railColorActive: "#18A058E0",
+    loadingColor: "#18A058E0"
   },
   Input: {
     color: "#161B22FF"

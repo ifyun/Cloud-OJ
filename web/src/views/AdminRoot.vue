@@ -9,7 +9,7 @@
         :native-scrollbar="false"
         :collapsed="collapsed">
         <div>
-          <logo :collapsed="collapsed" style="height: 50px" />
+          <logo :collapsed="collapsed" style="height: var(--header-height)" />
           <admin-navbar />
         </div>
       </n-layout-sider>
