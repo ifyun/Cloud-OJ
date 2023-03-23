@@ -3,42 +3,30 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.ProblemDao">
     <select id="getAll" resultMap="Map.Problem, Map.Total">
-        select sql_calc_found_rows p.problem_id,
-                                   p.title,
-                                   p.enable,
-                                   if(c.contest_name is not null,
-                                      concat_ws(',', c.contest_name, p.category),
-                                      p.category) as category,
-                                   p.score,
-                                   p.create_at
-        from problem p
-                 left join `contest-problem` cp on p.problem_id = cp.problem_id
-                 left join contest c on cp.contest_id = c.contest_id
+        select sql_calc_found_rows problem_id,
+                                   title,
+                                   enable,
+                                   category as category,
+                                   score,
+                                   create_at
+        from problem
         where if(#{keyword} is not null,
-                 title like concat(#{keyword}, '%')
-                     or find_in_set(#{keyword}, category)
-                     or c.contest_name like concat(#{keyword}, '%'),
+                 title like concat(#{keyword}, '%') or find_in_set(#{keyword}, category),
                  true)
         limit #{start}, #{limit};
         select found_rows()
     </select>
     <select id="getAllEnabled" resultMap="Map.Problem, Map.Total">
-        select sql_calc_found_rows p.problem_id,
-                                   p.title,
-                                   p.enable,
-                                   if(c.contest_name is not null,
-                                      concat_ws(',', c.contest_name, p.category),
-                                      p.category) as category,
-                                   p.score,
-                                   p.create_at
-        from problem p
-                 left join `contest-problem` cp on p.problem_id = cp.problem_id
-                 left join contest c on cp.contest_id = c.contest_id and p.enable = true
+        select sql_calc_found_rows problem_id,
+                                   title,
+                                   enable,
+                                   category,
+                                   score,
+                                   create_at
+        from problem
         where if(#{keyword} is not null,
-                 p.enable = true and title like concat(#{keyword}, '%')
-                     or find_in_set(#{keyword}, category)
-                     or c.contest_name like concat(#{keyword}, '%'),
-                 p.enable = true)
+                 enable = true and title like concat(#{keyword}, '%') or find_in_set(#{keyword}, category),
+                 enable = true)
         limit #{start}, #{limit};
         select found_rows()
     </select>
