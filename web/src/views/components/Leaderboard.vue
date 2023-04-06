@@ -5,6 +5,7 @@
     <div v-else>
       <n-space vertical>
         <n-data-table
+          single-column
           size="small"
           :loading="loading"
           :columns="rankingColumns"
@@ -38,6 +39,15 @@ import EmptyData from "@/components/EmptyData.vue"
 
 const route = useRoute()
 const router = useRouter()
+
+const props = withDefaults(
+  defineProps<{
+    cid: string | null
+  }>(),
+  { cid: null }
+)
+
+let contestId: number | null = null
 
 const pagination = ref({
   page: 1,
@@ -99,13 +109,25 @@ const rankingColumns: DataTableColumns<Ranking> = [
 ]
 
 onBeforeMount(() => {
+  const reg = /^\d+$/
   setTitle("排名")
 
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)
   }
 
-  queryRankings()
+  if (props.cid == null || reg.test(props.cid)) {
+    contestId = Number(props.cid)
+    queryRankings()
+  } else {
+    error.value = {
+      status: 404,
+      error: "Not Found",
+      message: "找不到竞赛"
+    }
+
+    loading.value = false
+  }
 })
 
 function pageChange(page: number) {
@@ -115,7 +137,7 @@ function pageChange(page: number) {
 }
 
 function queryRankings() {
-  RankingApi.get(pagination.value.page, pagination.value.pageSize)
+  RankingApi.get(pagination.value.page, pagination.value.pageSize, contestId)
     .then((data) => {
       rankings.value = data
     })

@@ -4,10 +4,11 @@ import ApiPath from "./api-path"
 import axios from "axios"
 
 const RankingApi = {
-  get(page: number, limit: number): Promise<Page<Ranking>> {
+  get(page: number, limit: number, cid: number | null): Promise<Page<Ranking>> {
     return new Promise<Page<Ranking>>((resolve, reject) => {
       axios({
-        url: ApiPath.RANKING,
+        url:
+          cid == null ? ApiPath.RANKING : `${ApiPath.CONTEST_RANKING}/${cid}`,
         method: "GET",
         params: {
           page,

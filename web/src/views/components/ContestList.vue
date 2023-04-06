@@ -5,7 +5,6 @@
     <div v-else>
       <n-space vertical size="large">
         <n-data-table
-          size="small"
           :loading="loading"
           :columns="contestColumns"
           :data="contests.data" />
@@ -29,6 +28,7 @@ import {
   DataTableColumns,
   NButton,
   NDataTable,
+  NDropdown,
   NIcon,
   NPagination,
   NSpace,
@@ -43,7 +43,7 @@ import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import { LanguageNames } from "@/type"
 import EmptyData from "@/components/EmptyData.vue"
 
-const timeFmt = "yyyy/MM/DD HH:mm:ss"
+const timeFmt = "yyyy-MM-DD HH:mm"
 
 const router = useRouter()
 
@@ -55,6 +55,7 @@ const pagination = ref({
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
 
+const selectedContest = ref<Contest | null>(null)
 const contests = ref<Page<Contest>>({
   data: [],
   count: 0
@@ -90,16 +91,16 @@ const contestColumns: DataTableColumns<Contest> = [
     title: "竞赛",
     key: "contest",
     render: (row) => (
-      <NButton
-        text
-        onClick={() =>
-          router.push({
-            name: "contest_problems",
-            params: { cid: row.contestId }
-          })
-        }>
-        {row.contestName}
-      </NButton>
+      <NDropdown
+        showArrow
+        trigger="click"
+        placement="bottom-end"
+        options={options}
+        onSelect={handleSelect}>
+        <NButton text onClick={() => (selectedContest.value = row)}>
+          {row.contestName}
+        </NButton>
+      </NDropdown>
     )
   },
   {
@@ -119,16 +120,21 @@ const contestColumns: DataTableColumns<Contest> = [
     }
   },
   {
-    title: "开始时间",
+    title: "开始/结束时间",
     key: "startAt",
-    width: 200,
-    render: (row) => <NText>{moment.unix(row.startAt!).format(timeFmt)}</NText>
+    align: "center",
+    render: (row) => <NText>{calcTimeRange(row)}</NText>
+  }
+]
+
+const options = [
+  {
+    label: "进入竞赛",
+    key: 1
   },
   {
-    title: "结束时间",
-    key: "endAt",
-    width: 200,
-    render: (row) => <NText>{moment.unix(row.endAt!).format(timeFmt)}</NText>
+    label: "查看排名",
+    key: 2
   }
 ]
 
@@ -154,5 +160,33 @@ function queryContests() {
     .finally(() => {
       loading.value = false
     })
+}
+
+function handleSelect(key: number) {
+  if (key === 1) {
+    router.push({
+      name: "contest_problems",
+      params: { cid: selectedContest.value?.contestId }
+    })
+  } else if (key === 2) {
+    router.push({
+      name: "leaderboard",
+      query: { cid: selectedContest.value?.contestId }
+    })
+  }
+}
+
+function calcTimeRange(c: Contest): string {
+  const s = moment.unix(c.startAt!)
+  const e = moment.unix(c.endAt!)
+  let str = s.format(timeFmt) + " ~ "
+
+  if (e.isSame(s)) {
+    str += e.format("HH:mm:ss")
+  } else {
+    str += e.format(timeFmt)
+  }
+
+  return str
 }
 </script>

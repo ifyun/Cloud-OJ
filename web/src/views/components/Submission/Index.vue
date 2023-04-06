@@ -1,8 +1,8 @@
 <template>
   <div class="submission">
-    <n-card style="height: 100%" content-style="overflow: hidden">
+    <n-card style="height: 100%">
       <Skeleton v-if="loading" />
-      <ErrorResult v-else-if="!loading && error != null" :error="error" />
+      <error-result v-else-if="!loading && error != null" :error="error" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
@@ -124,6 +124,7 @@ onBeforeMount(() => {
   } else {
     error.value = {
       status: 404,
+      error: "Not Found",
       message: "找不到题目"
     }
 

@@ -25,7 +25,7 @@
           </n-tag>
         </n-space>
         <n-data-table
-          size="small"
+          single-column
           :columns="problemColumns"
           :data="problems.data"
           :loading="loading" />

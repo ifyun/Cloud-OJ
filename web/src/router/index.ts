@@ -63,7 +63,10 @@ const router = createRouter({
         {
           path: "/leaderboard",
           name: "leaderboard",
-          component: Leaderboard
+          component: Leaderboard,
+          props: (route) => ({
+            cid: route.query.cid
+          })
         },
         {
           path: "/submission/:pid",

@@ -64,6 +64,7 @@ const themeOverridesDark: GlobalThemeOverrides = {
     tdColor: "#00000000"
   },
   DataTable: {
+    borderColor: "#161b22FF",
     thColor: "#161b22FF",
     tdColor: "#00000000",
     tdColorHover: "#161b22FF"

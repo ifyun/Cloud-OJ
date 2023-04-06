@@ -1,7 +1,7 @@
 <template>
   <n-space vertical>
     <n-data-table
-      :bordered="false"
+      single-column
       :columns="columns"
       :data="solutions.data"
       :loading="pagination.loading" />
@@ -53,7 +53,7 @@ withDefaults(defineProps<{ problemId: string | null }>(), {
 
 const pagination = ref({
   page: 1,
-  pageSize: 15,
+  pageSize: 20,
   loading: true
 })
 

@@ -45,9 +45,10 @@
                 path="timeRange">
                 <n-date-picker
                   v-model:value="contest.timeRange"
+                  :is-time-disabled="isTimeDisabled"
                   type="datetimerange"
                   clearable
-                  format="yyyy/MM/dd - HH:mm:ss" />
+                  format="yyyy-MM-dd - HH:mm:ss" />
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="语言限制" path="languages">
@@ -85,6 +86,7 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
+import moment from "moment-timezone"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import { ContestApi } from "@/api/request"
@@ -218,6 +220,12 @@ function save() {
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
     })
+}
+
+function isTimeDisabled(ts: number) {
+  return {
+    isSecondDisabled: () => moment.unix(ts).second() !== 0
+  }
 }
 </script>
 

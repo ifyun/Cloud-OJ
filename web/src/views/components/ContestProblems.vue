@@ -19,7 +19,7 @@
           <n-text v-else strong>{{ contest.contestName }}</n-text>
         </n-space>
         <n-data-table
-          size="small"
+          single-column
           :columns="columns"
           :data="problems"
           :loading="loading" />
@@ -111,6 +111,14 @@ onBeforeMount(() => {
   const reg = /^\d+$/
   if (reg.test(props.cid)) {
     queryContest(Number(props.cid))
+  } else {
+    error.value = {
+      status: 404,
+      error: "Not Found",
+      message: "找不到竞赛"
+    }
+
+    loading.value = false
   }
 })
 

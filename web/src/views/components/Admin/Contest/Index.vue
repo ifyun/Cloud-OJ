@@ -73,7 +73,7 @@ import { LanguageOptions } from "@/type"
 import { ContestApi } from "@/api/request"
 import Mutations from "@/store/mutations"
 
-const timeFmt = "yyyy-MM-DD HH:mm:ss"
+const timeFmt = "yyyy-MM-DD HH:mm"
 
 let selectedId: number | undefined
 
@@ -173,16 +173,10 @@ const contestColumns: DataTableColumns<Contest> = [
     }
   },
   {
-    title: "开始时间",
+    title: "开始/结束时间",
     key: "startAt",
-    width: 200,
-    render: (row) => <NText>{moment.unix(row.startAt!).format(timeFmt)}</NText>
-  },
-  {
-    title: "结束时间",
-    key: "endAt",
-    width: 200,
-    render: (row) => <NText>{moment.unix(row.endAt!).format(timeFmt)}</NText>
+    align: "center",
+    render: (row) => <NText>{calcTimeRange(row)}</NText>
   }
 ]
 // endregion
@@ -234,5 +228,19 @@ function queryContests() {
     .finally(() => {
       loading.value = false
     })
+}
+
+function calcTimeRange(c: Contest): string {
+  const s = moment.unix(c.startAt!)
+  const e = moment.unix(c.endAt!)
+  let str = s.format(timeFmt) + " ~ "
+
+  if (e.isSame(s)) {
+    str += e.format("HH:mm:ss")
+  } else {
+    str += e.format(timeFmt)
+  }
+
+  return str
 }
 </script>
