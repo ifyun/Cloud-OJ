@@ -22,6 +22,7 @@ OJ 判题程序。
 ```bash
 sudo ./build install
 ```
+
 - 可执行文件将被复制到 `/opt/cloud-oj/bin` 目录
 - 同时会在 `/usr/bin` 目录创建符号链接
 
@@ -40,6 +41,20 @@ judge <options>
 - `--data`: 测试数据目录，包含 `*.in`、 `*.out` 文件
 - `--cpu`: CPU 核心编号
 - `--help`: 显示帮助
+
+`--lang` 取值：
+
+| 参数 | 语言         |
+|----|------------|
+| 0  | C          |
+| 1  | C++        |
+| 2  | Java       |
+| 3  | Python     |
+| 4  | Bash       |
+| 5  | C#         |
+| 6  | JavaScript |
+| 7  | Kotlin     |
+| 8  | Go         |
 
 ### 示例
 
@@ -69,11 +84,6 @@ judge -c java@-Xms16m@-Xmx64m@Solution \
 
 - 用户的输出保存在工作目录的 `*.out`
 - 判题结果保存在工作目录的 `result.json` 并打印到标准输出流
-
-若判题发生错误，错误信息会打印到标准错误流，若没有任何输出，可以通过 `echo $?` 查看返回值：
-
-- 返回 1 表示用户程序出现了错误
-- 返回 -1 表示判题程序出现了错误
 
 `result.json` 示例:
 

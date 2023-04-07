@@ -18,12 +18,12 @@ Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &
     split(this->argv, cmd, "@");
     this->work_dir = work_dir;
     this->data_dir = data_dir;
-    this->syscall_checker = new SyscallChecker(language);
+    this->syscall_rule = new SyscallRule(language);
     this->config = config;
 }
 
 Runner::~Runner() {
-    delete this->syscall_checker;
+    delete this->syscall_rule;
     close(config.in);
     close(config.out);
 }
@@ -82,12 +82,12 @@ Result Runner::watch_result(pid_t pid) {
     struct Result res{.memUsed = 0};
 
     while (wait4(pid, &status, 0, &ru) > 0) {
-        // 检查系统调用
         int syscall_number;
         struct user_regs_struct regs{};
         ptrace(PTRACE_GETREGS, pid, 0, &regs);
 
-        if ((syscall_number = syscall_checker->check(&regs)) != 0) {
+        // ? 检查系统调用
+        if ((syscall_number = syscall_rule->check(&regs)) != 0) {
             kill(pid, SIGSYS);
         }
 
@@ -97,13 +97,15 @@ Result Runner::watch_result(pid_t pid) {
             kill(pid, SIGUSR1);
         }
 
-        res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000 +
-                       (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec) / 1000;
+        res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000 +
+                       (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
         int stop_signal;
-        if (WIFSTOPPED(status) && (stop_signal = WSTOPSIG(status)) != SIGTRAP) {
-            // 子进程暂停(忽略 ptrace 产生的 SIGTRAP 信号)
-            // 这个分支必须有 return 或 exit，否则会进入死循环
+        if (WIFSTOPPED(status) && (stop_signal = WSTOPSIG(status)) != SIGTRAP && stop_signal != SIGURG) {
+            // ? 子进程暂停
+            // * 忽略 ptrace 产生的 SIGTRAP 信号
+            // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
+            // ! 这个分支必须有 return 或 exit，否则会进入死循环
             switch (stop_signal) {
                 case SIGUSR1:
                     res.status = MLE;
@@ -121,12 +123,12 @@ Result Runner::watch_result(pid_t pid) {
                     res.code = RUNTIME_ERROR;
                     return res;
                 default:
-                    sprintf(res.err, "程序停止(SIGNAL: %d)", stop_signal);
+                    sprintf(res.err, "程序停止(SIGNAL: %s)", strsignal(stop_signal));
                     res.code = RUNTIME_ERROR;
                     return res;
             }
         } else if (WIFSIGNALED(status)) {
-            // 子进程终止
+            // ? 子进程收到信号终止
             auto signal = WTERMSIG(status);
             switch (signal) {
                 case SIGUSR1:
@@ -152,18 +154,19 @@ Result Runner::watch_result(pid_t pid) {
                     return res;
             }
         } else if (WIFEXITED(status)) {
-            // 子进程退出
+            // ? 子进程退出
+            auto exit_code = WEXITSTATUS(status);
+
             if (res.timeUsed > config.timeout) {
                 res.status = TLE;
-            } else if (WEXITSTATUS(status) != 0) {
+            } else if (exit_code != 0) {
                 sprintf(res.err, "非零退出");
-                res.code = WEXITSTATUS(status);
+                res.code = exit_code;
                 return res;
             } else {
                 res.status = Utils::diff(config.out_path, config.expect_path) ? WA : AC;
             }
         } else {
-            // 跟踪系统调用
             ptrace(PTRACE_SYSCALL, pid, 0, 0);
         }
     }
@@ -172,7 +175,6 @@ Result Runner::watch_result(pid_t pid) {
 }
 
 Result Runner::run() {
-    // create sandbox
     if (chdir(work_dir) != 0) {
         Result res = {.status=JUDGE_ERROR};
         sprintf(res.err, "chdir: %s", strerror(errno));
@@ -226,8 +228,9 @@ RTN Runner::judge() {
     setup_env(work_dir);
 
     try {
-        input_files = Utils::get_files(data_dir, "in");       // 获取输入数据
-        output_files = Utils::get_files(data_dir, "out");     // 获取输出数据
+        // * 获取测试数据
+        input_files = Utils::get_files(data_dir, "in");
+        output_files = Utils::get_files(data_dir, "out");
     } catch (const std::invalid_argument &error) {
         rtn = {JUDGE_ERROR, error.what()};
         goto exit;
@@ -255,7 +258,7 @@ RTN Runner::judge() {
             results.push_back(res);
         }
     } else if (!output_files.empty()) {
-        // 没有输入数据，读取第一个 .out 文件
+        // * 没有输入数据，读取第一个 .out 文件
         strcpy(config.expect_path, output_files[0].c_str());
         sprintf(config.out_path, "%s/%s", work_dir, "1.out");
         config.in = open("/dev/null", O_RDONLY, 0644);

@@ -12,7 +12,7 @@ int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char 
     desc.add_options()
             ("help,h", "显示此信息")
             ("cmd,c", po::value<std::string>(&_cmd), "命令(空格用 '@' 表示)")
-            ("lang,l", po::value<int>(&lang), "语言: 0.C 1.C++ 2.Java 3.Python 4.Bash 5.C# 6.JS 7.Kotlin 8.Go")
+            ("lang,l", po::value<int>(&lang), "语言")
             ("time,t", po::value<long>(&config.timeout), "时间限制(ms)")
             ("ram,m", po::value<long>(&config.memory), "内存限制(MB)")
             ("output,o", po::value<long>(&config.output_size), "输出限制(MB)")
@@ -33,6 +33,7 @@ int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char 
         strcpy(cmd, _cmd.c_str());
         strcpy(workdir, _workdir.c_str());
         strcpy(datadir, _datadir.c_str());
+        config.timeout *= 1000;
         config.memory <<= 10;
         config.output_size <<= 10;
         return 0;

@@ -18,8 +18,6 @@ cmake -B ${build_dir} \
 
 if [ "$1" == "install" ]; then
   sudo cmake --build ${build_dir} --target all install
-  sudo ln -sf /usr/local/cloud-oj/bin/judge /usr/local/bin/judge
-  sudo ln -sf /usr/local/cloud-oj/bin/judged /usr/local/bin/judged
 else
   cmake --build ${build_dir} --target all
 fi

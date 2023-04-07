@@ -2,7 +2,7 @@
 #define RUNNER_H 1
 
 #include <string>
-#include "syscall_check.h"
+#include "syscall_rule.h"
 
 #define AC 0
 #define WA 1
@@ -21,11 +21,10 @@ void alarm_child(int sig);
  * 运行配置(资源限制和文件路径)
  */
 struct Config {
-    long timeout;           // 运行时间(ms)
+    long timeout;           // 运行时间(us)
     long memory;            // 内存限制，用于判断是否超出限制(MB)
     long output_size;       // 输出限制(MB)
     int cpu = 0;            // CPU 核心，将进程绑定到指定核心减少切换
-
     int in;                 // 输入文件 fd
     int out;                // 输出文件 fd(实际输出)
     char out_path[64];      // 输出文件路径(实际输出)
@@ -59,7 +58,7 @@ private:
     char *data_dir;             // 测试数据目录
     std::string tmp_data_dir;   // 沙盒环境中的测试数据目录
     Config config;
-    SyscallChecker *syscall_checker;
+    SyscallRule *syscall_rule;
 private:
     int set_cpu() const;
 

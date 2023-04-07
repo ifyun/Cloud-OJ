@@ -3,7 +3,7 @@ project(judge)
 
 set(CMAKE_CXX_STANDARD 14)
 set(Boost_USE_STATIC_LIBS ON)
-set(INSTALL_BINDIR /usr/local/cloud-oj/bin)
+set(INSTALL_BINDIR /usr/local/bin)
 
 find_package(
         Boost COMPONENTS iostreams program_options REQUIRED

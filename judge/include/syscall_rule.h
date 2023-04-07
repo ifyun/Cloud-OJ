@@ -1,10 +1,9 @@
-/// 系统调用检查工具类
+/// 系统调用规则过滤
 /// @author Cloud
-#ifndef SYSCALL_CHECKER_H
-#define SYSCALL_CHECKER_H 1
+#ifndef SYSCALL_RULE_H
+#define SYSCALL_RULE_H 1
 
 #include <sys/user.h>
-#include <set>
 
 #define C 0
 #define CPP 1
@@ -16,11 +15,12 @@
 #define KT 7
 #define GO 8
 
-class SyscallChecker {
+class SyscallRule {
 private:
-    std::set<int> *blacklist = nullptr;
+    // 系统调用白名单
+    int rules[335] = {0};
 public:
-    explicit SyscallChecker(int language);
+    explicit SyscallRule(int language);
 
     /**
      * 检查系统调用是否允许
@@ -30,4 +30,4 @@ public:
     int check(struct user_regs_struct *regs);
 };
 
-#endif // SYSCALL_CHECKER_H
+#endif // SYSCALL_RULE_H
