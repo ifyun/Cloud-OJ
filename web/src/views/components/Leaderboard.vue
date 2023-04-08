@@ -116,7 +116,9 @@ onBeforeMount(() => {
     pagination.value.page = Number(route.query.page)
   }
 
-  if (props.cid == null || reg.test(props.cid)) {
+  if (props.cid == null) {
+    queryRankings()
+  } else if (reg.test(props.cid)) {
     contestId = Number(props.cid)
     queryRankings()
   } else {

@@ -125,10 +125,30 @@ const columns: DataTableColumns<JudgeResult> = [
         <NIcon color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText depth="1" style="margin-left: 6px">
+        <NText strong depth="1" style="margin-left: 6px">
           {LanguageNames[row.language!]}
         </NText>
       </div>
+    )
+  },
+  {
+    title: "运行时间",
+    key: "time",
+    align: "right",
+    render: (row) => (
+      <NText type="primary" strong>
+        {timeUsage(row.time!)}
+      </NText>
+    )
+  },
+  {
+    title: "内存占用",
+    key: "memory",
+    align: "right",
+    render: (row) => (
+      <NText type="info" strong>
+        {ramUsage(row.memory!)}
+      </NText>
     )
   },
   {
@@ -142,15 +162,15 @@ const columns: DataTableColumns<JudgeResult> = [
     width: "140",
     align: "right",
     render: (row) => (
-      <NTooltip trigger="hover" placement="left">
+      <NTooltip trigger="click" placement="left">
         {{
           trigger: () => (
             <NButton text={true}>
-              {moment.unix(row.submitTime!).format("YYYY-MM-DD")}
+              {moment.unix(row.submitTime!).format("YYYY/MM/DD")}
             </NButton>
           ),
           default: () => (
-            <NText italic={true}>
+            <NText italic={true} style="color: #ffffff">
               {moment.unix(row.submitTime!).format("HH:mm:ss")}
             </NText>
           )
@@ -180,5 +200,25 @@ function pageChange(page: number) {
   router.push({
     query: { tab: "solutions", page }
   })
+}
+
+function timeUsage(val: number): string {
+  if (val) {
+    return `${(val / 1000).toFixed(2)} ms`
+  }
+
+  return "-"
+}
+
+function ramUsage(val: number): string {
+  if (val) {
+    if (val >= 1024) {
+      return `${(val / 1024).toFixed(2)} MB`
+    } else {
+      return `${val} KB`
+    }
+  }
+
+  return "-"
 }
 </script>

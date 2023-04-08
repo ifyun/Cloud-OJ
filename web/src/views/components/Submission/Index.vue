@@ -2,7 +2,7 @@
   <div class="submission">
     <n-card style="height: 100%">
       <Skeleton v-if="loading" />
-      <error-result v-else-if="!loading && error != null" :error="error" />
+      <error-result v-else-if="!loading && error != null" :error="error!" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
@@ -47,7 +47,7 @@
           </n-scrollbar>
         </div>
         <!-- 代码编辑器 -->
-        <div class="editor">
+        <div style="overflow: hidden">
           <code-editor
             :value="code"
             :available-languages="problem.languages"
@@ -76,9 +76,9 @@ import {
   NModal,
   NScrollbar,
   NSpace,
-  NTag,
   NTabPane,
   NTabs,
+  NTag,
   useMessage
 } from "naive-ui"
 import { HelpCircle } from "@vicons/ionicons5"

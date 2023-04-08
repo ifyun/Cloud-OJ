@@ -95,13 +95,15 @@ const pySample = `a, b = map(int, input().split())
 print(a + b)`
 
 const javaSample = `import java.util.*;
+import java.io.*;
 
 public class Solution {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        int a = input.nextInt();
-        int b = input.nextInt();
-        System.out.print(a + b);
+    public static void main(String[] args) throws Exception {
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        String[] nums = bi.readLine().split(" ");
+        int a = Integer.parseInt(nums[0]);
+        int b = Integer.parseInt(nums[1]);
+        System.out.println(a + b);
     }
 }
 `

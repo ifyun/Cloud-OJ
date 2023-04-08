@@ -4,7 +4,7 @@
     <n-result
       v-if="error != null"
       status="error"
-      :title="error.error"
+      :title="error.error!"
       :description="error.message">
       <template #footer>
         <n-button secondary size="small" type="primary" @click="retry">
@@ -18,7 +18,7 @@
       size="small"
       :status="result.status"
       :title="result.title"
-      :description="result.desc">
+      :description="result.desc!">
       <template v-if="showRetry" #footer>
         <n-button secondary size="small" type="primary" @click="retry">
           重新获取
@@ -57,7 +57,7 @@ class Result {
 
 const Cost = (r: JudgeResult) => {
   const { time, memory } = r
-  return `运行时间: ${time} ms，内存占用: ${memory} KB`
+  return `运行时间: ${(time! / 1000).toFixed(2)} ms，内存占用: ${memory} KB`
 }
 
 const store = useStore()

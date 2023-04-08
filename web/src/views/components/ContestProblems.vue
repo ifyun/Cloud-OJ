@@ -80,7 +80,7 @@ const columns: DataTableColumns<Problem> = [
     width: 70
   },
   {
-    title: "题目名称",
+    title: "题名",
     key: "title",
     render: (row) => (
       <NButton
