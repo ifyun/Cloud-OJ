@@ -21,8 +21,6 @@ public class AppConfig {
     @Resource
     private ApplicationContext applicationContext;
 
-    private boolean fileSync = false;
-
     private boolean autoCleanSolution = true;
 
     private int judgePoolSize = 0;

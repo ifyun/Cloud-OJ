@@ -10,7 +10,6 @@ logging:
     cloud.oj: debug
 app:
   code-dir: /tmp/code/
-  file-dir: /var/lib/cloud-oj-sync/
-  file-sync: true
+  file-dir: /var/lib/cloud-oj/
   auto-clean-solution: false
   judge-pool-size: 0

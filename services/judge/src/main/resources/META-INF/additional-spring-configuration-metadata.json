@@ -24,11 +24,6 @@
       "name": "app.auto-clean-solution",
       "type": "java.lang.Boolean",
       "description": "是否自动清理判题产生的代码文件."
-    },
-    {
-      "name": "app.file-sync",
-      "type": "java.lang.Boolean",
-      "description": "是否从文件服务同步测试数据."
     }
   ]
 }

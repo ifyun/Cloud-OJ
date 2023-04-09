@@ -139,11 +139,6 @@ environment:
 - 判题线程数量，默认值(最大值)为逻辑处理器数量，建议根据内存大小来设置
 - 服务：judge
 
-`FILE_SYNC`
-
-- 是否开启文件同步，当你扩展一个 judge 节点时，设置为 `true`
-- 服务：judge
-
 `API_HOST`
 
 - gateway 服务的地址 + 端口
