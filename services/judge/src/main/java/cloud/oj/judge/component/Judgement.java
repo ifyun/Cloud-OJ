@@ -190,6 +190,8 @@ public class Judgement {
             } else if (result.getCode() == IE) {
                 log.info("内部错误({}): {}", solution.getSolutionId(), result.getError());
                 throw new InternalError(result.getError());
+            } else {
+                runtime.setResult(0);
             }
         } catch (IOException | InternalError | UnsupportedLanguageError e) {
             log.info("内部错误({}): {}", solution.getSolutionId(), e.getMessage());
@@ -197,7 +199,6 @@ public class Judgement {
             runtime.setInfo(e.getMessage());
         }
 
-        runtime.setResult(0);
         runtimeDao.update(runtime);
         return result;
     }

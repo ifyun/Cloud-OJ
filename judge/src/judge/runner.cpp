@@ -160,8 +160,8 @@ Result Runner::watch_result(pid_t pid) {
             if (res.timeUsed > config.timeout) {
                 res.status = TLE;
             } else if (exit_code != 0) {
-                sprintf(res.err, "非零退出");
-                res.code = exit_code;
+                sprintf(res.err, "非零退出(%d)", exit_code);
+                res.code = RUNTIME_ERROR;
                 return res;
             } else {
                 res.status = Utils::diff(config.out_path, config.expect_path) ? WA : AC;
