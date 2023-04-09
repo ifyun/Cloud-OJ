@@ -244,9 +244,9 @@ SyscallRule::SyscallRule(int language) {
 
 int SyscallRule::check(struct user_regs_struct *regs) {
     int syscall_number = (int) regs->orig_rax;
-    // 不允许执行外部程序
-    if (syscall_number == SYS_execve && regs->rdi != 0) {
-        return syscall_number;
+
+    if (syscall_number < 0) {
+        return 0;
     }
 
     if (rules[syscall_number] != 1) {

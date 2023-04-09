@@ -60,8 +60,9 @@ inline void Runner::set_limit() const {
 
 inline int Runner::run_cmd() {
     set_limit();
-    dup2(config.in, fileno(stdin));
-    dup2(config.out, fileno(stdout));
+    dup2(config.in, STDIN_FILENO);
+    dup2(config.out, STDOUT_FILENO);
+    dup2(config.out, STDERR_FILENO);
     setuid(99);
     ptrace(PTRACE_TRACEME, 0, 0, 0);
 
@@ -83,6 +84,7 @@ Result Runner::watch_result(pid_t pid) {
 
     while (wait4(pid, &status, 0, &ru) > 0) {
         int syscall_number;
+        int stop_signal;
         struct user_regs_struct regs{};
         ptrace(PTRACE_GETREGS, pid, 0, &regs);
 
@@ -91,6 +93,7 @@ Result Runner::watch_result(pid_t pid) {
             kill(pid, SIGSYS);
         }
 
+        // * Code + Data + Stack
         res.memUsed = ru.ru_minflt * getpagesize() / 1024;
 
         if (res.memUsed > config.memory) {
@@ -100,22 +103,21 @@ Result Runner::watch_result(pid_t pid) {
         res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000 +
                        (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        int stop_signal;
         if (WIFSTOPPED(status) && (stop_signal = WSTOPSIG(status)) != SIGTRAP && stop_signal != SIGURG) {
-            // ? 子进程暂停
+            // ? 子进程停止
             // * 忽略 ptrace 产生的 SIGTRAP 信号
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
-            // ! 这个分支必须有 return 或 exit，否则会进入死循环
+            // ! 没有 return 会进入死循环
             switch (stop_signal) {
                 case SIGUSR1:
                     res.status = MLE;
                     return res;
                 case SIGALRM:
-                    sprintf(res.err, "SIGALRM(CPU Time: %dms)", (int) res.timeUsed);
+                    sprintf(res.err, "SIGALRM(CPU: %dms)", (int) res.timeUsed);
                     res.code = RUNTIME_ERROR;
                     return res;
                 case SIGSEGV:
-                    sprintf(res.err, "段错误.\n");
+                    sprintf(res.err, "段错误(SIGSEGV)");
                     res.code = RUNTIME_ERROR;
                     return res;
                 case SIGSYS:
@@ -123,11 +125,13 @@ Result Runner::watch_result(pid_t pid) {
                     res.code = RUNTIME_ERROR;
                     return res;
                 default:
-                    sprintf(res.err, "程序停止(SIGNAL: %s)", strsignal(stop_signal));
+                    sprintf(res.err, "程序停止(SIG%s)", strsignal(stop_signal));
                     res.code = RUNTIME_ERROR;
                     return res;
             }
-        } else if (WIFSIGNALED(status)) {
+        }
+
+        if (WIFSIGNALED(status)) {
             // ? 子进程收到信号终止
             auto signal = WTERMSIG(status);
             switch (signal) {
@@ -153,7 +157,9 @@ Result Runner::watch_result(pid_t pid) {
                     res.code = RUNTIME_ERROR;
                     return res;
             }
-        } else if (WIFEXITED(status)) {
+        }
+
+        if (WIFEXITED(status)) {
             // ? 子进程退出
             auto exit_code = WEXITSTATUS(status);
 
@@ -166,9 +172,9 @@ Result Runner::watch_result(pid_t pid) {
             } else {
                 res.status = Utils::diff(config.out_path, config.expect_path) ? WA : AC;
             }
-        } else {
-            ptrace(PTRACE_SYSCALL, pid, 0, 0);
         }
+
+        ptrace(PTRACE_SYSCALL, pid, 0, 0);
     }
 
     return res;
@@ -194,10 +200,10 @@ Result Runner::run() {
         _exit(run_cmd());
     } else {
         child_pid = pid;
-        fchdir(root_fd);
-        chroot(".");
         signal(SIGALRM, alarm_child);
         alarm(ALARM_SECONDS);
+        fchdir(root_fd);
+        chroot(".");
         Result result = watch_result(pid);
         alarm(0);
         return result;
