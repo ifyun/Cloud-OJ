@@ -1,4 +1,4 @@
-package cloud.oj.fileservice.entity;
+package cloud.oj.core.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -28,6 +28,8 @@ public class Problem {
 
     @SuppressWarnings("unused")
     public void setCreateAt(Date createAt) {
-        this.createAt = createAt.getTime() / 1000;
+        if (createAt != null) {
+            this.createAt = createAt.getTime() / 1000;
+        }
     }
 }

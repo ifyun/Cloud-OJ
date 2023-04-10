@@ -1,6 +1,6 @@
-package cloud.oj.fileservice.service;
+package cloud.oj.core.service;
 
-import cloud.oj.fileservice.entity.TestData;
+import cloud.oj.core.entity.TestData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -20,7 +21,7 @@ public class FileService {
     private String fileDir;
 
     public List<TestData> getTestData(Integer problemId) {
-        var files = new File(fileDir + "test_data/" + problemId).listFiles();
+        var files = new File(fileDir + "data/" + problemId).listFiles();
         var testDataList = new ArrayList<TestData>();
 
         if (files != null) {
@@ -43,7 +44,7 @@ public class FileService {
             return ResponseEntity.badRequest().body("未选择文件.");
         }
 
-        var testDataDir = fileDir + "test_data/";
+        var testDataDir = fileDir + "data/";
         var dir = new File(testDataDir + problemId);
 
         if (!dir.exists() && !dir.mkdirs()) {
@@ -74,7 +75,7 @@ public class FileService {
      * @param name      文件名
      */
     public ResponseEntity<?> deleteTestData(Integer problemId, String name) {
-        var testDataDir = fileDir + "test_data/";
+        var testDataDir = fileDir + "data/";
         var file = new File(testDataDir + problemId + "/" + name);
 
         if (file.exists()) {
@@ -88,6 +89,50 @@ public class FileService {
         } else {
             log.warn("文件 {} 不存在", file.getAbsolutePath());
             return ResponseEntity.status(HttpStatus.GONE).build();
+        }
+    }
+
+    /**
+     * 保存头像图片
+     */
+    public ResponseEntity<?> saveAvatar(String userId, MultipartFile file) {
+        var avatarDir = fileDir + "image/avatar/";
+        var avatar = new File(avatarDir + userId + ".png");
+
+        try {
+            file.transferTo(avatar);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (IOException e) {
+            log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    public ResponseEntity<?> saveProblemImage(MultipartFile file) {
+        var originalName = file.getOriginalFilename();
+
+        if (originalName == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        var dir = new File(fileDir + "image/problem/");
+
+        if (!dir.exists() && !dir.mkdirs()) {
+            log.error("无法创建目录 {}", dir.getAbsolutePath());
+            return ResponseEntity.status(500).body("无法创建目录.");
+        }
+
+        var ext = originalName.substring(originalName.lastIndexOf("."));
+        var fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
+
+        var image = new File(dir.getAbsolutePath() + "/" + fileName);
+
+        try {
+            file.transferTo(image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
+        } catch (IOException e) {
+            log.error("上传题目图片失败, path: {}, error: {}", image.getAbsolutePath(), e.getMessage());
+            return ResponseEntity.status(500).build();
         }
     }
 }

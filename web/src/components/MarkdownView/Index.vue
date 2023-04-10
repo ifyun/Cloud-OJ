@@ -6,6 +6,7 @@
 import { computed } from "vue"
 import { useStore } from "vuex"
 import MarkdownIt from "markdown-it"
+import { ImgPlugin } from "./markdown-img"
 import { KatexPlugin } from "./markdown-katex"
 import markdownItContainer from "markdown-it-container"
 import highlightJs from "highlight.js/lib/core"
@@ -37,6 +38,7 @@ const md = new MarkdownIt({
 })
 
 md.use(KatexPlugin)
+md.use(ImgPlugin)
 md.use(markdownItContainer, "info", {
   validate: (params: string) => {
     return params.trim() === "info"

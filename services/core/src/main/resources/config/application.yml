@@ -5,6 +5,10 @@ spring:
     active: dev
   application:
     name: core
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
   main:
     allow-circular-references: true
   datasource:
@@ -37,3 +41,5 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: on
   mapper-locations: classpath:mybatis/mapper/*.xml
+app:
+  file-dir: /var/lib/cloud-oj/

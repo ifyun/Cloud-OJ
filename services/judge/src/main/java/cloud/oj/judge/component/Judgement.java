@@ -170,7 +170,7 @@ public class Judgement {
         RunResult result = null;
 
         try {
-            var testDataDir = appConfig.getFileDir() + "test_data/" + solution.getProblemId();
+            var testDataDir = appConfig.getFileDir() + "data/" + solution.getProblemId();
             var argv = buildCommand(solution, limit, testDataDir);
             var buf = ByteBuffer.allocate(2048);
             var channel = SocketChannel.open(StandardProtocolFamily.UNIX);

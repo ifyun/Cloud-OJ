@@ -13,12 +13,12 @@
             文件中的换行符必须为 LF，不能使用 CRLF。
           </n-alert>
           <n-upload
-            action="/api/file/test_data"
             multiple
-            accept=".in,.out"
+            :action="action"
             :headers="headers"
             :data="uploadData"
             :disabled="disableUpload"
+            accept=".in,.out"
             @before-upload="beforeUpload"
             @finish="handleUploadFinish">
             <n-upload-dragger style="width: 100%">
@@ -68,8 +68,10 @@ import {
 } from "@vicons/material"
 import axios from "axios"
 import Mutations from "@/store/mutations"
-import { ProblemApi } from "@/api/request"
+import { ApiPath, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, TestData } from "@/api/type"
+
+const action = ApiPath.TEST_DATA
 
 const route = useRoute()
 const router = useRouter()
@@ -236,13 +238,13 @@ function back() {
   router.back()
 }
 
-async function beforeUpload(data: { file: UploadFileInfo }) {
-  const fileName = data.file.name as string
+async function beforeUpload(options: { file: UploadFileInfo }) {
+  const fileName = options.file.name
   return fileName.endsWith(".in") || fileName.endsWith(".out")
 }
 
-function handleUploadFinish({ file }: any) {
-  message.success(`${file.name} 已上传`)
+function handleUploadFinish(options: { file: UploadFileInfo }) {
+  message.success(`${options.file.name} 已上传`)
   queryData(problem.value!.problemId!)
 }
 

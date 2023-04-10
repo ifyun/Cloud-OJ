@@ -17,23 +17,6 @@ services:
       - "8500:8500"
     volumes:
       - "consul:/consul/data"
-  storage:
-    image: cloudoj-storage
-    depends_on:
-      - "consul"
-      - "mariadb"
-      - "rabbitmq"
-    networks:
-      - cloud-oj
-    volumes:
-      - "/var/lib/cloud-oj:/var/lib/cloud-oj"
-    environment:
-      JVM_OPTS: "-Xmx100m"
-      CONSUL_HOST: "consul"
-      RABBIT_URL: rabbitmq
-      RABBIT_PORT: ${RABBIT_PORT}
-      RABBIT_USER: ${RABBIT_USER}
-      RABBIT_PASSWORD: ${RABBIT_PASSWD}
   gateway:
     image: cloudoj-gateway
     depends_on:

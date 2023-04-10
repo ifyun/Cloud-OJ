@@ -45,12 +45,12 @@ public class AppConfig {
             judgePoolSize = cpuCores - 1;
         }
 
-        createDir(fileDir + "test_data");
+        createDir(fileDir + "data");
         createDir(codeDir);
 
         log.info("测试数据目录: {}", fileDir);
         log.info("临时代码目录: {}", codeDir);
-        log.info("JUDGE线程数: {}", judgePoolSize);
+        log.info("JUDGE线程数: {}", judgePoolSize + 1);
         log.info("自动删除判题产物: {}", autoCleanSolution);
     }
 

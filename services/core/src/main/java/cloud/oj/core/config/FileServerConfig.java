@@ -1,4 +1,4 @@
-package cloud.oj.fileservice.config;
+package cloud.oj.core.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -29,18 +29,18 @@ public class FileServerConfig extends WebMvcConfigurationSupport {
         }
 
         if (dir.mkdirs()) {
-            log.info("Create {} successful", fileDir);
+            log.info("创建目录: {}", fileDir);
         } else {
-            log.error("Failed to create {}", fileDir);
+            log.error("创建目录失败: {}", fileDir);
         }
     }
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/test_data/download/**")
+        registry.addResourceHandler("/file/data/download/**")
                 .addResourceLocations("file:" + fileDir + "test_data/");
         super.addResourceHandlers(registry);
-        registry.addResourceHandler("/image/**")
+        registry.addResourceHandler("/file/img/**")
                 .addResourceLocations("file:" + fileDir + "image/");
         super.addResourceHandlers(registry);
     }

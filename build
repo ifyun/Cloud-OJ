@@ -53,7 +53,6 @@ if [ "$1" == "docker" ]; then
   cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
   docker build -t cloudoj-web web
   docker build -t cloudoj-gateway services/gateway
-  docker build -t cloudoj-storage services/storage
   docker build -t cloudoj-core services/core
   docker build -t cloudoj-judge services/judge
   docker build -t cloudoj-mariadb dev/sql
@@ -104,13 +103,11 @@ if [ "$1" == "install" ]; then
   # web and services
   sudo cp -r web/dist/* ${INSTALL_DIR}/web/
   sudo cp services/gateway/target/*.jar ${INSTALL_DIR}/services/gateway.jar
-  sudo cp services/storage/target/*.jar ${INSTALL_DIR}/services/storage.jar
   sudo cp services/core/target/*.jar ${INSTALL_DIR}/services/core.jar
   sudo cp services/judge/target/*.jar ${INSTALL_DIR}/services/judge.jar
   # dependencies
   sudo cp -rn \
     services/gateway/target/lib/* \
-    services/storage/target/lib/* \
     services/core/target/lib/* \
     services/judge/target/lib/* \
     ${INSTALL_DIR}/services/lib/

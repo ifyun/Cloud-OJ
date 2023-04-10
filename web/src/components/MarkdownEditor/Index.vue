@@ -32,11 +32,14 @@ import "codemirror/addon/scroll/simplescrollbars"
 import "codemirror/mode/markdown/markdown.js"
 import MarkdownToolbar from "./Toolbar.vue"
 import debounce from "lodash/debounce"
+import { ApiPath } from "@/api/request"
+
+let cmEditor: Editor | null = null
+const action = ApiPath.PROBLEM_IMAGE
 
 const store = useStore()
 const dialog = useDialog()
 
-let cmEditor: Editor | null = null
 const cmOptions: EditorConfiguration = {
   mode: {
     name: "text/x-markdown",
@@ -298,7 +301,7 @@ function addImage(link: boolean) {
       content: () => (
         <NUpload
           ref={uploadRef}
-          action="/api/file/image/problem"
+          action={action}
           headers={headers.value}
           showRetryButton={false}
           accept=".jpg,.png,.svg"
@@ -328,7 +331,7 @@ function uploadFinish(options: {
 }) {
   uploaded.value = true
   let name = (options.event?.target as XMLHttpRequest).response
-  addSymbol(`![](/api/file/image/problem/${name})`, true)
+  addSymbol(`![](${name})`, true)
 }
 </script>
 

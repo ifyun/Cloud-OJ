@@ -11,7 +11,7 @@
 
 ## 直接安装
 
-强烈建议使用 Docker 运行，无论是单机运行或是扩展服务都比较方便。
+建议使用 Docker 运行，无论是单机运行或是扩展服务都比较方便。
 
 ### 安装构建环境
 
@@ -100,8 +100,7 @@ docker-compose up -d
 |----------|-------------|
 | gateway  | 8080        |
 | core     | 8180        |
-| storage  | 8280        |
-| judge    | 8380        |
+| judge    | 8280        |
 | mariadb  | 3306        |
 | rabbitmq | 5672, 15672 |
 
@@ -147,19 +146,15 @@ environment:
 `JVM_OPTS`
 
 - Java 虚拟机参数，eg: -Xmx500m
-- 服务：全部（仅容器使用）
 
 `CONSUL_HOST`
 
 - Consul 注册中心的地址，默认为 `localhost`
-- 服务：全部
 
 `USE_IP`
 
 - 使用 IP 地址注册服务，默认值为 `false`
-- 服务：所有
 
 `SERVICE_IP`
 
 - `USE_IP` 为 `true` 时生效，可以指定该服务的 IP 地址，默认值为 `spring.cloud.client.ip-address`
-- 服务：所有

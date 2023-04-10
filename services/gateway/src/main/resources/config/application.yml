@@ -41,12 +41,6 @@ spring:
             - StripPrefix=2
           predicates:
             - Path=/api/judge/**
-        - id: storage
-          uri: lb://storage
-          filters:
-            - StripPrefix=2
-          predicates:
-            - Path=/api/file/**
         - id: auth
           uri: lb://gateway
           filters:

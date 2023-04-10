@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue"
 import { NAvatar } from "naive-ui"
+import { ApiPath } from "@/api/request"
 
 const props = defineProps<{
   userId: string
@@ -21,7 +22,7 @@ const url = ref<string>("")
 watch(
   props,
   async (newValue) => {
-    url.value = `/api/file/image/avatar/${newValue.userId}.png`
+    url.value = `${ApiPath.AVATAR}/${newValue.userId}.png`
   },
   { immediate: true, deep: true }
 )
