@@ -57,8 +57,8 @@ if [ "$1" == "docker" ]; then
   docker build -t cloudoj-judge services/judge
   docker build -t cloudoj-mariadb dev/sql
   docker images | grep cloudoj
-  if [ ! -d "${INSTALL_DIR}/sql" ]; then
-    sudo cp -r dev/docker/* ${INSTALL_DIR}/
+  if [ ! -f "${INSTALL_DIR}/docker-compose.yml" ]; then
+    sudo cp -r docker/* ${INSTALL_DIR}/
   fi
   info "DOCKER BUILD COMPLETE."
   cd "${ORIGINAL_DIR}"

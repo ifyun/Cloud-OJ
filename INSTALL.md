@@ -106,7 +106,9 @@ docker-compose up -d
 
 ## 开启 HTTPS
 
-若是 Docker 安装，建立一个目录存放你的证书，在 `docker-compose.yml` 文件的 `web` 中加入：
+若是 Docker 安装，建立一个目录存放你的证书和私钥(`cert.pem`, `private.key`)
+
+修改编排文件的 `web` 部分：
 
 ```yaml
 ports:
@@ -118,8 +120,6 @@ environment:
   API_HOST: "gateway:8080"
   ENABLE_HTTPS: "true"
   EXTERNAL_URL: "你的域名/外部IP"
-  SSL_CERT: "ssl_cert.pem"
-  SSL_KEY: "ssl_key.key"
 ```
 
 开启 HTTPS 后，80 端口会重定向到 443。

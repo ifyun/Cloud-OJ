@@ -2,7 +2,7 @@
   <div class="submission">
     <n-card style="height: 100%">
       <Skeleton v-if="loading" />
-      <error-result v-else-if="!loading && error != null" :error="error!" />
+      <error-result v-else-if="!loading && error != null" :error="error" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
@@ -42,7 +42,12 @@
                   :content="problem.description"
                   style="margin-top: 12px" />
               </n-tab-pane>
-              <n-tab-pane name="提交记录"> 还没有做</n-tab-pane>
+              <n-tab-pane name="提交记录">
+                <n-h2 style="margin-bottom: 12px">
+                  {{ `${problem.problemId}.${problem.title}` }}
+                </n-h2>
+                <solution-single :problem-id="pid" />
+              </n-tab-pane>
             </n-tabs>
           </n-scrollbar>
         </div>
@@ -90,6 +95,7 @@ import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, SubmitData, UserInfo } from "@/api/type"
 import { SourceCode } from "@/type"
 import { setTitle } from "@/utils"
+import SolutionSingle from "./Solutions.vue"
 
 const store = useStore()
 const message = useMessage()
