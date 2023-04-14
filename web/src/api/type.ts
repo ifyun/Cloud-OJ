@@ -138,6 +138,10 @@ export class JudgeResult {
   time?: number
   memory?: number
   passRate?: number
+
+  passed?: number
+
+  total?: number
   errorInfo?: string
   submitTime?: number
 }
@@ -174,4 +178,12 @@ export class Overview {
     total: 0
   }
   activities: Array<Activity> = []
+}
+
+export class Settings {
+  icp?: string
+  icpUrl?: string
+  alwaysShowRanking?: boolean
+  showAllContest?: boolean
+  showPassedPoints?: boolean
 }

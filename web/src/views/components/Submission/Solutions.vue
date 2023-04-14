@@ -2,19 +2,9 @@
   <n-space vertical>
     <n-data-table
       single-column
-      size="small"
       :columns="columns"
       :data="solutions.data"
-      :loading="pagination.loading" />
-    <n-pagination
-      v-model:page="pagination.page"
-      simple
-      size="small"
-      :page-size="pagination.pageSize"
-      :item-count="solutions.count"
-      @update:page="pageChange">
-      <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
-    </n-pagination>
+      :loading="loading" />
   </n-space>
 </template>
 
@@ -27,10 +17,8 @@ export default {
 <script setup lang="tsx">
 import { computed, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
-  NPagination,
   NSpace,
   NDataTable,
   NButton,
@@ -47,19 +35,11 @@ import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
 import { timeUsage, ramUsage } from "@/utils"
 
 const store = useStore()
-const route = useRoute()
-const router = useRouter()
 
 const props = defineProps<{ problemId: string }>()
 
-const pagination = ref({
-  page: 1,
-  pageSize: 20,
-  loading: true
-})
-
 const userInfo = computed(() => store.state.userInfo)
-
+const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
 const solutions = ref<Page<JudgeResult>>({
   data: [],
@@ -155,27 +135,16 @@ const columns: DataTableColumns<JudgeResult> = [
 ]
 
 onBeforeMount(() => {
-  if (route.query.page) {
-    pagination.value.page = Number(route.query.page)
-  }
-
   querySolutions()
 })
 
 function querySolutions() {
-  pagination.value.loading = true
-  const { page, pageSize } = pagination.value
-  UserApi.getSolutions(page, pageSize, userInfo.value, {
+  loading.value = true
+  UserApi.getSolutions(1, 15, userInfo.value, {
     problemId: Number(props.problemId)
   })
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
-    .finally(() => (pagination.value.loading = false))
-}
-
-function pageChange(page: number) {
-  router.push({
-    query: { tab: "solutions", page }
-  })
+    .finally(() => (loading.value = false))
 }
 </script>

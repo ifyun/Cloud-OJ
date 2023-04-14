@@ -15,9 +15,12 @@ public class SolutionService {
 
     private final SolutionDao solutionDao;
 
+    private final SystemSettings settings;
+
     @Autowired
-    public SolutionService(SolutionDao solutionDao) {
+    public SolutionService(SolutionDao solutionDao, SystemSettings settings) {
         this.solutionDao = solutionDao;
+        this.settings = settings;
     }
 
     public List<List<?>> getSolutions(String userId, int page, int limit, Integer problemId, String title) {
@@ -36,7 +39,7 @@ public class SolutionService {
         JudgeResult result;
 
         while (count > 0) {
-            result = solutionDao.getSolutionById(solutionId);
+            result = solutionDao.getSolutionById(solutionId, settings.getSettings().isShowPassedPoints());
 
             if (result != null) {
                 return Optional.of(result);

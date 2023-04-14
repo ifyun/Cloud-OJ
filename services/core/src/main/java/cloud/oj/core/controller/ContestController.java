@@ -32,7 +32,7 @@ public class ContestController {
     @GetMapping
     public ResponseEntity<?> contests(Integer page, Integer limit) {
         PagedList contests;
-        if (systemSettings.getSettings().isShowNotStartedContest()) {
+        if (systemSettings.getSettings().isShowAllContest()) {
             contests = PagedList.resolve(contestService.getAllContest(page, limit));
         } else {
             contests = PagedList.resolve(contestService.getStartedContest(page, limit));

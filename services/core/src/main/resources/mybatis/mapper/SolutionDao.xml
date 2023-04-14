@@ -7,6 +7,10 @@
                state - 1          as state_code,
                result - 1         as result_code,
                pass_rate,
+               <if test="showPassed == true">
+               passed,
+               total,
+               </if>
                truncate(score, 2) as score,
                time,
                memory,

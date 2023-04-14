@@ -21,6 +21,7 @@ const ContestAdmin = () => import("@/views/components/Admin/Contest/Index.vue")
 const ContestEditor = () =>
   import("@/views/components/Admin/Contest/Editor.vue")
 const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
+const SystemSettings = () => import("@/views/components/Admin/Settings.vue")
 
 const router = createRouter({
   history: createWebHistory(),
@@ -128,6 +129,11 @@ const router = createRouter({
           path: "/admin/user",
           name: "user_admin",
           component: UserAdmin
+        },
+        {
+          path: "/admin/settings",
+          name: "settings",
+          component: SystemSettings
         }
       ]
     }

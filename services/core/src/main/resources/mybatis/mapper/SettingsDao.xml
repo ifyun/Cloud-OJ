@@ -10,11 +10,11 @@
     </select>
     <update id="update" parameterType="cloud.oj.core.entity.Settings">
         update settings
-        set icp                      = #{icp},
-            icp_url                  = #{icpUrl},
-            site_name                = #{siteName},
-            show_ranking_after_ended = #{showRankingAfterEnded},
-            show_not_started_contest = #{showNotStartedContest}
+        set icp                 = #{icp},
+            icp_url             = #{icpUrl},
+            always_show_ranking = #{alwaysShowRanking},
+            show_all_contest    = #{showAllContest},
+            show_passed_points  = #{showPassedPoints}
         where id = 0;
     </update>
 </mapper>

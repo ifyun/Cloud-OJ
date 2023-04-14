@@ -1,10 +1,10 @@
 <template>
-  <n-space vertical>
+  <n-space vertical align="center" size="large" item-style="width: 100%">
     <!-- 错误 -->
     <n-result
       v-if="error != null"
       status="error"
-      :title="error.error!"
+      :title="error.error"
       :description="error.message">
       <template #footer>
         <n-button secondary size="small" type="primary" @click="retry">
@@ -18,7 +18,7 @@
       size="small"
       :status="result.status"
       :title="result.title"
-      :description="result.desc!">
+      :description="result.desc">
       <template v-if="showRetry" #footer>
         <n-button secondary size="small" type="primary" @click="retry">
           重新获取
@@ -27,9 +27,6 @@
     </n-result>
     <n-text v-if="result.error" type="error">
       <pre :class="{ dark: darkTheme }">{{ result.error }}</pre>
-    </n-text>
-    <n-text v-if="showRetry" depth="3">
-      你可以关闭此窗口，稍后查看提交记录
     </n-text>
   </n-space>
 </template>
@@ -117,19 +114,31 @@ function fetchResult() {
 }
 
 function setResult(r: JudgeResult) {
-  const passRate = r.passRate! * 100
+  const passed = r.passed ? `${r.passed}/${r.total}` : ""
   switch (r.result) {
     case 0:
       result.value = new Result("success", "完全正确", Cost(r))
       break
     case 1:
-      result.value = new Result("warning", `时间超限(${passRate}%)`, Cost(r))
+      result.value = new Result(
+        "warning",
+        "时间超限",
+        `${Cost(r)}，通过: ${passed}`
+      )
       break
     case 2:
-      result.value = new Result("warning", `内存超限(${passRate}%)`, Cost(r))
+      result.value = new Result(
+        "warning",
+        "内存超限",
+        `${Cost(r)}，通过: ${passed}`
+      )
       break
     case 3:
-      result.value = new Result("warning", `部分通过(${passRate}%)`, Cost(r))
+      result.value = new Result(
+        "warning",
+        "部分通过",
+        `${Cost(r)}，通过: ${passed}`
+      )
       break
     case 4:
       result.value = new Result("error", "答案错误", Cost(r))
@@ -141,7 +150,12 @@ function setResult(r: JudgeResult) {
       result.value = new Result("error", "运行错误", undefined, r.errorInfo)
       break
     case 7:
-      result.value = new Result("error", "内部错误", "判题服务器发生错误")
+      result.value = new Result(
+        "error",
+        "内部错误",
+        "判题服务器发生错误",
+        r.errorInfo
+      )
       break
     case 8:
       result.value = new Result(
@@ -161,10 +175,10 @@ pre {
   padding: 12px;
   background-color: #f8f8f8;
   border-radius: 2px;
-  border-left: 2px solid #e88080;
+  white-space: pre-wrap;
 
   &.dark {
-    background-color: #383842;
+    background-color: #0d1117;
   }
 }
 </style>

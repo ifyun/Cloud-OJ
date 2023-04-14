@@ -6,8 +6,8 @@
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
-            <n-tabs type="line">
-              <n-tab-pane name="题目描述">
+            <n-tabs v-model:value="tab" type="line" @update:value="changeTab">
+              <n-tab-pane name="problem" tab="题目描述">
                 <n-h2 style="margin-bottom: 6px">
                   {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>
@@ -42,7 +42,7 @@
                   :content="problem.description"
                   style="margin-top: 12px" />
               </n-tab-pane>
-              <n-tab-pane name="提交记录">
+              <n-tab-pane name="solutions" tab="提交记录">
                 <n-h2 style="margin-bottom: 12px">
                   {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>
@@ -64,15 +64,17 @@
   </div>
   <n-modal
     v-model:show="showResult"
-    preset="card"
+    :auto-focus="false"
     :mask-closable="false"
-    style="width: 520px; margin-top: 240px">
-    <result-dialog :solution-id="solutionId" style="margin-bottom: 24px" />
+    preset="card"
+    style="width: 600px; margin-top: 200px">
+    <result-dialog :solution-id="solutionId" style="margin-bottom: 12px" />
   </n-modal>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import {
   NCard,
@@ -97,6 +99,8 @@ import { SourceCode } from "@/type"
 import { setTitle } from "@/utils"
 import SolutionSingle from "./Solutions.vue"
 
+const route = useRoute()
+const router = useRouter()
 const store = useStore()
 const message = useMessage()
 
@@ -105,6 +109,7 @@ const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
 })
 
 const loading = ref<boolean>(true)
+const tab = ref<string>("problem")
 const showResult = ref<boolean>(false)
 const disableSubmit = ref<boolean>(false)
 const error = ref<ErrorMessage | null>(null)
@@ -119,6 +124,10 @@ let contestId: number | null = null
 
 onBeforeMount(() => {
   const reg = /^\d+$/
+
+  if (route.query.tab && route.query.tab.toString() === "solutions") {
+    tab.value = "solutions"
+  }
 
   if (props.cid != null && reg.test(props.cid)) {
     contestId = Number(props.cid)
@@ -137,6 +146,13 @@ onBeforeMount(() => {
     loading.value = false
   }
 })
+
+function changeTab(value: string) {
+  tab.value = value
+  router.push({
+    query: { tab: value }
+  })
+}
 
 /**
  * 获取题目数据

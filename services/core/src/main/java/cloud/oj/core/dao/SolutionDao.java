@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface SolutionDao {
-    JudgeResult getSolutionById(String solutionId);
+    JudgeResult getSolutionById(String solutionId, boolean showPassed);
 
     List<List<?>> getSolutionsByUser(String userId, int start, int limit);
 

@@ -129,15 +129,17 @@ bool Utils::diff(const std::string &user_output, const std::string &expect_outpu
     io::mapped_file_source file1(user_output, offset1);
     io::mapped_file_source file2(expect_output, offset2);
 
+    bool r;
+
     if (file1.size() != file2.size()) {
-        file1.close();
-        file2.close();
-        return true;
+        r = true;
     } else {
-        file1.close();
-        file2.close();
-        return !std::equal(file1.data(), file1.data() + file1.size(), file2.data());
+        r = !std::equal(file1.begin(), file1.end(), file2.begin(), file2.end());
     }
+
+    file1.close();
+    file2.close();
+    return r;
 }
 
 void Utils::write_result(RTN &rtn, const std::vector<Result> &results, const std::string &work_dir) {

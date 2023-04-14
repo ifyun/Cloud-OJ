@@ -24,9 +24,9 @@
         </ul>
       </n-alert>
       <n-h2>判题相关</n-h2>
-      <n-alert type="info" style="margin-bottom: 24px"
-        >如果提交成功却获取不到结果，说明还没有入库</n-alert
-      >
+      <n-alert type="info" :bordered="false" style="margin-bottom: 24px">
+        如果提交成功却获取不到结果，说明还没有入库
+      </n-alert>
       <n-data-table single-column :columns="judgeColumns" :data="judgeData" />
       <n-alert
         :bordered="false"

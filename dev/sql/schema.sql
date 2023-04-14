@@ -10,7 +10,7 @@ create table contest
     start_at     bigint        not null comment '开始时间',
     end_at       bigint        not null comment '结束时间',
     languages    int default 0 not null comment '支持的语言范围'
-);
+) engine = Aria;
 
 create table problem
 (
@@ -25,7 +25,7 @@ create table problem
     enable       tinyint(1) default 0                 null comment '是否开放',
     category     varchar(64)                          null comment '分类，多个用逗号分隔',
     create_at    datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
-);
+) engine = Aria;
 
 create table `contest-problem`
 (
@@ -37,7 +37,7 @@ create table `contest-problem`
     constraint `contest-problem_problem_problem_id_fk`
         foreign key (problem_id) references problem (problem_id)
             on update cascade
-);
+) engine = Aria;
 
 create index problem_title_index
     on problem (title);
@@ -47,7 +47,7 @@ create table role
     role_id   int         not null
         primary key,
     role_name varchar(32) not null
-);
+) engine = Aria;
 
 create table user
 (
@@ -63,7 +63,7 @@ create table user
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)
             on update cascade
-);
+) engine = Aria;
 
 create index user_name_index
     on user (name);
@@ -73,18 +73,18 @@ create index user_create_at_index
 
 create table solution
 (
-    solution_id char(36)                                                                not null
+    solution_id char(36)                                                       not null
         primary key,
-    problem_id  int                                                                     null,
-    contest_id  int                                                                     null,
-    title       varchar(64)                                                             not null,
-    language    int                                                                     not null,
-    state       enum ('JUDGED', 'IN_JUDGE_QUEUE', 'ACCEPTED') default 'ACCEPTED'        not null,
-    result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE')          null,
-    pass_rate   double                                        default 0                 not null comment '通过率',
-    score       double                                        default 0                 not null,
-    user_id     varchar(32)                                                             null,
-    submit_time datetime                                      default CURRENT_TIMESTAMP not null comment '提交时间',
+    problem_id  int                                                            null,
+    contest_id  int                                                            null,
+    title       varchar(64)                                                    not null,
+    language    int                                                            not null,
+    state       enum ('JUDGED', 'IN_JUDGE_QUEUE')                              not null,
+    result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE') null,
+    pass_rate   double   default 0                                             not null comment '通过率',
+    score       double   default 0                                             not null,
+    user_id     varchar(32)                                                    null,
+    submit_time datetime default CURRENT_TIMESTAMP                             not null comment '提交时间',
     constraint solution_contest_contest_id_fk
         foreign key (contest_id) references contest (contest_id)
             on update cascade,
@@ -199,6 +199,8 @@ select `s`.`solution_id`                                      AS `solution_id`,
        `sc`.`code`                                            AS `code`,
        `r`.`time`                                             AS `time`,
        `r`.`memory`                                           AS `memory`,
+       `r`.`passed`                                           AS `passed`,
+       `r`.`total`                                            AS `total`,
        concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
 from ((((`cloud_oj`.`solution` `s` left join `cloud_oj`.`compile` `c`
          on ((`s`.`solution_id` = `c`.`solution_id`))) left join `cloud_oj`.`runtime` `r`
@@ -208,13 +210,14 @@ order by `s`.`submit_time`;
 
 create table settings
 (
-    id                       int                    not null
+    id                  int                    not null
         primary key,
-    icp                      varchar(64) default '' not null,
-    icp_url                  varchar(64) default '' not null,
-    show_ranking_after_ended tinyint(1)  default 0  null,
-    show_not_started_contest tinyint(1)  default 0  null
-);
+    icp                 varchar(64) default '' not null,
+    icp_url             varchar(64) default '' not null,
+    always_show_ranking tinyint(1)  default 0  not null,
+    show_all_contest    tinyint(1)  default 0  not null,
+    show_passed_points  tinyint(1)  default 0  not null
+) engine = Aria;
 
 ALTER TABLE problem
     AUTO_INCREMENT = 1000;

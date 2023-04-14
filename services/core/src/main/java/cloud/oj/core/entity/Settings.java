@@ -6,9 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Settings {
-    private String icp;
-    private String icpUrl;
-    private String siteName;
-    private boolean showRankingAfterEnded;
-    private boolean showNotStartedContest;
+    private String icp = "";
+    private String icpUrl = "";
+    private boolean alwaysShowRanking;
+    private boolean showAllContest;
+    private boolean showPassedPoints;
 }

@@ -12,6 +12,8 @@ public class JudgeResult {
     private Integer problemId;
     private String title;
     private String userId;
+    private Integer passed;
+    private Integer total;
     private Double passRate;
     private Double score;
     private Long time;

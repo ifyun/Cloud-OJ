@@ -37,8 +37,11 @@ const themeOverridesDark: GlobalThemeOverrides = {
     headerColor: "#161B22FF",
     headerBorderColor: "#161B22FF",
     siderColor: "#161B22FF",
-    siderBorderColor: "#161B22FF",
+    siderBorderColor: "#0D1117FF",
     color: "#0D1117FF"
+  },
+  Divider: {
+    color: "#161B22FF"
   },
   Button: {
     colorTertiary: "#161B22FF"
@@ -51,7 +54,12 @@ const themeOverridesDark: GlobalThemeOverrides = {
     color: "#161B22FF"
   },
   Card: {
-    color: "#00000000"
+    color: "#00000000",
+    colorModal: "#161B22FF",
+    borderColor: "#161b22FF"
+  },
+  Tabs: {
+    tabBorderColor: "#161B22FF"
   },
   Drawer: {
     color: "#0D1117FF"
@@ -60,17 +68,17 @@ const themeOverridesDark: GlobalThemeOverrides = {
     color: "#161B22FF"
   },
   Table: {
-    thColor: "#161b22FF",
+    thColor: "#161B22FF",
     tdColor: "#00000000"
   },
   DataTable: {
-    borderColor: "#161b22FF",
-    thColor: "#161b22FF",
+    borderColor: "#161B22FF",
+    thColor: "#161B22FF",
     tdColor: "#00000000",
-    tdColorHover: "#161b22FF"
+    tdColorHover: "#161B22FF"
   },
   Transfer: {
-    listColor: "#161b22FF"
+    listColor: "#161B22FF"
   }
 }
 

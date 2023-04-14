@@ -40,7 +40,7 @@ const menuOptions = [
     )
   },
   {
-    label: "系统设置",
+    label: () => <RouterLink to={{ name: "settings" }}>系统设置</RouterLink>,
     key: "settings",
     icon: () => (
       <NIcon>

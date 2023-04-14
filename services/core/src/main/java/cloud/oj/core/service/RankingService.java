@@ -34,7 +34,7 @@ public class RankingService {
     }
 
     public List<List<?>> getContestRanking(int contestId, int page, int limit) {
-        if (systemSettings.getSettings().isShowRankingAfterEnded() && !contestDao.isContestEnded(contestId)) {
+        if (systemSettings.getSettings().isAlwaysShowRanking() && !contestDao.isContestEnded(contestId)) {
             throw new GenericException(HttpStatus.FORBIDDEN.value(), "结束后才可查看");
         }
 
