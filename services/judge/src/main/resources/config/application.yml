@@ -18,6 +18,7 @@ spring:
     password: ${RABBIT_PASSWORD:admin}
     listener:
       simple:
+        prefetch: 1
         acknowledge-mode: manual
   jackson:
     default-property-inclusion: non_null

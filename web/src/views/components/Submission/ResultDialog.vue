@@ -52,11 +52,6 @@ class Result {
   }
 }
 
-const Cost = (r: JudgeResult) => {
-  const { time, memory } = r
-  return `运行时间: ${(time! / 1000).toFixed(2)} ms，内存占用: ${memory} KB`
-}
-
 const store = useStore()
 
 const error = ref<ErrorMessage | null>(null)
@@ -76,6 +71,11 @@ const props = defineProps<{
 onMounted(() => {
   fetchResult()
 })
+
+function usage(r: JudgeResult) {
+  const { time, memory } = r
+  return `运行时间: ${(time! / 1000).toFixed(2)} ms，内存占用: ${memory} KB`
+}
 
 function retry() {
   fetchResult()
@@ -117,31 +117,31 @@ function setResult(r: JudgeResult) {
   const passed = r.passed ? `${r.passed}/${r.total}` : ""
   switch (r.result) {
     case 0:
-      result.value = new Result("success", "完全正确", Cost(r))
+      result.value = new Result("success", "完全正确", usage(r))
       break
     case 1:
       result.value = new Result(
         "warning",
         "时间超限",
-        `${Cost(r)}，通过: ${passed}`
+        `${usage(r)}，通过: ${passed}`
       )
       break
     case 2:
       result.value = new Result(
         "warning",
         "内存超限",
-        `${Cost(r)}，通过: ${passed}`
+        `${usage(r)}，通过: ${passed}`
       )
       break
     case 3:
       result.value = new Result(
         "warning",
         "部分通过",
-        `${Cost(r)}，通过: ${passed}`
+        `${usage(r)}，通过: ${passed}`
       )
       break
     case 4:
-      result.value = new Result("error", "答案错误", Cost(r))
+      result.value = new Result("error", "答案错误", usage(r))
       break
     case 5:
       result.value = new Result("error", "编译错误", undefined, r.errorInfo)
