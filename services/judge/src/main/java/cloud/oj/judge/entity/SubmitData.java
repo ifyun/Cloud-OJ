@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommitData {
+public class SubmitData {
     private String solutionId;
     private String userId;
     private Integer problemId;

@@ -46,7 +46,7 @@ public class Judgement {
 
     private final Compiler compiler;
 
-    private final HashMap<String, Integer> cpus;
+    private final HashMap<String, Integer> cpuMap;
 
     private static final int RE = 1;
     private static final int IE = 2;
@@ -56,7 +56,7 @@ public class Judgement {
     @Autowired
     public Judgement(AppConfig appConfig, ObjectMapper objectMapper, RuntimeDao runtimeDao, CompileDao compileDao,
                      ProblemDao problemDao, SolutionDao solutionDao, RankingDao rankingDao, DatabaseConfig dbConfig,
-                     Compiler compiler, HashMap<String, Integer> cpus) {
+                     Compiler compiler, HashMap<String, Integer> cpuMap) {
         this.appConfig = appConfig;
         this.objectMapper = objectMapper;
         this.runtimeDao = runtimeDao;
@@ -66,7 +66,7 @@ public class Judgement {
         this.rankingDao = rankingDao;
         this.dbConfig = dbConfig;
         this.compiler = compiler;
-        this.cpus = cpus;
+        this.cpuMap = cpuMap;
     }
 
     private static class InternalError extends Exception {
@@ -214,13 +214,18 @@ public class Judgement {
             throw new UnsupportedLanguageError("NULL");
         }
 
-        var argv = new ArrayList<>();
+        var cpu = cpuMap.get(Thread.currentThread().getName());
 
-        var cpu = cpus.get(Thread.currentThread().getName());
+        if (cpu == null) {
+            // 在提交线程时，cpu 为 null
+            cpu = appConfig.getCpus().get(0);
+        }
+
         var workDir = appConfig.getCodeDir() + solution.getSolutionId();
         var timeLimit = limit.getTimeout();
         var memoryLimit = limit.getMemoryLimit();
         var outputLimit = limit.getOutputLimit();
+        var argv = new ArrayList<>();
 
         switch (language) {
             case C, CPP, GO -> argv.add("--cmd=./Solution");

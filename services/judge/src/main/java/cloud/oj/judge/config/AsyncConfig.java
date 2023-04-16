@@ -19,17 +19,31 @@ public class AsyncConfig {
 
     private final AppConfig appConfig;
 
+    private boolean singleThread = false;
+
     @Autowired
     public AsyncConfig(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
+    public boolean isSingleThread() {
+        return singleThread;
+    }
+
     @Bean
     public Executor judgeExecutor() {
+        var threads = appConfig.getCpus().size();
+
+        if (threads == 1) {
+            singleThread = true;
+        } else {
+            threads -= 1;
+        }
+
         var executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix(THREAD_PREFIX);
-        executor.setCorePoolSize(appConfig.getJudgePoolSize());
-        executor.setMaxPoolSize(appConfig.getJudgePoolSize());
+        executor.setCorePoolSize(threads);
+        executor.setMaxPoolSize(threads);
         executor.setQueueCapacity(0);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
@@ -38,17 +52,15 @@ public class AsyncConfig {
 
     @Bean
     public HashMap<String, Integer> cpus() {
-        var cpus = new HashMap<String, Integer>();
+        var cpuMap = new HashMap<String, Integer>();
+        var cpuList = appConfig.getCpus();
 
-        if (appConfig.getJudgePoolSize() == 1) {
-            cpus.put(THREAD_PREFIX + 1, 0);
-        } else {
-            // 将 CPU 核心 ID 与线程名称绑定，CPU0 留给提交线程
-            for (int i = 1; i <= appConfig.getJudgePoolSize(); i++) {
-                cpus.put(THREAD_PREFIX + i, i);
-            }
+        // 将 CPU 与线程名称绑定，第 1 个留给提交线程
+        for (int i = 1; i < cpuList.size(); i++) {
+            log.info("{} -> CPU-{}", THREAD_PREFIX + i, i);
+            cpuMap.put(THREAD_PREFIX + i, i);
         }
 
-        return cpus;
+        return cpuMap;
     }
 }

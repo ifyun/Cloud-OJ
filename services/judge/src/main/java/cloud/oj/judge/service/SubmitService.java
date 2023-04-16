@@ -3,7 +3,7 @@ package cloud.oj.judge.service;
 import cloud.oj.judge.component.SolutionState;
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.dao.SourceCodeDao;
-import cloud.oj.judge.entity.CommitData;
+import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SourceCode;
 import lombok.extern.slf4j.Slf4j;
@@ -40,22 +40,22 @@ public class SubmitService {
      * <p>隔离级别：读提交</p>
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void submit(CommitData commitData) throws AmqpException {
+    public void submit(SubmitData submitData) throws AmqpException {
         var solution = new Solution(
-                commitData.getSolutionId(),
-                commitData.getUserId(),
-                commitData.getProblemId(),
-                commitData.getContestId(),
-                commitData.getLanguage(),
-                commitData.getSubmitTime()
+                submitData.getSolutionId(),
+                submitData.getUserId(),
+                submitData.getProblemId(),
+                submitData.getContestId(),
+                submitData.getLanguage(),
+                submitData.getSubmitTime()
         );
 
-        var sourceCode = new SourceCode(solution.getSolutionId(), commitData.getSourceCode());
+        var sourceCode = new SourceCode(solution.getSolutionId(), submitData.getSourceCode());
 
         solutionDao.add(solution);
         sourceCodeDao.add(sourceCode);
 
-        solution.setSourceCode(commitData.getSourceCode());
+        solution.setSourceCode(submitData.getSourceCode());
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.updateState(solution);
 

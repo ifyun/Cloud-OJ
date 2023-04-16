@@ -3,7 +3,7 @@ package cloud.oj.judge.controller;
 import cloud.oj.judge.config.RabbitConfig;
 import cloud.oj.judge.dao.ContestDao;
 import cloud.oj.judge.dao.ProblemDao;
-import cloud.oj.judge.entity.CommitData;
+import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -36,7 +36,7 @@ public class SubmitController {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    private ResponseEntity<?> submitCode(CommitData data, boolean isAdmin) {
+    private ResponseEntity<?> submitCode(SubmitData data, boolean isAdmin) {
         var contestId = data.getContestId();
 
         if (data.getSourceCode().trim().isEmpty()) {
@@ -73,7 +73,7 @@ public class SubmitController {
      * 提交代码，普通用户
      */
     @PostMapping("submit")
-    public ResponseEntity<?> submit(@RequestBody CommitData data) {
+    public ResponseEntity<?> submit(@RequestBody SubmitData data) {
         return submitCode(data, false);
     }
 
@@ -81,7 +81,7 @@ public class SubmitController {
      * 提交代码，管理员
      */
     @PostMapping("admin/submit")
-    public ResponseEntity<?> adminSubmit(@RequestBody CommitData data) {
+    public ResponseEntity<?> adminSubmit(@RequestBody SubmitData data) {
         return submitCode(data, true);
     }
 }

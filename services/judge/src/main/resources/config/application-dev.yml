@@ -12,4 +12,4 @@ app:
   code-dir: /tmp/code/
   file-dir: /var/lib/cloud-oj/
   auto-clean-solution: false
-  judge-pool-size: 0
+  judge-cpus: [ 1 ]

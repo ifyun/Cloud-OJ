@@ -1,8 +1,9 @@
 package cloud.oj.judge.receiver;
 
-import cloud.oj.judge.component.JudgementAsync;
+import cloud.oj.judge.component.JudgementEntry;
+import cloud.oj.judge.config.AsyncConfig;
 import cloud.oj.judge.config.RabbitConfig;
-import cloud.oj.judge.entity.CommitData;
+import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.service.SubmitService;
 import com.rabbitmq.client.Channel;
@@ -25,14 +26,17 @@ import java.util.Map;
 @Component
 public class SolutionReceiver {
 
+    private final AsyncConfig asyncConfig;
+
     private final SubmitService submitService;
 
-    private final JudgementAsync judgementAsync;
+    private final JudgementEntry judgementEntry;
 
     @Autowired
-    public SolutionReceiver(SubmitService submitService, JudgementAsync judgementAsync) {
+    public SolutionReceiver(AsyncConfig asyncConfig, SubmitService submitService, JudgementEntry judgementEntry) {
+        this.asyncConfig = asyncConfig;
         this.submitService = submitService;
-        this.judgementAsync = judgementAsync;
+        this.judgementEntry = judgementEntry;
     }
 
     /**
@@ -40,14 +44,15 @@ public class SolutionReceiver {
      */
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
-    public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel) {
-        judgementAsync.judge(solution, () -> {
-            try {
-                channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
-        });
+    public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel)
+            throws IOException {
+        if (asyncConfig.isSingleThread()) {
+            judgementEntry.judgeSync(solution);
+        } else {
+            judgementEntry.judge(solution);
+        }
+
+        channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
     }
 
     /**
@@ -55,12 +60,13 @@ public class SolutionReceiver {
      */
     @RabbitHandler
     @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE)
-    public void handleSubmission(@Payload CommitData data,
-                                 @Headers Map<String, Object> headers, Channel channel) throws IOException {
+    public void handleSubmission(@Payload SubmitData data, @Headers Map<String, Object> headers, Channel channel)
+            throws IOException {
         try {
             submitService.submit(data);
             channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
         } catch (Exception e) {
+            // submit 失败，重新入队
             channel.basicNack((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false, true);
         }
     }

@@ -128,33 +128,38 @@ environment:
 
 ## 环境变量说明
 
+### gateway
+
 `TOKEN_VALID_TIME`
 
-- JWT 有效时间，默认值为 `4`，单位：小时
-- 服务：gateway
+JWT 有效时间，默认值为 `4`，单位：小时
 
-`JUDGE_POOLE_SIZE`
+`JUDGE_CPUS`
 
-- 判题线程数量，默认值(最大值)为逻辑处理器数量，建议根据内存大小来设置
-- 服务：judge
+判题线程使用的 CPU，用数组表示：
+
+```
+JUDGE_CPUS=[0]          # 使用所有 CPU
+JUDGE_CPUS=[n]          # 使用 n 个 CPU，从 CPU-0 开始
+JUDGE_CPUS=[0,1,2]      # 使用 CPU-0, CPU-1, CPU-2
+```
 
 `API_HOST`
 
-- gateway 服务的地址 + 端口
-- 服务：web（仅容器使用）
+gateway 服务的地址 + 端口（仅 web 容器使用）
 
 `JVM_OPTS`
 
-- Java 虚拟机参数，eg: -Xmx500m
+Java 虚拟机参数，eg: -Xmx500m
 
 `CONSUL_HOST`
 
-- Consul 注册中心的地址，默认为 `localhost`
+Consul 注册中心的地址，默认为 `localhost`
 
 `USE_IP`
 
-- 使用 IP 地址注册服务，默认值为 `false`
+使用 IP 地址注册服务，默认值为 `false`
 
 `SERVICE_IP`
 
-- `USE_IP` 为 `true` 时生效，可以指定该服务的 IP 地址，默认值为 `spring.cloud.client.ip-address`
+`USE_IP` 为 `true` 时生效，可以指定该服务的 IP 地址，默认值为 `spring.cloud.client.ip-address`
