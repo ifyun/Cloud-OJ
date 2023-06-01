@@ -10,7 +10,7 @@ create table contest
     start_at     bigint        not null comment '开始时间',
     end_at       bigint        not null comment '结束时间',
     languages    int default 0 not null comment '支持的语言范围'
-) engine = Aria;
+);
 
 create table problem
 (
@@ -25,7 +25,7 @@ create table problem
     enable       tinyint(1) default 0                 null comment '是否开放',
     category     varchar(64)                          null comment '分类，多个用逗号分隔',
     create_at    datetime   default CURRENT_TIMESTAMP not null comment '创建时间'
-) engine = Aria;
+);
 
 create table `contest-problem`
 (
@@ -37,7 +37,7 @@ create table `contest-problem`
     constraint `contest-problem_problem_problem_id_fk`
         foreign key (problem_id) references problem (problem_id)
             on update cascade
-) engine = Aria;
+);
 
 create index problem_title_index
     on problem (title);
@@ -47,7 +47,7 @@ create table role
     role_id   int         not null
         primary key,
     role_name varchar(32) not null
-) engine = Aria;
+);
 
 create table user
 (
@@ -63,7 +63,7 @@ create table user
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)
             on update cascade
-) engine = Aria;
+);
 
 create index user_name_index
     on user (name);
