@@ -47,48 +47,112 @@ fi
 # build docker images
 if [ "$1" == "docker" ]; then
   docker build - -t build-env <Dockerfile
-  docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build
-  info "DOCKER BUILD START."
-  mkdir -p services/judge/target/bin
-  cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
-  docker build -t cloudoj-web web
-  docker build -t cloudoj-gateway services/gateway
-  docker build -t cloudoj-core services/core
-  docker build -t cloudoj-judge services/judge
-  docker build -t cloudoj-mariadb dev/sql
-  docker images | grep cloudoj
-  if [ ! -f "${INSTALL_DIR}/docker-compose.yml" ]; then
-    sudo cp -r docker/* ${INSTALL_DIR}/
+  if [ "$2" == "" ]; then
+    docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build
+    mkdir -p services/judge/target/bin
+    cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
+    docker build -t cloudoj-web web
+    docker build -t cloudoj-gateway services/gateway
+    docker build -t cloudoj-core services/core
+    docker build -t cloudoj-judge services/judge
+    docker build -t cloudoj-mariadb dev/sql
+    docker images | grep cloudoj
+    if [ ! -f "${INSTALL_DIR}/docker-compose.yml" ]; then
+      sudo cp -r docker/* ${INSTALL_DIR}/
+    fi
+    cd "${ORIGINAL_DIR}"
+    exit 0
+  else
+    case "$2" in
+    "web")
+      docker run --rm -v "$PWD":/BUILD -w /BUILD build-env bash build web
+      docker build -t cloudoj-web web
+      ;;
+    "mariadb")
+      docker build -t cloudoj-mariadb dev/sql
+      ;;
+    "gateway")
+      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build gateway
+      docker build -t cloudoj-gateway services/gateway
+      ;;
+    "core")
+      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build core
+      docker build -t cloudoj-core services/core
+      ;;
+    "judge")
+      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build judge
+      mkdir -p services/judge/target/bin
+      cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
+      docker build -t cloudoj-judge services/judge
+      ;;
+    *)
+      err "参数错误"
+      exit 1
+      ;;
+    esac
+    exit 0
   fi
-  info "DOCKER BUILD COMPLETE."
-  cd "${ORIGINAL_DIR}"
-  exit 0
 fi
 
+function build_web() {
+  if cd web && npm install && npm run build; then
+    cd ..
+  else
+    cd "${ORIGINAL_DIR}"
+    err "NPM BUILD FAILED."
+    exit 1
+  fi
+}
+
+function build_cmake() {
+  if cd judge && bash build; then
+    cd ..
+  else
+    cd "${ORIGINAL_DIR}"
+    err "CMAKE BUILD FAILED."
+    exit 1
+  fi
+}
+
+function build_service() {
+  if cd services && mvn clean -B package -pl "$1" '-Dmaven.test.skip=true'; then
+    cd ..
+  else
+    cd "${ORIGINAL_DIR}"
+    err "MAVEN BUILD FAILED."
+    exit 1
+  fi
+}
+
 # build
-info "BUILD START..."
-if cd judge && bash build; then
-  cd ..
+if [ "$1" == "" ]; then
+  info "BUILD START..."
+  build_cmake
+  build_service core,gateway,judge
+  build_web
+  info "BUILD COMPLETE."
+  exit 0
 else
-  cd "${ORIGINAL_DIR}"
-  err "CMAKE BUILD FAILED."
-  exit 1
+  case "$1" in
+  "web")
+    build_web
+    ;;
+  "core")
+    build_service core
+    ;;
+  "gateway")
+    build_service gateway
+    ;;
+  "judge")
+    build_cmake
+    build_service judge
+    ;;
+  *)
+    err "参数错误."
+    exit 1
+    ;;
+  esac
 fi
-if cd services && mvn clean -B package '-Dmaven.test.skip=true'; then
-  cd ..
-else
-  cd "${ORIGINAL_DIR}"
-  err "MAVEN BUILD FAILED."
-  exit 1
-fi
-if cd web && npm install && npm run build; then
-  cd ..
-else
-  cd "${ORIGINAL_DIR}"
-  err "NPM BUILD FAILED."
-  exit 1
-fi
-info "BUILD COMPLETE."
 
 # install to /usr/local
 if [ "$1" == "install" ]; then
@@ -129,4 +193,5 @@ if [ "$1" == "install" ]; then
   sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default
   info "INSTALL COMPLETE."
 fi
+
 cd "${ORIGINAL_DIR}"

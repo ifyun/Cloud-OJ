@@ -9,6 +9,8 @@
 - Node.js v18
 - Boost
 
+Docker 运行只需要安装好 Docker Engine 的 Linux 环境即可。
+
 ## 直接安装
 
 建议使用 Docker 运行，无论是单机运行或是扩展服务都比较方便。
@@ -49,7 +51,7 @@ sudo dnf install -y \
 下载源码，运行：
 
 ```bash
-./build install
+./build && ./build install
 ```
 
 以上命令将项目安装到 `/usr/local/cloud-oj`，同时安装 nginx、 supervisor、rabbitmq-server、mariadb-server。
@@ -103,6 +105,22 @@ docker-compose up -d
 | judge    | 8280        |
 | mariadb  | 3306        |
 | rabbitmq | 5672, 15672 |
+
+### 仅构建指定的镜像
+
+加入第二个参数：
+
+```bash
+./build docker web
+```
+
+以上命令仅构建 `cloudoj-web` 镜像，可选参数：
+
+- web
+- core
+- gateway
+- judge
+- mariadb
 
 ## 开启 HTTPS
 
