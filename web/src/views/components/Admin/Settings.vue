@@ -46,6 +46,11 @@
       </n-card>
       <n-button type="primary" secondary @click="saveSettings">
         保存设置
+        <template #icon>
+          <n-icon>
+            <save-round />
+          </n-icon>
+        </template>
       </n-button>
     </n-space>
   </div>
@@ -63,16 +68,18 @@ import {
   NButton,
   NCard,
   NText,
+  NIcon,
   NSpace,
   NSwitch,
   NThing,
   useMessage
 } from "naive-ui"
-import { setTitle } from "@/utils"
+import { SaveRound } from "@vicons/material"
+import ErrorResult from "@/components/ErrorResult.vue"
 import store, { Mutations } from "@/store"
 import { ErrorMessage, Settings, UserInfo } from "@/api/type"
 import { SettingsApi } from "@/api/request"
-import ErrorResult from "@/components/ErrorResult.vue"
+import { setTitle } from "@/utils"
 
 const message = useMessage()
 

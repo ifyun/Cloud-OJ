@@ -10,6 +10,7 @@ const Leaderboard = () => import("@/views/components/Leaderboard.vue")
 const Submission = () => import("@/views/components/Submission/Index.vue")
 const HelpDoc = () => import("@/views/components/HelpDoc.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
+const AccountEditor = () => import("@/views/components/Account/Editor.vue")
 const NotFound = () => import("@/views/components/NotFound.vue")
 
 const Admin = () => import("@/views/AdminRoot.vue")
@@ -87,6 +88,11 @@ const router = createRouter({
           path: "/account",
           name: "account",
           component: Account
+        },
+        {
+          path: "/account/edit",
+          name: "edit_account",
+          component: AccountEditor
         },
         {
           path: "/:catchAll(.*)",

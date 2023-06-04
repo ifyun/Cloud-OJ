@@ -3,7 +3,17 @@
     <user-avatar :size="72" :user-id="userId" />
     <div>
       <n-space vertical size="small">
-        <n-text strong style="font-size: 16px">{{ profile.name }}</n-text>
+        <n-space size="large" align="center">
+          <n-text strong style="font-size: 16px">{{ profile.name }}</n-text>
+          <n-button size="small" @click="edit">
+            修改个人信息
+            <template #icon>
+              <n-icon>
+                <user-edit />
+              </n-icon>
+            </template>
+          </n-button>
+        </n-space>
         <n-text italic depth="3">{{ profile.userId }}</n-text>
       </n-space>
     </div>
@@ -12,11 +22,14 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
-import { NSpace, NText, useMessage } from "naive-ui"
+import { useRouter } from "vue-router"
+import { NButton, NIcon, NSpace, NText, useMessage } from "naive-ui"
+import { UserEdit } from "@vicons/fa"
 import { UserAvatar } from "@/components"
 import { ErrorMessage, User } from "@/api/type"
 import { UserApi } from "@/api/request"
 
+const router = useRouter()
 const message = useMessage()
 
 const props = defineProps<{ userId: string }>()
@@ -31,4 +44,8 @@ onBeforeMount(() => {
       message.error(err.toString())
     })
 })
+
+function edit() {
+  router.push({ name: "edit_account" })
+}
 </script>

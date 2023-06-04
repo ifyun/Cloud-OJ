@@ -97,7 +97,13 @@ public class FileService {
      */
     public ResponseEntity<?> saveAvatar(String userId, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
+        var dir = new File(avatarDir);
         var avatar = new File(avatarDir + userId + ".png");
+
+        if (!dir.exists() && !avatar.mkdirs()) {
+            log.error("无法创建目录 {}", dir.getAbsolutePath());
+            return ResponseEntity.status(500).body("无法创建目录.");
+        }
 
         try {
             file.transferTo(avatar);

@@ -25,7 +25,6 @@ spring:
         query-passing: true
         prefer-ip-address: ${USE_IP:false}
         ip-address: ${SERVICE_IP:${spring.cloud.client.ip-address}}
-        include-hostname-in-instance-id: true
         health-check-critical-timeout: 5m
     gateway:
       routes:

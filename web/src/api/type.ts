@@ -14,8 +14,8 @@ export class UsernamePassword {
 export class User {
   userId = ""
   name = ""
-  password?: string
-  confirmPassword?: string
+  password: string = ""
+  confirmPassword: string = ""
   roleId?: number
   email = ""
   section = ""
