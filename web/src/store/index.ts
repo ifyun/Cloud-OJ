@@ -1,7 +1,7 @@
 import { createStore } from "vuex"
 import { darkTheme } from "naive-ui"
 import moment from "moment-timezone"
-import type { UserInfo } from "@/api/type"
+import { UserInfo } from "@/api/type"
 import Mutations from "@/store/mutations"
 
 const THEME = "theme"
@@ -11,11 +11,16 @@ const theme = localStorage.getItem(THEME)
 const token = localStorage.getItem(TOKEN)
 
 function resolveToken(token: string): UserInfo {
-  const userInfo: UserInfo = JSON.parse(
+  const json: any = JSON.parse(
     decodeURIComponent(escape(window.atob(token.split(".")[1])))
   )
+  const userInfo: UserInfo = new UserInfo()
   userInfo.token = token
-  userInfo.userId = userInfo.sub
+  userInfo.roleId = json.roleId
+  userInfo.userId = json.sub
+  userInfo.name = json.name
+  userInfo.email = json.email ?? ""
+  userInfo.section = json.section ?? ""
   return userInfo
 }
 

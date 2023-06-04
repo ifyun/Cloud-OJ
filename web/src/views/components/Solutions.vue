@@ -49,7 +49,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = withDefaults(
-  defineProps<{ problemId: string | null; single: boolean }>(),
+  defineProps<{ problemId: string | null; single?: boolean }>(),
   {
     problemId: null,
     single: false

@@ -79,7 +79,14 @@ public class UserService {
             user.setSecret(newUUID());
         }
 
-        return updateUser(user);
+        if (userDao.update(user) == 1) {
+            return HttpStatus.OK.value();
+        } else {
+            throw new GenericException(
+                    HttpStatus.NOT_MODIFIED.value(),
+                    String.format("%s 用户更新失败", user.getUserId())
+            );
+        }
     }
 
     public Integer deleteUser(String userId) {

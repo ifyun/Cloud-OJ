@@ -196,9 +196,9 @@ onMounted(() => {
 })
 
 function signup() {
-  loading.value = true
   signupForm.value?.validate((errors: any) => {
     if (!errors) {
+      loading.value = true
       user.value.password = hashSync(user.value.password!, 10)
       UserApi.save(user.value, null, true)
         .then(() => {
@@ -207,6 +207,7 @@ function signup() {
         })
         .catch((err: ErrorMessage) => {
           user.value.password = ""
+          user.value.confirmPassword = ""
           message.error(err.toString())
         })
         .finally(() => {

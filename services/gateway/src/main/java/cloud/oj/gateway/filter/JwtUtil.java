@@ -28,6 +28,7 @@ public class JwtUtil {
                 .setExpiration(new Date(expire))
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())
+                .claim("section", user.getSection())
                 .claim("roleId", user.getRoleId())
                 .claim("authorities", authorities)
                 .signWith(stringToSecretKey(secret))
