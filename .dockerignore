@@ -1,0 +1,14 @@
+.git/
+.assets/
+.github/
+**/.idea/
+**/.vscode/
+**/node_modules/
+**/dist/
+**/target/
+**/cmake-build-*/
+dev/
+
+**/.gitignore
+**/*.iml
+*.md

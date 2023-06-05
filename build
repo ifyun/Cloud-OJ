@@ -1,11 +1,9 @@
 #!/bin/bash
 set -e
-CONF_DIR="/etc/cloud-oj"
-DATA_DIR="/var/lib/cloud-oj"
-INSTALL_DIR="/usr/local/cloud-oj"
-ORIGINAL_DIR=$(pwd)
 SCRIPT=$(readlink -f "$0")
-WORKING_DIR=$(dirname "${SCRIPT}")
+ROOT_DIR=$(dirname "${SCRIPT}")
+
+cd "${ROOT_DIR}"
 
 function has_command() {
   which "$1" &>/dev/null
@@ -19,13 +17,10 @@ function err() {
   echo -e "\e[31m$1\e[0m"
 }
 
-# make sure working directory is correct
-cd "${WORKING_DIR}"
-
 # clean && exit
 if [ "$1" == "clean" ]; then
   if has_command mvn; then
-    cd services && mvn clean && cd ..
+    cd services && mvn clean && cd "${ROOT_DIR}"
   else
     err "command 'mvn' not found."
     exit 1
@@ -39,87 +34,37 @@ if [ "$1" == "clean" ]; then
   if [ -d "web/dist" ]; then
     rm -r web/dist
   fi
-  info "CLEAN COMPLETE."
-  cd "${ORIGINAL_DIR}"
+  info "CLEAN COMPLETE"
+  cd "${ROOT_DIR}"
   exit 0
 fi
 
-# build docker images
-if [ "$1" == "docker" ]; then
-  docker build - -t build-env <Dockerfile
-  if [ "$2" == "" ]; then
-    docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build
-    mkdir -p services/judge/target/bin
-    cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
-    docker build -t cloudoj-web web
-    docker build -t cloudoj-gateway services/gateway
-    docker build -t cloudoj-core services/core
-    docker build -t cloudoj-judge services/judge
-    docker build -t cloudoj-mariadb dev/sql
-    docker images | grep cloudoj
-    if [ ! -f "${INSTALL_DIR}/docker-compose.yml" ]; then
-      sudo cp -r docker/* ${INSTALL_DIR}/
-    fi
-    cd "${ORIGINAL_DIR}"
-    exit 0
-  else
-    case "$2" in
-    "web")
-      docker run --rm -v "$PWD":/BUILD -w /BUILD build-env bash build web
-      docker build -t cloudoj-web web
-      ;;
-    "mariadb")
-      docker build -t cloudoj-mariadb dev/sql
-      ;;
-    "gateway")
-      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build gateway
-      docker build -t cloudoj-gateway services/gateway
-      ;;
-    "core")
-      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build core
-      docker build -t cloudoj-core services/core
-      ;;
-    "judge")
-      docker run --rm -v "$PWD":/BUILD -v ~/.m2:/root/.m2 -w /BUILD build-env bash build judge
-      mkdir -p services/judge/target/bin
-      cp judge/cmake-build-release/{judge,judged} services/judge/target/bin/
-      docker build -t cloudoj-judge services/judge
-      ;;
-    *)
-      err "参数错误"
-      exit 1
-      ;;
-    esac
-    exit 0
-  fi
-fi
-
-function build_web() {
+function vue_build() {
   if cd web && npm install && npm run build; then
-    cd ..
+    cd "${ROOT_DIR}"
   else
-    cd "${ORIGINAL_DIR}"
-    err "NPM BUILD FAILED."
+    cd "${ROOT_DIR}"
+    err "NPM BUILD FAILED"
     exit 1
   fi
 }
 
-function build_cmake() {
+function cmake_build() {
   if cd judge && bash build; then
-    cd ..
+    cd "${ROOT_DIR}"
   else
-    cd "${ORIGINAL_DIR}"
-    err "CMAKE BUILD FAILED."
+    cd "${ROOT_DIR}"
+    err "CMAKE BUILD FAILED"
     exit 1
   fi
 }
 
-function build_service() {
+function mvn_build() {
   if cd services && mvn clean -B package -pl "$1" '-Dmaven.test.skip=true'; then
-    cd ..
+    cd "${ROOT_DIR}"
   else
-    cd "${ORIGINAL_DIR}"
-    err "MAVEN BUILD FAILED."
+    cd "${ROOT_DIR}"
+    err "MAVEN BUILD FAILED"
     exit 1
   fi
 }
@@ -127,71 +72,62 @@ function build_service() {
 # build
 if [ "$1" == "" ]; then
   info "BUILD START..."
-  build_cmake
-  build_service core,gateway,judge
-  build_web
-  info "BUILD COMPLETE."
+  cmake_build
+  mvn_build core,gateway,judge
+  vue_build
+  info "BUILD COMPLETE"
   exit 0
-else
-  case "$1" in
+elif [ "$1" == "target" ]; then
+  case "$2" in
   "web")
-    build_web
+    vue_build
     ;;
-  "core")
-    build_service core
-    ;;
-  "gateway")
-    build_service gateway
+  "core" | "gateway")
+    mvn_build "$2"
     ;;
   "judge")
-    build_cmake
-    build_service judge
+    cmake_build
+    mvn_build "$2"
     ;;
   *)
-    err "参数错误."
+    err "Invalid Target: $2"
     exit 1
     ;;
   esac
-fi
-
-# install to /usr/local
-if [ "$1" == "install" ]; then
-  info "INSTALL TO LOCAL."
-  sudo useradd judge || true
-  sudo mkdir -p ${INSTALL_DIR}/web ${INSTALL_DIR}/bin ${INSTALL_DIR}/services/lib ${CONF_DIR} ${DATA_DIR}
-  sudo chown judge ${DATA_DIR}
-  # judge, judged
-  sudo cp judge/cmake-build-release/{judge,judged} ${INSTALL_DIR}/bin/
-  sudo ln -sf ${INSTALL_DIR}/bin/judge /usr/local/bin/judge
-  sudo ln -sf ${INSTALL_DIR}/bin/judged /usr/local/bin/judged
-  # web and services
-  sudo cp -r web/dist/* ${INSTALL_DIR}/web/
-  sudo cp services/gateway/target/*.jar ${INSTALL_DIR}/services/gateway.jar
-  sudo cp services/core/target/*.jar ${INSTALL_DIR}/services/core.jar
-  sudo cp services/judge/target/*.jar ${INSTALL_DIR}/services/judge.jar
-  # dependencies
-  sudo cp -rn \
-    services/gateway/target/lib/* \
-    services/core/target/lib/* \
-    services/judge/target/lib/* \
-    ${INSTALL_DIR}/services/lib/
-  programs="unzip nginx supervisor rabbitmq-server mariadb-server"
-  if has_command apt-get; then
-    sudo apt-get install -y "${programs}"
-  elif has_command dnf; then
-    sudo dnf install -y "${programs}"
+elif [ "$1" == "docker" ]; then
+  # build docker images
+  if ! (has_command docker); then
+    err "docker not found!"
+    exit 1
   fi
-  curl -LJo /tmp/consul.zip https://releases.hashicorp.com/consul/1.15.1/consul_1.15.1_linux_amd64.zip
-  sudo unzip -d /usr/bin /tmp/consul.zip && rm /tmp/consul.zip
-  sudo cat dev/sql/schema.sql | sudo mariadb -u root
-  sudo mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
-  sudo rabbitmqctl add_user admin admin
-  sudo rabbitmqctl set_user_tags admin administrator
-  sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-  # supervisor and nginx conf
-  sudo cp -r dev/conf/*.conf ${CONF_DIR}/
-  sudo ln -sf ${CONF_DIR}/nginx.conf /etc/nginx/sites-enabled/default
-  info "INSTALL COMPLETE."
+  if [ "$2" == "" ]; then
+    docker build --target=core --build-arg="TARGET=core" -t cloudoj-core .
+    docker build --target=gateway --build-arg="TARGET=gateway" -t cloudoj-gateway .
+    docker build --target=judge --build-arg="TARGET=judge" -t cloudoj-judge .
+    docker build --target=web --build-arg="TARGET=web" -t cloudoj-web .
+    docker build -t cloudoj-mariadb dev/sql
+    docker images | grep cloudoj
+    if [ ! -f "${HOME}/cloud-oj/docker-compose.yml" ]; then
+      cp -r docker/* "${HOME}/cloud-oj/"
+    fi
+  else
+    case "$2" in
+    "mariadb")
+      docker build -t cloudoj-mariadb dev/sql
+      ;;
+    "web")
+      docker build --target=web --build-arg="TARGET=web" -t cloudoj-web .
+      ;;
+    "core" | "gateway" | "judge")
+      docker build --target="$2" --build-arg="TARGET=$2" -t cloudoj-"$2" .
+      ;;
+    *)
+      err "Invalid Target: $2"
+      exit 1
+      ;;
+    esac
+  fi
+else
+  err "Inlaid Arg"
+  exit 1
 fi
-
-cd "${ORIGINAL_DIR}"

@@ -1,9 +1,9 @@
 logging:
   level:
     root: warn
-    cloud.oj: debug
+    cloud.oj: warn
 app:
   code-dir: /tmp/code/
   file-dir: /var/lib/cloud-oj/
   auto-clean-solution: false
-  judge-cpus: [ 1 ]
+  judge-cpus: [ 2 ]
