@@ -14,7 +14,7 @@
 
 ```bash
 cd ~/cloud-oj
-docker-compose up -d
+docker compose up -d
 ```
 
 首次运行时，你可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码
