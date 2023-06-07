@@ -35,7 +35,7 @@ COPY --from=build-env /build/services/core/target/*.jar /app/core.jar
 WORKDIR /app
 EXPOSE 8180
 ENV JVM_OPTS="-Xmx200m"
-CMD ["bash", "-c", "java", "${JVM_OPTS}", "-Dspring.profiles.active=prod", "-jar", "core.jar"]
+CMD  java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core.jar
 # gateway service
 FROM openjdk:17-slim-bullseye as gateway
 COPY --from=build-env /build/services/gateway/target/lib/* /app/lib/
@@ -43,7 +43,7 @@ COPY --from=build-env /build/services/gateway/target/*.jar /app/gateway.jar
 WORKDIR /app
 EXPOSE 8080
 ENV JVM_OPTS="-Xmx200m"
-CMD ["bach", "-c", "java", "${JVM_OPTS}", "-Dspring.profiles.active=prod", "-jar", "gateway.jar"]
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
 # judge service
 FROM openjdk:17-jdk-bullseye as judge
 RUN sed -i "s/deb.debian.org/mirrors.ustc.edu.cn/g" /etc/apt/sources.list \
