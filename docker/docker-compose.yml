@@ -60,7 +60,7 @@ services:
     networks:
       - cloud-oj
     volumes:
-      - "data:/var/lib/cloud-oj:ro"
+      - "data:/var/lib/cloud-oj"
     environment:
       JVM_OPTS: "-Xmx300m"
       JUDGE_CPUS: 4
