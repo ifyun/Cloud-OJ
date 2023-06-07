@@ -6,4 +6,4 @@ app:
   code-dir: /tmp/code/
   file-dir: /var/lib/cloud-oj/
   auto-clean-solution: ${AUTO_CLEAN_SOLUTION:true}
-  judge-cpus: ${JUDGE_CPUS:[4]}
+  judge-cpus: ${JUDGE_CPUS:4}

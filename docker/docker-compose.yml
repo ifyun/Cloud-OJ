@@ -63,7 +63,7 @@ services:
       - "data:/var/lib/cloud-oj:ro"
     environment:
       JVM_OPTS: "-Xmx300m"
-      JUDGE_CPUS: "[4]"
+      JUDGE_CPUS: 4
       CONSUL_HOST: "consul"
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}

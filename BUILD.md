@@ -78,13 +78,15 @@ JWT 有效时间，默认值为 `4`，单位：小时
 
 `JUDGE_CPUS`
 
-判题线程使用的 CPU，用数组表示：
+判题线程使用的 CPU，多个值用逗号分隔：
 
 ```
-JUDGE_CPUS=[0]          # 使用所有 CPU
-JUDGE_CPUS=[n]          # 使用 n 个 CPU，从 CPU-0 开始
-JUDGE_CPUS=[0,1,2]      # 使用 CPU-0, CPU-1, CPU-2
+JUDGE_CPUS=0          # 使用所有 CPU
+JUDGE_CPUS=n          # 使用 n 个 CPU，从 CPU-0 开始
+JUDGE_CPUS=0,1,2      # 使用 CPU-0, CPU-1, CPU-2
 ```
+
+超过上限或小于 0 会被设置为 0
 
 默认使用 4 个线程，请根据可用内存量来设置
 

@@ -55,10 +55,11 @@ public class AsyncConfig {
         var cpuMap = new HashMap<String, Integer>();
         var cpuList = appConfig.getCpus();
 
+        log.info("{} --> CPU-{}", "Caller", cpuList.get(0));
         // 将 CPU 与线程名称绑定，第 1 个留给提交线程
         for (int i = 1; i < cpuList.size(); i++) {
-            log.info("{} -> CPU-{}", THREAD_PREFIX + i, i);
-            cpuMap.put(THREAD_PREFIX + i, i);
+            log.info("{} -> CPU-{}", THREAD_PREFIX + i, cpuList.get(i));
+            cpuMap.put(THREAD_PREFIX + i, cpuList.get(i));
         }
 
         return cpuMap;

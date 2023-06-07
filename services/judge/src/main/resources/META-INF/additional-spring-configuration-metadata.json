@@ -12,8 +12,8 @@
     },
     {
       "name": "app.judge-cpus",
-      "type": "java.util.List<java.lang.Integer>",
-      "description": "判题使用的 CPU 核心."
+      "type": "java.lang.String",
+      "description": "判题使用的 CPU 核心, 逗号分隔."
     },
     {
       "name": "app.file-dir",
