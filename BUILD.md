@@ -1,6 +1,6 @@
 # 构建 & 运行
 
-构建过程在容器中进行，你只需要安装好 Docker 即可
+构建过程在容器中进行，你只需要安装 [Docker Engine](https://docs.docker.com/engine/install/)
 
 ## 构建 Docker 镜像
 
@@ -34,13 +34,11 @@ docker compose up -d
 
 ### 仅构建指定的镜像
 
-加入第二个参数：
+仅构建 `cloudoj-web` 镜像：
 
 ```bash
 ./build docker web
 ```
-
-以上命令仅构建 `cloudoj-web` 镜像
 
 可选参数：
 
