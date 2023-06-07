@@ -28,6 +28,7 @@ COPY --from=build-env \
     /templates/
 COPY --from=build-env /build/web/docker/config.sh /docker-entrypoint.d/00-config.sh
 COPY --from=build-env /build/web/dist /usr/share/nginx/html
+RUN chmod +x /docker-entrypoint.d/00-config.sh
 # core service
 FROM openjdk:17-slim-bullseye as core
 COPY --from=build-env /build/services/core/target/lib/* /app/lib/
