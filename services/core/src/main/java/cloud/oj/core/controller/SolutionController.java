@@ -25,8 +25,8 @@ public class SolutionController {
      */
     @GetMapping
     public ResponseEntity<?> getAll(@RequestHeader String userId, Integer page, Integer limit,
-                                    Integer problemId, String title) {
-        var solutions = PagedList.resolve(solutionService.getSolutions(userId, page, limit, problemId, title));
+                                    Integer filter, String filterValue) {
+        var solutions = PagedList.resolve(solutionService.getSolutions(userId, page, limit, filter, filterValue));
         return solutions.getCount() > 0 ?
                 ResponseEntity.ok(solutions)
                 : ResponseEntity.noContent().build();

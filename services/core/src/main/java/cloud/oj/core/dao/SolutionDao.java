@@ -9,9 +9,5 @@ import java.util.List;
 public interface SolutionDao {
     JudgeResult getSolutionById(String solutionId, boolean showPassed);
 
-    List<List<?>> getSolutionsByUser(String userId, int start, int limit);
-
-    List<List<?>> getSolutionsByProblemId(String userId, int start, int limit, Integer problemId);
-
-    List<List<?>> getSolutionsByTitle(String userId, int start, int limit, String title);
+    List<List<?>> getSolutionsByUser(String userId, Integer start, Integer limit, Integer filter, String filterValue);
 }

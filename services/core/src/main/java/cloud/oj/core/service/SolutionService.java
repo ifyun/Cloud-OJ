@@ -23,14 +23,8 @@ public class SolutionService {
         this.settings = settings;
     }
 
-    public List<List<?>> getSolutions(String userId, int page, int limit, Integer problemId, String title) {
-        if (problemId != null) {
-            return solutionDao.getSolutionsByProblemId(userId, (page - 1) * limit, limit, problemId);
-        } else if (title != null && !title.isEmpty()) {
-            return solutionDao.getSolutionsByTitle(userId, (page - 1) * limit, limit, title);
-        } else {
-            return solutionDao.getSolutionsByUser(userId, (page - 1) * limit, limit);
-        }
+    public List<List<?>> getSolutions(String userId, Integer page, Integer limit, Integer filter, String filterValue) {
+        return solutionDao.getSolutionsByUser(userId, (page - 1) * limit, limit, filter, filterValue);
     }
 
     @SneakyThrows

@@ -24,28 +24,14 @@
                                    result - 1 as result_code
         from judge_result
         where user_id = #{userId}
-        order by submit_time desc
-        limit #{start}, #{limit};
-        select found_rows();
-    </select>
-    <select id="getSolutionsByProblemId" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows *,
-                                   state - 1  as state_code,
-                                   result - 1 as result_code
-        from judge_result
-        where user_id = #{userId}
-          and problem_id = #{problemId}
-        order by submit_time desc
-        limit #{start}, #{limit};
-        select found_rows();
-    </select>
-    <select id="getSolutionsByTitle" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows *,
-                                   state - 1  as state_code,
-                                   result - 1 as result_code
-        from judge_result
-        where user_id = #{userId}
-          and title like concat('%', #{title}, '%')
+        <choose>
+            <when test="filter == 1">
+                and problem_id = #{filterValue}
+            </when>
+            <when test="filter == 2">
+                and title like concat('%', #{filterValue}, '%')
+            </when>
+        </choose>
         order by submit_time desc
         limit #{start}, #{limit};
         select found_rows();

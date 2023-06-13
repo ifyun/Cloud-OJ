@@ -86,7 +86,7 @@ const columns: DataTableColumns<JudgeResult> = [
     )
   },
   {
-    title: "运行时间",
+    title: "CPU 时间",
     key: "time",
     align: "right",
     render: (row) => (
@@ -96,7 +96,7 @@ const columns: DataTableColumns<JudgeResult> = [
     )
   },
   {
-    title: "内存消耗",
+    title: "内存占用",
     key: "memory",
     align: "right",
     render: (row) => (
@@ -140,9 +140,7 @@ onBeforeMount(() => {
 
 function querySolutions() {
   loading.value = true
-  UserApi.getSolutions(1, 15, userInfo.value, {
-    problemId: Number(props.problemId)
-  })
+  UserApi.getSolutions(1, 16, userInfo.value, 1, props.problemId)
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (loading.value = false))

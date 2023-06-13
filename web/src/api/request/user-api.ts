@@ -92,7 +92,8 @@ const UserApi = {
     page: number,
     limit: number,
     userInfo: UserInfo,
-    searchParam?: { problemId?: number; title?: string }
+    filter: number | null,
+    filterValue: string | null
   ) {
     return new Promise<Page<JudgeResult>>((resolve, reject) => {
       axios({
@@ -106,8 +107,8 @@ const UserApi = {
         params: {
           page,
           limit,
-          problemId: searchParam?.problemId,
-          title: searchParam?.title
+          filter,
+          filterValue
         }
       })
         .then((res) => {

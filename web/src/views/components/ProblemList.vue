@@ -11,14 +11,15 @@
               maxlength="10"
               show-count
               clearable
-              placeholder="输入题目名称、分类">
-              <template #prefix>
+              placeholder="输入题目名称、分类" />
+            <n-button type="primary" @click="search">
+              搜索题目
+              <template #icon>
                 <n-icon>
-                  <search-icon />
+                  <search-round />
                 </n-icon>
               </template>
-            </n-input>
-            <n-button type="primary" @click="search"> 搜索题目</n-button>
+            </n-button>
           </n-input-group>
           <n-tag v-if="keywordTag != null" closable @close="clearKeyword">
             {{ keywordTag }}
@@ -56,12 +57,11 @@ import {
   NSpace,
   NTag
 } from "naive-ui"
-import { Search as SearchIcon } from "@vicons/fa"
-import { ErrorResult } from "@/components"
+import { SearchRound } from "@vicons/material"
+import { ErrorResult, EmptyData } from "@/components"
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { setTitle } from "@/utils"
-import EmptyData from "@/components/EmptyData.vue"
 
 const route = useRoute()
 const router = useRouter()

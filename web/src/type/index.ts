@@ -16,11 +16,11 @@ export const LanguageOptions: Array<LanguageOption> = [
   { value: 0, label: "C", version: "STD=11" },
   { value: 1, label: "C++", version: "STD=14" },
   { value: 2, label: "Java", version: "OpenJDK 1.8" },
-  { value: 3, label: "Python", version: "3.5" },
+  { value: 3, label: "Python", version: "3.x" },
   { value: 4, label: "Bash Shell", version: "" },
   { value: 5, label: "C#", version: "Mono" },
   { value: 6, label: "JavaScript", version: "Node.js" },
-  { value: 7, label: "Kotlin", version: "1.7.10" },
+  { value: 7, label: "Kotlin", version: "1.7.x" },
   { value: 8, label: "Go", version: "1.19" }
 ]
 

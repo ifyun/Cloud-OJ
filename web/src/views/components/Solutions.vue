@@ -1,5 +1,25 @@
 <template>
   <n-space vertical>
+    <n-input-group style="width: 450px">
+      <n-select
+        v-model:value="filter"
+        :options="filterOptions"
+        @update:value="filterChange"
+        style="width: 40%" />
+      <n-input v-model:value="filterValue" :disabled="filter == 0" />
+      <n-button
+        :disabled="filter == 0"
+        type="primary"
+        secondary
+        @click="search">
+        搜索记录
+        <template #icon>
+          <n-icon>
+            <search-round />
+          </n-icon>
+        </template>
+      </n-button>
+    </n-input-group>
     <n-data-table
       single-column
       :columns="columns"
@@ -7,9 +27,9 @@
       :loading="pagination.loading" />
     <n-pagination
       v-model:page="pagination.page"
+      simple
       :page-size="pagination.pageSize"
       :item-count="solutions.count"
-      simple
       @update:page="pageChange">
       <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
     </n-pagination>
@@ -28,17 +48,25 @@ import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
+  NIcon,
+  NInput,
+  NInputGroup,
   NPagination,
+  NSelect,
   NSpace,
   NDataTable,
   NButton,
   NTooltip,
-  NIcon,
   NTag,
   NText
 } from "naive-ui"
+import {
+  CircleRound,
+  CheckCircleFilled,
+  ErrorRound,
+  SearchRound
+} from "@vicons/material"
 import moment from "moment-timezone"
-import { CircleRound, CheckCircleFilled, ErrorRound } from "@vicons/material"
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
 import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
@@ -48,17 +76,9 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const props = withDefaults(
-  defineProps<{ problemId: string | null; single?: boolean }>(),
-  {
-    problemId: null,
-    single: false
-  }
-)
-
 const pagination = ref({
   page: 1,
-  pageSize: 20,
+  pageSize: 15,
   loading: true
 })
 
@@ -70,7 +90,22 @@ const solutions = ref<Page<JudgeResult>>({
   count: 0
 })
 
-let filter = {}
+const filter = ref<number>(0)
+const filterValue = ref<string>("")
+const filterOptions = [
+  {
+    label: "关闭过滤",
+    value: 0
+  },
+  {
+    label: "题目 ID",
+    value: 1
+  },
+  {
+    label: "题目名称",
+    value: 2
+  }
+]
 
 const columns: DataTableColumns<JudgeResult> = [
   {
@@ -139,7 +174,7 @@ const columns: DataTableColumns<JudgeResult> = [
     )
   },
   {
-    title: "时间",
+    title: "CPU 时间",
     key: "time",
     align: "right",
     render: (row) => (
@@ -149,7 +184,7 @@ const columns: DataTableColumns<JudgeResult> = [
     )
   },
   {
-    title: "内存",
+    title: "内存占用",
     key: "memory",
     align: "right",
     render: (row) => (
@@ -188,8 +223,9 @@ const columns: DataTableColumns<JudgeResult> = [
 ]
 
 onBeforeMount(() => {
-  if (props.problemId != null) {
-    filter = { problemId: Number(props.problemId) }
+  if (route.query.filter) {
+    filter.value = Number(route.query.filter)
+    filterValue.value = route.query.filterValue as string
   }
 
   if (route.query.page) {
@@ -202,7 +238,14 @@ onBeforeMount(() => {
 function querySolutions() {
   pagination.value.loading = true
   const { page, pageSize } = pagination.value
-  UserApi.getSolutions(page, pageSize, userInfo.value, filter)
+  console.log(filter.value)
+  UserApi.getSolutions(
+    page,
+    pageSize,
+    userInfo.value,
+    filter.value,
+    filterValue.value
+  )
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (pagination.value.loading = false))
@@ -210,7 +253,24 @@ function querySolutions() {
 
 function pageChange(page: number) {
   router.push({
-    query: { tab: "solutions", page }
+    query: {
+      tab: "solutions",
+      page,
+      filter: filter.value,
+      filterValue: filterValue.value
+    }
   })
+}
+
+function filterChange(value: number) {
+  if (value == 0) {
+    filter.value = 0
+    filterValue.value = ""
+    pageChange(1)
+  }
+}
+
+function search() {
+  pageChange(1)
 }
 </script>
