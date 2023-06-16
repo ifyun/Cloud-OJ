@@ -1,6 +1,10 @@
 <template>
   <n-space size="large" align="center">
-    <user-avatar :size="72" :user-id="userId" />
+    <user-avatar
+      :size="72"
+      :user-id="userId"
+      :name="profile.name"
+      :has-avatar="profile.hasAvatar" />
     <div>
       <n-space vertical size="small">
         <n-space size="large" align="center">

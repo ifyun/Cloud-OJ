@@ -6,8 +6,8 @@
       <n-timeline-item
         v-for="item in solutions.data"
         :key="item.solutionId"
-        :type="ResultTypes[item.result].type"
-        :title="ResultTypes[item.result].text"
+        :type="(ResultTypes[item.result!].type as any)"
+        :title="ResultTypes[item.result!].text"
         :content="content(item)"
         :time="time(item)"
         line-type="dashed" />
@@ -31,7 +31,7 @@ const userInfo = computed(() => store.state.userInfo)
 const solutions = ref<Page<JudgeResult>>({ data: [], count: 0 })
 
 onBeforeMount(() => {
-  UserApi.getSolutions(1, 6, userInfo.value).then((data) => {
+  UserApi.getSolutions(1, 5, userInfo.value).then((data) => {
     solutions.value = data
   })
 })

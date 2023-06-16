@@ -181,7 +181,7 @@ const userInfo = computed(() => {
 const headers = computed(() => {
   return {
     userId: userInfo.value.userId,
-    token: userInfo.value.token
+    Authorization: `Baerer ${userInfo.value.token}`
   }
 })
 

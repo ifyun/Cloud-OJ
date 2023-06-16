@@ -12,4 +12,5 @@ public class Ranking {
     private Integer committed;
     private Integer passed;
     private Double score;
+    private Boolean hasAvatar;
 }

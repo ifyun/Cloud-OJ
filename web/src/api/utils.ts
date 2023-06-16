@@ -27,7 +27,7 @@ function buildHeaders(userInfo: UserInfo | null): any {
   } else {
     return {
       "Content-Type": "application/json",
-      token: userInfo.token
+      Authorization: `Baerer ${userInfo.token}`
     }
   }
 }

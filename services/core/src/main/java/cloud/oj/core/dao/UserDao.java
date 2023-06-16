@@ -21,6 +21,8 @@ public interface UserDao {
 
     int update(User user);
 
+    void updateAvatar(String userId);
+
     int delete(String userId);
 
     List<HashMap<Integer, Integer>> getLanguagePreference(String userId);

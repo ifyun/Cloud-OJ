@@ -92,8 +92,8 @@ const UserApi = {
     page: number,
     limit: number,
     userInfo: UserInfo,
-    filter: number | null,
-    filterValue: string | null
+    filter: number | null = null,
+    filterValue: string | null = null
   ) {
     return new Promise<Page<JudgeResult>>((resolve, reject) => {
       axios({
@@ -101,7 +101,7 @@ const UserApi = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          token: userInfo.token!,
+          Authorization: `Bearer ${userInfo.token!}`,
           userId: userInfo.userId!
         },
         params: {

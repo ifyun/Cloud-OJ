@@ -54,6 +54,27 @@ class AuthApi {
   }
 
   /**
+   * 刷新 Token
+   * @param userInfo {@link UserInfo}
+   * @returns
+   */
+  refresh_token(userInfo: UserInfo): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      axios({
+        url: ApiPath.REFRESH_TOKEN,
+        method: "GET",
+        headers: buildHeaders(userInfo)
+      })
+        .then((res) => {
+          resolve(res.data)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  }
+
+  /**
    * 验证 Token
    *
    * @param userInfo {@link UserInfo}

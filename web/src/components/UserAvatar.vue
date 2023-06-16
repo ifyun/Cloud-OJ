@@ -1,10 +1,18 @@
 <template>
   <n-avatar
+    v-if="hasAvatar"
     round
     :src="url"
     :size="size"
     style="vertical-align: middle"
     @error="url = ''" />
+  <n-avatar
+    v-else
+    round
+    :size="size"
+    style="vertical-align: middle; background: var(--primary-color)">
+    {{ name.substring(0, 1).toUpperCase() }}
+  </n-avatar>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +22,8 @@ import { ApiPath } from "@/api/request"
 
 interface Props {
   userId: string
+  name: string
+  hasAvatar: boolean
   size: "small" | "medium" | "large" | number
   timestamp?: number
 }

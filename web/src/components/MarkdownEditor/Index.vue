@@ -77,7 +77,7 @@ const uploadRef = ref<UploadInst | null>(null)
 const headers = computed(() => {
   return {
     userId: store.state.userInfo.userId,
-    token: store.state.userInfo.token
+    Authorization: `Baerer ${store.state.userInfo.token}`
   }
 })
 

@@ -29,6 +29,7 @@ public class JwtUtil {
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())
                 .claim("section", user.getSection())
+                .claim("hasAvatar", user.getHasAvatar())
                 .claim("roleId", user.getRoleId())
                 .claim("authorities", authorities)
                 .signWith(stringToSecretKey(secret))

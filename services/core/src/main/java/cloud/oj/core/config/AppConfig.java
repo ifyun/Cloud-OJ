@@ -11,7 +11,7 @@ import java.io.File;
 
 @Slf4j
 @Configuration
-public class FileServerConfig extends WebMvcConfigurationSupport {
+public class AppConfig extends WebMvcConfigurationSupport {
 
     @Value(("${app.file-dir}"))
     private String fileDir;

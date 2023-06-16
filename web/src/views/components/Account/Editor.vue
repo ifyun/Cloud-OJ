@@ -18,7 +18,9 @@
             <n-space vertical align="center" size="large">
               <user-avatar
                 :size="128"
-                :user-id="userInfo?.userId!"
+                :user-id="userInfo.userId"
+                :name="userInfo.name"
+                :has-avatar="userInfo.hasAvatar"
                 :timestamp="t" />
               <n-upload
                 action="/api/core/file/img/avatar"
@@ -103,9 +105,10 @@ import {
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
 import { hashSync } from "bcryptjs"
 import UserAvatar from "@/components/UserAvatar.vue"
-import { UserApi } from "@/api/request"
+import { AuthApi, UserApi } from "@/api/request"
 import { ErrorMessage, User, UserInfo } from "@/api/type"
 import { setTitle } from "@/utils"
+import { Mutations } from "@/store"
 
 const router = useRouter()
 const store = useStore()
@@ -114,14 +117,14 @@ const message = useMessage()
 const loading = ref<boolean>(false)
 const userForm = ref<HTMLFormElement | null>(null)
 
-const userInfo = computed<UserInfo | null>(() => {
+const userInfo = computed(() => {
   return store.state.userInfo
 })
 
 const headers = computed(() => {
   return {
-    userId: userInfo.value!.userId,
-    token: userInfo.value!.token
+    userId: userInfo.value.userId,
+    Authorization: `Baerer ${userInfo.value.token}`
   }
 })
 
@@ -204,7 +207,7 @@ function save() {
       UserApi.save(user.value, userInfo.value)
         .then(() => {
           message.success("个人信息已更新")
-          location.reload()
+          refresh()
         })
         .catch((err: ErrorMessage) => {
           message.error(err.toString())
@@ -224,5 +227,17 @@ function back() {
 
 function uploadFinish() {
   t.value = Date.now()
+  refresh()
+}
+
+function refresh() {
+  AuthApi.refresh_token(userInfo.value)
+    .then((token) => {
+      store.commit(Mutations.SAVE_TOKEN, token)
+      location.reload()
+    })
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
+    })
 }
 </script>

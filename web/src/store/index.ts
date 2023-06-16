@@ -21,6 +21,7 @@ function resolveToken(token: string): UserInfo {
   userInfo.name = json.name
   userInfo.email = json.email ?? ""
   userInfo.section = json.section ?? ""
+  userInfo.hasAvatar = json.hasAvatar
   return userInfo
 }
 

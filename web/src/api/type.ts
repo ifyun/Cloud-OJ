@@ -12,13 +12,14 @@ export class UsernamePassword {
 }
 
 export class User {
-  userId = ""
-  name = ""
+  userId: string = ""
+  name: string = ""
   password: string = ""
   confirmPassword: string = ""
   roleId?: number
-  email = ""
-  section = ""
+  email: string = ""
+  section: string = ""
+  hasAvatar: boolean = false
   createAt?: number
 }
 
@@ -31,6 +32,7 @@ export class UserInfo {
   email: string = ""
   section: string = ""
   token?: string
+  hasAvatar: boolean = false
   roleId = 1
 }
 
@@ -100,12 +102,13 @@ export class Contest {
 }
 
 export class Ranking {
-  rank = 0
-  name = ""
-  userId = ""
-  committed = 0
-  passed = 0
-  score = 0
+  rank: number = 0
+  name: string = ""
+  userId: string = ""
+  hasAvatar: boolean = false
+  committed: number = 0
+  passed: number = 0
+  score: number = 0
 }
 
 /**

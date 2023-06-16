@@ -17,13 +17,17 @@ public class User implements UserDetails {
     private String userId;
 
     private String name;
+
     private String password;
+
     @JsonIgnore
     private String secret;
 
+    private String email;
+
     private String section;
 
-    private String email;
+    private Boolean hasAvatar;
 
     private int roleId;
 

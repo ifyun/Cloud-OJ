@@ -1,5 +1,6 @@
 package cloud.oj.core.service;
 
+import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.TestData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,12 @@ import java.util.UUID;
 public class FileService {
     @Value("${app.file-dir}")
     private String fileDir;
+
+    private final UserDao userDao;
+
+    public FileService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     public List<TestData> getTestData(Integer problemId) {
         var files = new File(fileDir + "data/" + problemId).listFiles();
@@ -100,13 +107,14 @@ public class FileService {
         var dir = new File(avatarDir);
         var avatar = new File(avatarDir + userId + ".png");
 
-        if (!dir.exists() && !avatar.mkdirs()) {
+        if (!dir.exists() && !dir.mkdirs()) {
             log.error("无法创建目录 {}", dir.getAbsolutePath());
             return ResponseEntity.status(500).body("无法创建目录.");
         }
 
         try {
             file.transferTo(avatar);
+            userDao.updateAvatar(userId);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
             log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());

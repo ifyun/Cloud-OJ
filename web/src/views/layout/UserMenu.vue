@@ -1,6 +1,10 @@
 <template>
   <n-space v-if="isLoggedIn" align="center" size="small">
-    <user-avatar size="small" :user-id="userId" />
+    <user-avatar
+      size="small"
+      :user-id="userInfo.userId!"
+      :name="userInfo.name!"
+      :has-avatar="userInfo.hasAvatar" />
     <n-dropdown
       trigger="click"
       :show-arrow="true"
@@ -93,8 +97,6 @@ const isLoggedIn = computed<boolean>(() => {
 const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo
 })
-
-const userId = computed<string>(() => store.state.userInfo.userId)
 
 function userMenuSelect(key: string) {
   if (key === "exit") {

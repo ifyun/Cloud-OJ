@@ -1,6 +1,7 @@
 const ApiPath = {
   LOGIN: "/api/auth/login",
   LOGOFF: "/api/auth/logoff",
+  REFRESH_TOKEN: "/api/auth/refresh_token",
   VERIFY: "/api/auth/verify",
   IMAGE: "/api/core/file/img",
   AVATAR: "/api/core/file/img/avatar",

@@ -23,7 +23,7 @@
                   <search-icon />
                 </n-icon>
               </template>
-              搜索
+              搜索用户
             </n-button>
           </n-input-group>
         </n-space>
@@ -135,7 +135,12 @@ const columns: DataTableColumns<User> = [
     ),
     render: (row) => (
       <NSpace align="center">
-        <UserAvatar size="small" userId={row.userId} />
+        <UserAvatar
+          size="small"
+          userId={row.userId}
+          name={row.name}
+          hasAvatar={row.hasAvatar}
+        />
         <NButton text={true}>
           <span style="font-weight: 500">{row.name}</span>
         </NButton>

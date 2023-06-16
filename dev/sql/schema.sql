@@ -51,15 +51,16 @@ create table role
 
 create table user
 (
-    user_id   varchar(32)                         not null
+    user_id    varchar(32)                          not null
         primary key,
-    name      varchar(16)                         not null,
-    password  varchar(100)                        not null,
-    secret    char(36)                            not null comment '秘钥，用于生成 jwt',
-    email     varchar(32)                         null,
-    section   varchar(16)                         null,
-    role_id   int       default 1                 not null,
-    create_at timestamp default CURRENT_TIMESTAMP null,
+    name       varchar(16)                          not null,
+    password   varchar(100)                         not null,
+    secret     char(36)                             not null,
+    email      varchar(32)                          null,
+    section    varchar(16)                          null,
+    has_avatar tinyint(1) default 0                 not null,
+    role_id    int        default 1                 not null,
+    create_at  timestamp  default CURRENT_TIMESTAMP null,
     constraint user_role_role_id_fk
         foreign key (role_id) references role (role_id)
             on update cascade

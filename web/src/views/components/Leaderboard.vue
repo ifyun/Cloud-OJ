@@ -6,7 +6,6 @@
       <n-space vertical>
         <n-data-table
           single-column
-          size="small"
           :loading="loading"
           :columns="rankingColumns"
           :data="rankings.data" />
@@ -78,7 +77,12 @@ const rankingColumns: DataTableColumns<Ranking> = [
     key: "name",
     render: (row) => (
       <NSpace align="center" size="small">
-        <UserAvatar size="small" userId={row.userId} />
+        <UserAvatar
+          size="small"
+          userId={row.userId}
+          name={row.name}
+          hasAvatar={row.hasAvatar}
+        />
         <NText>{row.name}</NText>
       </NSpace>
     )

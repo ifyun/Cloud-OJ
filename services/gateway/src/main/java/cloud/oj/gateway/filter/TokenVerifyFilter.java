@@ -47,9 +47,11 @@ public class TokenVerifyFilter implements WebFilter {
             return chain.filter(exchange);
         }
 
-        var token = request.getHeaders().getFirst("token");
+        var token = request.getHeaders().getFirst("Authorization");
 
-        if (token == null) {
+        if (token != null) {
+            token = token.substring(6);
+        } else {
             token = request.getQueryParams().getFirst("token");
         }
 

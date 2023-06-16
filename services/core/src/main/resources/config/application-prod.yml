@@ -2,3 +2,5 @@ logging:
   level:
     root: info
     cloud.oj: info
+app:
+  file-dir: /var/lib/cloud-oj/
