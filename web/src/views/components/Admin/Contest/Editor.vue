@@ -41,7 +41,7 @@
               </n-form-item-grid-item>
               <n-form-item-grid-item
                 :span="1"
-                label="时间范围"
+                label="开始/结束时间"
                 path="timeRange">
                 <n-date-picker
                   v-model:value="contest.timeRange"
@@ -92,8 +92,7 @@ import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, UserInfo } from "@/api/type"
 import { LanguageOption, LanguageOptions } from "@/type"
-import { LanguageUtil } from "@/utils"
-import Mutations from "@/store/mutations"
+import { LanguageUtil, setTitle } from "@/utils"
 
 const route = useRoute()
 const router = useRouter()
@@ -167,6 +166,7 @@ watch(languages, (value) => {
 })
 
 onBeforeMount(() => {
+  setTitle(route.meta.title as string)
   const reg = /^\d+$/
   const id = route.params.id.toString()
 
@@ -176,14 +176,7 @@ onBeforeMount(() => {
     loading.value = true
     queryContest(Number(id))
   }
-
-  setBreadcrumb()
 })
-
-function setBreadcrumb() {
-  const breadcrumb = ["竞赛管理", title.value]
-  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
-}
 
 function tabChange(tab: string) {
   currentTab.value = tab

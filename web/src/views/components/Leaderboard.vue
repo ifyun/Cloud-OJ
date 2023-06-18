@@ -13,7 +13,6 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="rankings.count"
-          simple
           @update:page="pageChange" />
       </n-space>
     </div>

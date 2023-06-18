@@ -64,6 +64,7 @@ export default {
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue"
+import { useRoute } from "vue-router"
 import {
   NButton,
   NCard,
@@ -76,11 +77,12 @@ import {
 } from "naive-ui"
 import { SaveRound } from "@vicons/material"
 import ErrorResult from "@/components/ErrorResult.vue"
-import store, { Mutations } from "@/store"
+import store from "@/store"
 import { ErrorMessage, Settings, UserInfo } from "@/api/type"
 import { SettingsApi } from "@/api/request"
 import { setTitle } from "@/utils"
 
+const route = useRoute()
 const message = useMessage()
 
 const error = ref<ErrorMessage | null>(null)
@@ -88,8 +90,7 @@ const settings = ref<Settings>({})
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
-  setTitle("系统设置")
-  store.commit(Mutations.SET_BREADCRUMB, ["系统设置"])
+  setTitle(route.meta.title as string)
   getSettings()
 })
 

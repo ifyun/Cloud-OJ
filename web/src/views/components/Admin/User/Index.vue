@@ -35,7 +35,6 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="users.count"
-          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
@@ -72,7 +71,6 @@ import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
 import { UserApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import moment from "moment"
-import { Mutations } from "@/store"
 
 const roles = [
   { text: "ADMIN", type: "primary" },
@@ -185,17 +183,15 @@ const columns: DataTableColumns<User> = [
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
-  setTitle("用户管理")
-  store.commit(Mutations.SET_BREADCRUMB, ["用户管理"])
-  const query = route.query
+  setTitle(route.meta.title as string)
 
   if (route.query.filter) {
     filter.value = Number(route.query.filter)
     filterValue.value = route.query.filterValue as string
   }
 
-  if ("page" in query) {
-    pagination.value.page = Number(query.page)
+  if (route.query.page) {
+    pagination.value.page = Number(route.query.page)
   }
 
   queryUsers()

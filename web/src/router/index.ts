@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 
+const RouterLayout = () => import("@/views/layout/RouterLayout.vue")
 const Auth = () => import("@/views/components/Auth/Index.vue")
 const Front = () => import("@/views/FrontRoot.vue")
 const ProblemList = () => import("@/views/components/ProblemList.vue")
@@ -38,12 +39,9 @@ const router = createRouter({
     {
       path: "/",
       name: "index",
+      redirect: "/problems",
       component: Front,
       children: [
-        {
-          path: "/",
-          redirect: "/problems"
-        },
         {
           path: "/problems",
           name: "problems",
@@ -104,42 +102,82 @@ const router = createRouter({
     {
       path: "/admin",
       name: "admin",
+      redirect: "/admin/problem/index",
       component: Admin,
       children: [
         {
-          path: "/admin/problem",
-          name: "problem_admin",
-          component: ProblemAdmin
+          path: "problem",
+          component: RouterLayout,
+          meta: {
+            title: "题目管理"
+          },
+          children: [
+            {
+              path: "index",
+              name: "problem_admin",
+              component: ProblemAdmin
+            },
+            {
+              path: "edit/:id",
+              name: "edit_problem",
+              component: ProblemEditor,
+              meta: {
+                title: "编辑题目"
+              }
+            },
+            {
+              path: "data/:id",
+              name: "test_data",
+              component: TestData,
+              meta: {
+                title: "测试数据管理"
+              }
+            }
+          ]
         },
         {
-          path: "/admin/problem/:id",
-          name: "edit_problem",
-          component: ProblemEditor
+          path: "contest",
+          component: RouterLayout,
+          meta: {
+            title: "竞赛管理"
+          },
+          children: [
+            {
+              path: "index",
+              name: "contest_admin",
+              component: ContestAdmin
+            },
+            {
+              path: "edit/:id",
+              name: "edit_contest",
+              component: ContestEditor,
+              meta: {
+                title: "编辑竞赛"
+              }
+            }
+          ]
         },
         {
-          path: "/admin/data/:id",
-          name: "test_data",
-          component: TestData
+          path: "user",
+          component: RouterLayout,
+          meta: {
+            title: "用户管理"
+          },
+          children: [
+            {
+              path: "index",
+              name: "user_admin",
+              component: UserAdmin
+            }
+          ]
         },
         {
-          path: "/admin/contest",
-          name: "contest_admin",
-          component: ContestAdmin
-        },
-        {
-          path: "/admin/contest/:id",
-          name: "edit_contest",
-          component: ContestEditor
-        },
-        {
-          path: "/admin/user",
-          name: "user_admin",
-          component: UserAdmin
-        },
-        {
-          path: "/admin/settings",
+          path: "settings",
           name: "settings",
-          component: SystemSettings
+          component: SystemSettings,
+          meta: {
+            title: "系统设置"
+          }
         }
       ]
     }

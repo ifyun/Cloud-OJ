@@ -67,9 +67,9 @@ import {
   FileDownloadOutlined as DownloadIcon
 } from "@vicons/material"
 import axios from "axios"
-import Mutations from "@/store/mutations"
 import { ApiPath, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, TestData } from "@/api/type"
+import { setTitle } from "@/utils"
 
 const action = ApiPath.TEST_DATA
 
@@ -115,7 +115,7 @@ const columns: DataTableColumns<TestData> = [
     render: (row) => <span>{row.size} 字节</span>
   },
   {
-    title: "操作",
+    title: "",
     key: "operation",
     align: "center",
     width: 240,
@@ -200,8 +200,7 @@ const disableUpload = computed<boolean>(() => {
 })
 
 onBeforeMount(() => {
-  const breadcrumb = ["题目管理", "测试数据管理"]
-  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
+  setTitle(route.meta.title as string)
 
   const reg = /^\d+$/
   const id = route.params.id.toString()

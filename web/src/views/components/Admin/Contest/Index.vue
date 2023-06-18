@@ -27,7 +27,6 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="contests.count"
-          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
         </n-pagination>
@@ -48,7 +47,7 @@
 <script setup lang="tsx">
 import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
   NButton,
@@ -71,13 +70,13 @@ import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import { LanguageOptions } from "@/type"
 import { ContestApi } from "@/api/request"
-import Mutations from "@/store/mutations"
 
 const timeFmt = "yyyy-MM-DD HH:mm"
 
 let selectedId: number | undefined
 
 const store = useStore()
+const route = useRoute()
 const router = useRouter()
 
 const loading = ref<boolean>(true)
@@ -189,8 +188,7 @@ const contests = ref<Page<Contest>>({
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
-  setTitle("竞赛管理")
-  store.commit(Mutations.SET_BREADCRUMB, ["竞赛管理"])
+  setTitle(route.meta.title as string)
   queryContests()
 })
 

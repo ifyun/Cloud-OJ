@@ -113,7 +113,7 @@ const columns: DataTableColumns<JudgeResult> = [
   {
     title: "状态",
     key: "result",
-    width: 120,
+    width: 100,
     align: "center",
     render: (row) => {
       const { type, text } = ResultTypes[row.result!]
@@ -168,17 +168,13 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "CPU 时间",
     key: "time",
     align: "right",
-    render: (row) => (
-      <NText type="success" strong>
-        {timeUsage(row.time!)}
-      </NText>
-    )
+    render: (row) => <NText type="success">{timeUsage(row.time!)}</NText>
   },
   {
     title: "内存占用",
     key: "memory",
     align: "right",
-    render: (row) => <NText strong>{ramUsage(row.memory!)}</NText>
+    render: (row) => <NText>{ramUsage(row.memory!)}</NText>
   },
   {
     title: "分数",

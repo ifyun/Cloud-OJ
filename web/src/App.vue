@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import {
   dateZhCN,
   NConfigProvider,
@@ -34,6 +34,7 @@ import { ErrorMessage } from "@/api/type"
 import { Mutations } from "@/store"
 
 const store = useStore()
+const route = useRoute()
 const router = useRouter()
 
 const theme = computed(() => {
@@ -48,8 +49,16 @@ const isLoggedIn = computed(() => {
   return store.getters.isLoggedIn
 })
 
-onMounted(() => {
-  console.log("Timezone:", store.state.timezone)
+router.afterEach(() => {
+  const routes: Array<string> = []
+
+  route.matched.forEach((r) => {
+    if (r.meta.title) {
+      routes.push(r.meta.title as string)
+    }
+  })
+
+  store.commit(Mutations.SET_BREADCRUMB, routes)
 
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
@@ -61,5 +70,9 @@ onMounted(() => {
       }
     })
   }
+})
+
+onMounted(() => {
+  console.log("Timezone:", store.state.timezone)
 })
 </script>

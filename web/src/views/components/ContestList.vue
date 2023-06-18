@@ -12,7 +12,6 @@
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="contests.count"
-          simple
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>

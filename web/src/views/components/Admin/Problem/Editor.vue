@@ -144,7 +144,6 @@ import { MarkdownEditor, MarkdownView } from "@/components"
 import { ErrorMessage, Problem, UserInfo } from "@/api/type"
 import { ProblemApi } from "@/api/request"
 import { setTitle } from "@/utils"
-import Mutations from "@/store/mutations"
 import MarkdownHelp from "./help.md?raw"
 
 const problemForm = ref<HTMLFormElement | null>(null)
@@ -243,6 +242,7 @@ watch(
 )
 
 onMounted(() => {
+  setTitle(route.meta.title as string)
   const reg = /^\d+$/
   const id = route.params.id.toString()
 
@@ -252,14 +252,7 @@ onMounted(() => {
     loading.value = true
     queryProblem(Number(id))
   }
-
-  setBreadcrumb()
 })
-
-function setBreadcrumb() {
-  const breadcrumb = ["题目管理", create.value ? "创建题目" : "编辑题目"]
-  store.commit(Mutations.SET_BREADCRUMB, breadcrumb)
-}
 
 function back() {
   router.back()
