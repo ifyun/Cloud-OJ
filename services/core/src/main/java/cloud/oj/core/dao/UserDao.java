@@ -9,11 +9,7 @@ import java.util.List;
 @Mapper
 public interface UserDao {
 
-    List<List<?>> getAll(Integer start, Integer limit);
-
-    List<List<?>> getAllByUserId(Integer start, Integer limit, String userId);
-
-    List<List<?>> getAllByName(Integer start, Integer limit, String name);
+    List<List<?>> getByFilter(Integer start, Integer limit, Integer filter, String filterValue);
 
     User getSingle(String userId);
 

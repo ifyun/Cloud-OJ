@@ -6,27 +6,27 @@
       style="margin-top: 48px" />
     <div v-else style="margin: 4px">
       <n-space vertical size="large">
-        <n-space>
-          <n-input-group>
-            <n-select
-              v-model:value="searchType"
-              :options="searchTypes"
-              style="width: 150px" />
-            <n-input
-              v-model:value="keyword"
-              clearable
-              show-count
-              maxlength="15" />
-            <n-button type="primary" @click="search">
-              <template #icon>
-                <n-icon>
-                  <search-icon />
-                </n-icon>
-              </template>
-              搜索用户
-            </n-button>
-          </n-input-group>
-        </n-space>
+        <n-input-group style="width: 520px">
+          <n-select
+            v-model:value="filter"
+            :options="filterOptions"
+            style="width: 180px"
+            @update:value="filterChange" />
+          <n-input
+            v-model:value="filterValue"
+            clearable
+            show-count
+            maxlength="15"
+            :disabled="filter == 0" />
+          <n-button type="primary" :disabled="filter == 0" @click="search">
+            <template #icon>
+              <n-icon>
+                <search-icon />
+              </n-icon>
+            </template>
+            搜索用户
+          </n-button>
+        </n-input-group>
         <n-data-table
           :columns="columns"
           :data="users.data"
@@ -88,13 +88,14 @@ const store = useStore()
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
 
-const searchTypes = [
+const filterOptions = [
+  { label: "关闭过滤", value: 0 },
   { label: "用户 ID", value: 1 },
   { label: "用户名", value: 2 }
 ]
 
-const searchType = ref<number>(1)
-const keyword = ref<string>("")
+const filter = ref<number>(0)
+const filterValue = ref<string>("")
 
 const users = ref<Page<User>>({
   data: [],
@@ -183,62 +184,54 @@ const columns: DataTableColumns<User> = [
 
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
-const searchParams = computed(() => {
-  const val = keyword.value.trim()
-
-  if (val.length === 0) {
-    return {}
-  }
-
-  return searchType.value === 1 ? { userId: val } : { name: val }
-})
-
 onBeforeMount(() => {
   setTitle("用户管理")
   store.commit(Mutations.SET_BREADCRUMB, ["用户管理"])
   const query = route.query
 
+  if (route.query.filter) {
+    filter.value = Number(route.query.filter)
+    filterValue.value = route.query.filterValue as string
+  }
+
   if ("page" in query) {
     pagination.value.page = Number(query.page)
-  }
-
-  if ("keyword" in query) {
-    keyword.value = String(query.keyword)
-  }
-
-  if ("searchType" in query) {
-    const val = Number(query.searchType)
-    searchType.value = val === 1 || val === 2 ? val : 1
   }
 
   queryUsers()
 })
 
-function search() {
-  pagination.value.page = 1
-  pageChange(pagination.value.page)
+function filterChange(value: number) {
+  if (value == 0) {
+    filter.value = 0
+    filterValue.value = ""
+    pageChange(1)
+  }
 }
 
 function pageChange(page: number) {
-  keyword.value = keyword.value.trim()
-  const query: any = { page }
-
-  if (keyword.value.length > 0) {
-    query.keyword = keyword.value
-    query.searchType = searchType.value
-  }
-
   router.push({
-    query
+    query: {
+      page,
+      filter: filter.value,
+      filterValue: filterValue.value
+    }
   })
+
+  queryUsers()
+}
+
+function search() {
+  pageChange(1)
 }
 
 function queryUsers() {
   loading.value = true
-  UserApi.getAll(
+  UserApi.getByFilter(
     pagination.value.page,
     pagination.value.pageSize,
-    searchParams.value,
+    filter.value,
+    filterValue.value,
     userInfo.value
   )
     .then((data) => {

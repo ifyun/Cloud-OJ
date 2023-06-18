@@ -30,9 +30,6 @@
                 搜索题目
               </n-button>
             </n-input-group>
-            <n-tag v-if="keywordTag != null" closable @close="clearKeyword">
-              {{ keywordTag }}
-            </n-tag>
           </n-space>
           <n-space align="center" justify="end">
             <n-button-group>
@@ -132,7 +129,6 @@ const problems = ref<Page<Problem>>({
 })
 
 const keyword = ref<string>("")
-const keywordTag = ref<string | null>(null)
 const showOperations = ref<boolean>(false)
 
 const point = ref({
@@ -262,7 +258,6 @@ onBeforeMount(() => {
 
   if ("keyword" in route.query) {
     keyword.value = String(route.query.keyword)
-    keywordTag.value = keyword.value
   }
 
   queryProblems()
@@ -299,12 +294,8 @@ function pageChange(page: number) {
   router.push({
     query: { page }
   })
-}
 
-function clearKeyword() {
-  router.push({
-    query: {}
-  })
+  queryProblems()
 }
 
 function search() {
@@ -313,6 +304,8 @@ function search() {
       query: { keyword: keyword.value }
     })
   }
+
+  pageChange(1)
 }
 
 function deleteProblem() {

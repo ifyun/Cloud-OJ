@@ -28,7 +28,9 @@ public class ProblemController {
      * @return 题目列表
      */
     @GetMapping
-    public ResponseEntity<?> getAllEnable(String keyword, Integer page, Integer limit) {
+    public ResponseEntity<?> getAllEnable(String keyword,
+                                          @RequestParam(defaultValue = "1") Integer page,
+                                          @RequestParam(defaultValue = "15") Integer limit) {
         var problems = PagedList.resolve(problemService.getAllEnabled(keyword, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)
@@ -41,7 +43,9 @@ public class ProblemController {
      * @return 题目列表
      */
     @GetMapping(path = "admin")
-    public ResponseEntity<?> getAll(String keyword, Integer page, Integer limit) {
+    public ResponseEntity<?> getAll(String keyword,
+                                    @RequestParam(defaultValue = "1") Integer page,
+                                    @RequestParam(defaultValue = "15") Integer limit) {
         var problems = PagedList.resolve(problemService.getAll(keyword, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)

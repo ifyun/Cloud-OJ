@@ -32,14 +32,8 @@ public class UserService {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public List<List<?>> getUsers(int page, int limit, String userId, String name) {
-        if (userId != null && !userId.isEmpty()) {
-            return userDao.getAllByUserId((page - 1) * limit, limit, userId);
-        } else if (name != null && !name.isEmpty()) {
-            return userDao.getAllByName((page - 1) * limit, limit, name);
-        } else {
-            return userDao.getAll((page - 1) * limit, limit);
-        }
+    public List<List<?>> getUsersByFilter(Integer page, Integer limit, Integer filter, String filterValue) {
+        return userDao.getByFilter((page - 1) * limit, limit, filter, filterValue);
     }
 
     public Optional<User> getUserInfo(String userId) {

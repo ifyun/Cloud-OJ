@@ -50,8 +50,8 @@
           position="absolute"
           :native-scrollbar="false"
           content-style="display: flex; flex-direction: column">
-          <router-view v-slot="{ Component }" :key="$route.fullPath">
-            <keep-alive>
+          <router-view v-slot="{ Component }">
+            <keep-alive :key="$route.path">
               <component :is="Component" />
             </keep-alive>
           </router-view>

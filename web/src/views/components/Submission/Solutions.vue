@@ -1,7 +1,6 @@
 <template>
   <n-space vertical>
     <n-data-table
-      single-column
       :columns="columns"
       :data="solutions.data"
       :loading="loading" />
@@ -50,7 +49,7 @@ const columns: DataTableColumns<JudgeResult> = [
   {
     title: "状态",
     key: "result",
-    width: 120,
+    width: 100,
     align: "center",
     render: (row) => {
       const { type, text } = ResultTypes[row.result!]
@@ -79,7 +78,7 @@ const columns: DataTableColumns<JudgeResult> = [
         <NIcon color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText strong depth="1" style="margin-left: 6px">
+        <NText strong depth="1" style="margin-left: 4px">
           {LanguageNames[row.language!]}
         </NText>
       </div>
@@ -89,31 +88,18 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "CPU 时间",
     key: "time",
     align: "right",
-    render: (row) => (
-      <NText type="primary" strong>
-        {timeUsage(row.time!)}
-      </NText>
-    )
+    render: (row) => <NText type="success">{timeUsage(row.time!)}</NText>
   },
   {
     title: "内存占用",
     key: "memory",
     align: "right",
-    render: (row) => (
-      <NText type="info" strong>
-        {ramUsage(row.memory!)}
-      </NText>
-    )
-  },
-  {
-    title: "分数",
-    key: "score",
-    align: "right"
+    render: (row) => <NText>{ramUsage(row.memory!)}</NText>
   },
   {
     title: "提交时间",
     key: "submitTime",
-    width: "140",
+    width: "120",
     align: "right",
     render: (row) => (
       <NTooltip trigger="click" placement="left">

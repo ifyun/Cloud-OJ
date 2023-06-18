@@ -140,6 +140,8 @@ function pageChange(page: number) {
   router.push({
     query: { page }
   })
+
+  queryRankings()
 }
 
 function queryRankings() {

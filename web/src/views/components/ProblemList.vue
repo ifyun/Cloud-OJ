@@ -21,9 +21,6 @@
               </template>
             </n-button>
           </n-input-group>
-          <n-tag v-if="keywordTag != null" closable @close="clearKeyword">
-            {{ keywordTag }}
-          </n-tag>
         </n-space>
         <n-data-table
           single-column
@@ -141,7 +138,6 @@ const problems = ref<Page<Problem>>({
 })
 
 const keyword = ref<string>("")
-const keywordTag = ref<string | null>(null)
 
 const noContent = computed<boolean>(
   () => !loading.value && problems.value.count === 0
@@ -156,7 +152,6 @@ onBeforeMount(() => {
 
   if ("keyword" in route.query) {
     keyword.value = String(route.query.keyword)
-    keywordTag.value = keyword.value
   }
 
   queryProblems()
@@ -166,12 +161,8 @@ function pageChange(page: number) {
   router.push({
     query: { page }
   })
-}
 
-function clearKeyword() {
-  router.push({
-    query: {}
-  })
+  queryProblems()
 }
 
 function search() {
@@ -180,6 +171,8 @@ function search() {
       query: { keyword: keyword.value }
     })
   }
+
+  pageChange(1)
 }
 
 /**

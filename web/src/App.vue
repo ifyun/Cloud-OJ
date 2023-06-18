@@ -8,10 +8,7 @@
     <n-global-style />
     <n-dialog-provider>
       <n-message-provider>
-        <router-view
-          v-if="!reload"
-          v-slot="{ Component }"
-          :key="$route.fullPath">
+        <router-view v-if="!reload" v-slot="{ Component }">
           <component :is="Component" />
         </router-view>
       </n-message-provider>

@@ -21,11 +21,16 @@ public class SolutionController {
     }
 
     /**
-     * 获取提交记录
+     * 根据过滤条件获取提交记录
+     * @param filter 1: by problemId, 2: by title
+     * @param filterValue problemId/title
      */
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestHeader String userId, Integer page, Integer limit,
-                                    Integer filter, String filterValue) {
+    public ResponseEntity<?> getAll(@RequestHeader String userId,
+                                    @RequestParam(defaultValue = "1") Integer page,
+                                    @RequestParam(defaultValue = "15") Integer limit,
+                                    Integer filter,
+                                    String filterValue) {
         var solutions = PagedList.resolve(solutionService.getSolutions(userId, page, limit, filter, filterValue));
         return solutions.getCount() > 0 ?
                 ResponseEntity.ok(solutions)

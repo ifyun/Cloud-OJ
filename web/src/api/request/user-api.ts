@@ -11,10 +11,11 @@ const UserApi = {
    * @param params 搜索参数
    * @param userInfo {@link UserInfo}
    */
-  getAll(
+  getByFilter(
     page: number,
     limit: number,
-    params: any,
+    filter: number | null = null,
+    filterValue: string | null = null,
     userInfo: UserInfo
   ): Promise<Page<User>> {
     return new Promise<Page<User>>((resolve, reject) => {
@@ -25,8 +26,8 @@ const UserApi = {
         params: {
           page,
           limit,
-          userId: params.userId,
-          name: params.name
+          filter,
+          filterValue
         }
       })
         .then((res) => {

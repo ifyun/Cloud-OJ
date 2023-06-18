@@ -9,7 +9,7 @@
           <n-tab-pane name="profile" tab="概览">
             <overview :user-id="userId" />
           </n-tab-pane>
-          <n-tab-pane name="solutions" tab="提交记录">
+          <n-tab-pane name="solutions" tab="提交记录" display-directive="show">
             <solution-list :problem-id="null" />
           </n-tab-pane>
         </n-tabs>

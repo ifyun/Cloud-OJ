@@ -106,7 +106,7 @@ import { FileUploadOutlined, SaveRound } from "@vicons/material"
 import { hashSync } from "bcryptjs"
 import UserAvatar from "@/components/UserAvatar.vue"
 import { AuthApi, UserApi } from "@/api/request"
-import { ErrorMessage, User, UserInfo } from "@/api/type"
+import { ErrorMessage, User } from "@/api/type"
 import { setTitle } from "@/utils"
 import { Mutations } from "@/store"
 

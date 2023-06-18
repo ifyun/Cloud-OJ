@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.UserDao">
-    <select id="getAll" resultMap="Map.User, Map.Total">
+    <select id="getByFilter" resultMap="Map.User, Map.Total">
         select sql_calc_found_rows user_id, name, email, section, has_avatar, role_id, create_at
         from user
-        order by role_id desc, create_at
-        limit #{start},#{limit};
-        select found_rows()
-    </select>
-    <select id="getAllByUserId" resultMap="Map.User, Map.Total">
-        select sql_calc_found_rows user_id, name, email, section, has_avatar, role_id, create_at
-        from user
-        where user_id like concat(#{userId}, '%')
-        order by role_id desc, create_at
-        limit #{start},#{limit};
-        select found_rows()
-    </select>
-    <select id="getAllByName" resultMap="Map.User, Map.Total">
-        select sql_calc_found_rows user_id, name, email, section, has_avatar, role_id, create_at
-        from user
-        where name like concat('%', #{name}, '%')
+        <choose>
+            <when test="filter == 1">
+                where user_id like concat(#{filterValue}, '%')
+            </when>
+            <when test="filter == 2">
+                where name like concat('%', #{filterValue}, '%')
+            </when>
+        </choose>
         order by role_id desc, create_at
         limit #{start},#{limit};
         select found_rows()

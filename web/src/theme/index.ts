@@ -75,7 +75,8 @@ const themeOverridesDark: GlobalThemeOverrides = {
     borderColor: "#161B22FF",
     thColor: "#161B22FF",
     tdColor: "#00000000",
-    tdColorHover: "#161B22FF"
+    tdColorHover: "#161B22FF",
+    tdColorStriped: "#161B22FF"
   },
   Transfer: {
     listColor: "#161B22FF"

@@ -213,6 +213,8 @@ function pageChange(page: number) {
   router.push({
     query: { page }
   })
+
+  queryContests()
 }
 
 function queryContests() {

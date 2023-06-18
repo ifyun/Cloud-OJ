@@ -21,6 +21,7 @@ public class UserController {
     /**
      * 获取统计信息
      *
+     * @param tz 时区
      * @return {@link java.util.HashMap}
      */
     @GetMapping(path = "overview")
@@ -29,13 +30,18 @@ public class UserController {
     }
 
     /**
-     * 获取所有用户
+     * 根据过滤条件获取用户
      *
+     * @param filter 1: by userId, 2: by name
+     * @param filterValue userId/name
      * @return 用户列表
      */
     @GetMapping(path = "admin")
-    public ResponseEntity<?> getUsers(Integer page, Integer limit, String userId, String name) {
-        var users = PagedList.resolve(userService.getUsers(page, limit, userId, name));
+    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "1") Integer page,
+                                      @RequestParam(defaultValue = "15") Integer limit,
+                                      Integer filter,
+                                      String filterValue) {
+        var users = PagedList.resolve(userService.getUsersByFilter(page, limit, filter, filterValue));
         return users.getCount() > 0 ?
                 ResponseEntity.ok(users)
                 : ResponseEntity.noContent().build();

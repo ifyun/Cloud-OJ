@@ -1,11 +1,11 @@
 <template>
   <n-space vertical>
-    <n-input-group style="width: 450px">
+    <n-input-group style="width: 520px">
       <n-select
         v-model:value="filter"
         :options="filterOptions"
-        @update:value="filterChange"
-        style="width: 40%" />
+        style="width: 180px"
+        @update:value="filterChange" />
       <n-input v-model:value="filterValue" :disabled="filter == 0" />
       <n-button
         :disabled="filter == 0"
@@ -93,18 +93,9 @@ const solutions = ref<Page<JudgeResult>>({
 const filter = ref<number>(0)
 const filterValue = ref<string>("")
 const filterOptions = [
-  {
-    label: "关闭过滤",
-    value: 0
-  },
-  {
-    label: "题目 ID",
-    value: 1
-  },
-  {
-    label: "题目名称",
-    value: 2
-  }
+  { label: "关闭过滤", value: 0 },
+  { label: "题目 ID", value: 1 },
+  { label: "题目名称", value: 2 }
 ]
 
 const columns: DataTableColumns<JudgeResult> = [
@@ -178,7 +169,7 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "time",
     align: "right",
     render: (row) => (
-      <NText type="primary" strong>
+      <NText type="success" strong>
         {timeUsage(row.time!)}
       </NText>
     )
@@ -187,11 +178,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "内存占用",
     key: "memory",
     align: "right",
-    render: (row) => (
-      <NText type="info" strong>
-        {ramUsage(row.memory!)}
-      </NText>
-    )
+    render: (row) => <NText strong>{ramUsage(row.memory!)}</NText>
   },
   {
     title: "分数",
@@ -238,7 +225,7 @@ onBeforeMount(() => {
 function querySolutions() {
   pagination.value.loading = true
   const { page, pageSize } = pagination.value
-  console.log(filter.value)
+
   UserApi.getSolutions(
     page,
     pageSize,
@@ -260,6 +247,8 @@ function pageChange(page: number) {
       filterValue: filterValue.value
     }
   })
+
+  querySolutions()
 }
 
 function filterChange(value: number) {

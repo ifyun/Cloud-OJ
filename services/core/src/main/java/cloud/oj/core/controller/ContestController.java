@@ -30,7 +30,8 @@ public class ContestController {
      * @return 竞赛列表
      */
     @GetMapping
-    public ResponseEntity<?> contests(Integer page, Integer limit) {
+    public ResponseEntity<?> contests(@RequestParam(defaultValue = "1") Integer page,
+                                      @RequestParam(defaultValue = "15") Integer limit) {
         PagedList contests;
         if (systemSettings.getSettings().isShowAllContest()) {
             contests = PagedList.resolve(contestService.getAllContest(page, limit));
@@ -61,7 +62,8 @@ public class ContestController {
      * @return 竞赛列表
      */
     @GetMapping(path = "admin")
-    public ResponseEntity<?> allContests(Integer page, Integer limit) {
+    public ResponseEntity<?> allContests(@RequestParam(defaultValue = "1") Integer page,
+                                         @RequestParam(defaultValue = "15") Integer limit) {
         var contests = PagedList.resolve(contestService.getAllContest(page, limit));
         return contests.getCount() > 0 ?
                 ResponseEntity.ok(contests)
@@ -112,7 +114,9 @@ public class ContestController {
      * @return 题目列表
      */
     @GetMapping("admin/problems_not_in_contest/{contestId}")
-    public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId, Integer page, Integer limit) {
+    public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId,
+                                                     @RequestParam(defaultValue = "1") Integer page,
+                                                     @RequestParam(defaultValue = "15") Integer limit) {
         var problems = PagedList.resolve(contestService.getProblemsNotInContest(contestId, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)
