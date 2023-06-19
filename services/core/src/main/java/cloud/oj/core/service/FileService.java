@@ -1,9 +1,9 @@
 package cloud.oj.core.service;
 
+import cloud.oj.core.config.AppConfig;
 import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.TestData;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,13 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class FileService {
-    @Value("${app.file-dir}")
-    private String fileDir;
+
+    private final String fileDir;
 
     private final UserDao userDao;
 
-    public FileService(UserDao userDao) {
+    public FileService(AppConfig appConfig, UserDao userDao) {
+        this.fileDir = appConfig.getFileDir();
         this.userDao = userDao;
     }
 

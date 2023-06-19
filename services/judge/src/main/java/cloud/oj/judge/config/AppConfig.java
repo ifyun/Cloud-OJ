@@ -1,7 +1,6 @@
 package cloud.oj.judge.config;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +11,6 @@ import java.util.*;
 
 @Slf4j
 @Getter
-@Setter
 @ConfigurationProperties("app")
 public class AppConfig {
     private final ApplicationContext applicationContext;
@@ -36,7 +34,7 @@ public class AppConfig {
         if (fileDir == null) {
             this.fileDir = home + "/.local/cloud-oj/";
         } else if (!fileDir.endsWith("/")) {
-            this.fileDir = fileDir + '/';
+            this.fileDir = fileDir + "/";
         } else {
             this.fileDir = fileDir;
         }
@@ -53,9 +51,9 @@ public class AppConfig {
         createDir(this.codeDir);
         configCpus();
 
-        log.info("测试数据目录: {}", fileDir);
-        log.info("临时代码目录: {}", codeDir);
-        log.info("自动删除判题产物: {}", autoCleanSolution);
+        log.info("数据文件目录: {}", this.fileDir);
+        log.info("临时代码目录: {}", this.codeDir);
+        log.info("自动删除判题产物: {}", this.autoCleanSolution);
     }
 
     private void configCpus() {
