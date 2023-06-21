@@ -30,6 +30,7 @@ spring:
         query-passing: true
         prefer-ip-address: ${USE_IP:false}
         ip-address: ${SERVICE_IP:${spring.cloud.client.ip-address}}
+        instance-id: ${spring.application.name}-${server.port}-${random.int}
         health-check-critical-timeout: 5m
 management:
   endpoint:
