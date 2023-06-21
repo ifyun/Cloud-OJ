@@ -20,7 +20,7 @@ private:
     * @param path 文件路径
     * @return 偏移量
     */
-    static __off_t get_rtrim_offset(const std::string &);
+    static __off_t get_rtrim_offset(int fd);
 
 public:
     /**

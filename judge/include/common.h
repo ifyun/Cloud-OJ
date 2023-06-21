@@ -2,7 +2,7 @@
 #define COMMON_H 1
 
 #define RUNTIME_ERROR 1
-#define JUDGE_ERROR 2
+#define INTERNAL_ERROR 2
 
 /**
 * 分割字符串到数组

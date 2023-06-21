@@ -9,7 +9,6 @@ import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
@@ -20,9 +19,8 @@ import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.StringJoiner;
 
 @Slf4j
 @Component
@@ -225,13 +223,14 @@ public class Judgement {
         var timeLimit = limit.getTimeout();
         var memoryLimit = limit.getMemoryLimit();
         var outputLimit = limit.getOutputLimit();
-        var argv = new ArrayList<>();
+
+        StringJoiner argv = new StringJoiner(" ");
 
         switch (language) {
             case C, CPP, GO -> argv.add("--cmd=./Solution");
             case JAVA -> {
                 memoryLimit <<= 1;
-                argv.add("--cmd=java@Solution");
+                argv.add("--cmd=java@@Solution");
             }
             case KOTLIN -> {
                 timeLimit <<= 1;
@@ -251,17 +250,14 @@ public class Judgement {
             default -> throw new UnsupportedLanguageError(language.toString());
         }
 
-        var config = Arrays.asList(
-                "--time=" + timeLimit,
-                "--ram=" + memoryLimit,
-                "--output=" + outputLimit,
-                "--work-dir=" + workDir,
-                "--data=" + dataDir,
-                "--lang=" + solution.getLanguage(),
-                "--cpu=" + (cpu == null ? 0 : cpu)
-        );
-
-        argv.addAll(config);
-        return StringUtils.join(argv, " ");
+        return argv
+                .add("--time=" + timeLimit)
+                .add("--ram=" + memoryLimit)
+                .add("--output=" + outputLimit)
+                .add("--workdir=" + workDir)
+                .add("--data=" + dataDir)
+                .add("--lang=" + solution.getLanguage())
+                .add("--cpu=" + (cpu == null ? 0 : cpu))
+                .toString();
     }
 }

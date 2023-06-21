@@ -1,43 +1,69 @@
 #include <cstring>
-#include <boost/program_options.hpp>
-#include <iostream>
+#include <getopt.h>
 #include "options.h"
-#include "common.h"
 
-namespace po = boost::program_options;
+static struct option long_options[] = {
+        {"cmd", 1, nullptr, 'c'},
+        {"lang", 1, nullptr, 'l'},
+        {"time", 1, nullptr, 't'},
+        {"ram", 1, nullptr, 'm'},
+        {"output", 1, nullptr, 'o'},
+        {"workdir", 1, nullptr, 'w'},
+        {"data", 1, nullptr, 'd'},
+        {"cpu", 1, nullptr, 'u'},
+        {nullptr, 0, nullptr, 0}
+};
+
+static const char *short_options = "c:l:t:m:o:w:d:u:";
 
 int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char datadir[], Config &config) {
-    std::string _cmd, _workdir, _datadir;
-    po::options_description desc("选项");
-    desc.add_options()
-            ("help,h", "显示此信息")
-            ("cmd,c", po::value<std::string>(&_cmd), "命令(空格用 '@' 表示)")
-            ("lang,l", po::value<int>(&lang), "语言")
-            ("time,t", po::value<long>(&config.timeout), "时间限制(ms)")
-            ("ram,m", po::value<long>(&config.memory), "内存限制(MB)")
-            ("output,o", po::value<long>(&config.output_size), "输出限制(MB)")
-            ("work-dir,w", po::value<std::string>(&_workdir), "工作路径")
-            ("data,d", po::value<std::string>(&_datadir), "测试数据路径")
-            ("cpu,u", po::value<int>(&config.cpu), "CPU 核心");
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
-    po::notify(vm);
+    int opt;
+    int index = 0;
+    int count = 0;
 
-    if (vm.count("help")) {
-        std::cerr << desc;
-        return 1;
+    while ((opt = getopt_long_only(argc, argv, short_options, long_options, &index)) != EOF) {
+        switch (opt) {
+            case 'c':
+                strcpy(cmd, optarg);
+                count++;
+                break;
+            case 'w':
+                strcpy(workdir, optarg);
+                count++;
+                break;
+            case 'd':
+                strcpy(datadir, optarg);
+                count++;
+                break;
+            case 'l':
+                lang = (int) strtol(optarg, nullptr, 10);
+                count++;
+                break;
+            case 'u':
+                config.cpu = (int) strtol(optarg, nullptr, 10);
+                count++;
+                break;
+            case 't':
+                config.timeout = (int) strtol(optarg, nullptr, 10) * 1000;
+                count++;
+                break;
+            case 'm':
+                config.memory = (int) strtol(optarg, nullptr, 10) << 10;
+                count++;
+                break;
+            case 'o':
+                config.output_size = (int) strtol(optarg, nullptr, 10) << 10;
+                count++;
+                break;
+            case '?':
+            default:
+                return -1;
+        }
     }
 
-    if (vm.count("cmd") && vm.count("lang") && vm.count("time") && vm.count("ram") &&
-        vm.count("output") && vm.count("work-dir") && vm.count("data") && vm.count("cpu")) {
-        strcpy(cmd, _cmd.c_str());
-        strcpy(workdir, _workdir.c_str());
-        strcpy(datadir, _datadir.c_str());
-        config.timeout *= 1000;
-        config.memory <<= 10;
-        config.output_size <<= 10;
-        return 0;
-    } else {
-        return JUDGE_ERROR;
+    if (count < 8) {
+        return -1;
     }
+
+    return 0;
 }

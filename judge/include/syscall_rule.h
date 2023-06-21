@@ -18,7 +18,7 @@
 class SyscallRule {
 private:
     // 系统调用白名单
-    int rules[335] = {0};
+    int rules[512] = {0};
 public:
     explicit SyscallRule(int language);
 

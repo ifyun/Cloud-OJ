@@ -68,7 +68,7 @@ inline int Runner::run_cmd() {
 
     if (execvp(argv[0], argv) == -1) {
         perror("无法创建进程");
-        return JUDGE_ERROR;
+        return INTERNAL_ERROR;
     }
 
     return 0;
@@ -78,37 +78,40 @@ inline int Runner::run_cmd() {
  * @brief 等待结果
  */
 Result Runner::watch_result(pid_t pid) {
+    int syscall_number = 0;
     int status;
     struct rusage ru{};
     struct Result res{.memUsed = 0};
 
     while (wait4(pid, &status, 0, &ru) > 0) {
-        int syscall_number;
-        int stop_signal;
+        int stop_sig;
         struct user_regs_struct regs{};
-        ptrace(PTRACE_GETREGS, pid, 0, &regs);
 
-        // ? 检查系统调用
-        if ((syscall_number = syscall_rule->check(&regs)) != 0) {
-            kill(pid, SIGSYS);
+        if (syscall_number == 0) {
+            // ? 检查系统调用
+            ptrace(PTRACE_GETREGS, pid, 0, &regs);
+            if ((syscall_number = syscall_rule->check(&regs)) != 0) {
+                kill(pid, SIGSYS);
+            }
         }
 
         // * Code + Data + Stack
         res.memUsed = ru.ru_minflt * getpagesize() / 1024;
-
+        // ? 检查内存占用
         if (res.memUsed > config.memory) {
             kill(pid, SIGUSR1);
         }
 
-        res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000 +
-                       (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
+        res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
+                       + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        if (WIFSTOPPED(status) && (stop_signal = WSTOPSIG(status)) != SIGTRAP && stop_signal != SIGURG) {
+        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGTRAP
+            && stop_sig != SIGURG && stop_sig != SIGCHLD) {
             // ? 子进程停止
             // * 忽略 ptrace 产生的 SIGTRAP 信号
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
             // ! 没有 return 会进入死循环
-            switch (stop_signal) {
+            switch (stop_sig) {
                 case SIGUSR1:
                     res.status = MLE;
                     return res;
@@ -125,7 +128,7 @@ Result Runner::watch_result(pid_t pid) {
                     res.code = RUNTIME_ERROR;
                     return res;
                 default:
-                    sprintf(res.err, "程序停止(SIG%s)", strsignal(stop_signal));
+                    sprintf(res.err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
                     res.code = RUNTIME_ERROR;
                     return res;
             }
@@ -133,8 +136,8 @@ Result Runner::watch_result(pid_t pid) {
 
         if (WIFSIGNALED(status)) {
             // ? 子进程收到信号终止
-            auto signal = WTERMSIG(status);
-            switch (signal) {
+            int sig = WTERMSIG(status);
+            switch (sig) {
                 case SIGUSR1:
                     res.status = MLE;
                     break;
@@ -152,8 +155,12 @@ Result Runner::watch_result(pid_t pid) {
                     sprintf(res.err, "段错误(SIGSEGV)");
                     res.code = RUNTIME_ERROR;
                     return res;
+                case SIGSYS:
+                    sprintf(res.err, "非法调用(SYSCALL: %d)", syscall_number);
+                    res.code = RUNTIME_ERROR;
+                    return res;
                 default:
-                    sprintf(res.err, "程序终止(SIG%s)", strsignal(signal));
+                    sprintf(res.err, "程序终止(%d: %s)", sig, strsignal(sig));
                     res.code = RUNTIME_ERROR;
                     return res;
             }
@@ -182,7 +189,7 @@ Result Runner::watch_result(pid_t pid) {
 
 Result Runner::run() {
     if (chdir(work_dir) != 0) {
-        Result res = {.status=JUDGE_ERROR};
+        Result res = {.status=INTERNAL_ERROR};
         sprintf(res.err, "chdir: %s", strerror(errno));
         fprintf(stderr, "%s", res.err);
         return res;
@@ -192,7 +199,7 @@ Result Runner::run() {
     pid_t pid = fork();
 
     if (pid < 0) {
-        Result res = {.status=JUDGE_ERROR};
+        Result res = {.status=INTERNAL_ERROR};
         sprintf(res.err, "fork: %s", strerror(errno));
         fprintf(stderr, "%s", res.err);
         return res;
@@ -218,7 +225,7 @@ RTN Runner::judge() {
     DIR *dp = opendir(work_dir);
 
     if (dp == nullptr) {
-        rtn = {JUDGE_ERROR, "工作目录不存在"};
+        rtn = {INTERNAL_ERROR, "工作目录不存在"};
         goto exit;
     }
 
@@ -227,7 +234,7 @@ RTN Runner::judge() {
     root_fd = open("/", O_RDONLY);
 
     if (set_cpu() == -1) {
-        rtn = {JUDGE_ERROR, strerror(errno)};
+        rtn = {INTERNAL_ERROR, strerror(errno)};
         goto exit;
     }
 
@@ -238,13 +245,13 @@ RTN Runner::judge() {
         input_files = Utils::get_files(data_dir, "in");
         output_files = Utils::get_files(data_dir, "out");
     } catch (const std::invalid_argument &error) {
-        rtn = {JUDGE_ERROR, error.what()};
+        rtn = {INTERNAL_ERROR, error.what()};
         goto exit;
     }
 
     if (!input_files.empty() && !output_files.empty()) {
         if (input_files.size() != output_files.size()) {
-            rtn = {JUDGE_ERROR, "测试数据文件数量不一致"};
+            rtn = {INTERNAL_ERROR, "测试数据文件数量不一致"};
             goto exit;
         }
 
@@ -279,7 +286,7 @@ RTN Runner::judge() {
 
         results.push_back(res);
     } else {
-        rtn = {JUDGE_ERROR, "无测试数据"};
+        rtn = {INTERNAL_ERROR, "无测试数据"};
     }
 
     exit:

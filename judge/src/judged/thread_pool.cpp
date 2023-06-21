@@ -11,7 +11,7 @@ const std::string &thread_name(const std::string &name) {
 }
 
 static inline void build_err_res(char *des, char *err) {
-    sprintf(des, R"({"code": %d, "error": "%s"})", JUDGE_ERROR, err);
+    sprintf(des, R"({"code": %d, "error": "%s"})", INTERNAL_ERROR, err);
 }
 
 static inline void write_to(int &fd, const void *_buf, size_t _n) {

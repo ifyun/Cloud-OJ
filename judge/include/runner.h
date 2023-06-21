@@ -21,14 +21,14 @@ void alarm_child(int sig);
  * 运行配置(资源限制和文件路径)
  */
 struct Config {
-    long timeout;           // 运行时间(us)
-    long memory;            // 内存限制，用于判断是否超出限制(MB)
-    long output_size;       // 输出限制(MB)
-    int cpu = 0;            // CPU 核心，将进程绑定到指定核心减少切换
-    int in;                 // 输入文件 fd
-    int out;                // 输出文件 fd(实际输出)
-    char out_path[64];      // 输出文件路径(实际输出)
-    char expect_path[64];   // 输出文件路径(正确输出)
+    long timeout;            // 运行时间(us)
+    long memory;             // 内存限制，用于判断是否超出限制(MB)
+    long output_size;        // 输出限制(MB)
+    int cpu = 0;             // CPU 核心，将进程绑定到指定核心减少切换
+    int in;                  // 输入文件 fd
+    int out;                 // 输出文件 fd(实际输出)
+    char out_path[128];      // 输出文件路径(实际输出)
+    char expect_path[128];   // 输出文件路径(正确输出)
 };
 
 /**
@@ -39,7 +39,7 @@ struct Result {
     int status;
     long timeUsed;
     long memUsed;
-    char err[32];
+    char err[64];
 };
 
 /**

@@ -1,5 +1,4 @@
 /// 判题守护进程，使用 UNIX Domain Socket 通信
-/// @author Cloud
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <sys/stat.h>

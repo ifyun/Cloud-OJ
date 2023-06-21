@@ -3,14 +3,13 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <dirent.h>
 #include <algorithm>
 #include <cstring>
 #include <fcntl.h>
-#include <boost/iostreams/device/mapped_file.hpp>
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/mman.h>
 #include "utils.h"
-
-namespace io = boost::iostreams;
 
 const char *status_str[] = {"AC", "WA", "TLE", "MLE", "OLE", "PA"};
 
@@ -19,7 +18,7 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     DIR *dir = opendir(path.c_str());
 
     if (dir == nullptr) {
-        throw std::invalid_argument("[ERROR] 测试数据目录不存在.\n");
+        throw std::invalid_argument("测试数据目录不存在");
     }
 
     struct dirent *d_ent;
@@ -98,10 +97,9 @@ std::string Utils::calc_results(const std::vector<Result> &results) {
     return ss.str();
 }
 
-__off_t Utils::get_rtrim_offset(const std::string &path) {
+__off_t Utils::get_rtrim_offset(int fd) {
     __off_t offset;
     char buf;
-    int fd = open(path.c_str(), O_RDONLY, 0644);
 
     offset = lseek(fd, -2, SEEK_END);
 
@@ -117,28 +115,38 @@ __off_t Utils::get_rtrim_offset(const std::string &path) {
         read(fd, &buf, sizeof(buf));
     }
 
-    close(fd);
-
     return offset;
 }
 
 bool Utils::diff(const std::string &user_output, const std::string &expect_output) {
-    auto offset1 = get_rtrim_offset(user_output);
-    auto offset2 = get_rtrim_offset(expect_output);
+    int fd1 = open(user_output.c_str(), O_RDONLY, 0644);
+    int fd2 = open(expect_output.c_str(), O_RDONLY, 0644);
 
-    io::mapped_file_source file1(user_output, offset1);
-    io::mapped_file_source file2(expect_output, offset2);
+    auto len1 = get_rtrim_offset(fd1);
+    auto len2 = get_rtrim_offset(fd2);
 
-    bool r;
+    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_PRIVATE, fd1, 0);
+    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_PRIVATE, fd2, 0);
 
-    if (file1.size() != file2.size()) {
+    bool r = false;
+
+    if (len1 != len2) {
         r = true;
     } else {
-        r = !std::equal(file1.begin(), file1.end(), file2.begin(), file2.end());
+        for (auto i = 0; i < len1; i++) {
+            if (addr1[i] != addr2[i]) {
+                r = true;
+                break;
+            }
+        }
     }
 
-    file1.close();
-    file2.close();
+    close(fd1);
+    close(fd2);
+
+    munmap(addr1, len1);
+    munmap(addr2, len2);
+
     return r;
 }
 
