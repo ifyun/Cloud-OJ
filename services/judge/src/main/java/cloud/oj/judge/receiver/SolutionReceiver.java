@@ -1,10 +1,9 @@
 package cloud.oj.judge.receiver;
 
 import cloud.oj.judge.component.JudgementEntry;
-import cloud.oj.judge.config.AsyncConfig;
 import cloud.oj.judge.config.RabbitConfig;
-import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.service.SubmitService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +25,12 @@ import java.util.Map;
 @Component
 public class SolutionReceiver {
 
-    private final AsyncConfig asyncConfig;
-
     private final SubmitService submitService;
 
     private final JudgementEntry judgementEntry;
 
     @Autowired
-    public SolutionReceiver(AsyncConfig asyncConfig, SubmitService submitService, JudgementEntry judgementEntry) {
-        this.asyncConfig = asyncConfig;
+    public SolutionReceiver(SubmitService submitService, JudgementEntry judgementEntry) {
         this.submitService = submitService;
         this.judgementEntry = judgementEntry;
     }
@@ -46,12 +42,7 @@ public class SolutionReceiver {
     @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
-        if (asyncConfig.isSingleThread()) {
-            judgementEntry.judgeSync(solution);
-        } else {
-            judgementEntry.judge(solution);
-        }
-
+        judgementEntry.judge(solution);
         channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
     }
 

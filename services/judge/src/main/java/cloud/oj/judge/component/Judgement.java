@@ -186,13 +186,12 @@ public class Judgement {
                 runtime.setInfo(result.getError());
                 runtime.setResult(SolutionResult.RE);
             } else if (result.getCode() == IE) {
-                log.info("内部错误({}): {}", solution.getSolutionId(), result.getError());
                 throw new InternalError(result.getError());
             } else {
                 runtime.setResult(0);
             }
         } catch (IOException | InternalError | UnsupportedLanguageError e) {
-            log.info("内部错误({}): {}", solution.getSolutionId(), e.getMessage());
+            log.error("内部错误({}): {}", solution.getSolutionId(), e.getMessage());
             runtime.setResult(SolutionResult.IE);
             runtime.setInfo(e.getMessage());
         }
@@ -213,12 +212,6 @@ public class Judgement {
         }
 
         var cpu = cpuMap.get(Thread.currentThread().getName());
-
-        if (cpu == null) {
-            // 在提交线程时，cpu 为 null
-            cpu = appConfig.getCpus().get(0);
-        }
-
         var workDir = appConfig.getCodeDir() + solution.getSolutionId();
         var timeLimit = limit.getTimeout();
         var memoryLimit = limit.getMemoryLimit();
@@ -244,7 +237,7 @@ public class Judgement {
                 .add("--workdir=" + workDir)
                 .add("--data=" + dataDir)
                 .add("--lang=" + solution.getLanguage())
-                .add("--cpu=" + (cpu == null ? 0 : cpu))
+                .add("--cpu=" + cpu)
                 .toString();
     }
 }

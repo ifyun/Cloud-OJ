@@ -58,7 +58,7 @@ public class SubmitService {
         solution.setSourceCode(submitData.getSourceCode());
         solution.setState(SolutionState.IN_JUDGE_QUEUE);
         solutionDao.updateState(solution);
-
+        // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }
 }

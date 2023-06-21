@@ -48,11 +48,4 @@ public class JudgementEntry {
             }
         }
     }
-
-    /**
-     * 只有一个线程时，由调用线程执行判题
-     */
-    public void judgeSync(Solution solution) {
-        judge(solution);
-    }
 }

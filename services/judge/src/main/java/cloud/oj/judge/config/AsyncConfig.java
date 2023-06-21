@@ -9,6 +9,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.HashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
@@ -19,33 +21,38 @@ public class AsyncConfig {
 
     private final AppConfig appConfig;
 
-    private boolean singleThread = false;
-
     @Autowired
     public AsyncConfig(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
-    public boolean isSingleThread() {
-        return singleThread;
+    /**
+     * 阻塞策略，线程都被占用时阻塞提交
+     */
+    private static class BlockPolicy implements RejectedExecutionHandler {
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            if (!executor.isShutdown()) {
+                try {
+                    executor.getQueue().put(r);
+                } catch (InterruptedException e) {
+                    throw new RejectedExecutionException("Task " + r + " rejected");
+                }
+            }
+        }
     }
 
     @Bean
     public Executor judgeExecutor() {
         var threads = appConfig.getCpus().size();
 
-        if (threads == 1) {
-            singleThread = true;
-        } else {
-            threads -= 1;
-        }
-
         var executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix(THREAD_PREFIX);
         executor.setCorePoolSize(threads);
         executor.setMaxPoolSize(threads);
+        // 队列由 RabbitMQ 承担，容量设为 0 构造同步队列
         executor.setQueueCapacity(0);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setRejectedExecutionHandler(new BlockPolicy());
         executor.initialize();
         return executor;
     }
@@ -55,9 +62,8 @@ public class AsyncConfig {
         var cpuMap = new HashMap<String, Integer>();
         var cpuList = appConfig.getCpus();
 
-        log.info("{} --> CPU-{}", "Caller", cpuList.get(0));
-        // 将 CPU 与线程名称绑定，第 1 个留给提交线程
-        for (int i = 1; i < cpuList.size(); i++) {
+        // 将 CPU 与线程名称绑定
+        for (int i = 0; i < cpuList.size(); i++) {
             log.info("{} -> CPU-{}", THREAD_PREFIX + i, cpuList.get(i));
             cpuMap.put(THREAD_PREFIX + i, cpuList.get(i));
         }
