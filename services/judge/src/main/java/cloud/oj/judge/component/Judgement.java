@@ -228,25 +228,12 @@ public class Judgement {
 
         switch (language) {
             case C, CPP, GO -> argv.add("--cmd=./Solution");
-            case JAVA -> {
-                memoryLimit <<= 1;
-                argv.add("--cmd=java@@Solution");
-            }
-            case KOTLIN -> {
-                timeLimit <<= 1;
-                memoryLimit <<= 1;
-                argv.add("--cmd=kotlin@SolutionKt");
-            }
-            case JAVA_SCRIPT -> {
-                memoryLimit <<= 1;
-                argv.add("--cmd=node@Solution.js");
-            }
+            case JAVA -> argv.add("--cmd=java@@Solution");
+            case KOTLIN -> argv.add("--cmd=./Solution.kexe");
+            case JAVA_SCRIPT -> argv.add("--cmd=node@Solution.js");
             case PYTHON -> argv.add("--cmd=python3@Solution.py");
             case BASH -> argv.add("--cmd=sh@Solution.sh");
-            case C_SHARP -> {
-                memoryLimit <<= 1;
-                argv.add("--cmd=mono@Solution.exe");
-            }
+            case C_SHARP -> argv.add("--cmd=mono@Solution.exe");
             default -> throw new UnsupportedLanguageError(language.toString());
         }
 

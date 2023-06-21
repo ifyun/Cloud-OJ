@@ -48,21 +48,24 @@ CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
 # judge service
 FROM openjdk:17-jdk-bullseye as judge
 RUN sed -i "s/deb.debian.org/mirrors.ustc.edu.cn/g" /etc/apt/sources.list \
-    && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get update \
     && apt-get install -y --no-install-recommends gcc g++ mono-devel nodejs \
     && apt-get clean && rm -r /var/lib/apt/lists/*
 RUN curl -LJO \
-    https://go.dev/dl/go1.19.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz \
+    https://go.dev/dl/go1.20.5.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz \
     && ln -s /usr/local/go/bin/go /usr/bin/go \
-    && rm go1.19.linux-amd64.tar.gz
+    && rm go1.20.5.linux-amd64.tar.gz
 RUN curl -LJO \
-    https://github.com/JetBrains/kotlin/releases/download/v1.7.10/kotlin-compiler-1.7.10.zip \
-    && unzip -d /usr/share kotlin-compiler-1.7.10.zip \
-    && ln -s /usr/share/kotlinc/bin/kotlinc /usr/bin/kotlinc \
-    && ln -s /usr/share/kotlinc/bin/kotlin /usr/bin/kotlin \
-    && rm kotlin-compiler-1.7.10.zip
+    https://github.com/JetBrains/kotlin/releases/download/v1.8.22/kotlin-native-linux-x86_64-1.8.22.tar.gz \
+    && tar -C /usr/share -xzf kotlin-native-linux-x86_64-1.8.22.tar.gz \
+    && mv /usr/share/kotlin-native-linux-x86_64-1.8.22 /usr/share/kotlin \
+    && ln -s /usr/share/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
+    && ln -s /usr/share/kotlin/bin/run_konan /usr/bin/run_konan \
+    && rm kotlin-native-linux-x86_64-1.8.22.tar.gz
+# install dependencies
+RUN kotlinc-native foo.kt || true
 COPY --from=build-env /build/services/judge/entrypoint.sh /app/entrypoint.sh
 COPY --from=build-env /build/services/judge/target/lib/* /app/lib/
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar

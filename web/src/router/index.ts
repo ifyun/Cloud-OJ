@@ -107,6 +107,7 @@ const router = createRouter({
       children: [
         {
           path: "problem",
+          redirect: "/admin/problem/index",
           component: RouterLayout,
           meta: {
             title: "题目管理"

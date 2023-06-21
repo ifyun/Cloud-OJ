@@ -19,12 +19,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 class Compiler {
+
     private static final Map<Language, String[]> CMD = Map.of(
             Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.c", "-o", "Solution"},
             Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.cpp", "-o", "Solution"},
             Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"},
             Language.C_SHARP, new String[]{"mcs", "Solution.cs"},
-            Language.KOTLIN, new String[]{"kotlinc", "Solution.kt"},
+            Language.KOTLIN, new String[]{"kotlinc-native", "Solution.kt", "-o", "Solution"},
             Language.GO, new String[]{"go", "build", "Solution.go"}
     );
 
@@ -90,7 +91,7 @@ class Compiler {
 
             var process = processBuilder.start();
 
-            if (process.waitFor(10, TimeUnit.SECONDS)) {
+            if (process.waitFor(60, TimeUnit.SECONDS)) {
                 if (process.exitValue() == 0) {
                     return new Compile(solutionId, 0, null);
                 } else {
@@ -99,11 +100,11 @@ class Compiler {
                 }
             } else {
                 process.destroy();
-                throw new InterruptedException("编译超时(10s).");
+                throw new InterruptedException("编译超时");
             }
         } catch (IOException e) {
             log.error("编译错误({}): {}", solutionId, e.getMessage());
-            return new Compile(solutionId, -1, "编译器可能不存在.");
+            return new Compile(solutionId, -1, "编译器可能不存在");
         } catch (InterruptedException | CompileError e) {
             log.error("编译错误({}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
