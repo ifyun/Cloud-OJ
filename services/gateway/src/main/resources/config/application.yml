@@ -17,6 +17,10 @@ spring:
       max-lifetime: 30000
   jackson:
     default-property-inclusion: non_null
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=20m
   cloud:
     consul:
       host: ${CONSUL_HOST:localhost}

@@ -1,6 +1,6 @@
 logging:
   level:
-    root: info
+    root: warn
     cloud.oj: info
 app:
   code-dir: /tmp/code/

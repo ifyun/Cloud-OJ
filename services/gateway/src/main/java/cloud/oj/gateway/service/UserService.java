@@ -2,8 +2,11 @@ package cloud.oj.gateway.service;
 
 import cloud.oj.gateway.dao.UserDao;
 import cloud.oj.gateway.entity.Role;
+import cloud.oj.gateway.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +39,7 @@ public class UserService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        var user = userDao.findUserById(username);
+        var user = userDao.findById(username);
         if (user != null) {
             int roleId = user.getRoleId();
             List<Role> roles;
@@ -55,5 +58,21 @@ public class UserService implements ReactiveUserDetailsService {
             log.error(error);
             return Mono.error(new UsernameNotFoundException(error));
         }
+    }
+
+    public User findById(String userId) {
+        return userDao.findById(userId);
+    }
+
+    @Cacheable(key = "#userId", cacheNames = "userSecret")
+    public String getSecret(String userId) {
+        log.info("查询 Secret");
+        return userDao.getSecret(userId);
+    }
+
+    @CachePut(key = "#userId", cacheNames = "userSecret")
+    public String updateSecret(String userId, String newSecret) {
+        userDao.updateSecret(userId, newSecret);
+        return newSecret;
     }
 }

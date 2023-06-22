@@ -1,6 +1,6 @@
 logging:
   level:
-    root: info
+    root: warn
     cloud.oj: info
 app:
   file-dir: /var/lib/cloud-oj/

@@ -33,6 +33,6 @@ public class AppConfig {
             SpringApplication.exit(context, () -> -1);
         }
 
-        log.info("数据文件目录: {}", fileDir);
+        log.info("数据文件目录: {}", this.fileDir);
     }
 }

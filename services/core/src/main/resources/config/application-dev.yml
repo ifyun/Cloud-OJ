@@ -1,6 +1,4 @@
 logging:
   level:
-    root: warn
+    root: info
     cloud.oj: info
-app:
-  file-dir: ${HOME}/.local/cloud-oj/

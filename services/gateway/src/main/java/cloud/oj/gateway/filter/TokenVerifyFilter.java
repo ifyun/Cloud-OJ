@@ -1,7 +1,7 @@
 package cloud.oj.gateway.filter;
 
-import cloud.oj.gateway.dao.UserDao;
 import cloud.oj.gateway.error.ErrorMessage;
+import cloud.oj.gateway.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import lombok.SneakyThrows;
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 public class TokenVerifyFilter implements WebFilter {
 
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -68,7 +68,7 @@ public class TokenVerifyFilter implements WebFilter {
 
             log.debug("Verify token: [Path: {}, User: {}]", request.getPath(), userId);
 
-            var secret = userDao.getSecret(userId);
+            var secret = userService.getSecret(userId);
             var claims = JwtUtil.getClaims(token, secret);
 
             var authorities = AuthorityUtils
@@ -85,9 +85,9 @@ public class TokenVerifyFilter implements WebFilter {
             log.error("Verify token failed: {}", error);
 
             if (e instanceof StringIndexOutOfBoundsException) {
-                error = "错误的Token";
+                error = "Token 错误";
             } else if (error.contains("expired")) {
-                error = "失效的Token";
+                error = "Token 已过期";
             } else if (error.contains("signature")) {
                 error = "签名不匹配";
             }

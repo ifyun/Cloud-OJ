@@ -17,7 +17,7 @@ public class JwtUtil {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public static String createJwt(User user, Object authorities, Integer validTime, String secret) {
+    public static String createJwt(User user, Object authorities, Integer validTime) {
         var now = System.currentTimeMillis();
         var expire = now + validTime * 3600000L;
 
@@ -32,7 +32,7 @@ public class JwtUtil {
                 .claim("hasAvatar", user.getHasAvatar())
                 .claim("roleId", user.getRoleId())
                 .claim("authorities", authorities)
-                .signWith(stringToSecretKey(secret))
+                .signWith(stringToSecretKey(user.getSecret()))
                 .compact();
     }
 

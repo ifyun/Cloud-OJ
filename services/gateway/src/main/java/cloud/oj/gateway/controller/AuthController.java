@@ -1,9 +1,9 @@
 package cloud.oj.gateway.controller;
 
-import cloud.oj.gateway.dao.UserDao;
 import cloud.oj.gateway.entity.User;
 import cloud.oj.gateway.error.ErrorMessage;
 import cloud.oj.gateway.filter.JwtUtil;
+import cloud.oj.gateway.service.UserService;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,11 @@ public class AuthController {
     @Value("${app.token-valid-time:4}")
     private int tokenValidTime;
 
-    private final UserDao userDao;
+    private final UserService userService;
 
     @Autowired
-    public AuthController(UserDao userDao) {
-        this.userDao = userDao;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     private String newUUID() {
@@ -60,9 +60,8 @@ public class AuthController {
         var user = (User) auth.getPrincipal();
         var secret = newUUID();
 
-        user.setSecret(secret);
-        userDao.updateSecret(user.getUserId(), secret);
-        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime, user.getSecret());
+        user.setSecret(userService.updateSecret(user.getUserId(), secret));
+        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
 
         return Mono.just(ResponseEntity.ok(jwt));
     }
@@ -75,11 +74,11 @@ public class AuthController {
     public Mono<ResponseEntity<?>> logoff(@RequestHeader String Authorization) {
         var token = Authorization.substring(6);
         var userId = JwtUtil.getSubject(token);
-        var secret = userDao.getSecret(userId);
+        var secret = userService.getSecret(userId);
 
         try {
             JwtUtil.getClaims(token, secret);
-            userDao.updateSecret(userId, newUUID());
+            userService.updateSecret(userId, newUUID());
             log.info("Logoff: user={}.", userId);
             return Mono.just(ResponseEntity.ok("用户" + userId + "已退出"));
         } catch (JwtException | IllegalArgumentException e) {
@@ -93,26 +92,25 @@ public class AuthController {
      * <p>用户信息修改时调用此接口</p>
      *
      * @param Authorization Bearer JWT Token
-     * @param auth  若验证成功则不为 null
+     * @param auth          若验证成功则不为 null
      * @return JWT Token
      */
     @GetMapping(path = "refresh_token")
     public Mono<ResponseEntity<?>> refreshToken(@RequestHeader String Authorization, Authentication auth) {
         var token = Authorization.substring(6);
         var userId = JwtUtil.getSubject(token);
-        var user = userDao.findUserById(userId);
+        var user = userService.findById(userId);
         var authorities = auth.getAuthorities();
         var secret = newUUID();
 
-        userDao.updateSecret(userId, secret);
-        user.setSecret(secret);
+        user.setSecret(userService.updateSecret(userId, secret));
         StringBuilder authoritiesString = new StringBuilder();
 
         for (var authority : authorities) {
             authoritiesString.append(authority.getAuthority()).append(",");
         }
 
-        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime, user.getSecret());
+        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
 
         return Mono.just(ResponseEntity.ok(jwt));
     }

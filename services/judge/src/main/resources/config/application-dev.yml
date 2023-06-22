@@ -1,6 +1,6 @@
 logging:
   level:
-    root: warn
+    root: info
     cloud.oj: info
 app:
   auto-clean-solution: false
