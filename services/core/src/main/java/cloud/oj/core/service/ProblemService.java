@@ -74,7 +74,7 @@ public class ProblemService {
             var contestId = problemDao.isInContest(problemId);
 
             if (contestId != null && !contestDao.getContest(contestId).isEnded()) {
-                throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不能开放未结束竞赛中的题目");
+                throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不准开放未结束竞赛中的题目");
             }
         }
 
@@ -98,7 +98,11 @@ public class ProblemService {
 
     public Integer delete(Integer problemId) {
         if (problemDao.isInContest(problemId) != null) {
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "无法删除竞赛中的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不准删除竞赛中的题目");
+        }
+
+        if (problemDao.isEnable(problemId)) {
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不准删除已开放的题目");
         }
 
         if (problemDao.delete(problemId) == 1) {

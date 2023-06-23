@@ -93,7 +93,13 @@
         select contest_id
         from `contest-problem`
         where problem_id = #{problemId}
-        limit 1;
+        limit 1
+    </select>
+    <select id="isEnable" resultType="java.lang.Boolean">
+        select count(problem_id)
+        from problem
+        where problem_id = #{problemId} and enable = true
+        limit 1
     </select>
     <delete id="delete">
         delete

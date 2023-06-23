@@ -4,14 +4,14 @@
       <n-page-header @back="back">
         <template #title>{{ title }}</template>
         <n-space vertical size="large">
+          <n-alert type="info" :bordered="false">
+            文件中的换行符必须为 LF，不能使用 CRLF
+          </n-alert>
           <n-data-table
             max-height="350"
             :loading="loading"
             :columns="columns"
             :data="testData" />
-          <n-alert type="info" title="注意换行符" :bordered="false">
-            文件中的换行符必须为 LF，不能使用 CRLF。
-          </n-alert>
           <n-upload
             multiple
             :action="action"
@@ -20,6 +20,7 @@
             :disabled="disableUpload"
             accept=".in,.out"
             @before-upload="beforeUpload"
+            @error="handleError"
             @finish="handleUploadFinish">
             <n-upload-dragger style="width: 100%">
               <div>
@@ -99,7 +100,7 @@ const columns: DataTableColumns<TestData> = [
       if (row.fileName.endsWith(".in")) {
         type = "info"
       } else if (row.fileName.endsWith(".out")) {
-        type = "success"
+        type = "warning"
       }
       return (
         <NText strong={true} type={type}>
@@ -242,6 +243,14 @@ async function beforeUpload(options: { file: UploadFileInfo }) {
   return fileName.endsWith(".in") || fileName.endsWith(".out")
 }
 
+function handleError(options: { event?: ProgressEvent }) {
+  const res = (options.event?.target as XMLHttpRequest).response
+  if (res) {
+    const err = ErrorMessage.from(JSON.parse(res))
+    message.error(err.toString())
+  }
+}
+
 function handleUploadFinish(options: { file: UploadFileInfo }) {
   message.success(`${options.file.name} 已上传`)
   queryData(problem.value!.problemId!)
@@ -269,12 +278,10 @@ function deleteFile(fileName: string) {
   ProblemApi.deleteTestData(problem.value!.problemId!, fileName, userInfo.value)
     .then(() => {
       message.warning(`${fileName} 已删除`)
+      queryData(problem.value!.problemId!)
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
-    })
-    .finally(() => {
-      queryData(problem.value!.problemId!)
     })
 }
 </script>

@@ -24,5 +24,7 @@ public interface ProblemDao {
 
     Integer isInContest(Integer problemId);
 
+    Boolean isEnable(Integer problemId);
+
     int toggleEnable(Integer problemId, boolean enable);
 }

@@ -1,8 +1,10 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.config.AppConfig;
+import cloud.oj.core.dao.ProblemDao;
 import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.TestData;
+import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,22 +26,26 @@ public class FileService {
 
     private final UserDao userDao;
 
-    public FileService(AppConfig appConfig, UserDao userDao) {
+    private final ProblemDao problemDao;
+
+    public FileService(AppConfig appConfig, UserDao userDao, ProblemDao problemDao) {
         this.fileDir = appConfig.getFileDir();
         this.userDao = userDao;
+        this.problemDao = problemDao;
     }
 
     public List<TestData> getTestData(Integer problemId) {
         var files = new File(fileDir + "data/" + problemId).listFiles();
-        var testDataList = new ArrayList<TestData>();
+        var list = new ArrayList<TestData>();
 
         if (files != null) {
             for (var file : files) {
-                testDataList.add(new TestData(file.getName(), file.length()));
+                list.add(new TestData(file.getName(), file.length()));
             }
         }
 
-        return testDataList;
+        list.sort(Comparator.comparing(TestData::getFileName));
+        return list;
     }
 
     /**
@@ -49,7 +56,12 @@ public class FileService {
      */
     public ResponseEntity<?> saveTestData(Integer problemId, MultipartFile[] files) {
         if (files.length == 0) {
-            return ResponseEntity.badRequest().body("未选择文件.");
+            return ResponseEntity.badRequest().body("未选择文件");
+        }
+
+        // ! 开放的题目不允许上传测试数据
+        if (problemDao.isEnable(problemId)) {
+            throw new GenericException(400, "题目已开放，不准上传测试数据");
         }
 
         var testDataDir = fileDir + "data/";
@@ -57,7 +69,7 @@ public class FileService {
 
         if (!dir.exists() && !dir.mkdirs()) {
             log.error("无法创建目录 {}", dir.getAbsolutePath());
-            return ResponseEntity.status(500).body("无法创建目录.");
+            return ResponseEntity.status(500).body("无法创建目录");
         }
 
         for (MultipartFile file : files) {
@@ -83,6 +95,11 @@ public class FileService {
      * @param name      文件名
      */
     public ResponseEntity<?> deleteTestData(Integer problemId, String name) {
+        // ! 开放的题目不允许删除测试数据
+        if (problemDao.isEnable(problemId)) {
+            throw new GenericException(400, "题目已开放，不准删除测试数据");
+        }
+
         var testDataDir = fileDir + "data/";
         var file = new File(testDataDir + problemId + "/" + name);
 
