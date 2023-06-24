@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.UserDao">
+    <!-- 根据过滤条件查询用户 -->
     <select id="getByFilter" resultMap="Map.User, Map.Total">
         select sql_calc_found_rows user_id, name, email, section, has_avatar, role_id, create_at
         from user
-        <choose>
-            <when test="filter == 1">
-                where user_id like concat(#{filterValue}, '%')
-            </when>
-            <when test="filter == 2">
-                where name like concat('%', #{filterValue}, '%')
-            </when>
-        </choose>
+        where deleted = false
+          and if(#{filter} = 1, user_id like concat(#{filterValue}, '%'), true)
+          and if(#{filter} = 2, name like concat('%', #{filterValue}, '%'), true)
         order by role_id desc, create_at
         limit #{start},#{limit};
         select found_rows()
     </select>
-    <select id="getSingle" resultMap="Map.User">
+    <!-- 根据 id 查询用户 -->
+    <select id="getById" resultMap="Map.User">
         select user_id, name, email, section, has_avatar
         from user
-        where user_id = #{userId};
+        where user_id = #{userId}
+          and deleted = false
     </select>
+    <!-- 增加用户 -->
     <insert id="add" parameterType="cloud.oj.core.entity.User">
         insert into `user`(user_id, name, password, secret, email, section, role_id)
             value (#{userId}, #{name}, #{password}, #{secret}, #{email}, #{section}, #{roleId})
     </insert>
+    <!-- 更新用户信息 -->
     <update id="update" parameterType="cloud.oj.core.entity.User">
         update user
         set name = #{name},
@@ -47,21 +47,25 @@
         section = #{section}
         where user_id = #{userId}
     </update>
+    <!-- 设置为有头像 -->
     <update id="updateAvatar" parameterType="java.lang.String">
         update user set has_avatar = true where user_id = #{userId}
     </update>
-    <delete id="delete">
-        delete
-        from user
+    <!-- 逻辑删除用户 -->
+    <update id="delete">
+        update user
+        set deleted = true
         where user_id = #{userId}
-    </delete>
+    </update>
+    <!-- 查询用户的语言使用情况 -->
     <select id="getLanguagePreference" resultType="java.util.Map">
         select language, count(solution_id) as count
         from solution
         where contest_id is null
           and user_id = #{userId}
-        group by language;
+        group by language
     </select>
+    <!-- 查询用户某一年的提交情况 -->
     <select id="getActivities" resultType="java.util.Map">
         select DATE_FORMAT(submit_time, '%Y-%m-%d') as date,
                count(problem_id)                    as count
@@ -74,6 +78,7 @@
               group by problem_id, submit_time) s
         group by date
     </select>
+    <!-- 查询用户所有提交的结果统计信息 -->
     <select id="getResultStatistics" resultType="java.util.Map">
         select count(result = 'AC' or null)  as AC,
                count(result = 'WA' or null)  as WA,
@@ -85,6 +90,6 @@
         from solution
         where user_id = #{userId}
           and contest_id is null
-          and result &lt;&gt; 'JUDGE_ERROR';
+          and result &lt;&gt; 'JUDGE_ERROR'
     </select>
 </mapper>

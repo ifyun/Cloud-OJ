@@ -1,23 +1,34 @@
 package cloud.oj.judge.service;
 
 import cloud.oj.judge.component.SolutionState;
+import cloud.oj.judge.config.RabbitConfig;
+import cloud.oj.judge.dao.ContestDao;
+import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.dao.SourceCodeDao;
-import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SourceCode;
+import cloud.oj.judge.entity.SubmitData;
+import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class SubmitService {
+
+    private final ProblemDao problemDao;
+
+    private final ContestDao contestDao;
 
     private final SolutionDao solutionDao;
 
@@ -28,11 +39,58 @@ public class SubmitService {
     private final Queue judgeQueue;
 
     @Autowired
-    public SubmitService(SolutionDao solutionDao, SourceCodeDao sourceCodeDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
+    public SubmitService(ProblemDao problemDao, ContestDao contestDao, SolutionDao solutionDao,
+                         SourceCodeDao sourceCodeDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
+        this.problemDao = problemDao;
+        this.contestDao = contestDao;
         this.solutionDao = solutionDao;
         this.sourceCodeDao = sourceCodeDao;
         this.rabbitTemplate = rabbitTemplate;
         this.judgeQueue = judgeQueue;
+    }
+
+    /**
+     * 提交到队列
+     *
+     * @param data    {@link SubmitData}
+     * @param isAdmin 是否为管理员
+     * @return {@link ResponseEntity}
+     */
+    public ResponseEntity<?> submitCode(SubmitData data, boolean isAdmin) {
+        var contestId = data.getContestId();
+
+        if (data.getSourceCode().trim().isEmpty()) {
+            throw new GenericException(400, "一行代码都没有，不准提交");
+        }
+
+        if (contestId != null) {
+            var contest = contestDao.getContest(contestId);
+
+            if (contest.isStarted()) {
+                throw new GenericException(400, "未开始，不准提交");
+            }
+
+            if (contest.isEnded()) {
+                throw new GenericException(400, "已结束，不准提交");
+            }
+
+            var lang = 1 << data.getLanguage();
+            var languages = contest.getLanguages();
+
+            if ((languages & lang) != lang) {
+                throw new GenericException(400, "不准使用该语言");
+            }
+        } else {
+            if (!isAdmin && !problemDao.isEnable(data.getProblemId())) {
+                throw new GenericException(400, "未开放，不准提交");
+            }
+        }
+
+        data.setSolutionId(UUID.randomUUID().toString());
+        data.setSubmitTime(System.currentTimeMillis() / 1000);
+        rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
+
+        return ResponseEntity.accepted().body(data.getSolutionId());
     }
 
     /**
@@ -56,7 +114,7 @@ public class SubmitService {
         sourceCodeDao.add(sourceCode);
 
         solution.setSourceCode(submitData.getSourceCode());
-        solution.setState(SolutionState.IN_JUDGE_QUEUE);
+        solution.setState(SolutionState.IN_QUEUE);
         solutionDao.updateState(solution);
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);

@@ -11,7 +11,7 @@ public interface UserDao {
 
     List<List<?>> getByFilter(Integer start, Integer limit, Integer filter, String filterValue);
 
-    User getSingle(String userId);
+    User getById(String userId);
 
     int add(User user);
 

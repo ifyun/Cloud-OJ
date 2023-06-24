@@ -2,7 +2,7 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.RankingDao;
-import cloud.oj.core.entity.JudgeResult;
+import cloud.oj.core.entity.Solution;
 import cloud.oj.core.error.GenericException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,14 +34,14 @@ public class RankingService {
     }
 
     public List<List<?>> getContestRanking(int contestId, int page, int limit) {
-        if (systemSettings.getSettings().isAlwaysShowRanking() && !contestDao.isContestEnded(contestId)) {
+        if (systemSettings.getSettings().isAlwaysShowRanking() && !contestDao.getState(contestId).isEnded()) {
             throw new GenericException(HttpStatus.FORBIDDEN.value(), "结束后才可查看");
         }
 
         return rankingDao.getContestRanking(contestId, (page - 1) * limit, limit);
     }
 
-    public List<JudgeResult> getDetail(int contestId, String userId) {
-        return rankingDao.getDetail(contestId, userId);
+    public List<Solution> getDetail(int contestId, String userId) {
+        return rankingDao.getDetailById(contestId, userId);
     }
 }

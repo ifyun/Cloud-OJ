@@ -1,6 +1,8 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.DatabaseConfig;
+import cloud.oj.core.dao.RankingDao;
+import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.error.GenericException;
@@ -8,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
@@ -20,11 +23,18 @@ public class UserService {
 
     private final UserDao userDao;
 
+    private final RankingDao rankingDao;
+
+    private final SolutionDao solutionDao;
+
     private final DatabaseConfig databaseConfig;
 
     @Autowired
-    public UserService(UserDao userDao, DatabaseConfig databaseConfig) {
+    public UserService(UserDao userDao, RankingDao rankingDao,
+                       SolutionDao solutionDao, DatabaseConfig databaseConfig) {
         this.userDao = userDao;
+        this.rankingDao = rankingDao;
+        this.solutionDao = solutionDao;
         this.databaseConfig = databaseConfig;
     }
 
@@ -37,35 +47,32 @@ public class UserService {
     }
 
     public Optional<User> getUserInfo(String userId) {
-        return Optional.ofNullable(userDao.getSingle(userId));
+        return Optional.ofNullable(userDao.getById(userId));
     }
 
-    public Integer addUser(User user) {
+    public HttpStatus addUser(User user) {
         user.setRoleId(1);
         user.setSecret(newUUID());
         if (userDao.add(user) == 1) {
-            return HttpStatus.CREATED.value();
+            return HttpStatus.CREATED;
         } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "请求数据可能不正确");
+            throw new GenericException(400, "请求数据可能不正确");
         }
     }
 
-    public Integer updateUser(User user) {
+    public HttpStatus updateUser(User user) {
         if (user.getPassword() != null || user.getRoleId() != null) {
             user.setSecret(newUUID());
         }
 
         if (userDao.update(user) == 1) {
-            return HttpStatus.OK.value();
+            return HttpStatus.OK;
         } else {
-            throw new GenericException(
-                    HttpStatus.NOT_MODIFIED.value(),
-                    String.format("%s 用户更新失败", user.getUserId())
-            );
+            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUserId()));
         }
     }
 
-    public Integer updateProfile(String userId, User user) {
+    public HttpStatus updateProfile(String userId, User user) {
         user.setRoleId(null);
         user.setUserId(userId);
 
@@ -74,20 +81,23 @@ public class UserService {
         }
 
         if (userDao.update(user) == 1) {
-            return HttpStatus.OK.value();
+            return HttpStatus.OK;
         } else {
-            throw new GenericException(
-                    HttpStatus.NOT_MODIFIED.value(),
-                    String.format("%s 用户更新失败", user.getUserId())
-            );
+            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUserId()));
         }
     }
 
-    public Integer deleteUser(String userId) {
-        if (userDao.delete(userId) == 1) {
-            return HttpStatus.NO_CONTENT.value();
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public HttpStatus deleteUser(String userId) {
+        if (userId.equals("admin")) {
+            throw new GenericException(400, "不准删除初始管理员");
+        }
+
+        if (userDao.delete(userId) == 1 && rankingDao.deleteByUser(userId) == 1) {
+            solutionDao.deleteByUser(userId);
+            return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(HttpStatus.GONE.value(), String.format("用户 %s 不存在", userId));
+            throw new GenericException(410, String.format("用户(%s)不存在", userId));
         }
     }
 

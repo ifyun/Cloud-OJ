@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.judge.dao.SolutionDao">
+    <!-- 查询用户在指定题目的历史提交中的最高分 -->
     <select id="getMaxScoreOfUser" resultType="java.lang.Double">
         select max(score) as score
         from solution
         where user_id = #{userId}
-        and problem_id = #{problemId}
-        <choose>
-            <when test="contestId != null">and contest_id = #{contestId}</when>
-            <otherwise>and contest_id is null</otherwise>
-        </choose>
+          and problem_id = #{problemId}
+          and if(#{contedtId} is not null, contest_id = #{contestId}, contest_id is null)
     </select>
-    <insert id="add" useGeneratedKeys="true" keyProperty="solutionId"
-            parameterType="cloud.oj.judge.entity.Solution">
-        insert into solution(solution_id, user_id, problem_id, contest_id, title, language, submit_time)
+    <!-- 增加提交 -->
+    <insert id="add" parameterType="cloud.oj.judge.entity.Solution">
+        insert into solution(solution_id, user_id, problem_id, contest_id, title, language, state, submit_time)
         select #{solutionId},
                #{userId},
                #{problemId},
                #{contestId},
                title,
                #{language},
+               'IN_QUEUE',
                from_unixtime(#{submitTime})
         from problem
         where problem_id = #{problemId}
     </insert>
+    <!-- 更新状态 -->
     <update id="updateState" parameterType="cloud.oj.judge.entity.Solution">
         update solution
         set state     = #{state},

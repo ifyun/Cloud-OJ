@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.RankingDao">
+    <!-- 查询排名 -->
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
@@ -10,8 +11,8 @@
                      committed,
                      passed,
                      truncate(score, 2) as score
-              from leaderboard
-                       join user u on leaderboard.user_id = u.user_id
+              from leaderboard l
+                       join user u on l.deleted = false and l.user_id = u.user_id
               where u.role_id = 1
                 and score &gt; 0
               order by score desc, update_time) r,
@@ -19,6 +20,7 @@
         limit #{start}, #{limit};
         select found_rows();
     </select>
+    <!-- 查询指定竞赛的排名 -->
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
@@ -28,8 +30,8 @@
                      committed,
                      passed,
                      truncate(score, 2) as score
-              from leaderboard_contest
-                       join user u on leaderboard_contest.user_id = u.user_id
+              from leaderboard_contest lc
+                       join user u on lc.deleted = false and lc.user_id = u.user_id
               where contest_id = #{contestId}
                 and u.role_id = 1
                 and score &gt; 0
@@ -38,7 +40,8 @@
         limit #{start}, #{limit};
         select found_rows();
     </select>
-    <select id="getDetail" resultType="cloud.oj.core.entity.JudgeResult">
+    <!-- 查询用户在指定竞赛中的分数构成 -->
+    <select id="getDetailById" resultType="cloud.oj.core.entity.Solution">
         select problem_id,
                title,
                max(pass_rate) as pass_rate,
@@ -50,4 +53,10 @@
         group by problem_id, title
         order by problem_id;
     </select>
+    <!-- 根据用户 id 逻辑删除排名 -->
+    <update id="deleteByUser">
+        update leaderboard
+        set deleted = true
+        where user_id = #{userId}
+    </update>
 </mapper>

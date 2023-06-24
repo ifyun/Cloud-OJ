@@ -4,7 +4,8 @@
 <mapper namespace="cloud.oj.judge.dao.ContestDao">
     <select id="getContest" resultType="cloud.oj.judge.entity.Contest">
         select contest_name,
-               if(end_at &lt;= unix_timestamp(now()), true, false) as ended,
+               if(start_at &lt;= unix_timestamp(now()), true, false) as started,
+               if(end_at &lt;= unix_timestamp(now()), true, false)   as ended,
                languages
         from contest
         where contest_id = #{contestId};

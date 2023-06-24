@@ -2,12 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.judge.dao.RankingDao">
+    <!-- 提交次数 + 1 -->
     <insert id="incCommitted">
         insert into leaderboard
         set user_id   = #{userId},
             committed = committed + 1
         on duplicate key update committed = committed + 1
     </insert>
+    <!-- 提交次数 + 1 (竞赛) -->
     <insert id="incCommittedForContest">
         insert into leaderboard_contest
         set user_id    = #{userId},
@@ -15,6 +17,7 @@
             committed  = committed + 1
         on duplicate key update committed = committed + 1
     </insert>
+    <!-- 更新排名 -->
     <insert id="update">
         replace into leaderboard(user_id, committed, passed, score, update_time)
         select #{userId}                                     as user_id,
@@ -30,6 +33,7 @@
                 and user_id = #{userId}
               group by problem_id) as user_score;
     </insert>
+    <!-- 更新竞赛排名 -->
     <insert id="updateForContest">
         replace into leaderboard_contest(user_id, contest_id, committed, passed, score, update_time)
         select #{userId}                                     as user_id,

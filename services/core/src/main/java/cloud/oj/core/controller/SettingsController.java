@@ -30,7 +30,6 @@ public class SettingsController {
      */
     @PutMapping(consumes = "application/json")
     public ResponseEntity<?> updateSettings(@RequestBody Settings settings) {
-        return systemSettings.setSettings(settings) ?
-                ResponseEntity.ok().build() : ResponseEntity.status(500).build();
+        return ResponseEntity.status(systemSettings.setSettings(settings)).build();
     }
 }

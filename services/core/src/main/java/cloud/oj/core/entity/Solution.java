@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class JudgeResult {
+public class Solution {
     private String solutionId;
     private Integer problemId;
     private String title;
@@ -19,7 +19,6 @@ public class JudgeResult {
     private Long time;
     private Long memory;
     private String errorInfo;
-    private String code;
     private Integer language;
     private Integer state;
     private Integer result;

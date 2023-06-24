@@ -85,11 +85,11 @@ public class ProblemController {
     }
 
     /**
-     * 切换题目的开放/关闭状态
+     * 切换题目开放/关闭状态
      */
     @PutMapping(path = "admin/{problemId}")
     public ResponseEntity<?> toggleEnable(@PathVariable Integer problemId, Boolean enable) {
-        return ResponseEntity.status(problemService.toggleEnable(problemId, enable)).build();
+        return ResponseEntity.status(problemService.setEnable(problemId, enable)).build();
     }
 
     /**

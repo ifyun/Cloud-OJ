@@ -1,6 +1,7 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PagedList;
+import cloud.oj.core.entity.Solution;
 import cloud.oj.core.service.SolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class SolutionController {
     /**
      * 获取判题结果
      *
-     * @return {@link cloud.oj.core.entity.JudgeResult}
+     * @return {@link Solution}
      */
     @GetMapping("{solutionId}")
     public ResponseEntity<?> getBySolutionId(@PathVariable String solutionId) {

@@ -6,15 +6,18 @@
         select *
         from settings
         where id = 0 for
-        update;
+        update
     </select>
     <update id="update" parameterType="cloud.oj.core.entity.Settings">
         update settings
-        set icp                 = #{icp},
-            icp_url             = #{icpUrl},
-            always_show_ranking = #{alwaysShowRanking},
+        set always_show_ranking = #{alwaysShowRanking},
             show_all_contest    = #{showAllContest},
             show_passed_points  = #{showPassedPoints}
-        where id = 0;
+        where id = 0
+    </update>
+    <update id="deleteByUser">
+        update solution
+        set deleted = true
+        where user_id = #{userId}
     </update>
 </mapper>

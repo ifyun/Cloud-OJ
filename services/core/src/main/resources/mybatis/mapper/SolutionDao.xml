@@ -2,10 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.SolutionDao">
-    <select id="getSolutionById" resultMap="Map.JudgeResult">
+    <!-- 根据 id 查询提交 -->
+    <select id="getSolutionById" resultMap="Map.Solution">
         select solution_id,
-               state - 1          as state_code,
-               result - 1         as result_code,
+               state - 1          as state,
+               result - 1         as result,
                pass_rate,
                <if test="showPassed == true">
                passed,
@@ -18,22 +19,37 @@
         from judge_result
         where solution_id = #{solutionId}
     </select>
-    <select id="getSolutionsByUser" resultMap="Map.JudgeResult, Map.Total">
-        select sql_calc_found_rows *,
-                                   state - 1  as state_code,
-                                   result - 1 as result_code
+    <!-- 查询指定用户的所有提交 -->
+    <select id="getSolutionsByUser" resultMap="Map.Solution, Map.Total">
+        select sql_calc_found_rows solution_id,
+                                   problem_id,
+                                   title,
+                                   language,
+                                   state - 1  as state,
+                                   result - 1 as result,
+                                   pass_rate,
+                                   truncate(score, 2) as score,
+                                   time,
+                                   memory,
+                                   error_info,
+                                   submit_time
         from judge_result
         where user_id = #{userId}
-        <choose>
-            <when test="filter == 1">
-                and problem_id = #{filterValue}
-            </when>
-            <when test="filter == 2">
-                and title like concat('%', #{filterValue}, '%')
-            </when>
-        </choose>
-        order by submit_time desc
+          and if(#{filter} = 1, problem_id = #{filterValue}, true)
+          and if(#{filter} = 2, title like concat('%', #{filterValue}, '%'), true)
         limit #{start}, #{limit};
         select found_rows();
     </select>
+    <!-- 更新标题字段 -->
+    <update id="updateTitle">
+        update solution
+        set title = #{title}
+        where problem_id = #{problemId}
+    </update>
+    <!-- 根据用户 id 逻辑删除提交 -->
+    <update id="deleteByUser">
+        update solution
+        set deleted = true
+        where user_id = #{userId}
+    </update>
 </mapper>

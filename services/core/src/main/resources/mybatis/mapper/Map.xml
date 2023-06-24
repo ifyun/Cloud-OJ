@@ -7,8 +7,5 @@
     <resultMap id="Problem" type="cloud.oj.core.entity.Problem"/>
     <resultMap id="Contest" type="cloud.oj.core.entity.Contest"/>
     <resultMap id="Ranking" type="cloud.oj.core.entity.Ranking"/>
-    <resultMap id="JudgeResult" type="cloud.oj.core.entity.JudgeResult">
-        <result column="state_code" property="state"/>
-        <result column="result_code" property="result"/>
-    </resultMap>
+    <resultMap id="Solution" type="cloud.oj.core.entity.Solution"/>
 </mapper>

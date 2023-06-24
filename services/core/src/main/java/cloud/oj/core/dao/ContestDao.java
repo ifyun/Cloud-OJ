@@ -8,15 +8,17 @@ import java.util.List;
 
 @Mapper
 public interface ContestDao {
-    boolean isContestEnded(int contestId);
+    Contest getState(int contestId);
 
     List<List<?>> getContests(int start, int limit, boolean onlyStarted);
 
-    List<Problem> getProblems(String userId, int contestId, boolean onlyStarted);
+    List<Problem> getProblems(int contestId, boolean onlyStarted);
+
+    List<Problem> getProblemsWithResult(String userId, int contestId);
 
     List<List<?>> getProblemsNotInContest(int contestId, int start, int limit);
 
-    Contest getContest(int contestId);
+    Contest getContestById(int contestId);
 
     int addContest(Contest contest);
 

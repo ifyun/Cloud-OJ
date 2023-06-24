@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class Contest {
     private String contestName;
+    private boolean started;
     private boolean ended;
     private int languages;
 }

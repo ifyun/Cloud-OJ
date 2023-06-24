@@ -7,5 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ProblemDao {
     Limit getLimit(int problemId);
 
-    boolean isOpen(int problemId);
+    boolean isEnable(int problemId);
 }

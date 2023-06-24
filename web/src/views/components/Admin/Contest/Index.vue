@@ -53,11 +53,15 @@ import {
   NButton,
   NDataTable,
   NDropdown,
+  NFormItem,
   NIcon,
+  NInput,
   NPagination,
   NSpace,
   NTag,
-  NText
+  NText,
+  useDialog,
+  useMessage
 } from "naive-ui"
 import {
   DeleteForeverRound as DelIcon,
@@ -73,11 +77,11 @@ import { ContestApi } from "@/api/request"
 
 const timeFmt = "yyyy-MM-DD HH:mm"
 
-let selectedId: number | undefined
-
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const message = useMessage()
+const dialog = useDialog()
 
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
@@ -87,12 +91,16 @@ const pagination = ref({
   pageSize: 15
 })
 
-const showOperations = ref<boolean>(false)
-
 const point = ref({
   x: 0,
   y: 0
 })
+
+const showOperations = ref<boolean>(false)
+
+let selectedId: number | undefined
+let selectedTitle: string | undefined
+let confirmDelete = ""
 
 const rowProps = (row: Contest): HTMLAttributes => {
   return {
@@ -104,6 +112,7 @@ const rowProps = (row: Contest): HTMLAttributes => {
       showOperations.value = false
       nextTick().then(() => {
         selectedId = row.contestId
+        selectedTitle = row.contestName
         point.value = {
           x: e.clientX,
           y: e.clientY
@@ -118,7 +127,7 @@ const operations = [
   {
     key: "edit",
     label: "编辑",
-    icon: renderIcon(EditIcon, "#399F58")
+    icon: renderIcon(EditIcon)
   },
   {
     key: "del",
@@ -180,6 +189,15 @@ const contestColumns: DataTableColumns<Contest> = [
 ]
 // endregion
 
+const delRule = {
+  trigger: ["input", "blur"],
+  validator() {
+    if (confirmDelete !== selectedTitle) {
+      return new Error("输入竞赛名称")
+    }
+  }
+}
+
 const contests = ref<Page<Contest>>({
   data: [],
   count: 0
@@ -202,6 +220,8 @@ function operationSelect(key: string) {
     case "edit":
       router.push({ name: "edit_contest", params: { id: selectedId } })
       break
+    case "del":
+      deleteContest()
     default:
       return
   }
@@ -228,6 +248,45 @@ function queryContests() {
     .finally(() => {
       loading.value = false
     })
+}
+
+function deleteContest() {
+  const d = dialog.error({
+    title: "删除竞赛",
+    showIcon: false,
+    content: () => (
+      <NFormItem
+        label="输入竞赛名称确认"
+        rule={delRule}
+        style="margin-top: 24px">
+        <NInput
+          placeholder={selectedTitle}
+          onUpdateValue={(value) => (confirmDelete = value)}
+        />
+      </NFormItem>
+    ),
+    negativeText: "取消",
+    positiveText: "删除",
+    onPositiveClick: () => {
+      if (confirmDelete !== selectedTitle) {
+        return false
+      }
+      d.loading = true
+      ContestApi.delete(selectedId!, userInfo.value)
+        .then(() => {
+          message.warning(`${selectedTitle} 已删除！`)
+          queryContests()
+          return true
+        })
+        .catch((error: ErrorMessage) => {
+          message.error(error.toString())
+          return false
+        })
+        .finally(() => {
+          d.loading = false
+        })
+    }
+  })
 }
 
 function calcTimeRange(c: Contest): string {

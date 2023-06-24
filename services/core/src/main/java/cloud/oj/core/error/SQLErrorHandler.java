@@ -19,20 +19,10 @@ public class SQLErrorHandler {
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<?> sqlErrorHandler(SQLException e) {
-        var code = e.getErrorCode();
-        log.error("code: {}, message: {}", code, e.getMessage());
+        log.error("数据库错误: code={}, msg={}", e.getErrorCode(), e.getMessage());
 
-        HttpStatus status;
-
-        if (code == 1062 || code == 1451) {
-            status = HttpStatus.CONFLICT;
-        } else if (code == 1048) {
-            status = HttpStatus.BAD_REQUEST;
-        } else {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-
-        var msg = new ErrorMessage(status, e.getMessage());
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        var msg = new ErrorMessage(status, "数据库异常");
 
         return ResponseEntity.status(status).body(msg);
     }

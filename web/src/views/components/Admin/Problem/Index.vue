@@ -127,13 +127,13 @@ const problems = ref<Page<Problem>>({
   count: 0
 })
 
-const keyword = ref<string>("")
-const showOperations = ref<boolean>(false)
-
 const point = ref({
   x: 0,
   y: 0
 })
+
+const keyword = ref<string>("")
+const showOperations = ref<boolean>(false)
 
 let selectedId: number | undefined
 let selectedTitle: string | undefined
@@ -240,8 +240,16 @@ const problemColumns: DataTableColumns<Problem> = [
     )
   }
 ]
-
 // endregion
+
+const delRule = {
+  trigger: ["input", "blur"],
+  validator() {
+    if (confirmDelete !== selectedTitle) {
+      return new Error("输入题目名称")
+    }
+  }
+}
 
 const userInfo = computed<UserInfo>(() => {
   return store.state.userInfo
@@ -249,7 +257,6 @@ const userInfo = computed<UserInfo>(() => {
 
 onBeforeMount(() => {
   setTitle("题目管理")
-  store.commit(Mutations.SET_BREADCRUMB, ["题目管理"])
 
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)
@@ -312,10 +319,12 @@ function deleteProblem() {
     title: "删除题目",
     showIcon: false,
     content: () => (
-      <NFormItem label="输入题目名称确认" style="margin-top: 24px">
+      <NFormItem
+        label="输入题目名称确认"
+        rule={delRule}
+        style="margin-top: 24px">
         <NInput
           placeholder={selectedTitle}
-          value={confirmDelete}
           onUpdateValue={(value) => (confirmDelete = value)}
         />
       </NFormItem>
@@ -324,7 +333,6 @@ function deleteProblem() {
     positiveText: "删除",
     onPositiveClick: () => {
       if (confirmDelete !== selectedTitle) {
-        message.error("请输入题目名称")
         return false
       }
       d.loading = true

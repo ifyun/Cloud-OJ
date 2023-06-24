@@ -1,10 +1,12 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SolutionDao;
-import cloud.oj.core.entity.JudgeResult;
+import cloud.oj.core.entity.Solution;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +29,17 @@ public class SolutionService {
         return solutionDao.getSolutionsByUser(userId, (page - 1) * limit, limit, filter, filterValue);
     }
 
+    /**
+     * 根据 id 获取提交
+     * <p>隔离级别：读未提交</p>
+     *
+     * @return {@link Optional} of {@link Solution}
+     */
     @SneakyThrows
-    public Optional<JudgeResult> getBySolutionId(String solutionId) {
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public Optional<Solution> getBySolutionId(String solutionId) {
         var count = 15;
-        JudgeResult result;
+        Solution result;
 
         while (count > 0) {
             result = solutionDao.getSolutionById(solutionId, settings.getSettings().isShowPassedPoints());

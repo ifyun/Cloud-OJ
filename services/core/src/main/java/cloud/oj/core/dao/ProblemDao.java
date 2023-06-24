@@ -12,9 +12,9 @@ public interface ProblemDao {
 
     List<List<?>> getAllEnabled(int start, int limit, String keyword);
 
-    Problem getSingle(Integer problemId, boolean enable);
+    Problem getById(Integer problemId, boolean enable);
 
-    Problem getSingleInContest(Integer contestId, Integer problemId);
+    Problem getByIdFromContest(Integer contestId, Integer problemId);
 
     int add(Problem problem);
 
@@ -26,5 +26,5 @@ public interface ProblemDao {
 
     Boolean isEnable(Integer problemId);
 
-    int toggleEnable(Integer problemId, boolean enable);
+    int setEnable(Integer problemId, boolean enable);
 }

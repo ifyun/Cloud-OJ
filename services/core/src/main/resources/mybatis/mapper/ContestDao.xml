@@ -1,64 +1,85 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.ContestDao">
-    <select id="isContestEnded" resultType="java.lang.Boolean">
-        select if(end_at &lt;= now(), true, false)
+    <!-- 查询竞赛状态 -->
+    <select id="getState" resultType="Map.Contest">
+        select contest_id,
+               if(start_at &lt;= now(), true, false) as started,
+               if(end_at &lt;= now(), true, false)   as ended
         from contest
-        where contest_id = #{contestId};
+        where contest_id = #{contestId}
     </select>
+    <!-- 查询所有竞赛 -->
     <select id="getContests" resultMap="Map.Contest, Map.Total">
         select sql_calc_found_rows c.*,
-        if(start_at &lt;= unix_timestamp(now()), true, false) as started,
-        if(end_at &lt;= unix_timestamp(now()), true, false) as ended,
-        count(cp.problem_id) as problem_count
-        from contest c left join `contest-problem` cp on c.contest_id = cp.contest_id
-        <if test="onlyStarted">
-            where start_at &lt;= unix_timestamp(now())
-        </if>
+                                   if(start_at &lt;= unix_timestamp(now()), true, false) as started,
+                                   if(end_at &lt;= unix_timestamp(now()), true, false)   as ended,
+                                   count(cp.problem_id)                                  as problem_count
+        from contest c
+                 left join `contest-problem` cp on c.contest_id = cp.contest_id
+        where c.deleted = false
+          and if(#{onlyStarted} = true, start_at &lt;= unix_timestamp(now()), true)
         group by c.contest_id
         order by started desc, ended
         limit #{start}, #{limit};
         select found_rows()
     </select>
+    <!-- 查询指定竞赛中的所有题目 -->
     <select id="getProblems" resultType="cloud.oj.core.entity.Problem">
-        <choose>
-            <when test="userId != null">
-                select cp.*, result
-                from contest_problem cp
-                left join (select user_id, problem_id, contest_id, min(result - 1) result
-                from judge_result
-                where user_id = #{userId}
-                group by user_id, problem_id, contest_id) jr
-                on cp.contest_id = jr.contest_id and cp.problem_id = jr.problem_id
-            </when>
-            <otherwise>
-                select * from contest_problem cp
-            </otherwise>
-        </choose>
+        select contest_id,
+               contest_name,
+               start_at,
+               end_at,
+               problem_id,
+               title,
+               score
+        from contest_problem cp
         where cp.contest_id = #{contestId}
-        <if test="onlyStarted">
-            and cp.start_at &lt;= unix_timestamp(now())
-        </if>
+          and if(#{onlyStarted} = true, cp.start_at &lt;= unix_timestamp(now()), true)
     </select>
+    <select id="getProblemsWithResult" resultType="cloud.oj.core.entity.Problem">
+        select cp.contest_id,
+               cp.contest_name,
+               cp.start_at,
+               cp.end_at,
+               cp.problem_id,
+               cp.title,
+               cp.score,
+               result
+        from contest_problem cp
+                 left join (select problem_id, contest_id, min(result - 1) result
+                            from solution
+                            where user_id = #{userId}
+                            group by user_id, problem_id, contest_id) s
+                           on cp.contest_id = s.contest_id and cp.problem_id = s.problem_id
+        where cp.contest_id = #{contestId}
+          and cp.start_at &lt;= unix_timestamp(now())
+    </select>
+    <!-- 查询不在指定竞赛中的所有题目 -->
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows *
         from problem
-        where problem_id not in (select problem_id from contest_problem where contest_id = #{contestId})
+        where deleted = false
           and enable = false
+          and problem_id not in (select problem_id from contest_problem where contest_id = #{contestId})
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <select id="getContest" resultMap="Map.Contest">
+    <!-- 根据 id 查询竞赛 -->
+    <select id="getContestById" resultMap="Map.Contest">
         select *,
                if(start_at &lt;= unix_timestamp(now()), true, false) as started,
                if(end_at &lt;= unix_timestamp(now()), true, false)   as ended
         from contest
         where contest_id = #{contestId}
+          and deleted = false
     </select>
+    <!-- 增加竞赛 -->
     <insert id="addContest" parameterType="cloud.oj.core.entity.Contest">
         insert into contest(contest_name, start_at, end_at, languages)
             value (#{contestName}, #{startAt}, #{endAt}, #{languages})
     </insert>
+    <!-- 更新竞赛信息 -->
     <update id="updateContest" parameterType="cloud.oj.core.entity.Contest">
         update contest
         set contest_name = #{contestName},
@@ -67,15 +88,18 @@
             languages    = #{languages}
         where contest_id = #{contestId}
     </update>
-    <delete id="deleteContest">
-        delete
-        from contest
+    <!-- 逻辑删除竞赛 -->
+    <update id="deleteContest">
+        update contest
+        set deleted = true
         where contest_id = #{contestId}
-    </delete>
+    </update>
+    <!-- 向指定竞赛中增加题目 -->
     <insert id="addProblem">
         insert into `contest-problem`(contest_id, problem_id)
             value (#{contestId}, #{problemId})
     </insert>
+    <!-- 从指定竞赛中移除题目 -->
     <delete id="removeProblem">
         delete
         from `contest-problem`
