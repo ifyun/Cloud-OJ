@@ -4,7 +4,6 @@ import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.RankingDao;
 import cloud.oj.core.entity.Solution;
 import cloud.oj.core.error.GenericException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ public class RankingService {
 
     private final SystemSettings systemSettings;
 
-    @Autowired
     public RankingService(RankingDao rankingDao, ContestDao contestDao, SystemSettings systemSettings) {
         this.rankingDao = rankingDao;
         this.contestDao = contestDao;

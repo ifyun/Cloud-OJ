@@ -6,7 +6,6 @@ import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -33,7 +32,6 @@ class Compiler {
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
 
-    @Autowired
     public Compiler(AppConfig appConfig) {
         this.appConfig = appConfig;
     }

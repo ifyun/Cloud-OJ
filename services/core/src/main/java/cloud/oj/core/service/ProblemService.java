@@ -6,7 +6,6 @@ import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -24,7 +23,6 @@ public class ProblemService {
 
     private final SolutionDao solutionDao;
 
-    @Autowired
     public ProblemService(ProblemDao problemDao, ContestDao contestDao, SolutionDao solutionDao) {
         this.problemDao = problemDao;
         this.contestDao = contestDao;

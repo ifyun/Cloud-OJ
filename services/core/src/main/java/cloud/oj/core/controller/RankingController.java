@@ -2,7 +2,6 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.RankingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,6 @@ public class RankingController {
 
     private final RankingService rankingService;
 
-    @Autowired
     public RankingController(RankingService rankingService) {
         this.rankingService = rankingService;
     }

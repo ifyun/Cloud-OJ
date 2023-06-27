@@ -42,6 +42,7 @@ export const LanguageColors = [
   "#B07219",
   "#3572A5",
   "#89E051",
+  "#178600",
   "#F1E05A",
   "#A97BFF",
   "#00ADD8"

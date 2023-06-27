@@ -4,7 +4,6 @@ import cloud.oj.gateway.filter.LoginFilter;
 import cloud.oj.gateway.filter.TokenVerifyFilter;
 import cloud.oj.gateway.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,7 +32,6 @@ public class WebFluxSecurityConfig {
 
     private final ObjectMapper mapper;
 
-    @Autowired
     public WebFluxSecurityConfig(UserService userService, ObjectMapper mapper) {
         this.userService = userService;
         this.mapper = mapper;

@@ -3,7 +3,6 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -32,7 +30,7 @@ public class UserController {
     /**
      * 根据过滤条件获取用户
      *
-     * @param filter 1: by userId, 2: by name
+     * @param filter      1: by userId, 2: by name
      * @param filterValue userId/name
      * @return 用户列表
      */

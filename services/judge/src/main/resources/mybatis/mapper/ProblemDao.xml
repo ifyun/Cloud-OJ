@@ -9,7 +9,7 @@
         where problem_id = #{problemId}
     </select>
     <!-- 查询题目是否开放 -->
-    <select id="isOpen" resultType="java.lang.Boolean">
+    <select id="isEnable" resultType="java.lang.Boolean">
         select enable
         from problem
         where problem_id = #{problemId}

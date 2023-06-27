@@ -3,7 +3,6 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ProblemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +15,6 @@ public class ProblemController {
 
     private final ProblemService problemService;
 
-    @Autowired
     public ProblemController(ProblemService problemService) {
         this.problemService = problemService;
     }

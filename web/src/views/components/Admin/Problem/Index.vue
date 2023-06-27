@@ -106,7 +106,6 @@ import { ErrorResult } from "@/components"
 import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
 import { renderIcon, setTitle } from "@/utils"
 import { ProblemApi } from "@/api/request"
-import { Mutations } from "@/store"
 
 const route = useRoute()
 const router = useRouter()

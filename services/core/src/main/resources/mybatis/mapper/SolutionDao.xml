@@ -4,8 +4,7 @@
 <mapper namespace="cloud.oj.core.dao.SolutionDao">
     <!-- 根据 id 查询提交 -->
     <select id="getSolutionById" resultMap="Map.Solution">
-        select solution_id,
-               state - 1          as state,
+        select state - 1          as state,
                result - 1         as result,
                pass_rate,
                <if test="showPassed == true">

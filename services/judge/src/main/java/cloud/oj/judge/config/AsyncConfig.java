@@ -1,7 +1,6 @@
 package cloud.oj.judge.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -21,7 +20,6 @@ public class AsyncConfig {
 
     private final AppConfig appConfig;
 
-    @Autowired
     public AsyncConfig(AppConfig appConfig) {
         this.appConfig = appConfig;
     }

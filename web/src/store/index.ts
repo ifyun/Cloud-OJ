@@ -1,6 +1,5 @@
 import { createStore } from "vuex"
 import { darkTheme } from "naive-ui"
-import moment from "moment-timezone"
 import { UserInfo } from "@/api/type"
 import Mutations from "@/store/mutations"
 
@@ -27,7 +26,6 @@ function resolveToken(token: string): UserInfo {
 
 const store = createStore({
   state: {
-    timezone: moment.tz.guess(),
     theme: theme === "dark" ? darkTheme : null,
     userInfo: token == null ? null : resolveToken(token),
     reload: false,

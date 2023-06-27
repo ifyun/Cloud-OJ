@@ -7,7 +7,6 @@ import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,7 +28,6 @@ public class UserService {
 
     private final DatabaseConfig databaseConfig;
 
-    @Autowired
     public UserService(UserDao userDao, RankingDao rankingDao,
                        SolutionDao solutionDao, DatabaseConfig databaseConfig) {
         this.userDao = userDao;

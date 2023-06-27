@@ -5,7 +5,6 @@ import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.ContestService;
 import cloud.oj.core.service.SystemSettings;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,6 @@ public class ContestController {
 
     private final SystemSettings systemSettings;
 
-    @Autowired
     public ContestController(ContestService contestService, SystemSettings systemSettings) {
         this.contestService = contestService;
         this.systemSettings = systemSettings;

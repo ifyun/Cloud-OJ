@@ -1,11 +1,11 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PagedList;
-import cloud.oj.core.entity.Solution;
 import cloud.oj.core.service.SolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  * 提交记录/判题结果接口
@@ -23,7 +23,8 @@ public class SolutionController {
 
     /**
      * 根据过滤条件获取提交记录
-     * @param filter 1: by problemId, 2: by title
+     *
+     * @param filter      1: by problemId, 2: by title
      * @param filterValue problemId/title
      */
     @GetMapping
@@ -40,13 +41,9 @@ public class SolutionController {
 
     /**
      * 获取判题结果
-     *
-     * @return {@link Solution}
      */
     @GetMapping("{solutionId}")
-    public ResponseEntity<?> getBySolutionId(@PathVariable String solutionId) {
-        return solutionService.getBySolutionId(solutionId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public SseEmitter getBySolutionId(@PathVariable String solutionId) {
+        return solutionService.getBySolutionId(solutionId);
     }
 }

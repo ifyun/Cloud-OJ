@@ -2,7 +2,6 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.service.FileService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +13,6 @@ public class FileController {
 
     private final FileService fileService;
 
-    @Autowired
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }

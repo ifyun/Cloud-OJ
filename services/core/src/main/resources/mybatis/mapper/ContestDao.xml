@@ -2,7 +2,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.ContestDao">
     <!-- 查询竞赛状态 -->
-    <select id="getState" resultType="Map.Contest">
+    <select id="getState" resultType="cloud.oj.core.entity.Contest">
         select contest_id,
                if(start_at &lt;= now(), true, false) as started,
                if(end_at &lt;= now(), true, false)   as ended

@@ -7,7 +7,10 @@
         <div>
           <n-scrollbar style="height: 100%">
             <n-tabs v-model:value="tab" type="line" @update:value="changeTab">
-              <n-tab-pane name="problem" tab="题目描述">
+              <n-tab-pane
+                name="problem"
+                tab="题目描述"
+                display-directive="show">
                 <n-h2 style="margin-bottom: 6px">
                   {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>

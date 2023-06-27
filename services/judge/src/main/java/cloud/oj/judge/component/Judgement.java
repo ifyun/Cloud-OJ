@@ -9,7 +9,6 @@ import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,6 @@ public class Judgement {
 
     private final static UnixDomainSocketAddress addr = UnixDomainSocketAddress.of("/var/run/judge.sock");
 
-    @Autowired
     public Judgement(AppConfig appConfig, ObjectMapper objectMapper, RuntimeDao runtimeDao, CompileDao compileDao,
                      ProblemDao problemDao, SolutionDao solutionDao, RankingDao rankingDao, DatabaseConfig dbConfig,
                      Compiler compiler, HashMap<String, Integer> cpuMap) {

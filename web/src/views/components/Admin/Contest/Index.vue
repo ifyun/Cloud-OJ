@@ -222,6 +222,7 @@ function operationSelect(key: string) {
       break
     case "del":
       deleteContest()
+      break
     default:
       return
   }

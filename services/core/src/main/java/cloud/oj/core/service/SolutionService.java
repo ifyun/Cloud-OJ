@@ -1,17 +1,18 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SolutionDao;
-import cloud.oj.core.entity.Solution;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class SolutionService {
 
@@ -19,8 +20,10 @@ public class SolutionService {
 
     private final SystemSettings settings;
 
-    @Autowired
-    public SolutionService(SolutionDao solutionDao, SystemSettings settings) {
+    private final ObjectMapper objectMapper;
+
+    public SolutionService(ObjectMapper objectMapper, SolutionDao solutionDao, SystemSettings settings) {
+        this.objectMapper = objectMapper;
         this.solutionDao = solutionDao;
         this.settings = settings;
     }
@@ -33,25 +36,39 @@ public class SolutionService {
      * 根据 id 获取提交
      * <p>隔离级别：读未提交</p>
      *
-     * @return {@link Optional} of {@link Solution}
+     * @return {@link SseEmitter}
      */
-    @SneakyThrows
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public Optional<Solution> getBySolutionId(String solutionId) {
-        var count = 15;
-        Solution result;
+    public SseEmitter getBySolutionId(String solutionId) {
+        var emitter = new SseEmitter(0L);
+        var executor = Executors.newSingleThreadExecutor();
 
-        while (count > 0) {
-            result = solutionDao.getSolutionById(solutionId, settings.getSettings().isShowPassedPoints());
+        executor.execute(() -> {
+            try {
+                while (true) {
+                    var result = solutionDao.getSolutionById(solutionId, settings.getSettings().isShowPassedPoints());
 
-            if (result != null) {
-                return Optional.of(result);
+                    if (result == null) {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                        continue;
+                    }
+
+                    var event = SseEmitter
+                            .event()
+                            .data(objectMapper.writeValueAsString(result))
+                            .name("message");
+                    emitter.send(event);
+
+                    if (result.getState() == 0) {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                emitter.completeWithError(e);
             }
+        });
 
-            TimeUnit.SECONDS.sleep(1);
-            count--;
-        }
-
-        return Optional.empty();
+        return emitter;
     }
 }

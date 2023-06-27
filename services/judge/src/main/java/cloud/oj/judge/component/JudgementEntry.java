@@ -5,7 +5,6 @@ import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.utils.FileCleaner;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -17,16 +16,15 @@ public class JudgementEntry {
 
     private final Judgement judgement;
 
-    private final SolutionDao solutionDao;
-
     private final FileCleaner fileCleaner;
 
-    @Autowired
-    public JudgementEntry(AppConfig appConfig, Judgement judgement, SolutionDao solutionDao, FileCleaner fileCleaner) {
+    private final SolutionDao solutionDao;
+
+    public JudgementEntry(AppConfig appConfig, Judgement judgement, FileCleaner fileCleaner, SolutionDao solutionDao) {
         this.appConfig = appConfig;
         this.judgement = judgement;
-        this.solutionDao = solutionDao;
         this.fileCleaner = fileCleaner;
+        this.solutionDao = solutionDao;
     }
 
     /**
@@ -37,8 +35,12 @@ public class JudgementEntry {
         try {
             judgement.judge(solution);
         } catch (Exception e) {
+            if (e.getMessage() == null) {
+                e.printStackTrace();
+            } else {
+                log.error(e.getMessage());
+            }
             // 判题发生异常，将结果设置为内部错误
-            log.error(e.getMessage());
             solution.setState(SolutionState.JUDGED);
             solution.setResult(SolutionResult.IE);
             solutionDao.updateState(solution);

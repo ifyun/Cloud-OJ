@@ -28,16 +28,16 @@ public class TokenVerifyFilter implements WebFilter {
     private UserService userService;
 
     @Autowired
-    private ObjectMapper mapper;
+    private ObjectMapper objectMapper;
 
     /**
      * 验证 JWT
      * <p>先后在 Header 和 Query 中查找 JWT，若为空则跳过验证</p>
      */
 
-    @Override
     @NonNull
     @SneakyThrows
+    @Override
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         var request = exchange.getRequest();
         var path = request.getPath().toString();
@@ -95,7 +95,7 @@ public class TokenVerifyFilter implements WebFilter {
             var response = exchange.getResponse();
             var status = HttpStatus.UNAUTHORIZED;
             var errorMessage = new ErrorMessage(status, error);
-            var dataBuffer = response.bufferFactory().wrap(mapper.writeValueAsBytes(errorMessage));
+            var dataBuffer = response.bufferFactory().wrap(objectMapper.writeValueAsBytes(errorMessage));
 
             response.setStatusCode(status);
             response.getHeaders().add("Content-Type", "application/json");

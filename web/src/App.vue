@@ -28,6 +28,7 @@ import {
   NMessageProvider,
   zhCN
 } from "naive-ui"
+import moment from "moment-timezone"
 import { themeOverrides } from "@/theme"
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
@@ -73,6 +74,6 @@ router.afterEach(() => {
 })
 
 onMounted(() => {
-  console.log("Timezone:", store.state.timezone)
+  console.log("Timezone:", moment.tz.guess())
 })
 </script>

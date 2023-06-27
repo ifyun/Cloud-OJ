@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 消息接收（提交和判题）
+ * 消息接收(提交和判题)
  */
 @Slf4j
 @Component
@@ -29,7 +28,6 @@ public class SolutionReceiver {
 
     private final JudgementEntry judgementEntry;
 
-    @Autowired
     public SolutionReceiver(SubmitService submitService, JudgementEntry judgementEntry) {
         this.submitService = submitService;
         this.judgementEntry = judgementEntry;

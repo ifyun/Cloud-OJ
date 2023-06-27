@@ -7,7 +7,7 @@
         from solution
         where user_id = #{userId}
           and problem_id = #{problemId}
-          and if(#{contedtId} is not null, contest_id = #{contestId}, contest_id is null)
+          and if(#{contestId} is not null, contest_id = #{contestId}, contest_id is null)
     </select>
     <!-- 增加提交 -->
     <insert id="add" parameterType="cloud.oj.judge.entity.Solution">

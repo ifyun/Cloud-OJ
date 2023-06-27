@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -38,7 +37,6 @@ public class SubmitService {
 
     private final Queue judgeQueue;
 
-    @Autowired
     public SubmitService(ProblemDao problemDao, ContestDao contestDao, SolutionDao solutionDao,
                          SourceCodeDao sourceCodeDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
         this.problemDao = problemDao;

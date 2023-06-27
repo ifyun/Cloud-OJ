@@ -6,11 +6,6 @@
       status="error"
       :title="error.error"
       :description="error.message">
-      <template #footer>
-        <n-button secondary size="small" type="primary" @click="retry">
-          重试
-        </n-button>
-      </template>
     </n-result>
     <!-- 结果 -->
     <n-result
@@ -19,11 +14,6 @@
       :status="result.status"
       :title="result.title"
       :description="result.desc">
-      <template v-if="showRetry" #footer>
-        <n-button secondary size="small" type="primary" @click="retry">
-          重新获取
-        </n-button>
-      </template>
     </n-result>
     <n-text v-if="result.error" type="error">
       <pre :class="{ dark: darkTheme }">{{ result.error }}</pre>
@@ -33,10 +23,10 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex"
-import { NButton, NResult, NSpace, NText } from "naive-ui"
+import { NResult, NSpace, NText } from "naive-ui"
 import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
-import { JudgeApi } from "@/api/request"
-import { computed, onMounted, ref } from "vue"
+import { ApiPath } from "@/api/request"
+import { computed, onMounted, onUnmounted, ref } from "vue"
 
 class Result {
   status: any
@@ -60,7 +50,6 @@ const result = ref<Result>({
   title: "提交成功，正在获取结果"
 })
 
-const showRetry = ref<boolean>(false)
 const darkTheme = computed<boolean>(() => store.state.theme != null)
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
@@ -68,8 +57,14 @@ const props = defineProps<{
   solutionId: string
 }>()
 
+let sse: EventSource
+
 onMounted(() => {
   fetchResult()
+})
+
+onUnmounted(() => {
+  sse.close()
 })
 
 function usage(r: JudgeResult) {
@@ -77,40 +72,32 @@ function usage(r: JudgeResult) {
   return `运行时间: ${(time! / 1000).toFixed(2)} ms，内存占用: ${memory} KB`
 }
 
-function retry() {
-  fetchResult()
-  error.value = null
-  result.value = {
-    status: "418",
-    title: "重新获取中"
-  }
-}
-
 /**
  * 获取结果
  */
 function fetchResult() {
-  JudgeApi.getResult(props.solutionId, userInfo.value)
-    .then((data) => {
-      if (data!.state !== 0) {
-        result.value = {
-          status: "418",
-          title: "在队列中，等待判题"
-        }
-        setTimeout(fetchResult, 200)
-      } else {
-        showRetry.value = false
-        setResult(data!)
+  sse = new EventSource(
+    `${ApiPath.SOLUTION}/${props.solutionId}?token=${userInfo.value.token}`
+  )
+
+  sse.onmessage = (event) => {
+    const data = JSON.parse(event.data) as JudgeResult
+
+    if (data.state !== 0) {
+      result.value = {
+        status: "418",
+        title: "在队列中，等待判题"
       }
-    })
-    .catch((err: ErrorMessage) => {
-      if (err.status === 404) {
-        result.value = new Result("info", "没有获取到结果")
-      } else {
-        error.value = err
-      }
-      showRetry.value = true
-    })
+    } else {
+      setResult(data)
+      sse.close()
+    }
+  }
+
+  sse.onerror = () => {
+    error.value = new ErrorMessage(500, "发生了错误，请自行查询提交记录")
+    sse.close()
+  }
 }
 
 function setResult(r: JudgeResult) {

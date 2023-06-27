@@ -6,7 +6,6 @@ import cloud.oj.gateway.filter.JwtUtil;
 import cloud.oj.gateway.service.UserService;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,6 @@ public class AuthController {
 
     private final UserService userService;
 
-    @Autowired
     public AuthController(UserService userService) {
         this.userService = userService;
     }

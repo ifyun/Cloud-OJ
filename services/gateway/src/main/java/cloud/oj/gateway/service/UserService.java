@@ -4,7 +4,6 @@ import cloud.oj.gateway.dao.UserDao;
 import cloud.oj.gateway.entity.Role;
 import cloud.oj.gateway.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -32,7 +31,6 @@ public class UserService implements ReactiveUserDetailsService {
         }
     };
 
-    @Autowired
     public UserService(UserDao userDao) {
         this.userDao = userDao;
     }
