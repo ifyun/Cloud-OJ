@@ -9,14 +9,11 @@ type StateTag = {
   icon: any
 }
 
-export function setTitle(title: string) {
+function setTitle(title: string) {
   document.title = `${title} - Cloud OJ`
 }
 
-export const renderIcon = (
-  icon: any,
-  color: string | undefined = undefined
-) => {
+const renderIcon = (icon: any, color: string | undefined = undefined) => {
   return () =>
     h(NIcon, color == null ? null : { color }, {
       default: () => h(icon)
@@ -66,4 +63,5 @@ function ramUsage(val: number): string {
 }
 
 export { default as LanguageUtil } from "./LanguageUtil"
-export { stateTag, timeUsage, ramUsage }
+export { setTitle, renderIcon, stateTag, timeUsage, ramUsage }
+export type { StateTag }

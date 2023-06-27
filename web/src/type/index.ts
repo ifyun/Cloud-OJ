@@ -20,7 +20,7 @@ export const LanguageOptions: Array<LanguageOption> = [
   { value: 4, label: "Bash Shell", version: "" },
   { value: 5, label: "C#", version: "Mono" },
   { value: 6, label: "JavaScript", version: "Node.js" },
-  { value: 7, label: "Kotlin Native", version: "1.8.x" },
+  { value: 7, label: "Kotlin", version: "1.8.x" },
   { value: 8, label: "Go", version: "1.20.x" }
 ]
 

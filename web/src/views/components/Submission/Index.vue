@@ -45,8 +45,11 @@
                   :content="problem.description"
                   style="margin-top: 12px" />
               </n-tab-pane>
-              <n-tab-pane name="solutions" tab="提交记录">
-                <n-h2 style="margin-bottom: 12px">
+              <n-tab-pane
+                name="solutions"
+                tab="提交记录"
+                display-directive="show">
+                <n-h2 style="margin-bottom: 6px">
                   {{ `${problem.problemId}.${problem.title}` }}
                 </n-h2>
                 <solution-single :problem-id="pid" />

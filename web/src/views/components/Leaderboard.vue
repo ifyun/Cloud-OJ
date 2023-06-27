@@ -4,6 +4,15 @@
     <empty-data v-else-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical>
+        <n-space v-if="contestState != null" align="center">
+          <n-tag round :bordered="false" :type="contestState.type">
+            <template #icon>
+              <n-icon :component="contestState.icon" />
+            </template>
+            {{ contestState.state }}
+          </n-tag>
+          <n-text strong>{{ contest?.contestName }} - 排名</n-text>
+        </n-space>
         <n-data-table
           single-column
           :loading="loading"
@@ -25,14 +34,16 @@ import { useRoute, useRouter } from "vue-router"
 import {
   DataTableColumns,
   NDataTable,
+  NIcon,
   NPagination,
   NSpace,
+  NTag,
   NText
 } from "naive-ui"
 import { ErrorResult, UserAvatar } from "@/components"
-import { RankingApi } from "@/api/request"
-import { ErrorMessage, Page, Ranking } from "@/api/type"
-import { setTitle } from "@/utils"
+import { ContestApi, RankingApi } from "@/api/request"
+import { Contest, ErrorMessage, Page, Ranking } from "@/api/type"
+import { StateTag, setTitle, stateTag } from "@/utils"
 import EmptyData from "@/components/EmptyData.vue"
 
 const route = useRoute()
@@ -46,6 +57,7 @@ const props = withDefaults(
 )
 
 let contestId: number | null = null
+let contestState: StateTag | null = null
 
 const pagination = ref({
   page: 1,
@@ -54,7 +66,7 @@ const pagination = ref({
 
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
-
+const contest = ref<Contest | null>(null)
 const rankings = ref<Page<Ranking>>({
   data: [],
   count: 0
@@ -123,7 +135,7 @@ onBeforeMount(() => {
     queryRankings()
   } else if (reg.test(props.cid)) {
     contestId = Number(props.cid)
-    queryRankings()
+    queryContest()
   } else {
     error.value = {
       status: 404,
@@ -141,6 +153,19 @@ function pageChange(page: number) {
   })
 
   queryRankings()
+}
+
+function queryContest() {
+  ContestApi.getById(contestId!)
+    .then((data) => {
+      contest.value = data
+      contestState = stateTag(data)
+      queryRankings()
+    })
+    .catch((err: ErrorMessage) => {
+      error.value = err
+      loading.value = false
+    })
 }
 
 function queryRankings() {

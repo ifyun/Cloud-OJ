@@ -1,5 +1,18 @@
 <template>
   <n-space vertical>
+    <n-space align="center">
+      <n-button
+        strong
+        secondary
+        size="small"
+        :loading="loading"
+        @click="querySolutions">
+        <template #icon>
+          <n-icon :component="HistoryRound" />
+        </template>
+        最近 15 次提交 (点击可刷新)
+      </n-button>
+    </n-space>
     <n-data-table
       :columns="columns"
       :data="solutions.data"
@@ -27,7 +40,12 @@ import {
   NText
 } from "naive-ui"
 import moment from "moment-timezone"
-import { CircleRound, CheckCircleFilled, ErrorRound } from "@vicons/material"
+import {
+  CircleRound,
+  CheckCircleFilled,
+  ErrorRound,
+  HistoryRound
+} from "@vicons/material"
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
 import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
