@@ -15,7 +15,7 @@ public class User {
     private String email;
     private String section;
     private Boolean hasAvatar;
-    private Integer roleId;
+    private Integer role;
     private String roleName;
     private Long createAt;
 

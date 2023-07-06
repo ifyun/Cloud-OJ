@@ -30,7 +30,7 @@ public class JwtUtil {
                 .claim("email", user.getEmail())
                 .claim("section", user.getSection())
                 .claim("hasAvatar", user.getHasAvatar())
-                .claim("roleId", user.getRoleId())
+                .claim("role", user.getRole())
                 .claim("authorities", authorities)
                 .signWith(stringToSecretKey(user.getSecret()))
                 .compact();

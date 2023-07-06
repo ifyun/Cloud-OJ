@@ -9,7 +9,7 @@
       trigger="click"
       :show-arrow="true"
       placement="bottom-end"
-      :options="userInfo.roleId === 1 ? userMenuOptions : adminMenuOptions"
+      :options="userInfo.role === 1 ? userMenuOptions : adminMenuOptions"
       @select="userMenuSelect">
       <n-button text icon-placement="right" style="padding: 6px 0">
         {{ userInfo.name }}
@@ -110,16 +110,12 @@ function login() {
 
 function logoff() {
   AuthApi.logoff(userInfo.value)
-    .then(() => {
-      message.success(`${userInfo.value.name} 已退出`)
-      login()
-    })
     .catch((err: ErrorMessage) => {
       message.warning(err.toString())
     })
     .finally(() => {
       store.commit(Mutations.CLEAR_TOKEN)
-      router.push({ name: "auth", params: { tab: "login" } })
+      login()
     })
 }
 

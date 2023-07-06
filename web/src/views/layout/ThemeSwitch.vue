@@ -7,14 +7,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, CSSProperties, ref, RendererNode } from "vue"
+import { computed, CSSProperties, RendererNode } from "vue"
 import { useStore } from "vuex"
 import { NIcon, NSwitch } from "naive-ui"
 import { DarkModeRound, LightModeRound } from "@vicons/material"
 import { Mutations } from "@/store"
 
+let icon: RendererNode | null = null
+
 const store = useStore()
-const icon = ref<RendererNode | null>(null)
 const isDarkTheme = computed<boolean>({
   get: () => {
     return store.state.theme != null
@@ -30,11 +31,11 @@ function railStyle({ checked }: { checked: boolean }) {
   if (checked) {
     // 暗色主题
     style.background = "#26292f"
-    icon.value = DarkModeRound
+    icon = DarkModeRound
   } else {
     // 亮色主题
     style.background = "#f6f6f9"
-    icon.value = LightModeRound
+    icon = LightModeRound
   }
 
   return style

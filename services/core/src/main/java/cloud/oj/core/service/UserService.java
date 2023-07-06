@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public HttpStatus addUser(User user) {
-        user.setRoleId(1);
+        user.setRole(1);
         user.setSecret(newUUID());
         if (userDao.add(user) == 1) {
             return HttpStatus.CREATED;
@@ -59,7 +59,7 @@ public class UserService {
     }
 
     public HttpStatus updateUser(User user) {
-        if (user.getPassword() != null || user.getRoleId() != null) {
+        if (user.getPassword() != null || user.getRole() != null) {
             user.setSecret(newUUID());
         }
 
@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public HttpStatus updateProfile(String userId, User user) {
-        user.setRoleId(null);
+        user.setRole(null);
         user.setUserId(userId);
 
         if (user.getPassword() != null) {

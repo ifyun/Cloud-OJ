@@ -13,7 +13,7 @@
                      truncate(score, 2) as score
               from leaderboard l
                        join user u on l.deleted = false and l.user_id = u.user_id
-              where u.role_id = 1
+              where u.role = 1
                 and score &gt; 0
               order by score desc, update_time) r,
              (select @ranking := #{start}) rn
@@ -33,7 +33,7 @@
               from leaderboard_contest lc
                        join user u on lc.deleted = false and lc.user_id = u.user_id
               where contest_id = #{contestId}
-                and u.role_id = 1
+                and u.role = 1
                 and score &gt; 0
               order by score desc, update_time) r,
              (select @ranking := #{start}) rn

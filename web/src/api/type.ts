@@ -16,7 +16,7 @@ export class User {
   name: string = ""
   password: string = ""
   confirmPassword: string = ""
-  roleId?: number
+  role?: number
   email: string = ""
   section: string = ""
   hasAvatar: boolean = false
@@ -33,7 +33,7 @@ export class UserInfo {
   section: string = ""
   token?: string
   hasAvatar: boolean = false
-  roleId = 1
+  role = 1
 }
 
 export class ErrorMessage {

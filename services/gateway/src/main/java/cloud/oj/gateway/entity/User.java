@@ -29,7 +29,7 @@ public class User implements UserDetails {
 
     private Boolean hasAvatar;
 
-    private int roleId;
+    private int role;
 
     @JsonIgnore
     private List<Role> roles;

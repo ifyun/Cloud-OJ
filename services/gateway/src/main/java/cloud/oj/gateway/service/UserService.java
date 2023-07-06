@@ -26,8 +26,6 @@ public class UserService implements ReactiveUserDetailsService {
         {
             add(new Role(0, "ROLE_ADMIN"));
             add(new Role(1, "ROLE_USER"));
-            add(new Role(2, "ROLE_USER_ADMIN"));
-            add(new Role(3, "ROLE_PROBLEM_ADMIN"));
         }
     };
 
@@ -39,14 +37,14 @@ public class UserService implements ReactiveUserDetailsService {
     public Mono<UserDetails> findByUsername(String username) {
         var user = userDao.findById(username);
         if (user != null) {
-            int roleId = user.getRoleId();
+            int role = user.getRole();
             List<Role> roles;
 
-            if (roleId == 0) {
-                // Admin 拥有所有角色
+            if (role == 0) {
+                // Admin
                 roles = ROLE_LIST;
             } else {
-                roles = Arrays.asList(ROLE_LIST.get(1), ROLE_LIST.get(roleId));
+                roles = Arrays.asList(ROLE_LIST.get(1), ROLE_LIST.get(role));
             }
 
             user.setRoles(roles);

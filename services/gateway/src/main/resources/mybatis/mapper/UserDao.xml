@@ -2,17 +2,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.gateway.dao.UserDao">
     <select id="findById" resultType="cloud.oj.gateway.entity.User">
-        select u.user_id,
+        select user_id,
                name,
                password,
                secret,
                email,
                section,
                has_avatar,
-               r.*
-        from user u
-                 join role r on u.deleted = false and u.role_id = r.role_id
-        where user_id = #{userId};
+               role
+        from user
+        where user_id = #{userId}
+          and deleted = false;
     </select>
     <select id="getSecret" resultType="java.lang.String">
         select secret

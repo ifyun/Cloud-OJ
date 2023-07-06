@@ -101,7 +101,7 @@ function login() {
       AuthApi.login(user.value)
         .then((token) => {
           store.commit(Mutations.SAVE_TOKEN, token)
-          if (store.state.userInfo.roleId == 1) {
+          if (store.state.userInfo.role == 1) {
             router.push({ path: "/" })
           } else {
             router.push({ path: "/admin/problem" })

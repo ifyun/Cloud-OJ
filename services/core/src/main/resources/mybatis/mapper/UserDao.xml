@@ -3,12 +3,12 @@
 <mapper namespace="cloud.oj.core.dao.UserDao">
     <!-- 根据过滤条件查询用户 -->
     <select id="getByFilter" resultMap="Map.User, Map.Total">
-        select sql_calc_found_rows user_id, name, email, section, has_avatar, role_id, create_at
+        select sql_calc_found_rows user_id, name, email, section, has_avatar, role, create_at
         from user
         where deleted = false
           and if(#{filter} = 1, user_id like concat(#{filterValue}, '%'), true)
           and if(#{filter} = 2, name like concat('%', #{filterValue}, '%'), true)
-        order by role_id desc, create_at
+        order by role, create_at
         limit #{start},#{limit};
         select found_rows()
     </select>
@@ -21,8 +21,8 @@
     </select>
     <!-- 增加用户 -->
     <insert id="add" parameterType="cloud.oj.core.entity.User">
-        insert into `user`(user_id, name, password, secret, email, section, role_id)
-            value (#{userId}, #{name}, #{password}, #{secret}, #{email}, #{section}, #{roleId})
+        insert into `user`(user_id, name, password, secret, email, section, role)
+            value (#{userId}, #{name}, #{password}, #{secret}, #{email}, #{section}, #{role})
     </insert>
     <!-- 更新用户信息 -->
     <update id="update" parameterType="cloud.oj.core.entity.User">
@@ -35,7 +35,7 @@
         </choose>
         <choose>
             <when test="roleId != null">
-                role_id = #{roleId},
+                role = #{roleId},
             </when>
         </choose>
         <choose>

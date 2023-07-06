@@ -53,10 +53,10 @@ public class SolutionService {
                         continue;
                     }
 
-                    var event = SseEmitter
-                            .event()
+                    var event = SseEmitter.event()
                             .data(objectMapper.writeValueAsString(result))
                             .name("message");
+
                     emitter.send(event);
 
                     if (result.getState() == 0) {

@@ -39,9 +39,7 @@ public class WebFluxSecurityConfig {
 
     private static class Role {
         private static final String USER = "USER";
-        private static final String UA = "USER_ADMIN";
-        private static final String PA = "PROBLEM_ADMIN";
-        private static final String SU = "ADMIN";
+        private static final String ADMIN = "ADMIN";
     }
 
     @Bean
@@ -67,21 +65,21 @@ public class WebFluxSecurityConfig {
                         .pathMatchers("/judge/**").denyAll()
                         .pathMatchers(HttpMethod.GET, "/api/core/user/profile").permitAll()
                         .pathMatchers(HttpMethod.PUT, "/api/core/user/profile").hasRole(Role.USER)
-                        .pathMatchers("/api/core/user/admin/**").hasRole(Role.UA)
-                        .pathMatchers("/api/core/problem/admin/**").hasRole(Role.PA)
+                        .pathMatchers("/api/core/user/admin/**").hasRole(Role.ADMIN)
+                        .pathMatchers("/api/core/problem/admin/**").hasRole(Role.ADMIN)
                         .pathMatchers("/api/core/solution/**").hasRole(Role.USER)
-                        .pathMatchers("/api/core/contest/admin/**").hasRole(Role.PA)
+                        .pathMatchers("/api/core/contest/admin/**").hasRole(Role.ADMIN)
                         .pathMatchers("/api/core/contest/problem/**").hasRole(Role.USER)
-                        .pathMatchers("/api/core/ranking/admin/**").hasRole(Role.PA)
+                        .pathMatchers("/api/core/ranking/admin/**").hasRole(Role.ADMIN)
                         .pathMatchers(HttpMethod.GET, "/api/core/settings/**").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/api/core/settings/**").hasRole(Role.SU)
-                        .pathMatchers("/api/core/file/data/**").hasRole(Role.PA)
+                        .pathMatchers(HttpMethod.POST, "/api/core/settings/**").hasRole(Role.ADMIN)
+                        .pathMatchers("/api/core/file/data/**").hasRole(Role.ADMIN)
                         .pathMatchers(HttpMethod.GET, "/api/core/file/img/**").permitAll()
-                        .pathMatchers(HttpMethod.DELETE, "/api/core/file/img/**").hasRole(Role.SU)
-                        .pathMatchers(HttpMethod.POST, "/api/core/file/img/problem/**").hasRole(Role.PA)
+                        .pathMatchers(HttpMethod.DELETE, "/api/core/file/img/**").hasRole(Role.ADMIN)
+                        .pathMatchers(HttpMethod.POST, "/api/core/file/img/problem/**").hasRole(Role.ADMIN)
                         .pathMatchers(HttpMethod.POST, "/api/core/file/img/avatar/**").hasRole(Role.USER)
                         .pathMatchers("/api/judge/submit").hasRole(Role.USER)
-                        .pathMatchers("/api/judge/admin/**").hasRole(Role.PA)
+                        .pathMatchers("/api/judge/admin/**").hasRole(Role.ADMIN)
                         .anyExchange()
                         .permitAll()
                 )

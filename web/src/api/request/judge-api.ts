@@ -12,7 +12,7 @@ const JudgeApi = {
   submit(data: SubmitData, userInfo: UserInfo): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       axios({
-        url: userInfo.roleId == 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT,
+        url: userInfo.role == 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT,
         method: "POST",
         headers: buildHeaders(userInfo),
         data: JSON.stringify(data, (k, v) => v ?? undefined)

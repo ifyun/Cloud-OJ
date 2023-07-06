@@ -44,12 +44,6 @@ create table `contest-problem`
 create index idx_cid on `contest-problem` (contest_id);
 create index idx_pid on `contest-problem` (problem_id);
 
-create table role
-(
-    role_id   int unsigned not null primary key,
-    role_name varchar(32)  not null
-);
-
 create table user
 (
     user_id    varchar(32)                            not null primary key,
@@ -59,12 +53,13 @@ create table user
     email      varchar(32)                            null,
     section    varchar(16)                            null,
     has_avatar tinyint(1)   default 0                 not null,
-    role_id    int unsigned default 1                 not null,
+    role       int unsigned default 1                 not null,
     create_at  timestamp    default CURRENT_TIMESTAMP not null,
     deleted    tinyint(1)   default 0                 not null
 );
 
 create index idx_name on user (name);
+create index idx_role on user (role);
 create index idx_time on user (create_at);
 
 # 提交
@@ -214,7 +209,7 @@ INSERT INTO cloud_oj.role (role_id, role_name)
 VALUES (3, 'ROLE_PROBLEM_ADMIN');
 
 # 初始 ADMIN 用户
-INSERT INTO cloud_oj.user (user_id, name, password, secret, role_id)
+INSERT INTO cloud_oj.user (user_id, name, password, secret, role)
 VALUES ('admin', '管理员', '$2a$10$i8D62CjX7/.z8juoUACG9ecqatDl9JkizB5XoA9UswPtb8WmnCAG6', '', 0);
 
 INSERT INTO settings (id)

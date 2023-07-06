@@ -14,13 +14,11 @@ const ProblemApi = {
    * @param page 页序号
    * @param limit 数量
    * @param keyword 指定关键字用于搜索
-   * @param userId 指定此参数可返回题目状态
    */
   getAllOpened(
     page: number,
     limit: number,
-    keyword: string | null = null,
-    userId: string | null = null
+    keyword: string | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
@@ -29,8 +27,7 @@ const ProblemApi = {
         params: {
           page,
           limit,
-          keyword,
-          userId
+          keyword
         }
       })
         .then((res) => {
@@ -88,7 +85,7 @@ const ProblemApi = {
   ): Promise<Problem> {
     let path: string, headers: any
 
-    if (userInfo == null || userInfo.roleId == 1) {
+    if (userInfo == null || userInfo.role == 1) {
       path = ApiPath.PROBLEM
       headers = null
     } else {

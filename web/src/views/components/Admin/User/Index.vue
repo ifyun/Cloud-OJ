@@ -72,13 +72,6 @@ import { UserApi } from "@/api/request"
 import { setTitle } from "@/utils"
 import moment from "moment"
 
-const roles = [
-  { text: "ADMIN", type: "primary" },
-  { text: "用户", type: "info" },
-  { text: "题目管理员", type: "warning" },
-  { text: "用户管理员", type: "warning" }
-]
-
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
@@ -140,9 +133,16 @@ const columns: DataTableColumns<User> = [
           name={row.name}
           hasAvatar={row.hasAvatar}
         />
-        <NButton text={true}>
-          <span style="font-weight: 500">{row.name}</span>
+        <NButton text={true} strong={true}>
+          {row.name}
         </NButton>
+        {row.userId == userInfo.value.userId ? (
+          <NTag type="primary" size="small" round={true}>
+            你自己
+          </NTag>
+        ) : (
+          <span></span>
+        )}
       </NSpace>
     )
   },
@@ -157,11 +157,15 @@ const columns: DataTableColumns<User> = [
         <NText>权限</NText>
       </NSpace>
     ),
-    render: (row) => (
-      <NTag size="small" type={roles[row.roleId!].type as any}>
-        {roles[row.roleId!].text}
-      </NTag>
-    )
+    render: (row) => {
+      if (row.role! == 0) {
+        return (
+          <NTag size="small" type="primary">
+            管理员
+          </NTag>
+        )
+      }
+    }
   },
   {
     key: "createAt",

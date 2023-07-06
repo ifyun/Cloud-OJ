@@ -15,7 +15,7 @@ function resolveToken(token: string): UserInfo {
   )
   const userInfo: UserInfo = new UserInfo()
   userInfo.token = token
-  userInfo.roleId = json.roleId
+  userInfo.role = json.role
   userInfo.userId = json.sub
   userInfo.name = json.name
   userInfo.email = json.email ?? ""
