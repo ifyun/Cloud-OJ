@@ -9,7 +9,7 @@
 ![Top Languages](https://img.shields.io/github/languages/top/imcloudfloating/Cloud-OJ?logo=github)
 ![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?logo=github)
 
-Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js、UNIX API。
+Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js、UNIX API
 
 - Docker 运行
 - 代码高亮

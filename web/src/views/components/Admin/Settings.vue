@@ -44,6 +44,22 @@
           </template>
         </n-thing>
       </n-card>
+      <n-card>
+        <n-thing>
+          <template #header>自动删除判题产物</template>
+          <template #description>
+            <n-text depth="3">
+              判题结束后删除写入硬盘的用户代码、编译的二进制文件
+            </n-text>
+          </template>
+          <template #action>
+            <n-switch
+              v-model:value="settings.autoDelSolutions"
+              :round="false"
+              size="small" />
+          </template>
+        </n-thing>
+      </n-card>
       <n-button type="primary" secondary @click="saveSettings">
         保存设置
         <template #icon>

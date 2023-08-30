@@ -3,5 +3,4 @@ logging:
     root: info
     cloud.oj: info
 app:
-  auto-clean-solution: false
   judge-cpus: 0,1

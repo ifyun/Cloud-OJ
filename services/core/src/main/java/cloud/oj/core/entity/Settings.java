@@ -9,4 +9,5 @@ public class Settings {
     private boolean alwaysShowRanking;
     private boolean showAllContest;
     private boolean showPassedPoints;
+    private boolean autoDelSolutions;
 }

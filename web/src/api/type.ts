@@ -181,9 +181,8 @@ export class Overview {
 }
 
 export class Settings {
-  icp?: string
-  icpUrl?: string
   alwaysShowRanking?: boolean
   showAllContest?: boolean
   showPassedPoints?: boolean
+  autoDelSolutions?: boolean
 }

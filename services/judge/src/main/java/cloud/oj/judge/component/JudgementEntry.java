@@ -1,6 +1,6 @@
 package cloud.oj.judge.component;
 
-import cloud.oj.judge.config.AppConfig;
+import cloud.oj.judge.dao.SettingsDao;
 import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.utils.FileCleaner;
@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 @Slf4j
 @Component
 public class JudgementEntry {
-
-    private final AppConfig appConfig;
+    private final SettingsDao settingsDao;
 
     private final Judgement judgement;
 
@@ -20,8 +22,8 @@ public class JudgementEntry {
 
     private final SolutionDao solutionDao;
 
-    public JudgementEntry(AppConfig appConfig, Judgement judgement, FileCleaner fileCleaner, SolutionDao solutionDao) {
-        this.appConfig = appConfig;
+    public JudgementEntry(SettingsDao settingsDao, Judgement judgement, FileCleaner fileCleaner, SolutionDao solutionDao) {
+        this.settingsDao = settingsDao;
         this.judgement = judgement;
         this.fileCleaner = fileCleaner;
         this.solutionDao = solutionDao;
@@ -36,7 +38,9 @@ public class JudgementEntry {
             judgement.judge(solution);
         } catch (Exception e) {
             if (e.getMessage() == null) {
-                e.printStackTrace();
+                var stream = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintStream(stream));
+                log.error(stream.toString());
             } else {
                 log.error(e.getMessage());
             }
@@ -45,7 +49,7 @@ public class JudgementEntry {
             solution.setResult(SolutionResult.IE);
             solutionDao.updateState(solution);
         } finally {
-            if (appConfig.isAutoCleanSolution()) {
+            if (settingsDao.isAutoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());
             }
         }

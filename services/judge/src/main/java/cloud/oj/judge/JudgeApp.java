@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @EnableTransactionManagement
-@EnableConfigurationProperties(AppConfig.class)
 @EnableDiscoveryClient
 @SpringBootApplication
+@EnableConfigurationProperties(AppConfig.class)
 public class JudgeApp {
     private static void checkSystem() {
         if (!SystemUtils.IS_OS_LINUX) {

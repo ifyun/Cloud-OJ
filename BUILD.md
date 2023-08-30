@@ -10,28 +10,6 @@
 
 构建完成后，编排文件将复制到 `~/cloud-oj` 目录
 
-运行：
-
-```bash
-cd ~/cloud-oj
-docker compose up -d
-```
-
-首次运行时，你可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码
-
-**系统默认管理员账号和密码均为 `admin`**
-
-部分端口未映射到宿主机，如有必要可参考下表：
-
-| Service  | Port(s)     |
-|----------|-------------|
-| Consul   | 8500        |
-| gateway  | 8080        |
-| core     | 8180        |
-| judge    | 8280        |
-| mariadb  | 3306        |
-| rabbitmq | 5672, 15672 |
-
 ### 仅构建指定的镜像
 
 仅构建 `cloudoj-web` 镜像：
@@ -47,6 +25,28 @@ docker compose up -d
 - gateway
 - judge
 - mariadb
+
+## 运行
+
+```bash
+cd ~/cloud-oj
+docker compose up -d
+```
+
+首次运行时，你可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码
+
+部分端口未映射到宿主机，如有必要可参考下表：
+
+| Service  | Port(s)     |
+|----------|-------------|
+| Consul   | 8500        |
+| gateway  | 8080        |
+| core     | 8180        |
+| judge    | 8280        |
+| mariadb  | 3306        |
+| rabbitmq | 5672, 15672 |
+
+**系统默认管理员账号和密码均为 `admin`**。
 
 ## 开启 HTTPS
 
@@ -88,7 +88,7 @@ JUDGE_CPUS=0,1,2      # 使用 CPU-0, CPU-1, CPU-2
 
 超过上限或小于 0 会被设置为 0
 
-默认使用 4 个线程，请根据可用内存量来设置
+默认使用 1 个线程，请根据 CPU 和可用内存量来设置
 
 `API_HOST`
 

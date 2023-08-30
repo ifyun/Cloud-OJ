@@ -6,11 +6,6 @@
       "description": "应用程序配置."
     },
     {
-      "name": "app.code-dir",
-      "type": "java.lang.String",
-      "description": "代码临时目录."
-    },
-    {
       "name": "app.judge-cpus",
       "type": "java.lang.String",
       "description": "判题使用的 CPU 核心, 逗号分隔."
@@ -19,11 +14,6 @@
       "name": "app.file-dir",
       "type": "java.lang.String",
       "description": "文件存放目录."
-    },
-    {
-      "name": "app.auto-clean-solution",
-      "type": "java.lang.Boolean",
-      "description": "是否自动清理判题产生的代码文件."
     }
   ]
 }

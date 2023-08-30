@@ -151,7 +151,8 @@ create table settings
     id                  int unsigned         not null primary key,
     always_show_ranking tinyint(1) default 0 not null,
     show_all_contest    tinyint(1) default 0 not null,
-    show_passed_points  tinyint(1) default 0 not null
+    show_passed_points  tinyint(1) default 0 not null,
+    auto_del_solutions  tinyint(1) default 0 not null
 ) engine = Aria;
 
 create view contest_problem as

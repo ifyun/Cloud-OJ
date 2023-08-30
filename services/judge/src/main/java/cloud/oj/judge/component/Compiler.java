@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-class Compiler {
+public class Compiler {
 
     private static final Map<Language, String[]> CMD = Map.of(
             Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.c", "-o", "Solution"},

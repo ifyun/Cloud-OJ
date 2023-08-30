@@ -12,7 +12,8 @@
         update settings
         set always_show_ranking = #{alwaysShowRanking},
             show_all_contest    = #{showAllContest},
-            show_passed_points  = #{showPassedPoints}
+            show_passed_points  = #{showPassedPoints},
+            auto_del_solutions  = #{autoDelSolutions}
         where id = 0
     </update>
     <update id="deleteByUser">

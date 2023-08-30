@@ -15,8 +15,6 @@ import java.util.*;
 public class AppConfig {
     private final ApplicationContext applicationContext;
 
-    private final boolean autoCleanSolution;
-
     private final String fileDir;
 
     private final String codeDir;
@@ -25,11 +23,10 @@ public class AppConfig {
 
     private List<Integer> cpus;
 
-    public AppConfig(ApplicationContext context, Boolean autoCleanSolution, String fileDir, String codeDir, String judgeCpus) {
+    public AppConfig(ApplicationContext context, String fileDir, String judgeCpus) {
         var home = System.getProperty("user.home");
         this.applicationContext = context;
-        this.autoCleanSolution = Optional.ofNullable(autoCleanSolution).orElse(true);
-        this.judgeCpus = Optional.ofNullable(judgeCpus).orElse("4");
+        this.judgeCpus = Optional.ofNullable(judgeCpus).orElse("1");
 
         if (fileDir == null) {
             this.fileDir = home + "/.local/cloud-oj/";
@@ -39,13 +36,7 @@ public class AppConfig {
             this.fileDir = fileDir;
         }
 
-        if (codeDir == null) {
-            this.codeDir = "/tmp/code/";
-        } else if (!codeDir.endsWith("/")) {
-            this.codeDir = codeDir + "/";
-        } else {
-            this.codeDir = codeDir;
-        }
+        this.codeDir = this.fileDir + "code/";
 
         createDir(this.fileDir + "data");
         createDir(this.codeDir);
@@ -53,7 +44,6 @@ public class AppConfig {
 
         log.info("数据文件目录: {}", this.fileDir);
         log.info("临时代码目录: {}", this.codeDir);
-        log.info("自动删除判题产物: {}", this.autoCleanSolution);
     }
 
     private void configCpus() {

@@ -18,7 +18,7 @@ WORKDIR /build
 ARG TARGET=""
 ENV TARGET=${TARGET}
 RUN --mount=type=cache,target=/root/.m2/ \
-    cp services/mvn.xml /root/.m2/settings.xml \
+    cp dev/mvn.xml /root/.m2/settings.xml \
     && bash build target ${TARGET}
 # web
 FROM nginx:alpine as web
