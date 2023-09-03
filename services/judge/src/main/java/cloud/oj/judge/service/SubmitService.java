@@ -113,7 +113,7 @@ public class SubmitService {
 
         solution.setSourceCode(submitData.getSourceCode());
         solution.setState(SolutionState.IN_QUEUE);
-        solutionDao.updateState(solution);
+        solutionDao.update(solution);
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }

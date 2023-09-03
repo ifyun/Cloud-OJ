@@ -1,13 +1,16 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
-import cloud.oj.judge.dao.*;
+import cloud.oj.judge.dao.DatabaseConfig;
+import cloud.oj.judge.dao.ProblemDao;
+import cloud.oj.judge.dao.RankingDao;
+import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Limit;
-import cloud.oj.judge.entity.RunResult;
-import cloud.oj.judge.entity.Runtime;
+import cloud.oj.judge.entity.JudgeResult;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
@@ -21,17 +24,16 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.StringJoiner;
 
+import static cloud.oj.judge.component.SolutionResult.*;
+
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class Judgement {
 
     private final AppConfig appConfig;
 
     private final ObjectMapper objectMapper;
-
-    private final RuntimeDao runtimeDao;
-
-    private final CompileDao compileDao;
 
     private final ProblemDao problemDao;
 
@@ -45,31 +47,7 @@ public class Judgement {
 
     private final HashMap<String, Integer> cpuMap;
 
-    private static final int RE = 1;
-    private static final int IE = 2;
-
     private final static UnixDomainSocketAddress addr = UnixDomainSocketAddress.of("/var/run/judge.sock");
-
-    public Judgement(AppConfig appConfig, ObjectMapper objectMapper, RuntimeDao runtimeDao, CompileDao compileDao,
-                     ProblemDao problemDao, SolutionDao solutionDao, RankingDao rankingDao, DatabaseConfig dbConfig,
-                     Compiler compiler, HashMap<String, Integer> cpuMap) {
-        this.appConfig = appConfig;
-        this.objectMapper = objectMapper;
-        this.runtimeDao = runtimeDao;
-        this.compileDao = compileDao;
-        this.problemDao = problemDao;
-        this.solutionDao = solutionDao;
-        this.rankingDao = rankingDao;
-        this.dbConfig = dbConfig;
-        this.compiler = compiler;
-        this.cpuMap = cpuMap;
-    }
-
-    private static class InternalError extends Exception {
-        InternalError(String msg) {
-            super(msg);
-        }
-    }
 
     /**
      * 判题入口
@@ -84,34 +62,32 @@ public class Judgement {
         dbConfig.disableFKChecks();
 
         var compile = compiler.compile(solution);
-        compileDao.add(compile);
 
         if (compile.getState() == 0) {
+            // 编译成功
             var limit = problemDao.getLimit(solution.getProblemId());
-            var runtime = new Runtime(solution.getSolutionId());
-            runtimeDao.add(runtime);
-
-            var result = execute(solution, runtime, limit);
-            saveResult(solution, runtime, result, limit);
-            runtimeDao.update(runtime);
+            // 运行
+            var result = execute(solution, limit);
+            saveResult(solution, result, limit);
         } else {
-            solution.setResult(SolutionResult.CE);
-            solution.setState(SolutionState.JUDGED);
-            solutionDao.updateState(solution);
+            // 编译失败
+            solution.endWithError(CE, compile.getInfo());
+            solutionDao.update(solution);
         }
     }
 
     /**
-     * 计算并结果
+     * 保存判题结果
      * <p>计算分数并更新排名</p>
      *
-     * @param result {@link RunResult}
+     * @param result {@link JudgeResult}
      */
-    private void saveResult(Solution solution, Runtime runtime, RunResult result, Limit limit) {
-        if (runtime.getResult().equals(SolutionResult.IE) || runtime.getResult().equals(SolutionResult.RE)) {
-            solution.setResult(runtime.getResult());
-            solution.setState(SolutionState.JUDGED);
-            solutionDao.updateState(solution);
+    private void saveResult(Solution solution, JudgeResult result, Limit limit) {
+        // 运行错误/内部错误
+        if (result.getResult().equals(RE) || result.getResult().equals(IE)) {
+            log.warn("运行时/内部错误({}): {}", solution.getSolutionId(), result.getError());
+            solution.endWithError(result.getResult(), result.getError());
+            solutionDao.update(solution);
             return;
         }
 
@@ -128,18 +104,18 @@ public class Judgement {
         // 查询历史提交中的最高分
         var maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
 
-        runtime.setTotal(result.getTotal());
-        runtime.setPassed(result.getPassed());
-        runtime.setTime(result.getTime());
-        runtime.setMemory(result.getMemory());
-
-        solution.setResult(SolutionResult.fromString(result.getResult()));
+        solution.setTotal(result.getTotal());
+        solution.setPassed(result.getPassed());
         solution.setPassRate(passRate);
         solution.setScore(passRate * limit.getScore());
+        solution.setTime(result.getTime());
+        solution.setMemory(result.getMemory());
+        solution.setResult(result.getResult());
         solution.setState(SolutionState.JUDGED);
 
-        solutionDao.updateState(solution);
+        solutionDao.update(solution);
 
+        // 更新排名
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
         if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
             if (contestId == null) {
@@ -158,12 +134,12 @@ public class Judgement {
     }
 
     /**
-     * 执行用户程序
+     * 运行用户程序
      *
-     * @return 运行结果 {@link RunResult}
+     * @return 运行结果 {@link JudgeResult}
      */
-    private RunResult execute(Solution solution, Runtime runtime, Limit limit) {
-        RunResult result = null;
+    private JudgeResult execute(Solution solution, Limit limit) {
+        JudgeResult result;
 
         try {
             var testDataDir = appConfig.getFileDir() + "data/" + solution.getProblemId();
@@ -177,24 +153,19 @@ public class Judgement {
             buf.flip();
             var bytes = new byte[buf.remaining()];
             buf.get(bytes);
-            result = objectMapper.readValue(bytes, RunResult.class);
+            result = objectMapper.readValue(bytes, JudgeResult.class);
 
-            if (result.getCode() == RE) {
-                log.info("运行错误({}): {}", solution.getSolutionId(), result.getError());
-                runtime.setInfo(result.getError());
-                runtime.setResult(SolutionResult.RE);
-            } else if (result.getCode() == IE) {
-                throw new InternalError(result.getError());
-            } else {
-                runtime.setResult(0);
+            if (result.getCode() == 1) {
+                result.setResult(RE);
+            } else if (result.getCode() == 2) {
+                result.setResult(IE);
             }
-        } catch (IOException | InternalError | UnsupportedLanguageError e) {
-            log.error("内部错误({}): {}", solution.getSolutionId(), e.getMessage());
-            runtime.setResult(SolutionResult.IE);
-            runtime.setInfo(e.getMessage());
+        } catch (IOException | UnsupportedLanguageError e) {
+            result = new JudgeResult();
+            result.setResult(IE);
+            result.setError(e.getMessage());
         }
 
-        runtimeDao.update(runtime);
         return result;
     }
 
@@ -228,8 +199,7 @@ public class Judgement {
             default -> throw new UnsupportedLanguageError(language.toString());
         }
 
-        return argv
-                .add("--time=" + timeLimit)
+        return argv.add("--time=" + timeLimit)
                 .add("--ram=" + memoryLimit)
                 .add("--output=" + outputLimit)
                 .add("--workdir=" + workDir)

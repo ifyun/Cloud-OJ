@@ -73,8 +73,13 @@ create table solution
     language    int unsigned                                                   not null,
     state       enum ('JUDGED', 'IN_QUEUE')                                    not null,
     result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE') null,
+    total       int        default 0                                           not null comment '总测试点数量',
+    passed      int        default 0                                           not null comment '通过测试点数量',
     pass_rate   double     default 0                                           not null,
     score       double     default 0                                           not null,
+    time        bigint     default 0                                           not null comment 'CPU 时间(μs)',
+    memory      bigint     default 0                                           not null comment '内存占用(KiB)',
+    error_info  text       default 0                                           not null,
     submit_time datetime   default CURRENT_TIMESTAMP                           not null,
     deleted     tinyint(1) default 0                                           not null
 );
@@ -83,6 +88,15 @@ create index idx_uid on solution (user_id);
 create index idx_pid on solution (problem_id);
 create index idx_cid on solution (contest_id);
 create index idx_time on solution (submit_time desc);
+
+# 代码
+create table source_code
+(
+    solution_id char(36) not null,
+    code        text     not null
+);
+
+create index idx_sid on source_code (solution_id);
 
 # 排名
 create table leaderboard
@@ -111,41 +125,6 @@ create table leaderboard_contest
 
 create index idx_cid_score_time on leaderboard_contest (contest_id, score desc, update_time asc);
 
-# 编译信息
-create table if not exists compile
-(
-    id          int unsigned auto_increment primary key,
-    solution_id char(36) not null,
-    state       int      not null comment '0: 编译成功, -1: 编译出错',
-    info        text     null
-);
-
-create index idx_sid on compile (solution_id);
-
-# 运行时信息
-create table runtime
-(
-    id          int unsigned auto_increment primary key,
-    solution_id char(36) not null,
-    total       int      null comment '总测试点数量',
-    passed      int      null comment '通过测试点数量',
-    time        bigint   null comment 'CPU 时间(μs)',
-    memory      bigint   null comment '内存占用(KiB)',
-    info        text     null
-);
-
-create index idx_sid on runtime (solution_id);
-
-# 代码
-create table source_code
-(
-    id          int unsigned auto_increment primary key,
-    solution_id char(36) not null,
-    code        text     not null
-);
-
-create index idx_sid on source_code (solution_id);
-
 create table settings
 (
     id                  int unsigned         not null primary key,
@@ -173,41 +152,8 @@ select `c`.`contest_id`   AS `contest_id`,
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on (`cp`.`problem_id` = `p`.`problem_id`))
     join `cloud_oj`.`contest` `c` on (`c`.`deleted` = 0 and `cp`.`contest_id` = `c`.`contest_id`));
 
-create view judge_result as
-select `s`.`solution_id`                                      AS `solution_id`,
-       `s`.`problem_id`                                       AS `problem_id`,
-       `s`.`contest_id`                                       AS `contest_id`,
-       `s`.`title`                                            AS `title`,
-       `s`.`language`                                         AS `language`,
-       `s`.`state`                                            AS `state`,
-       `s`.`result`                                           AS `result`,
-       truncate(`s`.`pass_rate`, 2)                           AS `pass_rate`,
-       `s`.`user_id`                                          AS `user_id`,
-       `s`.`submit_time`                                      AS `submit_time`,
-       truncate(`s`.`score`, 2)                               AS `score`,
-       `r`.`time`                                             AS `time`,
-       `r`.`memory`                                           AS `memory`,
-       `r`.`passed`                                           AS `passed`,
-       `r`.`total`                                            AS `total`,
-       concat(ifnull(`c`.`info`, ''), ifnull(`r`.`info`, '')) AS `error_info`
-from ((`cloud_oj`.`solution` `s` left join `cloud_oj`.`compile` `c`
-       on (`s`.`solution_id` = `c`.`solution_id`)) left join `cloud_oj`.`runtime` `r`
-      on (`s`.`solution_id` = `r`.`solution_id`))
-where `s`.`deleted` = 0
-order by `s`.`submit_time` desc;
-
 ALTER TABLE problem
     AUTO_INCREMENT = 1000;
-
-# 初始化角色/权限表
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (0, 'ROLE_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (1, 'ROLE_USER');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (2, 'ROLE_USER_ADMIN');
-INSERT INTO cloud_oj.role (role_id, role_name)
-VALUES (3, 'ROLE_PROBLEM_ADMIN');
 
 # 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (user_id, name, password, secret, role)

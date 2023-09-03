@@ -1,22 +1,31 @@
 package cloud.oj.judge.entity;
 
+import cloud.oj.judge.component.SolutionResult;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 对应判题程序返回结果
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RunResult {
+public class JudgeResult {
     private Integer code;
+    private Integer result;
     private String error;
-    private Integer status;
-    private String result;
     private Integer total;
     private Integer passed;
     private Double passRate;
     private Long time;
     private Long memory;
+
+    @JsonSetter("result")
+    public void setResultStr(String result) {
+        this.result = SolutionResult.ofString(result);
+    }
 }

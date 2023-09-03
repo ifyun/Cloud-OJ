@@ -1,5 +1,3 @@
-/// 日志输出
-/// @author Cloud
 #ifndef LOG_H
 #define LOG_H 1
 

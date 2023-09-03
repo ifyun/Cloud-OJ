@@ -1,5 +1,9 @@
 package cloud.oj.judge.component;
 
+/**
+ * 对应 solution 表中的枚举值
+ * <p>MariaDB 的枚举值从 1 开始</p>
+ */
 public class SolutionResult {
     public static final int AC = 1;  // 通过
     public static final int TLE = 2; // 超时
@@ -11,7 +15,7 @@ public class SolutionResult {
     public static final int IE = 8;  // 内部错误
     public static final int OLE = 9; // 输出超限
 
-    public static Integer fromString(String str) {
+    public static Integer ofString(String str) {
         return switch (str) {
             case "AC" -> AC;
             case "WA" -> WA;

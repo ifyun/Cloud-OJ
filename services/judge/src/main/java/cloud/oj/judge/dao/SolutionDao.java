@@ -18,16 +18,9 @@ public interface SolutionDao {
     void add(Solution solution);
 
     /**
-     * 更新状态，有以下字段：
-     *
-     * <ul>
-     *     <li>state</li>
-     *     <li>result</li>
-     *     <li>passRate</li>
-     *     <li>score</li>
-     * </ul>
+     * 更新判题结果
      *
      * @param solution {@link Solution}
      */
-    void updateState(Solution solution);
+    void update(Solution solution);
 }

@@ -123,11 +123,9 @@ void ThreadPool::exec(int &cfd, char *argv[]) {
             _exit(errno);
         }
     } else {
-        int state;
         size_t read_size;
         char buf[BUF_SIZE];
-
-        waitpid(pid, &state, 0);
+        waitpid(pid, nullptr, 0);
 
         if ((read_size = read(pip[0], buf, BUF_SIZE)) == -1) {
             char res[32];

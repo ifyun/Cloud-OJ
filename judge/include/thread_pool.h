@@ -1,5 +1,3 @@
-/// judged 线程池
-/// @author Cloud
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H 1
 

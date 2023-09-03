@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static cloud.oj.judge.component.SolutionResult.IE;
+import static cloud.oj.judge.component.SolutionState.JUDGED;
+
 @Slf4j
 @Component
 public class JudgementEntry {
@@ -45,9 +48,13 @@ public class JudgementEntry {
                 log.error(e.getMessage());
             }
             // 判题发生异常，将结果设置为内部错误
-            solution.setState(SolutionState.JUDGED);
-            solution.setResult(SolutionResult.IE);
-            solutionDao.updateState(solution);
+            if (solution.getErrorInfo() == null) {
+                solution.setErrorInfo("内部错误");
+            }
+
+            solution.setState(JUDGED);
+            solution.setResult(IE);
+            solutionDao.update(solution);
         } finally {
             if (settingsDao.isAutoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());

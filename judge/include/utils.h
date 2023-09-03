@@ -1,5 +1,3 @@
-/// 文件工具类
-/// @author Cloud
 #ifndef UTILS_H
 #define UTILS_H 1
 

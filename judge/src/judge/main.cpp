@@ -1,4 +1,3 @@
-/// 判题程序入口
 #include <iostream>
 #include <unistd.h>
 #include "runner.h"
@@ -7,9 +6,9 @@
 
 int main(int argc, char *argv[]) {
     int lang;
-    char cmd[64];
-    char work_dir[64];
-    char data_dir[64];
+    char cmd[128];
+    char work_dir[128];
+    char data_dir[128];
     Config config;
 
     if (get_args(argc, argv, cmd, lang, work_dir, data_dir, config) != 0) {

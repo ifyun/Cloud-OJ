@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.judge.dao.SolutionDao">
     <!-- 查询用户在指定题目的历史提交中的最高分 -->
@@ -24,12 +25,17 @@
         where problem_id = #{problemId}
     </insert>
     <!-- 更新状态 -->
-    <update id="updateState" parameterType="cloud.oj.judge.entity.Solution">
+    <update id="update" parameterType="cloud.oj.judge.entity.Solution">
         update solution
-        set state     = #{state},
-            result    = #{result},
-            pass_rate = #{passRate},
-            score     = #{score}
+        set state      = #{state},
+            result     = #{result},
+            total      = #{total},
+            passed     = #{passed},
+            pass_rate  = #{passRate},
+            score      = #{score},
+            time       = #{time},
+            memory     = #{memory},
+            error_info = #{errorInfo}
         where solution_id = #{solutionId}
     </update>
 </mapper>

@@ -4,18 +4,16 @@
 <mapper namespace="cloud.oj.core.dao.SolutionDao">
     <!-- 根据 id 查询提交 -->
     <select id="getSolutionById" resultMap="Map.Solution">
-        select state - 1          as state,
-               result - 1         as result,
-               pass_rate,
-               <if test="showPassed == true">
-               passed,
-               total,
-               </if>
-               truncate(score, 2) as score,
+        select state - 1                                      as state,
+               result - 1                                     as result,
+               truncate(pass_rate, 2)                         as pass_rate,
+               truncate(score, 2)                             as score,
+               case when #{showPassed} = true then total end  as total,
+               case when #{showPassed} = true then passed end as passed,
                time,
                memory,
                error_info
-        from judge_result
+        from solution
         where solution_id = #{solutionId}
     </select>
     <!-- 查询指定用户的所有提交 -->
@@ -24,18 +22,20 @@
                                    problem_id,
                                    title,
                                    language,
-                                   state - 1  as state,
-                                   result - 1 as result,
-                                   pass_rate,
-                                   truncate(score, 2) as score,
+                                   state - 1              as state,
+                                   result - 1             as result,
+                                   truncate(pass_rate, 2) as pass_rate,
+                                   truncate(score, 2)     as score,
                                    time,
                                    memory,
                                    error_info,
                                    submit_time
-        from judge_result
-        where user_id = #{userId}
+        from solution
+        where deleted = 0
+          and user_id = #{userId}
           and if(#{filter} = 1, problem_id = #{filterValue}, true)
           and if(#{filter} = 2, title like concat('%', #{filterValue}, '%'), true)
+        order by submit_time desc
         limit #{start}, #{limit};
         select found_rows();
     </select>

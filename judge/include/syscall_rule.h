@@ -1,5 +1,4 @@
-/// 系统调用规则过滤
-/// @author Cloud
+/// 系统调用规则
 #ifndef SYSCALL_RULE_H
 #define SYSCALL_RULE_H 1
 

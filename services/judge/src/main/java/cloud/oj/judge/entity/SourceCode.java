@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SourceCode {
-    private Integer id;
     private String solutionId;
     private String code;
 
