@@ -9,9 +9,9 @@ import java.util.List;
 public interface SolutionDao {
     Solution getSolutionById(String solutionId, boolean showPassed);
 
-    List<List<?>> getSolutionsByUser(String userId, Integer start, Integer limit, Integer filter, String filterValue);
+    List<List<?>> getSolutionsByUser(Integer uid, Integer start, Integer limit, Integer filter, String filterValue);
 
     void updateTitle(String title, int problemId);
 
-    void deleteByUser(String userId);
+    void deleteByUser(Integer userId);
 }

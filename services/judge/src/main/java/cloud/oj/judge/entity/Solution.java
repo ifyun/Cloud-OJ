@@ -1,6 +1,5 @@
 package cloud.oj.judge.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,9 +11,9 @@ import static cloud.oj.judge.component.SolutionState.JUDGED;
 @NoArgsConstructor
 public class Solution {
     private String solutionId;
+    private Integer uid;
     private Integer problemId;
     private Integer contestId;
-    private String userId;
     private Integer language;
     private Integer state;
     private Integer result;
@@ -28,10 +27,10 @@ public class Solution {
     private Long submitTime;
     private String sourceCode;
 
-    public Solution(String solutionId, String userId, Integer problemId, Integer contestId,
+    public Solution(String solutionId, Integer uid, Integer problemId, Integer contestId,
                     Integer language, Long submitTime) {
         this.solutionId = solutionId;
-        this.userId = userId;
+        this.uid = uid;
         this.problemId = problemId;
         this.contestId = contestId;
         this.language = language;
@@ -42,23 +41,5 @@ public class Solution {
         this.result = result;
         state = JUDGED;
         errorInfo = info;
-    }
-
-    @JsonGetter
-    public Integer getStateValue() {
-        if (state == null) {
-            return null;
-        }
-
-        return state - 1;
-    }
-
-    @JsonGetter
-    public Integer getResultValue() {
-        if (result == null) {
-            return null;
-        }
-
-        return result - 1;
     }
 }

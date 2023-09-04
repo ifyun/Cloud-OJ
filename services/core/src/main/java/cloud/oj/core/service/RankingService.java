@@ -39,7 +39,7 @@ public class RankingService {
         return rankingDao.getContestRanking(contestId, (page - 1) * limit, limit);
     }
 
-    public List<Solution> getDetail(int contestId, String userId) {
-        return rankingDao.getDetailById(contestId, userId);
+    public List<Solution> getDetail(int contestId, Integer uid) {
+        return rankingDao.getDetailById(contestId, uid);
     }
 }

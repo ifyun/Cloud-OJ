@@ -32,7 +32,7 @@
                                    submit_time
         from solution
         where deleted = 0
-          and user_id = #{userId}
+          and uid = #{uid}
           and if(#{filter} = 1, problem_id = #{filterValue}, true)
           and if(#{filter} = 2, title like concat('%', #{filterValue}, '%'), true)
         order by submit_time desc
@@ -49,6 +49,6 @@
     <update id="deleteByUser">
         update solution
         set deleted = true
-        where user_id = #{userId}
+        where uid = #{uid}
     </update>
 </mapper>

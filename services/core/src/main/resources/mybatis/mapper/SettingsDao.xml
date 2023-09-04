@@ -16,9 +16,4 @@
             auto_del_solutions  = #{autoDelSolutions}
         where id = 0
     </update>
-    <update id="deleteByUser">
-        update solution
-        set deleted = true
-        where user_id = #{userId}
-    </update>
 </mapper>

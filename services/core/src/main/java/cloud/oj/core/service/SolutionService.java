@@ -28,8 +28,8 @@ public class SolutionService {
         this.settings = settings;
     }
 
-    public List<List<?>> getSolutions(String userId, Integer page, Integer limit, Integer filter, String filterValue) {
-        return solutionDao.getSolutionsByUser(userId, (page - 1) * limit, limit, filter, filterValue);
+    public List<List<?>> getSolutions(Integer uid, Integer page, Integer limit, Integer filter, String filterValue) {
+        return solutionDao.getSolutionsByUser(uid, (page - 1) * limit, limit, filter, filterValue);
     }
 
     /**

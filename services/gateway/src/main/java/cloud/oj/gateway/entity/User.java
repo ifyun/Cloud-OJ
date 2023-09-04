@@ -14,9 +14,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class User implements UserDetails {
-    private String userId;
+    private Integer uid;
 
-    private String name;
+    private String username;
+
+    private String nickname;
 
     private String password;
 
@@ -49,7 +51,7 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public String getUsername() {
-        return userId;
+        return username;
     }
 
     @Override

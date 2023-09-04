@@ -1,18 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.RankingDao">
     <!-- 查询排名 -->
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
-        from (select u.user_id,
-                     u.name,
+        from (select u.uid,
+                     u.username,
+                     u.nickname,
                      u.has_avatar,
                      committed,
                      passed,
                      truncate(score, 2) as score
               from leaderboard l
-                       join user u on l.deleted = false and l.user_id = u.user_id
+                       join user u on l.deleted = false and l.uid = u.uid
               where u.role = 1
                 and score &gt; 0
               order by score desc, update_time) r,
@@ -24,14 +26,15 @@
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    r.*
-        from (select u.user_id,
-                     u.name,
+        from (select u.uid,
+                     u.username,
+                     u.nickname,
                      u.has_avatar,
                      committed,
                      passed,
                      truncate(score, 2) as score
               from leaderboard_contest lc
-                       join user u on lc.deleted = false and lc.user_id = u.user_id
+                       join user u on lc.deleted = false and lc.uid = u.uid
               where contest_id = #{contestId}
                 and u.role = 1
                 and score &gt; 0
@@ -46,10 +49,10 @@
                title,
                max(pass_rate) as pass_rate,
                max(score)     as score
-        from judge_result
+        from solution
         where state + 0 = 1
           and contest_id = #{contestId}
-          and user_id = #{userId}
+          and uid = #{uid}
         group by problem_id, title
         order by problem_id;
     </select>
@@ -57,6 +60,6 @@
     <update id="deleteByUser">
         update leaderboard
         set deleted = true
-        where user_id = #{userId}
+        where uid = #{uid}
     </update>
 </mapper>

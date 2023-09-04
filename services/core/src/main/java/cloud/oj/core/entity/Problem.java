@@ -3,8 +3,6 @@ package cloud.oj.core.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 public class Problem {
@@ -24,12 +22,6 @@ public class Problem {
     private Integer languages;
     private Integer score;
     private Boolean enable;
+    // UNIX 时间戳(10 位)
     private Long createAt;
-
-    @SuppressWarnings("unused")
-    public void setCreateAt(Date createAt) {
-        if (createAt != null) {
-            this.createAt = createAt.getTime() / 1000;
-        }
-    }
 }

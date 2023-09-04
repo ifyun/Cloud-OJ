@@ -52,13 +52,13 @@ const UserApi = {
     })
   },
 
-  getProfile(userId: string): Promise<User> {
+  getProfile(uid: number): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       axios({
         url: ApiPath.PROFILE,
         method: "GET",
         params: {
-          userId
+          uid
         }
       })
         .then((res) => {
@@ -70,13 +70,13 @@ const UserApi = {
     })
   },
 
-  getOverview(userId: string, year: number) {
+  getOverview(uid: number, year: number) {
     return new Promise<Overview>((resolve, reject) => {
       axios({
         url: ApiPath.OVERVIEW,
         method: "GET",
         params: {
-          userId,
+          uid,
           year
         }
       })
@@ -103,7 +103,7 @@ const UserApi = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token!}`,
-          userId: userInfo.userId!
+          uid: userInfo.uid
         },
         params: {
           page,

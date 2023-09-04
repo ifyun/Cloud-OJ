@@ -191,20 +191,12 @@ const columns: DataTableColumns<JudgeResult> = [
         {{
           trigger: () => (
             <NButton text={true}>
-              {moment
-                .unix(row.submitTime!)
-                .utc(true)
-                .local()
-                .format("YYYY/MM/DD")}
+              {moment.unix(row.submitTime! / 1000).format("YYYY/MM/DD")}
             </NButton>
           ),
           default: () => (
             <NText italic={true} style="color: #ffffff">
-              {moment
-                .unix(row.submitTime!)
-                .utc(true)
-                .local()
-                .format("HH:mm:ss")}
+              {moment.unix(row.submitTime! / 1000).format("HH:mm:ss")}
             </NText>
           )
         }}

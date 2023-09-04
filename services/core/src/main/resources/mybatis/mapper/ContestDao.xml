@@ -12,8 +12,8 @@
     <!-- 查询所有竞赛 -->
     <select id="getContests" resultMap="Map.Contest, Map.Total">
         select sql_calc_found_rows c.*,
-                                   if(start_at &lt;= unix_timestamp(now()), true, false) as started,
-                                   if(end_at &lt;= unix_timestamp(now()), true, false)   as ended,
+                                   if(start_at &lt;= unix_timestamp(), true, false) as started,
+                                   if(end_at &lt;= unix_timestamp(), true, false)   as ended,
                                    count(cp.problem_id)                                  as problem_count
         from contest c
                  left join `contest-problem` cp on c.contest_id = cp.contest_id
@@ -49,11 +49,11 @@
         from contest_problem cp
                  left join (select problem_id, contest_id, min(result - 1) result
                             from solution
-                            where user_id = #{userId}
-                            group by user_id, problem_id, contest_id) s
+                            where uid = #{uid}
+                            group by uid, problem_id, contest_id) s
                            on cp.contest_id = s.contest_id and cp.problem_id = s.problem_id
         where cp.contest_id = #{contestId}
-          and cp.start_at &lt;= unix_timestamp(now())
+          and cp.start_at &lt;= unix_timestamp()
     </select>
     <!-- 查询不在指定竞赛中的所有题目 -->
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">

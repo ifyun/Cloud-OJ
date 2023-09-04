@@ -7,8 +7,9 @@ import lombok.Setter;
 @Setter
 public class Ranking {
     private Integer rank;
-    private String userId;
-    private String name;
+    private Integer uid;
+    private String username;
+    private String nickname;
     private Integer committed;
     private Integer passed;
     private Double score;

@@ -2,12 +2,12 @@
   <div style="width: 1100px; padding: var(--layout-padding) 0; margin: 0 auto">
     <n-card>
       <template #cover>
-        <user-profile :user-id="userId" style="padding: 12px 24px" />
+        <user-profile :uid="uid!" style="padding: 12px 24px" />
       </template>
       <n-space vertical>
         <n-tabs type="line" :value="tab" @update:value="changeTab">
           <n-tab-pane name="profile" tab="概览">
-            <overview :user-id="userId" />
+            <overview :uid="uid!" />
           </n-tab-pane>
           <n-tab-pane name="solutions" tab="提交记录" display-directive="show">
             <solution-list :problem-id="null" />
@@ -37,14 +37,13 @@ const userInfo = computed<UserInfo | null>(() => {
   return store.state.userInfo
 })
 
-const userId = computed<string>(() => {
-  const userId = route.params.id
-  if (userId) {
-    return userId.toString()
+const uid = computed<number | null>(() => {
+  if (route.params.id) {
+    return Number(route.params.id)
   } else if (userInfo.value != null) {
-    return userInfo.value.userId!
+    return userInfo.value.uid!
   } else {
-    return ""
+    return null
   }
 })
 

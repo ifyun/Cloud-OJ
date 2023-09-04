@@ -5,15 +5,16 @@ export class UsernamePassword {
   username: string
   password: string
 
-  constructor(userId: string, password: string) {
-    this.username = userId
+  constructor(username: string, password: string) {
+    this.username = username
     this.password = password
   }
 }
 
 export class User {
-  userId: string = ""
-  name: string = ""
+  uid?: number
+  username: string = ""
+  nickname: string = ""
   password: string = ""
   confirmPassword: string = ""
   role?: number
@@ -27,8 +28,9 @@ export class User {
  * 用户信息（登录成功后）
  */
 export class UserInfo {
-  userId?: string
-  name?: string
+  uid?: number
+  username?: string
+  nickname?: string
   email: string = ""
   section: string = ""
   token?: string
@@ -98,13 +100,17 @@ export class Contest {
   endAt?: number
   started = false
   ended = false
+  /**
+   * 给时间选择器使用
+   */
   timeRange?: [number, number]
 }
 
 export class Ranking {
   rank: number = 0
-  name: string = ""
-  userId: string = ""
+  uid?: number
+  username: string = ""
+  nickname: string = ""
   hasAvatar: boolean = false
   committed: number = 0
   passed: number = 0
@@ -120,7 +126,7 @@ export type Page<T> = {
 }
 
 export type SubmitData = {
-  userId: string
+  uid: number
   problemId: number
   contestId: number | null
   language: number
@@ -135,14 +141,15 @@ export class JudgeResult {
   title?: string
   state?: number
   result?: number
+  total?: number
+  passed?: number
+  passRate?: number
   time?: number
   memory?: number
-  passRate?: number
-
-  passed?: number
-
-  total?: number
   errorInfo?: string
+  /**
+   * UNIX_TIMESTAMP(毫秒)
+   */
   submitTime?: number
 }
 

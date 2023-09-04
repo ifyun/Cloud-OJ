@@ -18,8 +18,8 @@
             <n-space vertical align="center" size="large">
               <user-avatar
                 :size="128"
-                :user-id="userInfo.userId"
-                :name="userInfo.name"
+                :uid="userInfo.uid"
+                :nickname="userInfo.nickname"
                 :has-avatar="userInfo.hasAvatar"
                 :timestamp="t" />
               <n-upload
@@ -39,13 +39,13 @@
               </n-upload>
             </n-space>
           </n-form-item>
-          <n-form-item label="UID">
-            <n-input disabled :value="user.userId" />
+          <n-form-item label="用户名">
+            <n-input disabled :value="user.username" />
           </n-form-item>
-          <n-form-item path="name" label="用户名">
+          <n-form-item path="name" label="昵称">
             <n-input
-              v-model:value="user.name"
-              :disabled="user.userId === 'admin'" />
+              v-model:value="user.nickname"
+              :disabled="user.username === 'admin'" />
           </n-form-item>
           <n-form-item path="password" label="新密码">
             <n-input
@@ -193,10 +193,10 @@ const rules: FormRules = {
 
 onMounted(() => {
   setTitle("编辑个人信息")
-  user.value.userId = userInfo.value!.userId!
-  user.value.name = userInfo.value!.name!
-  user.value.email = userInfo.value!.email!
-  user.value.section = userInfo.value!.section!
+  user.value.username = userInfo.value!.username
+  user.value.nickname = userInfo.value!.nickname
+  user.value.email = userInfo.value!.email
+  user.value.section = userInfo.value!.section
 })
 
 function save() {

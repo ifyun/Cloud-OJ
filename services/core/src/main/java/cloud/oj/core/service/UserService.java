@@ -44,8 +44,8 @@ public class UserService {
         return userDao.getByFilter((page - 1) * limit, limit, filter, filterValue);
     }
 
-    public Optional<User> getUserInfo(String userId) {
-        return Optional.ofNullable(userDao.getById(userId));
+    public Optional<User> getUserInfo(Integer uid) {
+        return Optional.ofNullable(userDao.getById(uid));
     }
 
     public HttpStatus addUser(User user) {
@@ -66,13 +66,13 @@ public class UserService {
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUserId()));
+            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUid()));
         }
     }
 
-    public HttpStatus updateProfile(String userId, User user) {
+    public HttpStatus updateProfile(Integer uid, User user) {
         user.setRole(null);
-        user.setUserId(userId);
+        user.setUid(uid);
 
         if (user.getPassword() != null) {
             user.setSecret(newUUID());
@@ -81,26 +81,26 @@ public class UserService {
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUserId()));
+            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUid()));
         }
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus deleteUser(String userId) {
-        if (userId.equals("admin")) {
+    public HttpStatus deleteUser(Integer uid) {
+        if (uid.equals(1)) {
             throw new GenericException(400, "不准删除初始管理员");
         }
 
-        if (userDao.delete(userId) == 1 && rankingDao.deleteByUser(userId) == 1) {
-            solutionDao.deleteByUser(userId);
+        if (userDao.delete(uid) == 1 && rankingDao.deleteByUser(uid) == 1) {
+            solutionDao.deleteByUser(uid);
             return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(410, String.format("用户(%s)不存在", userId));
+            throw new GenericException(410, String.format("用户(%s)不存在", uid));
         }
     }
 
     @Transactional
-    public HashMap<String, Object> getOverview(String userId, Integer year, String tz) {
+    public HashMap<String, Object> getOverview(Integer uid, Integer year, String tz) {
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
             var offset = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
             databaseConfig.setTimezone(offset);
@@ -108,9 +108,9 @@ public class UserService {
             databaseConfig.setTimezone("+8:00");
         }
 
-        var preference = userDao.getLanguagePreference(userId);
-        var activities = userDao.getActivities(userId, year);
-        var statistics = userDao.getResultStatistics(userId);
+        var preference = userDao.getLanguagePreference(uid);
+        var activities = userDao.getActivities(uid, year);
+        var statistics = userDao.getResultStatistics(uid);
 
         var overview = new HashMap<String, Object>();
 

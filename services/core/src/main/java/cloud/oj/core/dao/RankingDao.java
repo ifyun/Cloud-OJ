@@ -12,7 +12,7 @@ public interface RankingDao {
 
     List<List<?>> getContestRanking(int contestId, int start, int limit);
 
-    List<Solution> getDetailById(int contestId, String userId);
+    List<Solution> getDetailById(int contestId, Integer uid);
 
-    int deleteByUser(String userId);
+    int deleteByUser(Integer uid);
 }

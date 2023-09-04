@@ -120,10 +120,10 @@ public class FileService {
     /**
      * 保存头像图片
      */
-    public ResponseEntity<?> saveAvatar(String userId, MultipartFile file) {
+    public ResponseEntity<?> saveAvatar(Integer uid, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
         var dir = new File(avatarDir);
-        var avatar = new File(avatarDir + userId + ".png");
+        var avatar = new File(avatarDir + uid + ".png");
 
         if (!dir.exists() && !dir.mkdirs()) {
             log.error("无法创建目录 {}", dir.getAbsolutePath());
@@ -132,7 +132,7 @@ public class FileService {
 
         try {
             file.transferTo(avatar);
-            userDao.updateAvatar(userId);
+            userDao.updateAvatar(uid);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
             log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());

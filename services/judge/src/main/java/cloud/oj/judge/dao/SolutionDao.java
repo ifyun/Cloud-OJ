@@ -8,12 +8,12 @@ public interface SolutionDao {
     /**
      * 从记录找出指定题目的历史最高分
      *
-     * @param userId    用户名
+     * @param uid       用户 Id
      * @param problemId 题目 Id
      * @param contestId 竞赛 Id，可为空
      * @return 分数
      */
-    Double getMaxScoreOfUser(String userId, Integer problemId, Integer contestId);
+    Double getMaxScoreOfUser(Integer uid, Integer problemId, Integer contestId);
 
     void add(Solution solution);
 

@@ -22,7 +22,7 @@ import { UserApi } from "@/api/request"
 import { ErrorMessage, Overview } from "@/api/type"
 import moment from "moment"
 
-const props = defineProps<{ userId: string }>()
+const props = defineProps<{ uid: number }>()
 
 const message = useMessage()
 
@@ -30,7 +30,7 @@ const year = ref<number>(moment().year())
 const overview = ref<Overview>(new Overview())
 
 onBeforeMount(() => {
-  UserApi.getOverview(props.userId, year.value)
+  UserApi.getOverview(props.uid, year.value)
     .then((data) => {
       overview.value = data
     })

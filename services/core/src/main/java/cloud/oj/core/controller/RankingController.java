@@ -57,9 +57,9 @@ public class RankingController {
      * 获取用户的详细得分情况
      */
     @GetMapping(path = "admin/contest/detail")
-    public ResponseEntity<?> getDetail(Integer contestId, String userId) {
-        var detail = rankingService.getDetail(contestId, userId);
-        return detail.size() > 0 ?
+    public ResponseEntity<?> getDetail(Integer contestId, Integer uid) {
+        var detail = rankingService.getDetail(contestId, uid);
+        return !detail.isEmpty() ?
                 ResponseEntity.ok(detail)
                 : ResponseEntity.noContent().build();
     }

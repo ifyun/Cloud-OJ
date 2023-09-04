@@ -28,12 +28,12 @@ public class SolutionController {
      * @param filterValue problemId/title
      */
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestHeader String userId,
+    public ResponseEntity<?> getAll(@RequestHeader Integer uid,
                                     @RequestParam(defaultValue = "1") Integer page,
                                     @RequestParam(defaultValue = "15") Integer limit,
                                     Integer filter,
                                     String filterValue) {
-        var solutions = PagedList.resolve(solutionService.getSolutions(userId, page, limit, filter, filterValue));
+        var solutions = PagedList.resolve(solutionService.getSolutions(uid, page, limit, filter, filterValue));
         return solutions.getCount() > 0 ?
                 ResponseEntity.ok(solutions)
                 : ResponseEntity.noContent().build();

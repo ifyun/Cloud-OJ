@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SystemSettings {
 
-    private Settings settings;
-
     private final SettingsDao settingsDao;
 
     public SystemSettings(SettingsDao settingsDao) {
@@ -20,7 +18,6 @@ public class SystemSettings {
 
     public HttpStatus setSettings(Settings settings) {
         if (settingsDao.update(settings) > 0) {
-            this.settings = settings;
             return HttpStatus.OK;
         } else {
             return HttpStatus.INTERNAL_SERVER_ERROR;
@@ -28,10 +25,6 @@ public class SystemSettings {
     }
 
     public Settings getSettings() {
-        if (settings == null) {
-            settings = settingsDao.get();
-        }
-
-        return settings;
+        return settingsDao.get();
     }
 }

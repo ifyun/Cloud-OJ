@@ -201,7 +201,7 @@ function submit(data: SourceCode) {
     contestId,
     sourceCode: data.code.trim(),
     type: 0,
-    userId: userInfo.value.userId!
+    uid: userInfo.value.uid!
   }
 
   JudgeApi.submit(submitData, userInfo.value)

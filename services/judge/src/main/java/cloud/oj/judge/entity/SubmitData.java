@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SubmitData {
     private String solutionId;
-    private String userId;
+    private Integer uid;
     private Integer problemId;
     private Integer contestId;
     private String sourceCode;

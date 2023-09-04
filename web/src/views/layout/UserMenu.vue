@@ -2,8 +2,8 @@
   <n-space v-if="isLoggedIn" align="center" size="small">
     <user-avatar
       size="small"
-      :user-id="userInfo.userId!"
-      :name="userInfo.name!"
+      :uid="userInfo.uid!"
+      :nickname="userInfo.nickname!"
       :has-avatar="userInfo.hasAvatar" />
     <n-dropdown
       trigger="click"
@@ -12,7 +12,7 @@
       :options="userInfo.role === 1 ? userMenuOptions : adminMenuOptions"
       @select="userMenuSelect">
       <n-button text icon-placement="right" style="padding: 6px 0">
-        {{ userInfo.name }}
+        {{ userInfo.nickname }}
         <template #icon>
           <n-icon>
             <drop-down-icon />

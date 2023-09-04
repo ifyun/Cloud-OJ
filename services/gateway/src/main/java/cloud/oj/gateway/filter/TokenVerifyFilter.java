@@ -34,7 +34,6 @@ public class TokenVerifyFilter implements WebFilter {
      * 验证 JWT
      * <p>先后在 Header 和 Query 中查找 JWT，若为空则跳过验证</p>
      */
-
     @NonNull
     @SneakyThrows
     @Override
@@ -60,24 +59,24 @@ public class TokenVerifyFilter implements WebFilter {
         }
 
         try {
-            var userId = JwtUtil.getSubject(token);
+            var uid = JwtUtil.getSubject(token);
 
-            if (userId == null) {
+            if (uid == null) {
                 throw new JwtException("错误的Token");
             }
 
-            log.debug("Verify token: [Path: {}, User: {}]", request.getPath(), userId);
+            log.debug("Verify token: [Path: {}, User: {}]", request.getPath(), uid);
 
-            var secret = userService.getSecret(userId);
+            var secret = userService.getSecret(uid);
             var claims = JwtUtil.getClaims(token, secret);
 
             var authorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
-            var auth = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-
+            var auth = new UsernamePasswordAuthenticationToken(uid, null, authorities);
+            // 为带 token 的请求加上 uid 请求头
             return chain.filter(
                     exchange.mutate().request(
-                            request.mutate().header("userId", userId).build()
+                            request.mutate().header("uid", uid.toString()).build()
                     ).build()
             ).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
         } catch (JwtException | IllegalArgumentException | StringIndexOutOfBoundsException e) {

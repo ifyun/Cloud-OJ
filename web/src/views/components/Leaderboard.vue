@@ -90,11 +90,11 @@ const rankingColumns: DataTableColumns<Ranking> = [
       <NSpace align="center" size="small">
         <UserAvatar
           size="small"
-          userId={row.userId}
-          name={row.name}
+          uid={row.uid!}
+          nickname={row.nickname}
           hasAvatar={row.hasAvatar}
         />
-        <NText>{row.name}</NText>
+        <NText>{row.nickname}</NText>
       </NSpace>
     )
   },

@@ -58,7 +58,7 @@ public class AuthController {
         var user = (User) auth.getPrincipal();
         var secret = newUUID();
 
-        user.setSecret(userService.updateSecret(user.getUserId(), secret));
+        user.setSecret(userService.updateSecret(user.getUid(), secret));
         String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
 
         return Mono.just(ResponseEntity.ok(jwt));
@@ -71,14 +71,14 @@ public class AuthController {
     @DeleteMapping(path = "logoff")
     public Mono<ResponseEntity<?>> logoff(@RequestHeader String Authorization) {
         var token = Authorization.substring(6);
-        var userId = JwtUtil.getSubject(token);
-        var secret = userService.getSecret(userId);
+        var uid = JwtUtil.getSubject(token);
+        var secret = userService.getSecret(uid);
 
         try {
             JwtUtil.getClaims(token, secret);
-            userService.updateSecret(userId, newUUID());
-            log.info("Logoff: user={}.", userId);
-            return Mono.just(ResponseEntity.ok("用户" + userId + "已退出"));
+            userService.updateSecret(uid, newUUID());
+            log.info("Logoff: user={}.", uid);
+            return Mono.just(ResponseEntity.ok("用户" + uid + "已退出"));
         } catch (JwtException | IllegalArgumentException e) {
             log.error(e.getMessage());
             return Mono.just(ResponseEntity.badRequest().build());
@@ -96,12 +96,12 @@ public class AuthController {
     @GetMapping(path = "refresh_token")
     public Mono<ResponseEntity<?>> refreshToken(@RequestHeader String Authorization, Authentication auth) {
         var token = Authorization.substring(6);
-        var userId = JwtUtil.getSubject(token);
-        var user = userService.findById(userId);
+        var uid = JwtUtil.getSubject(token);
+        var user = userService.findById(uid);
         var authorities = auth.getAuthorities();
         var secret = newUUID();
 
-        user.setSecret(userService.updateSecret(userId, secret));
+        user.setSecret(userService.updateSecret(uid, secret));
         StringBuilder authoritiesString = new StringBuilder();
 
         for (var authority : authorities) {

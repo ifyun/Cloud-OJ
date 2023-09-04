@@ -57,7 +57,7 @@ public class Judgement {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void judge(Solution solution) {
-        log.debug("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUserId());
+        log.debug("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUid());
         // 为当前事务禁用外键约束
         dbConfig.disableFKChecks();
 
@@ -91,7 +91,7 @@ public class Judgement {
             return;
         }
 
-        var userId = solution.getUserId();
+        var uid = solution.getUid();
         var problemId = solution.getProblemId();
         var contestId = solution.getContestId();
 
@@ -102,7 +102,7 @@ public class Judgement {
         }
 
         // 查询历史提交中的最高分
-        var maxScore = solutionDao.getMaxScoreOfUser(userId, problemId, contestId);
+        var maxScore = solutionDao.getMaxScoreOfUser(uid, problemId, contestId);
 
         solution.setTotal(result.getTotal());
         solution.setPassed(result.getPassed());
@@ -119,16 +119,16 @@ public class Judgement {
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
         if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
             if (contestId == null) {
-                rankingDao.update(userId, solution.getSubmitTime());
+                rankingDao.update(uid, solution.getSubmitTime());
             } else {
-                rankingDao.updateForContest(contestId, userId, solution.getSubmitTime());
+                rankingDao.updateForContest(contestId, uid, solution.getSubmitTime());
             }
         } else {
             // 仅更新提交次数
             if (contestId == null) {
-                rankingDao.incCommitted(userId);
+                rankingDao.incCommitted(uid, solution.getSubmitTime());
             } else {
-                rankingDao.incCommittedForContest(contestId, userId);
+                rankingDao.incCommittedForContest(uid, contestId, solution.getSubmitTime());
             }
         }
     }

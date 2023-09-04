@@ -23,15 +23,15 @@ public class UserController {
      * @return {@link java.util.HashMap}
      */
     @GetMapping(path = "overview")
-    public ResponseEntity<?> getOverview(String userId, Integer year, String tz) {
-        return ResponseEntity.ok(userService.getOverview(userId, year, tz));
+    public ResponseEntity<?> getOverview(Integer uid, Integer year, String tz) {
+        return ResponseEntity.ok(userService.getOverview(uid, year, tz));
     }
 
     /**
      * 根据过滤条件获取用户
      *
-     * @param filter      1: by userId, 2: by name
-     * @param filterValue userId/name
+     * @param filter      1: by username, 2: by nickname
+     * @param filterValue username/nickname
      * @return 用户列表
      */
     @GetMapping(path = "admin")
@@ -51,8 +51,8 @@ public class UserController {
      * @return {@link User}
      */
     @GetMapping(path = "profile")
-    public ResponseEntity<?> getUserInfo(String userId) {
-        return userService.getUserInfo(userId)
+    public ResponseEntity<?> getUserInfo(Integer uid) {
+        return userService.getUserInfo(uid)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -77,15 +77,15 @@ public class UserController {
      * 更新用户(个人)
      */
     @PutMapping(path = "profile")
-    public ResponseEntity<?> updateProfile(@RequestHeader String userId, @RequestBody User user) {
-        return ResponseEntity.status(userService.updateProfile(userId, user)).build();
+    public ResponseEntity<?> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
+        return ResponseEntity.status(userService.updateProfile(uid, user)).build();
     }
 
     /**
      * 删除用户(管理员)
      */
-    @DeleteMapping(path = "admin/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
-        return ResponseEntity.status(userService.deleteUser(userId)).build();
+    @DeleteMapping(path = "admin/{uid}")
+    public ResponseEntity<?> deleteUser(@PathVariable Integer uid) {
+        return ResponseEntity.status(userService.deleteUser(uid)).build();
     }
 }

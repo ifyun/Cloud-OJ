@@ -111,32 +111,32 @@ const columns: DataTableColumns<User> = [
     )
   },
   {
-    title: "ID",
-    key: "userId",
+    title: "用户名",
+    key: "username",
     width: 140
   },
   {
     key: "name",
     title: () => (
-      <NSpace size="small" align="center">
+      <NSpace size="small" align="center" style="margin-left: 7px">
         <NIcon style="display: flex">
           <UserIcon />
         </NIcon>
-        <NText>用户名称</NText>
+        <NText>昵称</NText>
       </NSpace>
     ),
     render: (row) => (
       <NSpace align="center">
         <UserAvatar
           size="small"
-          userId={row.userId}
-          name={row.name}
+          uid={row.uid!}
+          nickname={row.nickname}
           hasAvatar={row.hasAvatar}
         />
         <NButton text={true} strong={true}>
-          {row.name}
+          {row.nickname}
         </NButton>
-        {row.userId == userInfo.value.userId ? (
+        {row.uid == userInfo.value.uid ? (
           <NTag type="primary" size="small" round={true}>
             你自己
           </NTag>
@@ -150,7 +150,7 @@ const columns: DataTableColumns<User> = [
     key: "role",
     align: "center",
     title: () => (
-      <NSpace size="small" justify="center" align="center">
+      <NSpace size="small" align="center" justify="center">
         <NIcon style="display: flex">
           <RoleIcon />
         </NIcon>
@@ -171,7 +171,7 @@ const columns: DataTableColumns<User> = [
     key: "createAt",
     align: "right",
     title: () => (
-      <NSpace size="small" justify="end" align="center">
+      <NSpace size="small" align="center" justify="end">
         <NIcon style="display: flex">
           <DateIcon />
         </NIcon>
@@ -179,7 +179,7 @@ const columns: DataTableColumns<User> = [
       </NSpace>
     ),
     render: (row) => (
-      <span>{moment.unix(row.createAt!).format("yyyy/MM/DD")}</span>
+      <span>{moment.unix(row.createAt! / 1000).format("yyyy/MM/DD")}</span>
     )
   }
 ]

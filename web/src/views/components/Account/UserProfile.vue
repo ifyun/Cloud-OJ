@@ -2,13 +2,13 @@
   <n-space size="large" align="center">
     <user-avatar
       :size="72"
-      :user-id="userId"
-      :name="profile.name"
+      :uid="uid"
+      :nickname="profile.nickname"
       :has-avatar="profile.hasAvatar" />
     <div>
       <n-space vertical size="small">
         <n-space size="large" align="center">
-          <n-text strong style="font-size: 16px">{{ profile.name }}</n-text>
+          <n-text strong style="font-size: 16px">{{ profile.nickname }}</n-text>
           <n-button size="small" @click="edit">
             修改个人信息
             <template #icon>
@@ -18,7 +18,7 @@
             </template>
           </n-button>
         </n-space>
-        <n-text italic depth="3">{{ profile.userId }}</n-text>
+        <n-text italic depth="3">{{ profile.username }}</n-text>
       </n-space>
     </div>
   </n-space>
@@ -36,11 +36,11 @@ import { UserApi } from "@/api/request"
 const router = useRouter()
 const message = useMessage()
 
-const props = defineProps<{ userId: string }>()
+const props = defineProps<{ uid: number }>()
 const profile = ref<User>(new User())
 
 onBeforeMount(() => {
-  UserApi.getProfile(props.userId)
+  UserApi.getProfile(props.uid)
     .then((data) => {
       profile.value = data
     })

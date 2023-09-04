@@ -6,12 +6,13 @@
     :size="size"
     style="vertical-align: middle"
     @error="url = ''" />
+  <!-- 没有头像，使用昵称第一个字符作为头像 -->
   <n-avatar
     v-else
     round
     :size="size"
     style="vertical-align: middle; background: var(--primary-color)">
-    {{ name.substring(0, 1).toUpperCase() }}
+    {{ nickname.substring(0, 1).toUpperCase() }}
   </n-avatar>
 </template>
 
@@ -21,8 +22,8 @@ import { NAvatar } from "naive-ui"
 import { ApiPath } from "@/api/request"
 
 interface Props {
-  userId: string
-  name: string
+  uid: number
+  nickname: string
   hasAvatar: boolean
   size: "small" | "medium" | "large" | number
   timestamp?: number
@@ -37,7 +38,7 @@ const url = ref<string>("")
 watch(
   props,
   async (newValue) => {
-    url.value = `${ApiPath.AVATAR}/${newValue.userId}.png?t=${newValue.timestamp}`
+    url.value = `${ApiPath.AVATAR}/${newValue.uid}.png?t=${newValue.timestamp}`
   },
   { immediate: true, deep: true }
 )

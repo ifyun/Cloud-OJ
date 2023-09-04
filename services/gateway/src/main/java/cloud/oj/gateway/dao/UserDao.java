@@ -5,9 +5,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface UserDao {
-    User findById(String userId);
+    User findById(Integer uid);
 
-    String getSecret(String userId);
+    User findByUsername(String username);
 
-    void updateSecret(String userId, String secret);
+    String getSecret(Integer userId);
+
+    void updateSecret(Integer uid, String secret);
 }

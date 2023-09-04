@@ -7,32 +7,34 @@ public interface RankingDao {
     /**
      * 提交次数 +1
      *
-     * @param userId 用户名
+     * @param uid  用户 Id
+     * @param time 更新时间
      */
-    void incCommitted(String userId);
+    void incCommitted(Integer uid, Long time);
 
     /**
      * 提交次数 +1（竞赛）
      *
+     * @param uid       用户 Id
      * @param contestId 竞赛 Id
-     * @param userId    用户名
+     * @param time      更新时间
      */
-    void incCommittedForContest(int contestId, String userId);
+    void incCommittedForContest(Integer uid, Integer contestId, Long time);
 
     /**
      * 更新排名
      *
-     * @param userId 用户名
-     * @param time   本次提交的时间
+     * @param uid  用户 Id
+     * @param time 本次提交的时间
      */
-    void update(String userId, Long time);
+    void update(Integer uid, Long time);
 
     /**
      * 更新排名（竞赛）
      *
      * @param contestId 竞赛 Id
-     * @param userId    用户名
+     * @param uid       用户 Id
      * @param time      本次提交的时间
      */
-    void updateForContest(int contestId, String userId, Long time);
+    void updateForContest(Integer contestId, Integer uid, Long time);
 }

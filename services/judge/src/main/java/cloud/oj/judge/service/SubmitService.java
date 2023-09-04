@@ -85,7 +85,7 @@ public class SubmitService {
         }
 
         data.setSolutionId(UUID.randomUUID().toString());
-        data.setSubmitTime(System.currentTimeMillis() / 1000);
+        data.setSubmitTime(System.currentTimeMillis());
         rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
 
         return ResponseEntity.accepted().body(data.getSolutionId());
@@ -99,7 +99,7 @@ public class SubmitService {
     public void submit(SubmitData submitData) throws AmqpException {
         var solution = new Solution(
                 submitData.getSolutionId(),
-                submitData.getUserId(),
+                submitData.getUid(),
                 submitData.getProblemId(),
                 submitData.getContestId(),
                 submitData.getLanguage(),

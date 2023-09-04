@@ -21,8 +21,8 @@ public class FileController {
      * 上传头像
      */
     @PostMapping(path = "img/avatar")
-    public ResponseEntity<?> uploadAvatar(@RequestHeader String userId, @RequestParam MultipartFile file) {
-        return fileService.saveAvatar(userId, file);
+    public ResponseEntity<?> uploadAvatar(@RequestHeader Integer uid, @RequestParam MultipartFile file) {
+        return fileService.saveAvatar(uid, file);
     }
 
     /**
@@ -42,7 +42,7 @@ public class FileController {
     @GetMapping(path = "data/{problemId}")
     public ResponseEntity<?> getTestData(@PathVariable Integer problemId) {
         var list = fileService.getTestData(problemId);
-        return list.size() > 0 ? ResponseEntity.ok(list) : ResponseEntity.noContent().build();
+        return !list.isEmpty() ? ResponseEntity.ok(list) : ResponseEntity.noContent().build();
     }
 
     /**

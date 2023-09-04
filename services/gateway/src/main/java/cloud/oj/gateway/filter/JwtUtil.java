@@ -23,10 +23,11 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setIssuer("Cloud OJ")
-                .setSubject(user.getUserId())
+                .setSubject(user.getUid().toString())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(expire))
-                .claim("name", user.getName())
+                .claim("username", user.getUsername())
+                .claim("nickname", user.getNickname())
                 .claim("email", user.getEmail())
                 .claim("section", user.getSection())
                 .claim("hasAvatar", user.getHasAvatar())
@@ -51,12 +52,12 @@ public class JwtUtil {
     }
 
     /**
-     * 从 JWT 中取出 Subject
+     * 从 JWT 中取出 Subject(uid)
      * <p>此操作不验证 JWT 签名</p>
      *
      * @return Subject or null
      */
-    public static String getSubject(String jwt) throws StringIndexOutOfBoundsException {
+    public static Integer getSubject(String jwt) throws StringIndexOutOfBoundsException {
         var payload = new String(
                 Base64.getDecoder().decode(jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.')))
         );
@@ -64,7 +65,7 @@ public class JwtUtil {
         var matcher = Pattern.compile("\"sub\":(\"(.+?)\"|(\\d*))").matcher(payload);
 
         if (matcher.find()) {
-            return matcher.group(2);
+            return Integer.valueOf(matcher.group(2));
         } else {
             return null;
         }

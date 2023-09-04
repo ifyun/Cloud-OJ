@@ -57,7 +57,7 @@ const ContestApi = {
         headers: buildHeaders(userInfo),
         params: {
           contestId,
-          userId: userInfo.userId
+          uid: userInfo.uid
         }
       })
         .then((res) => {

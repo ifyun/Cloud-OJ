@@ -6,7 +6,7 @@
       <n-timeline-item
         v-for="item in solutions.data"
         :key="item.solutionId"
-        :type="(ResultTypes[item.result!].type as any)"
+        :type="ResultTypes[item.result!].type as any"
         :title="ResultTypes[item.result!].text"
         :content="content(item)"
         :time="time(item)"
@@ -41,6 +41,6 @@ function content(item: JudgeResult) {
 }
 
 function time(item: JudgeResult) {
-  return moment.unix(item.submitTime!).format(timeFmt)
+  return moment.unix(item.submitTime! / 1000).format(timeFmt)
 }
 </script>

@@ -13,9 +13,12 @@ public class Contest {
     private Integer contestId;
     private String contestName;
     private Integer problemCount;
+    // UNIX 时间戳(10 位)
     private Long startAt;
     private Long endAt;
     private Integer languages;
     private boolean started;
     private boolean ended;
+    // UNIX 时间戳(10 位)
+    private Long createAt;
 }

@@ -3,31 +3,38 @@
 <mapper namespace="cloud.oj.core.dao.UserDao">
     <!-- 根据过滤条件查询用户 -->
     <select id="getByFilter" resultMap="Map.User, Map.Total">
-        select sql_calc_found_rows user_id, name, email, section, has_avatar, role, create_at
+        select sql_calc_found_rows uid,
+                                   username,
+                                   nickname,
+                                   email,
+                                   section,
+                                   has_avatar,
+                                   role,
+                                   create_at
         from user
         where deleted = false
-          and if(#{filter} = 1, user_id like concat(#{filterValue}, '%'), true)
-          and if(#{filter} = 2, name like concat('%', #{filterValue}, '%'), true)
+          and if(#{filter} = 1, username like concat(#{filterValue}, '%'), true)
+          and if(#{filter} = 2, nickname like concat('%', #{filterValue}, '%'), true)
         order by role, create_at
         limit #{start},#{limit};
         select found_rows()
     </select>
     <!-- 根据 id 查询用户 -->
     <select id="getById" resultMap="Map.User">
-        select user_id, name, email, section, has_avatar
+        select uid, username, nickname, email, section, has_avatar
         from user
-        where user_id = #{userId}
+        where uid = #{userId}
           and deleted = false
     </select>
     <!-- 增加用户 -->
     <insert id="add" parameterType="cloud.oj.core.entity.User">
-        insert into `user`(user_id, name, password, secret, email, section, role)
-            value (#{userId}, #{name}, #{password}, #{secret}, #{email}, #{section}, #{role})
+        insert into `user`(username, nickname, password, secret, email, section, role)
+            value (#{username}, #{nickname}, #{password}, #{secret}, #{email}, #{section}, #{role})
     </insert>
     <!-- 更新用户信息 -->
     <update id="update" parameterType="cloud.oj.core.entity.User">
         update user
-        set name = #{name},
+        set nickname = #{nickname},
         <choose>
             <when test="password != null">
                 password = #{password},
@@ -45,35 +52,37 @@
         </choose>
         email = #{email},
         section = #{section}
-        where user_id = #{userId}
+        where uid = #{uid}
     </update>
     <!-- 设置为有头像 -->
     <update id="updateAvatar" parameterType="java.lang.String">
-        update user set has_avatar = true where user_id = #{userId}
+        update user
+        set has_avatar = true
+        where uid = #{uid}
     </update>
     <!-- 逻辑删除用户 -->
     <update id="delete">
         update user
         set deleted = true
-        where user_id = #{userId}
+        where uid = #{uid}
     </update>
     <!-- 查询用户的语言使用情况 -->
     <select id="getLanguagePreference" resultType="java.util.Map">
         select language, count(solution_id) as count
         from solution
         where contest_id is null
-          and user_id = #{userId}
+          and uid = #{uid}
         group by language
     </select>
     <!-- 查询用户某一年的提交情况 -->
     <select id="getActivities" resultType="java.util.Map">
-        select DATE_FORMAT(submit_time, '%Y-%m-%d') as date,
-               count(problem_id)                    as count
+        select DATE_FORMAT(from_unixtime(submit_time / 1000), '%Y-%m-%d') as date,
+               count(problem_id)                                          as count
         from (select problem_id, submit_time
               from solution
               where contest_id is null
-                and user_id = #{userId}
-                and year(submit_time) = #{year}
+                and uid = #{uid}
+                and year(from_unixtime(submit_time / 1000)) = #{year}
                 and result = 'AC'
               group by problem_id, submit_time) s
         group by date
@@ -88,7 +97,7 @@
                count(result = 'CE' or null)  as CE,
                count(solution_id)            as total
         from solution
-        where user_id = #{userId}
+        where uid = #{uid}
           and contest_id is null
           and result &lt;&gt; 'JUDGE_ERROR'
     </select>

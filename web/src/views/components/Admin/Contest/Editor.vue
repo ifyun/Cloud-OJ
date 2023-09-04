@@ -156,6 +156,7 @@ watch(
   () => contest.value.timeRange,
   (value) => {
     const [start, end] = value!
+    // 时间选择器的 UNIX 时间是 13 位的
     contest.value.startAt = start / 1000
     contest.value.endAt = end / 1000
   }
