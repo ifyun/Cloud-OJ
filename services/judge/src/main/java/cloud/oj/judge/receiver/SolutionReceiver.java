@@ -7,7 +7,6 @@ import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.service.SubmitService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -36,8 +35,7 @@ public class SolutionReceiver {
     /**
      * 监听判题队列
      */
-    @RabbitHandler
-    @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE)
+    @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE, ackMode = "MANUAL")
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
         judgementEntry.judge(solution);
@@ -47,8 +45,7 @@ public class SolutionReceiver {
     /**
      * 监听提交队列
      */
-    @RabbitHandler
-    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE)
+    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE, ackMode = "MANUAL", concurrency = "10")
     public void handleSubmission(@Payload SubmitData data, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
         try {

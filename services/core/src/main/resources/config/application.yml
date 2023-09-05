@@ -18,9 +18,8 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
     hikari:
-      connection-timeout: 10000
-      maximum-pool-size: ${DB_POOL_SIZE:10}
-      max-lifetime: 30000
+      minimum-idle: ${DB_POOL_SIZE:5}
+      maximum-pool-size: ${DB_POOL_SIZE:5}
   jackson:
     default-property-inclusion: non_null
   cloud:

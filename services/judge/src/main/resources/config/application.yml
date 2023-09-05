@@ -11,6 +11,9 @@ spring:
     url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?allowMultiQueries=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
+    hikari:
+      minimum-idle: ${DB_POOL_SIZE:5}
+      maximum-pool-size: ${DB_POOL_SIZE:5}
   rabbitmq:
     host: ${RABBIT_URL:localhost}
     port: ${RABBIT_PORT:5672}

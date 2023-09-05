@@ -31,8 +31,6 @@ services:
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
-      DB_POOL_SIZE: 5
-      TOKEN_VALID_TIME: 4
   core:
     image: cloudoj-core
     depends_on:
@@ -49,7 +47,6 @@ services:
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
-      DB_POOL_SIZE: 5
   judge:
     image: cloudoj-judge
     privileged: true
@@ -68,7 +65,6 @@ services:
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
-      DB_POOL_SIZE: 5
       RABBIT_URL: rabbitmq
       RABBIT_PORT: ${RABBIT_PORT}
       RABBIT_USER: ${RABBIT_USER}
