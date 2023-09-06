@@ -5,14 +5,11 @@ import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.utils.FileCleaner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import static cloud.oj.judge.component.SolutionResult.IE;
-import static cloud.oj.judge.component.SolutionState.JUDGED;
 
 @Slf4j
 @Component
@@ -40,20 +37,10 @@ public class JudgementEntry {
         try {
             judgement.judge(solution);
         } catch (Exception e) {
-            if (e.getMessage() == null) {
-                var stream = new ByteArrayOutputStream();
-                e.printStackTrace(new PrintStream(stream));
-                log.error(stream.toString());
-            } else {
-                log.error(e.getMessage());
-            }
+            var msg = ExceptionUtils.getRootCauseMessage(e);
+            log.error(msg);
             // 判题发生异常，将结果设置为内部错误
-            if (solution.getErrorInfo() == null) {
-                solution.setErrorInfo("内部错误");
-            }
-
-            solution.setState(JUDGED);
-            solution.setResult(IE);
+            solution.endWithError(IE, msg);
             solutionDao.update(solution);
         } finally {
             if (settingsDao.isAutoDelSolutions()) {

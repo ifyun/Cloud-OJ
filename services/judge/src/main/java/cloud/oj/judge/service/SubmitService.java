@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -56,31 +57,32 @@ public class SubmitService {
      */
     public ResponseEntity<?> submitCode(SubmitData data, boolean isAdmin) {
         var contestId = data.getContestId();
+        var status = HttpStatus.BAD_REQUEST;
 
         if (data.getSourceCode().trim().isEmpty()) {
-            throw new GenericException(400, "一行代码都没有，不准提交");
+            throw new GenericException(status, "一行代码都没有，不准提交");
         }
 
         if (contestId != null) {
             var contest = contestDao.getContest(contestId);
 
             if (contest.isStarted()) {
-                throw new GenericException(400, "未开始，不准提交");
+                throw new GenericException(status, "未开始，不准提交");
             }
 
             if (contest.isEnded()) {
-                throw new GenericException(400, "已结束，不准提交");
+                throw new GenericException(status, "已结束，不准提交");
             }
 
             var lang = 1 << data.getLanguage();
             var languages = contest.getLanguages();
 
             if ((languages & lang) != lang) {
-                throw new GenericException(400, "不准使用该语言");
+                throw new GenericException(status, "不准使用该语言");
             }
         } else {
             if (!isAdmin && !problemDao.isEnable(data.getProblemId())) {
-                throw new GenericException(400, "未开放，不准提交");
+                throw new GenericException(status, "未开放，不准提交");
             }
         }
 

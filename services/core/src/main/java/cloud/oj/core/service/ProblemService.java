@@ -58,7 +58,7 @@ public class ProblemService {
         var contestId = problemDao.isInContest(problem.getProblemId());
 
         if (contestId != null && contestDao.getContestById(contestId).isStarted()) {
-            throw new GenericException(400, "不准修改已开始竞赛中的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准修改已开始竞赛中的题目");
         }
 
         if (problemDao.update(problem) == 1) {
@@ -66,7 +66,8 @@ public class ProblemService {
             solutionDao.updateTitle(problem.getTitle(), problem.getProblemId());
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("题目(%d)更新失败", problem.getProblemId()));
+            var msg = String.format("题目(%d)更新失败", problem.getProblemId());
+            throw new GenericException(HttpStatus.BAD_REQUEST, msg);
         }
     }
 
@@ -76,14 +77,14 @@ public class ProblemService {
             var contestId = problemDao.isInContest(problemId);
 
             if (contestId != null && !contestDao.getContestById(contestId).isEnded()) {
-                throw new GenericException(HttpStatus.BAD_REQUEST.value(), "不准开放未结束竞赛中的题目");
+                throw new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目");
             }
         }
 
         if (problemDao.setEnable(problemId, enable) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("题目(%d)开放/关闭失败", problemId));
+            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("题目(%d)开放/关闭失败", problemId));
         }
     }
 
@@ -91,23 +92,23 @@ public class ProblemService {
         if (problemDao.add(problem) == 1) {
             return HttpStatus.CREATED;
         } else {
-            throw new GenericException(400, "请求数据可能不正确");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
         }
     }
 
     public HttpStatus delete(Integer problemId) {
         if (problemDao.isInContest(problemId) != null) {
-            throw new GenericException(400, "不准删除竞赛中的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除竞赛中的题目");
         }
 
         if (problemDao.isEnable(problemId)) {
-            throw new GenericException(400, "不准删除已开放的题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除已开放的题目");
         }
 
         if (problemDao.delete(problemId) == 1) {
             return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(410, String.format("题目(%d)删除失败", problemId));
+            throw new GenericException(HttpStatus.GONE, String.format("题目(%d)删除失败", problemId));
         }
     }
 }

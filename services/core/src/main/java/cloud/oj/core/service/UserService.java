@@ -54,7 +54,7 @@ public class UserService {
         if (userDao.add(user) == 1) {
             return HttpStatus.CREATED;
         } else {
-            throw new GenericException(400, "请求数据可能不正确");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
         }
     }
 
@@ -66,7 +66,7 @@ public class UserService {
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUid()));
+            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("用户(%s)更新失败", user.getUid()));
         }
     }
 
@@ -81,21 +81,21 @@ public class UserService {
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("用户(%s)更新失败", user.getUid()));
+            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("用户(%s)更新失败", user.getUid()));
         }
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public HttpStatus deleteUser(Integer uid) {
         if (uid.equals(1)) {
-            throw new GenericException(400, "不准删除初始管理员");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员");
         }
 
         if (userDao.delete(uid) == 1 && rankingDao.deleteByUser(uid) == 1) {
             solutionDao.deleteByUser(uid);
             return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(410, String.format("用户(%s)不存在", uid));
+            throw new GenericException(HttpStatus.GONE, String.format("用户(%s)不存在", uid));
         }
     }
 

@@ -39,7 +39,7 @@ public class ContestService {
         if (contestDao.addContest(contest) == 1) {
             return HttpStatus.CREATED;
         } else {
-            throw new GenericException(400, "请求数据可能不正确");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
         }
     }
 
@@ -47,7 +47,8 @@ public class ContestService {
         if (contestDao.updateContest(contest) == 1) {
             return HttpStatus.OK;
         } else {
-            throw new GenericException(400, String.format("竞赛(%d)更新失败", contest.getContestId()));
+            var msg = String.format("竞赛(%d)更新失败", contest.getContestId());
+            throw new GenericException(HttpStatus.BAD_REQUEST, msg);
         }
     }
 
@@ -62,13 +63,13 @@ public class ContestService {
         var contest = contestDao.getState(contestId);
 
         if (contest.isStarted() && !contest.isEnded()) {
-            throw new GenericException(400, "竞赛已开始，不准删除");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "竞赛已开始，不准删除");
         }
 
         if (contestDao.deleteContest(contestId) == 1) {
             return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(410, String.format("竞赛(%d)不存在", contestId));
+            throw new GenericException(HttpStatus.GONE, String.format("竞赛(%d)不存在", contestId));
         }
     }
 
@@ -92,7 +93,7 @@ public class ContestService {
         if (contestDao.addProblem(contestId, problemId) == 1) {
             return HttpStatus.CREATED;
         } else {
-            throw new GenericException(400, "无法添加题目");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "无法添加题目");
         }
     }
 
@@ -100,7 +101,7 @@ public class ContestService {
         if (contestDao.removeProblem(contestId, problemId) == 1) {
             return HttpStatus.NO_CONTENT;
         } else {
-            throw new GenericException(410, String.format("题目(%d)不存在", problemId));
+            throw new GenericException(HttpStatus.GONE, String.format("题目(%d)不存在", problemId));
         }
     }
 }

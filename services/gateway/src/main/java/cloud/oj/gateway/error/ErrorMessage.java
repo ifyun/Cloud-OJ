@@ -13,7 +13,7 @@ public class ErrorMessage {
     private String message;
 
     public ErrorMessage() {
-        timestamp = System.currentTimeMillis() / 1000;
+        timestamp = System.currentTimeMillis();
     }
 
     public ErrorMessage(HttpStatus status, String message) {

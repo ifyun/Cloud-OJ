@@ -13,20 +13,13 @@ public class ErrorMessage {
     private String message;
 
     public ErrorMessage() {
-        timestamp = System.currentTimeMillis() / 1000;
+        timestamp = System.currentTimeMillis();
     }
 
-    public ErrorMessage(RuntimeException e) {
+    public ErrorMessage(HttpStatus status, String message) {
         this();
-
-        if (e instanceof GenericException) {
-            status = ((GenericException) e).getStatus();
-        } else {
-            status = 500;
-        }
-
-        timestamp = System.currentTimeMillis() / 1000;
-        error = HttpStatus.valueOf(status).getReasonPhrase();
-        message = e.getMessage();
+        this.status = status.value();
+        this.message = message;
+        error = status.getReasonPhrase();
     }
 }

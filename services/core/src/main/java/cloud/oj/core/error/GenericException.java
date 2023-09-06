@@ -1,12 +1,13 @@
 package cloud.oj.core.error;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class GenericException extends RuntimeException {
-    private final Integer status;
+    private final HttpStatus status;
 
-    public GenericException(Integer status, String msg) {
+    public GenericException(HttpStatus status, String msg) {
         super(msg);
         this.status = status;
     }

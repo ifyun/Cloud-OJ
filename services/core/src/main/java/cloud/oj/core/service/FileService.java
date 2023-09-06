@@ -61,7 +61,7 @@ public class FileService {
 
         // ! 开放的题目不允许上传测试数据
         if (problemDao.isEnable(problemId)) {
-            throw new GenericException(400, "题目已开放，不准上传测试数据");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准上传测试数据");
         }
 
         var testDataDir = fileDir + "data/";
@@ -97,7 +97,7 @@ public class FileService {
     public ResponseEntity<?> deleteTestData(Integer problemId, String name) {
         // ! 开放的题目不允许删除测试数据
         if (problemDao.isEnable(problemId)) {
-            throw new GenericException(400, "题目已开放，不准删除测试数据");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准删除测试数据");
         }
 
         var testDataDir = fileDir + "data/";
