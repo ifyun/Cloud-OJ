@@ -31,7 +31,6 @@ COPY --from=build-env /build/web/dist /usr/share/nginx/html
 RUN chmod +x /docker-entrypoint.d/00-config.sh
 # core service
 FROM openjdk:17-slim-bullseye as core
-COPY --from=build-env /build/services/core/target/lib/* /app/lib/
 COPY --from=build-env /build/services/core/target/*.jar /app/core.jar
 WORKDIR /app
 EXPOSE 8180
@@ -39,7 +38,6 @@ ENV JVM_OPTS="-Xmx200m"
 CMD  java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core.jar
 # gateway service
 FROM openjdk:17-slim-bullseye as gateway
-COPY --from=build-env /build/services/gateway/target/lib/* /app/lib/
 COPY --from=build-env /build/services/gateway/target/*.jar /app/gateway.jar
 WORKDIR /app
 EXPOSE 8080
@@ -67,7 +65,6 @@ RUN curl -LJO \
 # install dependencies
 RUN kotlinc-native foo.kt || true
 COPY --from=build-env /build/services/judge/entrypoint.sh /app/entrypoint.sh
-COPY --from=build-env /build/services/judge/target/lib/* /app/lib/
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar
 COPY --from=build-env \
     /build/judge/cmake-build-release/judge \

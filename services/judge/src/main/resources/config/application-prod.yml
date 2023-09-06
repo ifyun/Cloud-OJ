@@ -4,4 +4,4 @@ logging:
     cloud.oj: info
 app:
   file-dir: /var/lib/cloud-oj/
-  judge-cpus: ${JUDGE_CPUS:4}
+  judge-cpus: ${JUDGE_CPUS:1}
