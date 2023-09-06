@@ -43,34 +43,35 @@ export default {
 </script>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { UserApi } from "@/api/request"
+import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
+import { ramUsage, timeUsage } from "@/utils"
+import {
+  CheckCircleFilled,
+  CircleRound,
+  ErrorRound,
+  SearchRound,
+  TimelapseRound
+} from "@vicons/material"
+import moment from "moment-timezone"
 import {
   DataTableColumns,
+  NButton,
+  NDataTable,
   NIcon,
   NInput,
   NInputGroup,
   NPagination,
   NSelect,
   NSpace,
-  NDataTable,
-  NButton,
-  NTooltip,
   NTag,
-  NText
+  NText,
+  NTooltip
 } from "naive-ui"
-import {
-  CircleRound,
-  CheckCircleFilled,
-  ErrorRound,
-  SearchRound
-} from "@vicons/material"
-import moment from "moment-timezone"
-import { UserApi } from "@/api/request"
-import { ErrorMessage, JudgeResult, Page } from "@/api/type"
-import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
-import { timeUsage, ramUsage } from "@/utils"
+import { Component, computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const store = useStore()
 const route = useRoute()
@@ -104,7 +105,7 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "#",
     width: 50,
     align: "right",
-    render: (row, rowIndex: number) => (
+    render: (_row, rowIndex: number) => (
       <NText>
         {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
       </NText>
@@ -116,13 +117,19 @@ const columns: DataTableColumns<JudgeResult> = [
     width: 100,
     align: "center",
     render: (row) => {
-      const { type, text } = ResultTypes[row.result!]
-      let icon: any
-      if (row.result! === 0) {
+      let icon: Component
+
+      if (row.state != 0) {
+        icon = TimelapseRound
+      } else if (row.result! === 0) {
         icon = CheckCircleFilled
       } else {
         icon = ErrorRound
       }
+
+      const { type, text } =
+        row.state === 0 ? ResultTypes[row.result!] : ResultTypes[9]
+
       return (
         <NTag size="small" bordered={false} type={type as any}>
           {{
@@ -168,13 +175,13 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "CPU 时间",
     key: "time",
     align: "right",
-    render: (row) => <NText type="success">{timeUsage(row.time!)}</NText>
+    render: (row) => <NText type="success">{timeUsage(row.time)}</NText>
   },
   {
     title: "内存占用",
     key: "memory",
     align: "right",
-    render: (row) => <NText>{ramUsage(row.memory!)}</NText>
+    render: (row) => <NText>{ramUsage(row.memory)}</NText>
   },
   {
     title: "分数",

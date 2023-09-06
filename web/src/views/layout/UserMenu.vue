@@ -11,11 +11,11 @@
       placement="bottom-end"
       :options="userInfo.role === 1 ? userMenuOptions : adminMenuOptions"
       @select="userMenuSelect">
-      <n-button text icon-placement="right" style="padding: 6px 0">
+      <n-button text icon-placement="right">
         {{ userInfo.nickname }}
         <template #icon>
           <n-icon>
-            <drop-down-icon />
+            <arrow-drop-down-round />
           </n-icon>
         </template>
       </n-button>
@@ -29,9 +29,17 @@
 </template>
 
 <script setup lang="tsx">
-import { computed } from "vue"
-import { useStore } from "vuex"
-import { RouterLink, useRouter } from "vue-router"
+import { AuthApi } from "@/api/request"
+import { ErrorMessage, UserInfo } from "@/api/type"
+import { UserAvatar } from "@/components"
+import { Mutations } from "@/store"
+import { renderIcon } from "@/utils"
+import { HouseUser } from "@vicons/fa"
+import {
+  ArrowDropDownRound,
+  DashboardRound,
+  ExitToAppRound
+} from "@vicons/material"
 import {
   NButton,
   NDropdown,
@@ -40,17 +48,9 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { UserAvatar } from "@/components"
-import {
-  ArrowDropDownFilled as DropDownIcon,
-  DashboardCustomizeRound as DashboardIcon,
-  ExitToAppOutlined as LogoutIcon
-} from "@vicons/material"
-import { HouseUser as UserHomeIcon } from "@vicons/fa"
-import { renderIcon } from "@/utils"
-import { AuthApi } from "@/api/request"
-import { ErrorMessage, UserInfo } from "@/api/type"
-import { Mutations } from "@/store"
+import { computed } from "vue"
+import { RouterLink, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const store = useStore()
 const router = useRouter()
@@ -61,12 +61,12 @@ const userMenuOptions = [
   {
     label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
     key: "account",
-    icon: renderIcon(UserHomeIcon)
+    icon: renderIcon(HouseUser)
   },
   {
     label: "退出",
     key: "exit",
-    icon: renderIcon(LogoutIcon)
+    icon: renderIcon(ExitToAppRound)
   }
 ]
 
@@ -74,19 +74,19 @@ const adminMenuOptions = [
   {
     label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
     key: "account",
-    icon: renderIcon(UserHomeIcon)
+    icon: renderIcon(HouseUser)
   },
   {
     label: () => (
       <RouterLink to={{ name: "problem_admin" }}>系统管理</RouterLink>
     ),
     key: "admin",
-    icon: renderIcon(DashboardIcon)
+    icon: renderIcon(DashboardRound)
   },
   {
     label: "退出登录",
     key: "exit",
-    icon: renderIcon(LogoutIcon)
+    icon: renderIcon(ExitToAppRound)
   }
 ]
 

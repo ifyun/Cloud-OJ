@@ -27,29 +27,30 @@ export default {
 </script>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import {
-  DataTableColumns,
-  NSpace,
-  NDataTable,
-  NButton,
-  NTooltip,
-  NIcon,
-  NTag,
-  NText
-} from "naive-ui"
-import moment from "moment-timezone"
-import {
-  CircleRound,
-  CheckCircleFilled,
-  ErrorRound,
-  HistoryRound
-} from "@vicons/material"
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
-import { LanguageNames, LanguageColors, ResultTypes } from "@/type"
-import { timeUsage, ramUsage } from "@/utils"
+import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
+import { ramUsage, timeUsage } from "@/utils"
+import {
+  CheckCircleFilled,
+  CircleRound,
+  ErrorRound,
+  HistoryRound,
+  TimelapseRound
+} from "@vicons/material"
+import moment from "moment-timezone"
+import {
+  DataTableColumns,
+  NButton,
+  NDataTable,
+  NIcon,
+  NSpace,
+  NTag,
+  NText,
+  NTooltip
+} from "naive-ui"
+import { Component, computed, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
 
 const store = useStore()
 
@@ -70,13 +71,19 @@ const columns: DataTableColumns<JudgeResult> = [
     width: 100,
     align: "center",
     render: (row) => {
-      const { type, text } = ResultTypes[row.result!]
-      let icon: any
-      if (row.result! === 0) {
+      let icon: Component
+
+      if (row.state != 0) {
+        icon = TimelapseRound
+      } else if (row.result! === 0) {
         icon = CheckCircleFilled
       } else {
         icon = ErrorRound
       }
+
+      const { type, text } =
+        row.state === 0 ? ResultTypes[row.result!] : ResultTypes[9]
+
       return (
         <NTag size="small" bordered={false} type={type as any}>
           {{
@@ -96,7 +103,7 @@ const columns: DataTableColumns<JudgeResult> = [
         <NIcon color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText strong depth="1" style="margin-left: 4px">
+        <NText depth="1" style="margin-left: 4px">
           {LanguageNames[row.language!]}
         </NText>
       </div>

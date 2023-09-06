@@ -11,7 +11,7 @@
       <n-button type="primary" :loading="loading" @click="submit">
         <template #icon>
           <n-icon>
-            <submit-icon />
+            <send-round />
           </n-icon>
         </template>
         提交运行
@@ -32,7 +32,7 @@ import {
   NInputGroupLabel,
   NSelect
 } from "naive-ui"
-import { PaperPlane as SubmitIcon } from "@vicons/ionicons5"
+import { SendRound } from "@vicons/material"
 import type { LanguageOption, SourceCode } from "@/type"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"

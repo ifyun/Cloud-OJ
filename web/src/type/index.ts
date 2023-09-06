@@ -57,5 +57,6 @@ export const ResultTypes = [
   { type: "error", text: "编译错误" },
   { type: "error", text: "运行错误" },
   { type: "error", text: "内部错误" },
-  { type: "error", text: "输出超限" }
+  { type: "error", text: "输出超限" },
+  { type: "info", text: "等待判题" }
 ]

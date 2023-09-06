@@ -7,17 +7,17 @@
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
     <n-form-item path="userId">
-      <n-input v-model:value="user.userId" placeholder="用户名（字母和数字）">
+      <n-input v-model:value="user.username" placeholder="用户名 (字母和数字)">
         <template #prefix>
           <n-icon class="input-prefix-icon">
-            <user-id-icon />
+            <username-icon />
           </n-icon>
         </template>
       </n-input>
     </n-form-item>
     <n-form-item path="name">
       <n-input
-        v-model:value="user.name"
+        v-model:value="user.nickname"
         placeholder="昵称"
         maxlength="16"
         :input-props="{ autocomplete: 'off' }">
@@ -66,7 +66,7 @@
       </n-input>
     </n-form-item>
     <n-form-item path="section">
-      <n-input v-model:value="user.section" placeholder="学院/班级/部门 (可选)">
+      <n-input v-model:value="user.section" placeholder="来自哪里 (可选)">
         <template #prefix>
           <n-icon class="input-prefix-icon">
             <building />
@@ -103,7 +103,7 @@ import {
   Building,
   Envelope as MailIcon,
   Lock as PasswordIcon,
-  Orcid as UserIdIcon,
+  IdCard as UsernameIcon,
   User as UserIcon
 } from "@vicons/fa"
 import { hashSync } from "bcryptjs"

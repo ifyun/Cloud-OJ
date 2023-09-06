@@ -17,7 +17,7 @@
                 placeholder="输入题目名称、分类">
                 <template #prefix>
                   <n-icon class="input-prefix-icon">
-                    <search-icon />
+                    <search-round />
                   </n-icon>
                 </template>
               </n-input>
@@ -74,9 +74,18 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { ProblemApi } from "@/api/request"
+import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
+import { ErrorResult } from "@/components"
+import { renderIcon, setTitle } from "@/utils"
+import {
+  PostAddRound as AddIcon,
+  DeleteForeverRound as DelIcon,
+  EditNoteRound as EditIcon,
+  FolderZipRound as FolderIcon,
+  ManageSearchRound,
+  SearchRound
+} from "@vicons/material"
 import {
   DataTableColumns,
   NButton,
@@ -94,18 +103,9 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { FileArchive as FileIcon } from "@vicons/fa"
-import { Search as SearchIcon } from "@vicons/ionicons5"
-import {
-  DeleteForeverRound as DelIcon,
-  EditNoteRound as EditIcon,
-  ManageSearchRound,
-  PostAddRound as AddIcon
-} from "@vicons/material"
-import { ErrorResult } from "@/components"
-import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
-import { renderIcon, setTitle } from "@/utils"
-import { ProblemApi } from "@/api/request"
+import { HTMLAttributes, computed, nextTick, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const route = useRoute()
 const router = useRouter()
@@ -168,9 +168,9 @@ const operations = [
     icon: renderIcon(EditIcon)
   },
   {
-    label: "管理测试数据",
+    label: "数据管理",
     key: "test_data",
-    icon: renderIcon(FileIcon, "#18A058")
+    icon: renderIcon(FolderIcon, "#18A058")
   },
   {
     label: "删除",

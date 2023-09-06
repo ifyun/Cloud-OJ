@@ -8,10 +8,15 @@
 </template>
 
 <script setup lang="tsx">
+import {
+  LocalLibraryRound,
+  PeopleAltRound,
+  SchoolRound,
+  SettingsRound
+} from "@vicons/material"
+import { NIcon, NMenu } from "naive-ui"
 import { computed } from "vue"
 import { RouterLink, useRoute } from "vue-router"
-import { NIcon, NMenu } from "naive-ui"
-import { Library, Options, People, School } from "@vicons/ionicons5"
 
 const route = useRoute()
 const routeName = computed(() => route.name?.toString())
@@ -24,7 +29,7 @@ const menuOptions = [
     key: "problem_admin",
     icon: () => (
       <NIcon>
-        <Library />
+        <LocalLibraryRound />
       </NIcon>
     )
   },
@@ -35,7 +40,7 @@ const menuOptions = [
     key: "contest_admin",
     icon: () => (
       <NIcon>
-        <School />
+        <SchoolRound />
       </NIcon>
     )
   },
@@ -44,7 +49,7 @@ const menuOptions = [
     key: "user_admin",
     icon: () => (
       <NIcon>
-        <People />
+        <PeopleAltRound />
       </NIcon>
     )
   },
@@ -53,7 +58,7 @@ const menuOptions = [
     key: "settings",
     icon: () => (
       <NIcon>
-        <Options />
+        <SettingsRound />
       </NIcon>
     )
   }

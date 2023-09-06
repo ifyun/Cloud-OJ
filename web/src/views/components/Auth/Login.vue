@@ -5,7 +5,7 @@
       <n-input v-model:value="user.username">
         <template #prefix>
           <n-icon class="input-prefix-icon">
-            <orcid />
+            <user-icon />
           </n-icon>
         </template>
       </n-input>
@@ -14,7 +14,7 @@
       <n-input v-model:value="user.password" type="password" maxlength="16">
         <template #prefix>
           <n-icon class="input-prefix-icon">
-            <lock />
+            <password-icon />
           </n-icon>
         </template>
       </n-input>
@@ -33,9 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
-import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { AuthApi } from "@/api/request"
+import { ErrorMessage, UsernamePassword } from "@/api/type"
+import { Mutations } from "@/store"
+import { setTitle } from "@/utils"
+import { Lock as PasswordIcon, User as UserIcon } from "@vicons/fa"
 import {
   FormRules,
   NButton,
@@ -45,11 +47,9 @@ import {
   NInput,
   useMessage
 } from "naive-ui"
-import { Lock, Orcid } from "@vicons/fa"
-import { AuthApi } from "@/api/request"
-import { ErrorMessage, UsernamePassword } from "@/api/type"
-import { Mutations } from "@/store"
-import { setTitle } from "@/utils"
+import { onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const loading = ref<boolean>(false)
 const store = useStore()

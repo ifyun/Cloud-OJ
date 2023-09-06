@@ -42,7 +42,7 @@ function stateTag(c: Contest): StateTag {
   }
 }
 
-function timeUsage(val: number): string {
+function timeUsage(val?: number): string {
   if (val) {
     return `${(val / 1000).toFixed(2)} ms`
   }
@@ -50,7 +50,7 @@ function timeUsage(val: number): string {
   return "-"
 }
 
-function ramUsage(val: number): string {
+function ramUsage(val?: number): string {
   if (val) {
     if (val >= 1024) {
       return `${(val / 1024).toFixed(2)} MB`

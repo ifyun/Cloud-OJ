@@ -179,7 +179,7 @@ const columns: DataTableColumns<User> = [
       </NSpace>
     ),
     render: (row) => (
-      <span>{moment.unix(row.createAt! / 1000).format("yyyy/MM/DD")}</span>
+      <span>{moment.unix(row.createAt!).format("yyyy/MM/DD")}</span>
     )
   }
 ]

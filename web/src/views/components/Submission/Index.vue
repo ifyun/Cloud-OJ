@@ -17,7 +17,7 @@
                 <n-space size="small">
                   <n-tag type="success" size="small" round :bordered="false">
                     <template #icon>
-                      <n-icon :component="HelpCircle" />
+                      <n-icon :component="HelpRound" />
                     </template>
                     {{ problem.score }} 分
                   </n-tag>
@@ -94,8 +94,12 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import { HelpCircle } from "@vicons/ionicons5"
-import { DataSaverOffRound, PrintRound, TimerOutlined } from "@vicons/material"
+import {
+  DataSaverOffRound,
+  HelpRound,
+  PrintRound,
+  TimerOutlined
+} from "@vicons/material"
 import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
 import Skeleton from "./Skeleton.vue"
 import ResultDialog from "./ResultDialog.vue"
