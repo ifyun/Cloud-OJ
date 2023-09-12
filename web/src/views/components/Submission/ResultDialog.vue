@@ -22,11 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "vuex"
-import { NResult, NSpace, NText } from "naive-ui"
-import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
 import { ApiPath } from "@/api/request"
+import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
+import { ramUsage } from "@/utils"
+import { NResult, NSpace, NText } from "naive-ui"
 import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useStore } from "vuex"
 
 class Result {
   status: any
@@ -69,7 +70,9 @@ onUnmounted(() => {
 
 function usage(r: JudgeResult) {
   const { time, memory } = r
-  return `运行时间: ${(time! / 1000).toFixed(2)} ms，内存占用: ${memory} KB`
+  const t = (time! / 1000).toFixed(2)
+  const m = ramUsage(memory)
+  return `运行时间: ${t} ms，内存占用: ${m}`
 }
 
 /**
@@ -95,7 +98,7 @@ function fetchResult() {
   }
 
   sse.onerror = () => {
-    error.value = new ErrorMessage(500, "发生了错误，请自行查询提交记录")
+    error.value = new ErrorMessage(500, "发生了错误，请查询提交记录")
     sse.close()
   }
 }
