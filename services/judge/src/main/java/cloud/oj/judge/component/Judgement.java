@@ -1,12 +1,13 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
-import cloud.oj.judge.dao.DatabaseConfig;
+import cloud.oj.judge.constant.Language;
+import cloud.oj.judge.constant.State;
 import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.dao.RankingDao;
 import cloud.oj.judge.dao.SolutionDao;
-import cloud.oj.judge.entity.Limit;
 import cloud.oj.judge.entity.JudgeResult;
+import cloud.oj.judge.entity.Problem;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,8 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.StringJoiner;
 
-import static cloud.oj.judge.component.SolutionResult.*;
+import static cloud.oj.judge.constant.Language.*;
+import static cloud.oj.judge.constant.Result.*;
 
 @Slf4j
 @Component
@@ -41,8 +43,6 @@ public class Judgement {
 
     private final RankingDao rankingDao;
 
-    private final DatabaseConfig dbConfig;
-
     private final Compiler compiler;
 
     private final HashMap<String, Integer> cpuMap;
@@ -57,15 +57,11 @@ public class Judgement {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void judge(Solution solution) {
-        log.debug("Judging: solution({}), user({}).", solution.getSolutionId(), solution.getUid());
-        // 为当前事务禁用外键约束
-        dbConfig.disableFKChecks();
-
         var compile = compiler.compile(solution);
 
         if (compile.getState() == 0) {
             // 编译成功
-            var limit = problemDao.getLimit(solution.getProblemId());
+            var limit = problemDao.getById(solution.getProblemId());
             // 运行
             var result = execute(solution, limit);
             saveResult(solution, result, limit);
@@ -82,7 +78,7 @@ public class Judgement {
      *
      * @param result {@link JudgeResult}
      */
-    private void saveResult(Solution solution, JudgeResult result, Limit limit) {
+    private void saveResult(Solution solution, JudgeResult result, Problem problem) {
         // 运行错误/内部错误
         if (result.getResult().equals(RE) || result.getResult().equals(IE)) {
             log.warn("运行时/内部错误({}): {}", solution.getSolutionId(), result.getError());
@@ -107,11 +103,11 @@ public class Judgement {
         solution.setTotal(result.getTotal());
         solution.setPassed(result.getPassed());
         solution.setPassRate(passRate);
-        solution.setScore(passRate * limit.getScore());
+        solution.setScore(passRate * problem.getScore());
         solution.setTime(result.getTime());
         solution.setMemory(result.getMemory());
         solution.setResult(result.getResult());
-        solution.setState(SolutionState.JUDGED);
+        solution.setState(State.JUDGED);
 
         solutionDao.update(solution);
 
@@ -138,12 +134,12 @@ public class Judgement {
      *
      * @return 运行结果 {@link JudgeResult}
      */
-    private JudgeResult execute(Solution solution, Limit limit) {
+    private JudgeResult execute(Solution solution, Problem problem) {
         JudgeResult result;
 
         try {
             var testDataDir = appConfig.getFileDir() + "data/" + solution.getProblemId();
-            var argv = buildCommand(solution, limit, testDataDir);
+            var argv = buildCommand(solution, problem, testDataDir);
             var buf = ByteBuffer.allocate(2048);
             var channel = SocketChannel.open(StandardProtocolFamily.UNIX);
             channel.connect(addr);
@@ -172,19 +168,16 @@ public class Judgement {
     /**
      * 生成命令
      */
-    private String buildCommand(Solution solution, Limit limit, String dataDir)
+    private String buildCommand(Solution solution, Problem problem, String dataDir)
             throws UnsupportedLanguageError {
-        var language = Language.get(solution.getLanguage());
-
-        if (language == null) {
-            throw new UnsupportedLanguageError("NULL");
-        }
+        var language = solution.getLanguage();
+        Language.check(language);
 
         var cpu = cpuMap.get(Thread.currentThread().getName());
         var workDir = appConfig.getCodeDir() + solution.getSolutionId();
-        var timeLimit = limit.getTimeout();
-        var memoryLimit = limit.getMemoryLimit();
-        var outputLimit = limit.getOutputLimit();
+        var timeLimit = problem.getTimeout();
+        var memoryLimit = problem.getMemoryLimit();
+        var outputLimit = problem.getOutputLimit();
 
         StringJoiner argv = new StringJoiner(" ");
 
@@ -196,7 +189,6 @@ public class Judgement {
             case PYTHON -> argv.add("--cmd=python3@Solution.py");
             case BASH -> argv.add("--cmd=sh@Solution.sh");
             case C_SHARP -> argv.add("--cmd=mono@Solution.exe");
-            default -> throw new UnsupportedLanguageError(language.toString());
         }
 
         return argv.add("--time=" + timeLimit)

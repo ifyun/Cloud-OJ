@@ -1,6 +1,6 @@
 package cloud.oj.judge.entity;
 
-import cloud.oj.judge.component.SolutionResult;
+import cloud.oj.judge.constant.Result;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +26,6 @@ public class JudgeResult {
 
     @JsonSetter("result")
     public void setResultStr(String result) {
-        this.result = SolutionResult.ofString(result);
+        this.result = Result.ofString(result);
     }
 }

@@ -1,6 +1,6 @@
 package cloud.oj.judge.service;
 
-import cloud.oj.judge.component.SolutionState;
+import cloud.oj.judge.constant.State;
 import cloud.oj.judge.config.RabbitConfig;
 import cloud.oj.judge.dao.ContestDao;
 import cloud.oj.judge.dao.ProblemDao;
@@ -114,7 +114,7 @@ public class SubmitService {
         sourceCodeDao.add(sourceCode);
 
         solution.setSourceCode(submitData.getSourceCode());
-        solution.setState(SolutionState.IN_QUEUE);
+        solution.setState(State.IN_QUEUE);
         solutionDao.update(solution);
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);

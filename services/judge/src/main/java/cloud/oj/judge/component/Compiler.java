@@ -1,6 +1,7 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
+import cloud.oj.judge.constant.Language;
 import cloud.oj.judge.entity.Compile;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Compiler {
 
-    private static final Map<Language, String[]> CMD = Map.of(
+    private static final Map<Integer, String[]> CMD = Map.of(
             Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.c", "-o", "Solution"},
             Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.cpp", "-o", "Solution"},
             Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"},
@@ -47,19 +48,19 @@ public class Compiler {
      */
     public Compile compile(Solution solution) {
         var solutionId = solution.getSolutionId();
-        var languageId = solution.getLanguage();
+        var language = solution.getLanguage();
         var sourceCode = solution.getSourceCode();
 
-        var src = writeCode(solutionId, languageId, sourceCode);
-
-        if (src.isEmpty()) {
-            var err = "编译错误: 无法写入代码.";
-            log.error(err);
-            return new Compile(solutionId, -1, err);
-        }
-
         try {
-            var language = Language.get(languageId);
+            Language.check(language);
+            var src = writeCode(solutionId, language, sourceCode);
+
+            if (src.isEmpty()) {
+                var err = "编译错误: 无法写入代码.";
+                log.error(err);
+                return new Compile(solutionId, -1, err);
+            }
+
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
             log.error("编译错误: {}", e.getMessage());
@@ -72,11 +73,7 @@ public class Compiler {
      *
      * @return {@link Compile} 编译结果
      */
-    private Compile compileSource(String solutionId, Language language) throws UnsupportedLanguageError {
-        if (language == null) {
-            throw new UnsupportedLanguageError("NULL");
-        }
-
+    private Compile compileSource(String solutionId, Integer language) {
         var solutionDir = appConfig.getCodeDir() + solutionId;
 
         try {

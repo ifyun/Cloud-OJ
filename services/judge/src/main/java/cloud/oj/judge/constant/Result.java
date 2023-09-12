@@ -1,10 +1,10 @@
-package cloud.oj.judge.component;
+package cloud.oj.judge.constant;
 
 /**
- * 对应 solution 表中的枚举值
+ * 对应 solution 表中的 result 字段
  * <p>MariaDB 的枚举值从 1 开始</p>
  */
-public class SolutionResult {
+public class Result {
     public static final int AC = 1;  // 通过
     public static final int TLE = 2; // 超时
     public static final int MLE = 3; // 超内存
@@ -18,12 +18,14 @@ public class SolutionResult {
     public static Integer ofString(String str) {
         return switch (str) {
             case "AC" -> AC;
-            case "WA" -> WA;
             case "TLE" -> TLE;
             case "MLE" -> MLE;
-            case "OLE" -> OLE;
             case "PA" -> PA;
+            case "WA" -> WA;
+            case "CE" -> CE;
+            case "RE" -> RE;
             case "IE" -> IE;
+            case "OLE" -> OLE;
             default -> null;
         };
     }

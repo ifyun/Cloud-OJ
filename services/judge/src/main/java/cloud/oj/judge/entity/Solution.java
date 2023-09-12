@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static cloud.oj.judge.component.SolutionState.JUDGED;
+import static cloud.oj.judge.constant.State.JUDGED;
 
 @Getter
 @Setter

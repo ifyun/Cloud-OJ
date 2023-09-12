@@ -1,11 +1,11 @@
 package cloud.oj.judge.dao;
 
-import cloud.oj.judge.entity.Limit;
+import cloud.oj.judge.entity.Problem;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface ProblemDao {
-    Limit getLimit(int problemId);
+    Problem getById(int problemId);
 
     boolean isEnable(int problemId);
 }
