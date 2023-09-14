@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface SolutionDao {
-    Solution getSolutionById(String solutionId, boolean showPassed);
+    Solution getSolutionByUidAndTime(Integer uid, Long time, boolean showPassed);
 
     List<List<?>> getSolutionsByUser(Integer uid, Integer start, Integer limit, Integer filter, String filterValue);
 

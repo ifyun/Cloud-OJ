@@ -11,10 +11,9 @@
           and if(#{contestId} is not null, contest_id = #{contestId}, contest_id is null)
     </select>
     <!-- 增加提交 -->
-    <insert id="add" parameterType="cloud.oj.judge.entity.Solution">
-        insert into solution(solution_id, uid, problem_id, contest_id, title, language, state, submit_time)
-        select #{solutionId},
-               #{uid},
+    <insert id="create" useGeneratedKeys="true" keyProperty="solutionId" parameterType="cloud.oj.judge.entity.Solution">
+        insert into solution(uid, problem_id, contest_id, title, language, state, submit_time)
+        select #{uid},
                #{problemId},
                #{contestId},
                title,

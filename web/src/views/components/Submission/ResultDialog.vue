@@ -55,7 +55,7 @@ const darkTheme = computed<boolean>(() => store.state.theme != null)
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 const props = defineProps<{
-  solutionId: string
+  submitTime: number
 }>()
 
 let sse: EventSource
@@ -80,7 +80,7 @@ function usage(r: JudgeResult) {
  */
 function fetchResult() {
   sse = new EventSource(
-    `${ApiPath.SOLUTION}/${props.solutionId}?token=${userInfo.value.token}`
+    `${ApiPath.SOLUTION}/${userInfo.value.uid}/${props.submitTime}?token=${userInfo.value.token}`
   )
 
   sse.onmessage = (event) => {
@@ -89,7 +89,7 @@ function fetchResult() {
     if (data.state !== 0) {
       result.value = {
         status: "418",
-        title: "在队列中，等待判题"
+        title: "等待判题中"
       }
     } else {
       setResult(data)

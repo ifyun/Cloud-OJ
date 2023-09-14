@@ -9,22 +9,23 @@ const JudgeApi = {
    * @param data {@link SubmitData}
    * @param userInfo {@link UserInfo}
    */
-  submit(data: SubmitData, userInfo: UserInfo): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+  submit(data: SubmitData, userInfo: UserInfo): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
       axios({
         url: userInfo.role == 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT,
         method: "POST",
         headers: buildHeaders(userInfo),
-        data: JSON.stringify(data, (k, v) => v ?? undefined)
+        data: JSON.stringify(data, (_, v) => v ?? undefined)
       })
         .then((res) => {
-          resolve(res.data as string)
+          resolve(res.data as number)
         })
         .catch((error) => {
           reject(resolveError(error))
         })
     })
   },
+  // TODO 此接口当前没有被使用
   /**
    * 获取判题结果
    * @param solutionId

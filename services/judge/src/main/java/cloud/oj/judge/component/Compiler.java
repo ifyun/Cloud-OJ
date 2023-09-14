@@ -73,7 +73,7 @@ public class Compiler {
      *
      * @return {@link Compile} 编译结果
      */
-    private Compile compileSource(String solutionId, Integer language) {
+    private Compile compileSource(Integer solutionId, Integer language) {
         var solutionDir = appConfig.getCodeDir() + solutionId;
 
         try {
@@ -111,7 +111,7 @@ public class Compiler {
      *
      * @return 文件路径
      */
-    private String writeCode(String solutionId, int language, String source) {
+    private String writeCode(Integer solutionId, int language, String source) {
         var solutionDir = new File(appConfig.getCodeDir() + solutionId);
 
         if (!solutionDir.mkdirs()) {

@@ -41,9 +41,10 @@ public class SolutionController {
 
     /**
      * 获取判题结果
+     * @return {@link SseEmitter} 由服务端轮询并推送结果
      */
-    @GetMapping("{solutionId}")
-    public SseEmitter getBySolutionId(@PathVariable String solutionId) {
-        return solutionService.getBySolutionId(solutionId);
+    @GetMapping("{uid}/{time}")
+    public SseEmitter getBySolutionId(@PathVariable Integer uid, @PathVariable Long time) {
+        return solutionService.getBySolutionId(uid, time);
     }
 }

@@ -15,7 +15,7 @@ public interface SolutionDao {
      */
     Double getMaxScoreOfUser(Integer uid, Integer problemId, Integer contestId);
 
-    void add(Solution solution);
+    void create(Solution solution);
 
     /**
      * 更新判题结果

@@ -6,16 +6,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Compile {
-    private int id;
-    private String solutionId;
-    private int state;
+    private Integer id;
+    private Integer solutionId;
+    private Integer state;
     private String info;
 
-    public Compile(String solutionId, int state) {
+    public Compile(Integer solutionId, Integer state) {
         this(solutionId, state, null);
     }
 
-    public Compile(String solutionId, int state, String info) {
+    public Compile(Integer solutionId, Integer state, String info) {
         this.solutionId = solutionId;
         this.state = state;
         this.info = info;

@@ -5,7 +5,7 @@ set character set utf8mb4;
 # 题目
 create table problem
 (
-    problem_id   int auto_increment primary key,
+    problem_id   int auto_increment primary key      not null,
     title        char(64)                            not null,
     description  text                                not null,
     timeout      bigint     default 100              null comment 'CPU 时间限制(ms)',
@@ -25,7 +25,7 @@ create index idx_enable on problem (enable);
 # 竞赛
 create table contest
 (
-    contest_id   int auto_increment primary key,
+    contest_id   int auto_increment primary key      not null,
     contest_name char(64)                            not null,
     start_at     bigint                              not null comment '开始时间，10 位 UNIX',
     end_at       bigint                              not null comment '结束时间，10 位 UNIX',
@@ -46,7 +46,7 @@ create index idx_pid on `contest-problem` (problem_id);
 
 create table user
 (
-    uid        int auto_increment primary key,
+    uid        int auto_increment primary key      not null,
     username   char(32)                            not null,
     nickname   char(16)                            not null,
     password   char(100)                           not null,
@@ -67,7 +67,7 @@ create index idx_time on user (create_at);
 # 提交
 create table solution
 (
-    solution_id char(36)                                                       not null primary key,
+    solution_id int primary key auto_increment                                 not null,
     uid         int                                                            not null,
     problem_id  int                                                            not null,
     contest_id  int                                                            null,
@@ -94,14 +94,14 @@ create index idx_time on solution (submit_time desc);
 # 代码
 create table source_code
 (
-    solution_id char(36) primary key not null,
-    code        text                 not null
+    solution_id int primary key not null,
+    code        text            not null
 );
 
 # 排名
 create table leaderboard
 (
-    uid         int                  not null primary key,
+    uid         int primary key      not null,
     committed   int        default 0 not null,
     passed      int        default 0 not null,
     score       double     default 0 not null,
@@ -114,7 +114,7 @@ create index idx_score_time on leaderboard (score desc, update_time asc);
 # 竞赛排名
 create table leaderboard_contest
 (
-    uid         int                  not null primary key,
+    uid         int primary key      not null,
     contest_id  int                  not null,
     committed   int        default 0 not null,
     passed      int        default 0 not null,
@@ -127,7 +127,7 @@ create index idx_cid_score_time on leaderboard_contest (contest_id, score desc, 
 
 create table settings
 (
-    id                  int                  not null primary key,
+    id                  int primary key      not null,
     always_show_ranking tinyint(1) default 0 not null,
     show_all_contest    tinyint(1) default 0 not null,
     show_passed_points  tinyint(1) default 0 not null,
@@ -156,7 +156,7 @@ ALTER TABLE problem
     AUTO_INCREMENT = 1000;
 
 ALTER TABLE user
-    AUTO_INCREMENT = 10000;
+    AUTO_INCREMENT = 100000;
 
 # 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (uid, username, nickname, password, secret, role)

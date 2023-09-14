@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SubmitData {
-    private String solutionId;
     private Integer uid;
     private Integer problemId;
     private Integer contestId;

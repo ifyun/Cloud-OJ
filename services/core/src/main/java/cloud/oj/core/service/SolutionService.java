@@ -39,14 +39,14 @@ public class SolutionService {
      * @return {@link SseEmitter}
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public SseEmitter getBySolutionId(String solutionId) {
+    public SseEmitter getBySolutionId(Integer uid, Long time) {
         var emitter = new SseEmitter(0L);
         var executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
             try {
                 while (true) {
-                    var result = solutionDao.getSolutionById(solutionId, settings.getSettings().isShowPassedPoints());
+                    var result = solutionDao.getSolutionByUidAndTime(uid, time, settings.getSettings().isShowPassedPoints());
 
                     if (result == null) {
                         TimeUnit.MILLISECONDS.sleep(500);

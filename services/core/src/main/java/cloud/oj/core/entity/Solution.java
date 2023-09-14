@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Solution {
-    private String solutionId;
+    private Integer solutionId;
     private Integer problemId;
     private String title;
     private Integer uid;

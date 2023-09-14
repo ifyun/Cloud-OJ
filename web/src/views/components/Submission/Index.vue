@@ -74,7 +74,7 @@
     :mask-closable="false"
     preset="card"
     style="width: 600px; margin-top: 200px">
-    <result-dialog :solution-id="solutionId" style="margin-bottom: 12px" />
+    <result-dialog :submit-time="submitTime" style="margin-bottom: 12px" />
   </n-modal>
 </template>
 
@@ -126,7 +126,7 @@ const error = ref<ErrorMessage | null>(null)
 
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
-const solutionId = ref<string>("")
+const submitTime = ref<number>(0)
 const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 let problemId: number | null = null
@@ -209,8 +209,8 @@ function submit(data: SourceCode) {
   }
 
   JudgeApi.submit(submitData, userInfo.value)
-    .then((id) => {
-      solutionId.value = id
+    .then((time) => {
+      submitTime.value = time
       showResult.value = true
     })
     .catch((err: ErrorMessage) => {

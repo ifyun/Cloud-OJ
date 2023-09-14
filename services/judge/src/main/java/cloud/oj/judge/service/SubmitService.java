@@ -1,13 +1,11 @@
 package cloud.oj.judge.service;
 
-import cloud.oj.judge.constant.State;
 import cloud.oj.judge.config.RabbitConfig;
 import cloud.oj.judge.dao.ContestDao;
 import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.dao.SolutionDao;
-import cloud.oj.judge.dao.SourceCodeDao;
+import cloud.oj.judge.dao.SourceDao;
 import cloud.oj.judge.entity.Solution;
-import cloud.oj.judge.entity.SourceCode;
 import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Slf4j
 @Service
 public class SubmitService {
@@ -32,18 +28,18 @@ public class SubmitService {
 
     private final SolutionDao solutionDao;
 
-    private final SourceCodeDao sourceCodeDao;
+    private final SourceDao sourceDao;
 
     private final RabbitTemplate rabbitTemplate;
 
     private final Queue judgeQueue;
 
     public SubmitService(ProblemDao problemDao, ContestDao contestDao, SolutionDao solutionDao,
-                         SourceCodeDao sourceCodeDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
+                         SourceDao sourceDao, RabbitTemplate rabbitTemplate, Queue judgeQueue) {
         this.problemDao = problemDao;
         this.contestDao = contestDao;
         this.solutionDao = solutionDao;
-        this.sourceCodeDao = sourceCodeDao;
+        this.sourceDao = sourceDao;
         this.rabbitTemplate = rabbitTemplate;
         this.judgeQueue = judgeQueue;
     }
@@ -56,11 +52,12 @@ public class SubmitService {
      * @return {@link ResponseEntity}
      */
     public ResponseEntity<?> submitCode(SubmitData data, boolean isAdmin) {
+        data.setSubmitTime(System.currentTimeMillis());
         var contestId = data.getContestId();
         var status = HttpStatus.BAD_REQUEST;
 
         if (data.getSourceCode().trim().isEmpty()) {
-            throw new GenericException(status, "一行代码都没有，不准提交");
+            throw new GenericException(status, "代码为空，不准提交");
         }
 
         if (contestId != null) {
@@ -86,11 +83,8 @@ public class SubmitService {
             }
         }
 
-        data.setSolutionId(UUID.randomUUID().toString());
-        data.setSubmitTime(System.currentTimeMillis());
         rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
-
-        return ResponseEntity.accepted().body(data.getSolutionId());
+        return ResponseEntity.accepted().body(data.getSubmitTime());
     }
 
     /**
@@ -100,22 +94,17 @@ public class SubmitService {
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void submit(SubmitData submitData) throws AmqpException {
         var solution = new Solution(
-                submitData.getSolutionId(),
                 submitData.getUid(),
                 submitData.getProblemId(),
                 submitData.getContestId(),
                 submitData.getLanguage(),
-                submitData.getSubmitTime()
+                submitData.getSubmitTime(),
+                submitData.getSourceCode()
         );
 
-        var sourceCode = new SourceCode(solution.getSolutionId(), submitData.getSourceCode());
-
-        solutionDao.add(solution);
-        sourceCodeDao.add(sourceCode);
-
-        solution.setSourceCode(submitData.getSourceCode());
-        solution.setState(State.IN_QUEUE);
-        solutionDao.update(solution);
+        solutionDao.create(solution);
+        // solutionId 由数据库生成
+        sourceDao.create(solution.getSolutionId(), submitData.getSourceCode());
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }

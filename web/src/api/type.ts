@@ -135,7 +135,8 @@ export type SubmitData = {
 }
 
 export class JudgeResult {
-  solutionId?: string
+  solutionId?: number
+  uid?: number
   problemId?: number
   language?: number
   title?: string

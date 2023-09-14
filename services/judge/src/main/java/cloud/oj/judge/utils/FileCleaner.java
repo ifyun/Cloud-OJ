@@ -24,11 +24,11 @@ public class FileCleaner {
     }
 
     @Async
-    public void deleteTempFile(String solutionId) {
+    public void deleteTempFile(Integer solutionId) {
         try {
             FileUtils.deleteDirectory(new File(appConfig.getCodeDir() + solutionId));
         } catch (IOException e) {
-            log.warn("Delete solution dir failed: solutionId={}", solutionId);
+            log.warn("删除失败: solutionId={}", solutionId);
         }
     }
 }
