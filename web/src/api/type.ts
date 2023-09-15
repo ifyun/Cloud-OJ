@@ -142,6 +142,8 @@ export class JudgeResult {
   title?: string
   state?: number
   result?: number
+  stateText?: string
+  resultText?: string
   total?: number
   passed?: number
   passRate?: number

@@ -2,6 +2,7 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SolutionDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -14,20 +15,17 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SolutionService {
+    private static final int MAX_COUNT = 180;
 
     private final SolutionDao solutionDao;
 
-    private final SystemSettings settings;
+    private final SystemSettings systemSettings;
 
     private final ObjectMapper objectMapper;
 
-    public SolutionService(ObjectMapper objectMapper, SolutionDao solutionDao, SystemSettings settings) {
-        this.objectMapper = objectMapper;
-        this.solutionDao = solutionDao;
-        this.settings = settings;
-    }
-
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public List<List<?>> getSolutions(Integer uid, Integer page, Integer limit, Integer filter, String filterValue) {
         return solutionDao.getSolutionsByUser(uid, (page - 1) * limit, limit, filter, filterValue);
     }
@@ -35,21 +33,23 @@ public class SolutionService {
     /**
      * 根据 id 获取提交
      * <p>隔离级别：读未提交</p>
+     * <p>开启了新的线程，不可使用声明式事务，隔离级别在 SQL 语句中设置</p>
      *
      * @return {@link SseEmitter}
      */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public SseEmitter getBySolutionId(Integer uid, Long time) {
         var emitter = new SseEmitter(0L);
         var executor = Executors.newSingleThreadExecutor();
+        var settings = systemSettings.getSettings();
 
         executor.execute(() -> {
+            var count = 0;
             try {
                 while (true) {
-                    var result = solutionDao.getSolutionByUidAndTime(uid, time, settings.getSettings().isShowPassedPoints());
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    var result = solutionDao.getSolutionByUidAndTime(uid, time, settings.isShowPassedPoints());
 
                     if (result == null) {
-                        TimeUnit.MILLISECONDS.sleep(500);
                         continue;
                     }
 
@@ -58,14 +58,22 @@ public class SolutionService {
                             .name("message");
 
                     emitter.send(event);
+                    count += 1;
 
                     if (result.getState() == 0) {
+                        emitter.complete();
                         break;
+                    }
+
+                    if (count == MAX_COUNT) {
+                        log.warn("轮询超时");
+                        emitter.complete();
                     }
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
-                emitter.completeWithError(e);
+                // complete 会触发客户端 EventSource 的 onerror 方法
+                emitter.complete();
             }
         });
 

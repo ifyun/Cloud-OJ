@@ -2,9 +2,12 @@ package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.constant.Language;
+import cloud.oj.judge.constant.State;
+import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Compile;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class Compiler {
 
     private static final Map<Integer, String[]> CMD = Map.of(
@@ -31,11 +35,9 @@ public class Compiler {
 
     private final AppConfig appConfig;
 
-    private final ProcessBuilder processBuilder = new ProcessBuilder();
+    private final SolutionDao solutionDao;
 
-    public Compiler(AppConfig appConfig) {
-        this.appConfig = appConfig;
-    }
+    private final ProcessBuilder processBuilder = new ProcessBuilder();
 
     private static class CompileError extends Exception {
         CompileError(String msg) {
@@ -50,20 +52,20 @@ public class Compiler {
         var solutionId = solution.getSolutionId();
         var language = solution.getLanguage();
         var sourceCode = solution.getSourceCode();
+        // 更新为正在编译状态
+        solutionDao.updateState(solutionId, State.COMPILING);
 
         try {
             Language.check(language);
             var src = writeCode(solutionId, language, sourceCode);
 
             if (src.isEmpty()) {
-                var err = "编译错误: 无法写入代码.";
-                log.error(err);
-                return new Compile(solutionId, -1, err);
+                return new Compile(solutionId, -1, "编译错误: 无法写入代码");
             }
 
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
-            log.error("编译错误: {}", e.getMessage());
+            log.warn("编译错误: {}", e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -131,7 +133,7 @@ public class Compiler {
 
             return sourceFile.getPath();
         } catch (IOException e) {
-            log.error("创建文件失败({}): {}", sourceFile.getName(), e.getMessage());
+            log.error("写入代码失败({}): {}", sourceFile.getName(), e.getMessage());
             return "";
         }
     }

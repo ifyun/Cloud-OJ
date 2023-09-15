@@ -41,7 +41,7 @@ public class JudgementEntry {
             log.error(msg);
             // 判题发生异常，将结果设置为内部错误
             solution.endWithError(IE, msg);
-            solutionDao.update(solution);
+            solutionDao.updateWithResult(solution);
         } finally {
             if (settingsDao.isAutoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());

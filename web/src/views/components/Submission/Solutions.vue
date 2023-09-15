@@ -75,14 +75,16 @@ const columns: DataTableColumns<JudgeResult> = [
 
       if (row.state != 0) {
         icon = TimelapseRound
-      } else if (row.result! === 0) {
+      } else if (row.result === 0) {
         icon = CheckCircleFilled
       } else {
         icon = ErrorRound
       }
 
       const { type, text } =
-        row.state === 0 ? ResultTypes[row.result!] : ResultTypes[9]
+        row.state === 0
+          ? { type: ResultTypes[row.result!], text: row.resultText }
+          : { type: "info", text: row.stateText }
 
       return (
         <NTag size="small" bordered={false} type={type as any}>

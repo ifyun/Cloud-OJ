@@ -18,9 +18,16 @@ public interface SolutionDao {
     void create(Solution solution);
 
     /**
+     * 更新状态
+     *
+     * @param state {@link cloud.oj.judge.constant.State}
+     */
+    void updateState(Integer solutionId, Integer state);
+
+    /**
      * 更新判题结果
      *
      * @param solution {@link Solution}
      */
-    void update(Solution solution);
+    void updateWithResult(Solution solution);
 }

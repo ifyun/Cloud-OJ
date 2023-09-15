@@ -61,14 +61,16 @@ public class Judgement {
 
         if (compile.getState() == 0) {
             // 编译成功
-            var limit = problemDao.getById(solution.getProblemId());
+            var problem = problemDao.getById(solution.getProblemId());
+            // 更新为正在运行状态
+            solutionDao.updateState(solution.getSolutionId(), State.RUNNING);
             // 运行
-            var result = execute(solution, limit);
-            saveResult(solution, result, limit);
+            var result = execute(solution, problem);
+            saveResult(solution, result, problem);
         } else {
             // 编译失败
             solution.endWithError(CE, compile.getInfo());
-            solutionDao.update(solution);
+            solutionDao.updateWithResult(solution);
         }
     }
 
@@ -83,7 +85,7 @@ public class Judgement {
         if (result.getResult().equals(RE) || result.getResult().equals(IE)) {
             log.warn("运行时/内部错误({}): {}", solution.getSolutionId(), result.getError());
             solution.endWithError(result.getResult(), result.getError());
-            solutionDao.update(solution);
+            solutionDao.updateWithResult(solution);
             return;
         }
 
@@ -109,7 +111,7 @@ public class Judgement {
         solution.setResult(result.getResult());
         solution.setState(State.JUDGED);
 
-        solutionDao.update(solution);
+        solutionDao.updateWithResult(solution);
 
         // 更新排名
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名

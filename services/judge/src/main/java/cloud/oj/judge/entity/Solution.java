@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static cloud.oj.judge.constant.State.IN_QUEUE;
+import static cloud.oj.judge.constant.State.WAITING;
 import static cloud.oj.judge.constant.State.JUDGED;
 
 @Getter
@@ -37,7 +37,7 @@ public class Solution {
         this.language = language;
         this.submitTime = submitTime;
         this.sourceCode = sourceCode;
-        this.state = IN_QUEUE;
+        this.state = WAITING;
     }
 
     public void endWithError(Integer result, String info) {

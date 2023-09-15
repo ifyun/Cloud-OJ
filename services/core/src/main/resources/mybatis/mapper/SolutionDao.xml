@@ -4,6 +4,7 @@
 <mapper namespace="cloud.oj.core.dao.SolutionDao">
     <!-- 根据 uid 和提交时间查询提交 -->
     <select id="getSolutionByUidAndTime" resultMap="Map.Solution">
+        set tx_isolation = 'read-uncommitted';
         select state - 1                                      as state,
                result - 1                                     as result,
                truncate(pass_rate, 2)                         as pass_rate,

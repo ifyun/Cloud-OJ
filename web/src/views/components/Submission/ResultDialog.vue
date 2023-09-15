@@ -3,7 +3,7 @@
     <!-- 错误 -->
     <n-result
       v-if="error != null"
-      status="error"
+      status="warning"
       :title="error.error"
       :description="error.message">
     </n-result>
@@ -24,39 +24,48 @@
 <script setup lang="ts">
 import { ApiPath } from "@/api/request"
 import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
+import { ResultTypes } from "@/type"
 import { ramUsage } from "@/utils"
 import { NResult, NSpace, NText } from "naive-ui"
 import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useStore } from "vuex"
 
-class Result {
+interface Result {
   status: any
   title: string
   desc?: string
   error?: string
-
-  constructor(status: string, title: string, desc?: string, error?: string) {
-    this.status = status
-    this.title = title
-    this.desc = desc
-    this.error = error
-  }
 }
-
-const store = useStore()
-
-const error = ref<ErrorMessage | null>(null)
-const result = ref<Result>({
-  status: "418",
-  title: "提交成功，正在获取结果"
-})
-
-const darkTheme = computed<boolean>(() => store.state.theme != null)
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 const props = defineProps<{
   submitTime: number
 }>()
+
+const store = useStore()
+
+const error = ref<ErrorMessage | null>(null)
+const solution = ref<JudgeResult | null>(null)
+
+const darkTheme = computed<boolean>(() => store.state.theme != null)
+const userInfo = computed<UserInfo>(() => store.state.userInfo)
+
+const result = computed<Result>(() => {
+  const s = solution.value
+  if (s == null) {
+    return { status: "418", title: "提交成功，正在获取结果" }
+  }
+  // 等待/编译/运行状态
+  if (s.state !== 0) {
+    return { status: "418", title: s.stateText! }
+  }
+  // 运行结束
+  return {
+    status: ResultTypes[s.result!],
+    title: s.resultText!,
+    desc: [5, 6, 7, 8].indexOf(s.result!) === -1 ? usage(s) : undefined,
+    error: s.errorInfo
+  }
+})
 
 let sse: EventSource
 
@@ -72,7 +81,13 @@ function usage(r: JudgeResult) {
   const { time, memory } = r
   const t = (time! / 1000).toFixed(2)
   const m = ramUsage(memory)
-  return `运行时间: ${t} ms，内存占用: ${m}`
+  const text = `运行时间: ${t} ms, 内存占用: ${m}`
+
+  if (r.passed) {
+    return `${text}, 通过: ${r.passed}/${r.total}`
+  } else {
+    return text
+  }
 }
 
 /**
@@ -85,75 +100,17 @@ function fetchResult() {
 
   sse.onmessage = (event) => {
     const data = JSON.parse(event.data) as JudgeResult
+    solution.value = data
 
-    if (data.state !== 0) {
-      result.value = {
-        status: "418",
-        title: "等待判题中"
-      }
-    } else {
-      setResult(data)
+    if (data.state === 0) {
       sse.close()
     }
   }
 
   sse.onerror = () => {
-    error.value = new ErrorMessage(500, "发生了错误，请查询提交记录")
+    error.value = new ErrorMessage(500, "无法获取结果")
+    error.value.message = "请查询提交记录"
     sse.close()
-  }
-}
-
-function setResult(r: JudgeResult) {
-  const passed = r.passed ? `${r.passed}/${r.total}` : ""
-  switch (r.result) {
-    case 0:
-      result.value = new Result("success", "完全正确", usage(r))
-      break
-    case 1:
-      result.value = new Result(
-        "warning",
-        "时间超限",
-        `${usage(r)}，通过: ${passed}`
-      )
-      break
-    case 2:
-      result.value = new Result(
-        "warning",
-        "内存超限",
-        `${usage(r)}，通过: ${passed}`
-      )
-      break
-    case 3:
-      result.value = new Result(
-        "warning",
-        "部分通过",
-        `${usage(r)}，通过: ${passed}`
-      )
-      break
-    case 4:
-      result.value = new Result("error", "答案错误", usage(r))
-      break
-    case 5:
-      result.value = new Result("error", "编译错误", undefined, r.errorInfo)
-      break
-    case 6:
-      result.value = new Result("error", "运行错误", undefined, r.errorInfo)
-      break
-    case 7:
-      result.value = new Result(
-        "error",
-        "内部错误",
-        "判题服务器发生错误",
-        r.errorInfo
-      )
-      break
-    case 8:
-      result.value = new Result(
-        "warning",
-        "输出超限",
-        "你的程序产生的输出已超出题目限制"
-      )
-      break
   }
 }
 </script>

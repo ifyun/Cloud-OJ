@@ -11,20 +11,27 @@
           and if(#{contestId} is not null, contest_id = #{contestId}, contest_id is null)
     </select>
     <!-- 增加提交 -->
-    <insert id="create" useGeneratedKeys="true" keyProperty="solutionId" parameterType="cloud.oj.judge.entity.Solution">
+    <insert id="create" useGeneratedKeys="true" keyProperty="solutionId"
+            parameterType="cloud.oj.judge.entity.Solution">
         insert into solution(uid, problem_id, contest_id, title, language, state, submit_time)
         select #{uid},
                #{problemId},
                #{contestId},
                title,
                #{language},
-               'IN_QUEUE',
+               #{state},
                #{submitTime}
         from problem
         where problem_id = #{problemId}
     </insert>
     <!-- 更新状态 -->
-    <update id="update" parameterType="cloud.oj.judge.entity.Solution">
+    <update id="updateState">
+        update solution
+        set state = #{state}
+        where solution_id = #{solutionId}
+    </update>
+    <!-- 更新结果 -->
+    <update id="updateWithResult" parameterType="cloud.oj.judge.entity.Solution">
         update solution
         set state      = #{state},
             result     = #{result},

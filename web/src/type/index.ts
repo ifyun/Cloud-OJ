@@ -49,14 +49,13 @@ export const LanguageColors = [
 ]
 
 export const ResultTypes = [
-  { type: "success", text: "完全正确" },
-  { type: "warning", text: "时间超限" },
-  { type: "warning", text: "内存超限" },
-  { type: "warning", text: "部分通过" },
-  { type: "error", text: "答案错误" },
-  { type: "error", text: "编译错误" },
-  { type: "error", text: "运行错误" },
-  { type: "error", text: "内部错误" },
-  { type: "error", text: "输出超限" },
-  { type: "info", text: "等待判题" }
+  "success",
+  "warning",
+  "warning",
+  "warning",
+  "error",
+  "error",
+  "error",
+  "error",
+  "error"
 ]

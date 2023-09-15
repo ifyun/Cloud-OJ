@@ -17,12 +17,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class JudgeApp {
     private static void checkSystem() {
         if (!SystemUtils.IS_OS_LINUX) {
-            log.error("Only support Linux");
+            log.error("Please run on Linux");
             System.exit(1);
         }
 
         if (!System.getProperty("os.arch").equals("amd64")) {
-            log.error("Only support x64.");
+            log.error("Please run on x86-64");
             System.exit(1);
         }
     }
