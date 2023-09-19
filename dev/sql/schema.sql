@@ -155,6 +155,9 @@ from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on (`cp`.
 ALTER TABLE problem
     AUTO_INCREMENT = 1000;
 
+ALTER TABLE solution
+    AUTO_INCREMENT = 10000;
+
 ALTER TABLE user
     AUTO_INCREMENT = 100000;
 

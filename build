@@ -107,7 +107,7 @@ elif [ "$1" == "docker" ]; then
     docker build --target=web --build-arg="TARGET=web" -t cloudoj-web .
     docker build -t cloudoj-mariadb dev/sql
     docker images | grep cloudoj
-    if [ ! -f "${HOME}/cloud-oj/docker-compose.yml" ]; then
+    if [ ! -f "${HOME}/cloud-oj/compose.yml" ]; then
       mkdir -p "${HOME}/cloud-oj"
       cp -r docker/. "${HOME}/cloud-oj/"
     fi
