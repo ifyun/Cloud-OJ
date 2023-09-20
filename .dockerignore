@@ -7,7 +7,6 @@
 **/dist/
 **/target/
 **/cmake-build-*/
-dev/
 
 **/.gitignore
 **/*.iml
