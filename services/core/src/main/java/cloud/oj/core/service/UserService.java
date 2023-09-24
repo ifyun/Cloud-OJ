@@ -49,6 +49,10 @@ public class UserService {
     }
 
     public HttpStatus addUser(User user) {
+        if (userDao.exists(user.getUsername()) != null) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "用户名重复");
+        }
+
         user.setRole(1);
         user.setSecret(newUUID());
         if (userDao.add(user) == 1) {
@@ -59,10 +63,6 @@ public class UserService {
     }
 
     public HttpStatus updateUser(User user) {
-        if (user.getPassword() != null || user.getRole() != null) {
-            user.setSecret(newUUID());
-        }
-
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
@@ -73,10 +73,6 @@ public class UserService {
     public HttpStatus updateProfile(Integer uid, User user) {
         user.setRole(null);
         user.setUid(uid);
-
-        if (user.getPassword() != null) {
-            user.setSecret(newUUID());
-        }
 
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;

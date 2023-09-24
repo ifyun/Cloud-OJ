@@ -6,7 +6,7 @@
     :model="user"
     :rules="signupRules">
     <input type="password" hidden autocomplete="new-password" />
-    <n-form-item path="userId">
+    <n-form-item path="username">
       <n-input v-model:value="user.username" placeholder="用户名 (字母和数字)">
         <template #prefix>
           <n-icon class="input-prefix-icon">
@@ -15,7 +15,7 @@
         </template>
       </n-input>
     </n-form-item>
-    <n-form-item path="name">
+    <n-form-item path="nickname">
       <n-input
         v-model:value="user.nickname"
         placeholder="昵称"
@@ -119,12 +119,12 @@ const user = ref<User>(new User())
 const signupForm = ref<HTMLFormElement | null>(null)
 
 const signupRules: FormRules = {
-  userId: {
+  username: {
     required: true,
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {
       if (!value) {
-        return new Error("请输入ID")
+        return new Error("请输入用户名")
       } else if (value.length < 6) {
         return new Error("至少 6 个字符!")
       }
@@ -132,7 +132,7 @@ const signupRules: FormRules = {
       return true
     }
   },
-  name: {
+  nickname: {
     required: true,
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {

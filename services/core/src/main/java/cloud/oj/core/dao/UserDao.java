@@ -13,6 +13,8 @@ public interface UserDao {
 
     User getById(Integer uid);
 
+    Boolean exists(String username);
+
     int add(User user);
 
     int update(User user);

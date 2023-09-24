@@ -37,7 +37,7 @@ public class JudgementEntry {
         try {
             judgement.judge(solution);
         } catch (Exception e) {
-            var msg = ExceptionUtils.getRootCauseMessage(e);
+            var msg = ExceptionUtils.getRootCause(e).getMessage();
             log.error(msg);
             // 判题发生异常，将结果设置为内部错误
             solution.endWithError(IE, msg);

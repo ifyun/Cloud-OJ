@@ -252,7 +252,7 @@ function submit(data: SourceCode) {
 <style scoped lang="scss">
 .submission {
   width: calc(100% - var(--layout-padding) * 2);
-  min-height: 1000px;
+  min-height: 900px;
   padding: var(--layout-padding);
 
   .content {

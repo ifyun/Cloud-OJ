@@ -26,6 +26,9 @@
         where uid = #{userId}
           and deleted = false
     </select>
+    <select id="exists" resultType="java.lang.Boolean">
+        select 1 from user where username = #{username}
+    </select>
     <!-- 增加用户 -->
     <insert id="add" parameterType="cloud.oj.core.entity.User">
         insert into `user`(username, nickname, password, secret, email, section, role)
@@ -41,7 +44,7 @@
             </when>
         </choose>
         <choose>
-            <when test="roleId != null">
+            <when test="role != null">
                 role = #{roleId},
             </when>
         </choose>

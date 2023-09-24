@@ -42,10 +42,8 @@
           <n-form-item label="用户名">
             <n-input disabled :value="user.username" />
           </n-form-item>
-          <n-form-item path="name" label="昵称">
-            <n-input
-              v-model:value="user.nickname"
-              :disabled="user.username === 'admin'" />
+          <n-form-item path="nickname" label="昵称">
+            <n-input v-model:value="user.nickname" />
           </n-form-item>
           <n-form-item path="password" label="新密码">
             <n-input
@@ -132,8 +130,7 @@ const user = ref<User>(new User())
 const t = ref<number>(Date.now())
 
 const rules: FormRules = {
-  name: {
-    required: true,
+  nickname: {
     trigger: ["blur", "input"],
     validator(rule: any, value: string): Error | boolean {
       if (!value) {
@@ -193,6 +190,7 @@ const rules: FormRules = {
 
 onMounted(() => {
   setTitle("编辑个人信息")
+  user.value.uid = userInfo.value!.uid
   user.value.username = userInfo.value!.username
   user.value.nickname = userInfo.value!.nickname
   user.value.email = userInfo.value!.email
@@ -227,7 +225,7 @@ function back() {
 
 function uploadFinish() {
   t.value = Date.now()
-  refresh()
+  location.reload()
 }
 
 function refresh() {

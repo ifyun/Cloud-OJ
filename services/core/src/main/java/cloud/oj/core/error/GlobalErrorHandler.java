@@ -16,7 +16,7 @@ public class GlobalErrorHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> otherErrorHandler(RuntimeException e) {
         HttpStatus status;
-        var msg = ExceptionUtils.getRootCauseMessage(e);
+        var msg = ExceptionUtils.getRootCause(e).getMessage();
         log.error(msg);
 
         if (e instanceof GenericException) {
