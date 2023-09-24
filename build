@@ -101,11 +101,11 @@ elif [ "$1" == "docker" ]; then
     exit 1
   fi
   if [ "$2" == "" ]; then
-    docker build --target=core --build-arg="TARGET=core" -t cloudoj-core .
-    docker build --target=gateway --build-arg="TARGET=gateway" -t cloudoj-gateway .
-    docker build --target=judge --build-arg="TARGET=judge" -t cloudoj-judge .
-    docker build --target=web --build-arg="TARGET=web" -t cloudoj-web .
-    docker build -t cloudoj-mariadb dev/sql
+    docker build --target=core --build-arg="TARGET=core" -t cloud-oj:core .
+    docker build --target=gateway --build-arg="TARGET=gateway" -t cloud-oj:gateway .
+    docker build --target=judge --build-arg="TARGET=judge" -t cloud-oj:judge .
+    docker build --target=web --build-arg="TARGET=web" -t cloud-oj:web .
+    docker build -t cloud-oj:mariadb dev/sql
     docker images | grep cloudoj
     if [ ! -f "${HOME}/cloud-oj/compose.yml" ]; then
       mkdir -p "${HOME}/cloud-oj"
@@ -114,13 +114,13 @@ elif [ "$1" == "docker" ]; then
   else
     case "$2" in
     "mariadb")
-      docker build -t cloudoj-mariadb dev/sql
+      docker build -t cloud-oj:mariadb dev/sql
       ;;
     "web")
-      docker build --target=web --build-arg="TARGET=web" -t cloudoj-web .
+      docker build --target=web --build-arg="TARGET=web" -t cloud-oj:web .
       ;;
     "core" | "gateway" | "judge")
-      docker build --target="$2" --build-arg="TARGET=$2" -t cloudoj-"$2" .
+      docker build --target="$2" --build-arg="TARGET=$2" -t cloud-oj:"$2" .
       ;;
     *)
       err "Invalid Target: $2"

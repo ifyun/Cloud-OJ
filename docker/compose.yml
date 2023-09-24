@@ -1,6 +1,6 @@
 services:
   consul:
-    image: consul:latest
+    image: consul:1.15
     command:
       - "agent"
       - "-server"
@@ -12,12 +12,10 @@ services:
       - "-log-level=err"
     networks:
       - cloud-oj
-    ports:
-      - "8500:8500"
     volumes:
       - "consul:/consul/data"
   gateway:
-    image: cloudoj-gateway
+    image: cloud-oj:gateway
     depends_on:
       - "consul"
       - "mariadb"
@@ -31,7 +29,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
   core:
-    image: cloudoj-core
+    image: cloud-oj:core
     depends_on:
       - "consul"
       - "mariadb"
@@ -47,7 +45,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
   judge:
-    image: cloudoj-judge
+    image: cloud-oj:judge
     privileged: true
     depends_on:
       - "consul"
@@ -69,7 +67,7 @@ services:
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
       JUDGE_CPUS: 1
   web:
-    image: cloudoj-web
+    image: cloud-oj:web
     networks:
       - cloud-oj
     ports:
@@ -77,7 +75,7 @@ services:
     environment:
       API_HOST: "gateway:8080"
   mariadb:
-    image: cloudoj-mariadb
+    image: cloud-oj:mariadb
     networks:
       - cloud-oj
     volumes:
@@ -93,8 +91,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWD}
-    ports:
-      - "15672:15672"
     volumes:
       - "rabbitmq:/var/lib/rabbitmq/mnesia"
 networks:

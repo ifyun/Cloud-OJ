@@ -26,14 +26,24 @@
 - judge
 - mariadb
 
+如果构建因为网络问题容易出错，可以用这种方式重新构建。
+
 ## 运行
+
+若没有 `~/cloud-oj` 目录，请复制 `docker` 目录：
+
+```bash
+cp -r docker/. "${HOME}/cloud-oj/"
+```
+
+启动：
 
 ```bash
 cd ~/cloud-oj
 docker compose up -d
 ```
 
-首次运行时，你可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码
+首次运行时，可以在 `.env` 文件中修改 MariaDB、RabbitMQ 的用户名和密码
 
 部分端口未映射到宿主机，如有必要可参考下表：
 
@@ -70,8 +80,6 @@ environment:
 
 ## 环境变量说明
 
-### gateway
-
 `TOKEN_VALID_TIME`
 
 JWT 有效时间，默认值为 `4`，单位：小时
@@ -86,13 +94,11 @@ JUDGE_CPUS=n          # 使用 n 个 CPU，从 CPU-0 开始
 JUDGE_CPUS=0,1,2      # 使用 CPU-0, CPU-1, CPU-2
 ```
 
-超过上限或小于 0 会被设置为 0
-
 默认使用 1 个线程，请根据 CPU 和可用内存量来设置
 
 `API_HOST`
 
-gateway 服务的地址 + 端口（仅 web 容器使用）
+gateway 服务的地址 + 端口(仅 web 容器使用)
 
 `JVM_OPTS`
 
@@ -108,4 +114,4 @@ Consul 注册中心的地址
 
 `SERVICE_IP`
 
-`USE_IP` 为 `true` 时生效，指定当前服务的 IP 地址，默认值为 `spring.cloud.client.ip-address`
+`USE_IP` 为 `true` 时生效，指定当前服务向注册中心注册的 IP 地址，默认值为 `spring.cloud.client.ip-address`
