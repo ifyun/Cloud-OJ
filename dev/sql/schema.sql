@@ -73,7 +73,7 @@ create table solution
     contest_id  int                                                            null,
     title       char(64)                                                       not null,
     language    int                                                            not null,
-    state       enum ('JUDGED', 'IN_QUEUE')                                    not null,
+    state       enum ('JUDGED', 'RUNNING', 'COMPILING', 'WAITING')             not null,
     result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE') null,
     total       int        default 0                                           not null comment '总测试点数量',
     passed      int        default 0                                           not null comment '通过测试点数量',
