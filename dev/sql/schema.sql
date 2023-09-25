@@ -81,7 +81,7 @@ create table solution
     score       double     default 0                                           not null,
     time        bigint     default 0                                           not null comment 'CPU 时间(μs)',
     memory      bigint     default 0                                           not null comment '内存占用(KiB)',
-    error_info  text       default 0                                           not null,
+    error_info  text                                                           null,
     submit_time bigint                                                         not null comment '毫秒级',
     deleted     tinyint(1) default 0                                           not null
 );
