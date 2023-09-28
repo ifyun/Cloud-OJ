@@ -14,7 +14,8 @@
                 maxlength="10"
                 show-count
                 clearable
-                placeholder="输入题目名称、分类">
+                placeholder="输入题目名称、分类"
+                @clear="search">
                 <template #prefix>
                   <n-icon class="input-prefix-icon">
                     <search-round />
@@ -213,7 +214,14 @@ const problemColumns: DataTableColumns<Problem> = [
       }
       const tags = row.category.split(",")
       return tags.map((tag) => (
-        <NTag class="tag" size="small" type="primary" round bordered={false}>
+        <NTag
+          class="tag"
+          size="small"
+          type="primary"
+          round
+          bordered={false}
+          // @ts-ignore
+          onClick={() => tagClick(tag)}>
           {tag}
         </NTag>
       ))
@@ -303,14 +311,21 @@ function pageChange(page: number) {
   queryProblems()
 }
 
-function search() {
-  if (keyword.value !== "") {
-    router.push({
-      query: { keyword: keyword.value }
-    })
-  }
+function tagClick(tag: string) {
+  keyword.value = tag
+  search()
+}
 
-  pageChange(1)
+function search() {
+  nextTick(() => {
+    if (keyword.value !== "") {
+      router.push({
+        query: { keyword: keyword.value }
+      })
+    }
+
+    pageChange(1)
+  })
 }
 
 function deleteProblem() {

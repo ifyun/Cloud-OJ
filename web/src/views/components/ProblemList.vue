@@ -11,7 +11,8 @@
               maxlength="10"
               show-count
               clearable
-              placeholder="输入题目名称、分类" />
+              placeholder="输入题目名称、分类"
+              @clear="search" />
             <n-button type="primary" @click="search">
               搜索题目
               <template #icon>
@@ -40,8 +41,11 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { ProblemApi } from "@/api/request"
+import { ErrorMessage, Page, Problem } from "@/api/type"
+import { EmptyData, ErrorResult } from "@/components"
+import { setTitle } from "@/utils"
+import { SearchRound } from "@vicons/material"
 import {
   DataTableColumns,
   NButton,
@@ -53,11 +57,8 @@ import {
   NSpace,
   NTag
 } from "naive-ui"
-import { SearchRound } from "@vicons/material"
-import { ErrorResult, EmptyData } from "@/components"
-import { ProblemApi } from "@/api/request"
-import { ErrorMessage, Page, Problem } from "@/api/type"
-import { setTitle } from "@/utils"
+import { computed, nextTick, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 const route = useRoute()
 const router = useRouter()
@@ -116,7 +117,14 @@ const problemColumns: DataTableColumns<Problem> = [
       const tags = row.category.split(",")
       return tags.map((tag) => {
         return (
-          <NTag class="tag" size="small" type="primary" round bordered={false}>
+          <NTag
+            class="tag"
+            size="small"
+            type="primary"
+            round
+            bordered={false}
+            // @ts-ignore
+            onClick={() => tagClick(tag)}>
             {tag}
           </NTag>
         )
@@ -164,14 +172,21 @@ function pageChange(page: number) {
   queryProblems()
 }
 
-function search() {
-  if (keyword.value !== "") {
-    router.push({
-      query: { keyword: keyword.value }
-    })
-  }
+function tagClick(tag: string) {
+  keyword.value = tag
+  search()
+}
 
-  pageChange(1)
+function search() {
+  nextTick(() => {
+    if (keyword.value !== "") {
+      router.push({
+        query: { keyword: keyword.value }
+      })
+    }
+
+    pageChange(1)
+  })
 }
 
 /**
