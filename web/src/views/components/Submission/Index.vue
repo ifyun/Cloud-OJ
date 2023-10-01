@@ -63,7 +63,7 @@
             :value="code"
             :available-languages="problem.languages"
             :loading="disableSubmit"
-            @submit="submit" />
+            @submit="submitClick" />
         </div>
       </div>
     </n-card>
@@ -79,9 +79,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
+import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
+import { ErrorMessage, Problem, SubmitData, UserInfo } from "@/api/type"
+import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
+import { SourceCode } from "@/type"
+import { setTitle } from "@/utils"
+import {
+  DataSaverOffRound,
+  HelpRound,
+  PrintRound,
+  TimerOutlined
+} from "@vicons/material"
+import _ from "lodash"
 import {
   NCard,
   NH2,
@@ -94,19 +103,11 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import {
-  DataSaverOffRound,
-  HelpRound,
-  PrintRound,
-  TimerOutlined
-} from "@vicons/material"
-import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
-import Skeleton from "./Skeleton.vue"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 import ResultDialog from "./ResultDialog.vue"
-import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
-import { ErrorMessage, Problem, SubmitData, UserInfo } from "@/api/type"
-import { SourceCode } from "@/type"
-import { setTitle } from "@/utils"
+import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
 
 const route = useRoute()
@@ -131,6 +132,8 @@ const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 let problemId: number | null = null
 let contestId: number | null = null
+
+const submitClick = _.throttle(submit, 1000)
 
 onBeforeMount(() => {
   const reg = /^\d+$/
