@@ -7,19 +7,19 @@
         :columns="languageColumns"
         :data="languageData" />
       <n-h2>注意事项</n-h2>
-      <n-alert :bordered="false" type="warning" title="Java">
+      <n-alert :bordered="false" type="info" title="Java">
         Java 的类名必须为 Solution，且不能使用 package 关键字。
       </n-alert>
       <n-alert
         :bordered="false"
-        type="warning"
+        type="info"
         title="Kotlin Native"
         style="margin-top: 24px">
         Kotlin 编译时间可能长达 30 秒以上。
       </n-alert>
       <n-alert
         :bordered="false"
-        type="warning"
+        type="info"
         title="输入输出"
         style="margin-top: 24px">
         <ul>
@@ -32,11 +32,12 @@
       </n-alert>
       <n-h2>判题相关</n-h2>
       <n-alert type="info" :bordered="false" style="margin-bottom: 24px">
-        如果提交成功却获取不到结果，说明还没有入库
+        若提交成功一直获取不到结果(下表前 3
+        种状态)，可以稍后查询提交记录，若一直没有结果，请联系管理员。
       </n-alert>
       <n-data-table single-column :columns="judgeColumns" :data="judgeData" />
       <n-alert :bordered="false" type="info" style="margin-top: 24px">
-        对于内存和时间超限，仅超限的那一组测试点为 0 分
+        对于内存和时间超限，仅超限的那一组测试点为 0 分。
       </n-alert>
       <n-h2>示例</n-h2>
       <span>A + B</span>
@@ -60,6 +61,12 @@
     </div>
   </n-config-provider>
 </template>
+
+<script lang="ts">
+export default {
+  name: "HelpDoc"
+}
+</script>
 
 <script setup lang="ts">
 import { onBeforeMount } from "vue"
@@ -122,7 +129,7 @@ const kotlinSample = `fun main() {
 const languageColumns = [
   { title: "语言", key: "lang" },
   { title: "编译器/解释器", key: "compiler" },
-  { title: "版本/参数", key: "version" }
+  { title: "版本、参数说明", key: "version" }
 ]
 
 const languageData = [
@@ -130,8 +137,8 @@ const languageData = [
   { lang: "C++", compiler: "g++", version: "17" },
   { lang: "Java", compiler: "OpenJDK", version: "Language Level 1.8" },
   { lang: "Python", compiler: "Python3", version: "3.x" },
-  { lang: "Bash Shell", compiler: "-", version: "-" },
-  { lang: "C#", compiler: "Mono", version: "C# 6.0" },
+  { lang: "Bash Shell", compiler: "GNU Bash", version: "5.1.x" },
+  { lang: "C#", compiler: "Mono", version: "C# 6.0(部分支持7.0)" },
   { lang: "JavaScript", compiler: "Node.js", version: "18.x" },
   { lang: "Kotlin", compiler: "kotlinc-native", version: "1.8.x" },
   { lang: "Go", compiler: "-", version: "1.20.x" }
@@ -146,8 +153,10 @@ const judgeColumns = [
 ]
 
 const judgeData = [
-  { status: "等待判题", desc: "你的提交已经加入队列，等等就好" },
-  { status: "部分通过", desc: "你可能有一些特殊情况没有考虑到" },
+  { status: "等待判题", desc: "提交已经加入队列" },
+  { status: "正在编译", desc: "Kotlin 可能会出现这个状态长达数十秒" },
+  { status: "正在运行", desc: "字面意思，但你可能很少看到这个状态" },
+  { status: "部分通过 PA", desc: "可能有一些情况没有考虑到" },
   { status: "完全正确 AC", desc: "恭喜你通过了所有测试点" },
   { status: "答案错误 WA", desc: "再接再厉！" },
   { status: "时间超限 TLE", desc: "注意！时间超限不能说明答案是正确的" },
@@ -158,7 +167,7 @@ const judgeData = [
     status: "运行错误 RE",
     desc: "如果是脚本语言可能存在语法错误 / 其它原因导致判题程序中断，具体可以参考错误信息"
   },
-  { status: "内部错误 IE", desc: "题目没有测试数据 / 判题服务器出问题了" }
+  { status: "内部错误 IE", desc: "判题服务器出问题了" }
 ]
 
 onBeforeMount(() => {

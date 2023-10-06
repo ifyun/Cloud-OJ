@@ -9,10 +9,10 @@ import lombok.Setter;
 @SuppressWarnings("unused")
 public class Solution {
     @JsonIgnore
-    private static final String[] S = {"运行结束", "正在运行", "正在编译", "等待判题"};
+    public static final String[] S = {"运行完成", "正在运行", "正在编译", "等待判题"};
 
     @JsonIgnore
-    private static final String[] R = {
+    public static final String[] R = {
             "完全正确", "时间超限", "内存超限",
             "部分通过", "答案错误", "编译错误",
             "运行错误", "内部错误", "输出超限"

@@ -6,6 +6,32 @@ import axios from "axios"
 
 const ContestApi = {
   /**
+   * 使用邀请码加入竞赛
+   */
+  joinContest(
+    userInfo: UserInfo,
+    cid: number,
+    key: string
+  ): Promise<AxiosResponse> {
+    return new Promise<AxiosResponse>((resolve, reject) => {
+      axios({
+        url: `${ApiPath.CONTEST_INVITATION}/${cid}`,
+        method: "POST",
+        headers: buildHeaders(userInfo),
+        params: {
+          key
+        }
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  /**
    * 获取所有竞赛
    */
   getAll(

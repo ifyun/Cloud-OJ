@@ -30,7 +30,7 @@ function stateTag(c: Contest): StateTag {
   } else if (c.started) {
     return {
       type: "success",
-      state: "已开始",
+      state: "进行中",
       icon: PlayArrowRound
     }
   } else {

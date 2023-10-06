@@ -1,42 +1,61 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
+import cloud.oj.core.dao.InviteeDao;
 import cloud.oj.core.dao.ProblemDao;
 import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ContestService {
+
+    private final InviteeDao inviteeDao;
 
     private final ContestDao contestDao;
 
     private final ProblemDao problemDao;
 
-    public ContestService(ContestDao contestDao, ProblemDao problemDao) {
-        this.contestDao = contestDao;
-        this.problemDao = problemDao;
+    /**
+     * 根据用户输入的邀请码将用户加入竞赛
+     */
+    public ResponseEntity<?> inviteUserWithKey(Integer contestId, Integer uid, String key) {
+        if (!key.equals(contestDao.getInviteKey(contestId))) {
+            throw new GenericException(HttpStatus.NOT_ACCEPTABLE, "Invalid Invite Key");
+        }
+
+        if (inviteeDao.checkInvitee(contestId, uid) == null) {
+            inviteeDao.inviteUser(contestId, uid);
+        }
+
+        return ResponseEntity.ok().build();
     }
 
     public List<List<?>> getAllContest(int page, int limit) {
-        return contestDao.getContests((page - 1) * limit, limit, false);
+        return contestDao.getAll((page - 1) * limit, limit);
     }
 
-    public Optional<Contest> getContest(int contestId) {
+    public Optional<Contest> getContest(Integer contestId) {
         return Optional.ofNullable(contestDao.getContestById(contestId));
     }
 
     public List<List<?>> getStartedContest(int page, int limit) {
-        return contestDao.getContests((page - 1) * limit, limit, true);
+        return contestDao.getStarted((page - 1) * limit, limit);
     }
 
-    public HttpStatus addContest(Contest contest) {
-        if (contestDao.addContest(contest) == 1) {
+    public HttpStatus create(Contest contest) {
+        contest.setInviteKey(RandomStringUtils.randomNumeric(6));
+
+        if (contestDao.createContest(contest) == 1) {
             return HttpStatus.CREATED;
         } else {
             throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
@@ -59,37 +78,42 @@ public class ContestService {
      * @param contestId 竞赛 Id
      * @return HTTP 状态码 {@link HttpStatus}
      */
-    public HttpStatus deleteContest(int contestId) {
+    public HttpStatus deleteContest(Integer contestId) {
         var contest = contestDao.getState(contestId);
 
         if (contest.isStarted() && !contest.isEnded()) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "竞赛已开始，不准删除");
         }
 
-        if (contestDao.deleteContest(contestId) == 1) {
-            return HttpStatus.NO_CONTENT;
-        } else {
+        if (contestDao.deleteContest(contestId) < 1) {
             throw new GenericException(HttpStatus.GONE, String.format("竞赛(%d)不存在", contestId));
         }
+
+        return HttpStatus.NO_CONTENT;
     }
 
-    public List<List<?>> getProblemsNotInContest(int contestId, int page, int limit) {
+    public List<List<?>> getProblemsNotInContest(Integer contestId, int page, int limit) {
         return contestDao.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
     }
 
-    public List<Problem> getProblemsFromContest(String userId, int contestId, boolean onlyStarted) {
-        if (userId == null) {
-            return contestDao.getProblems(contestId, onlyStarted);
+    public List<Problem> getProblemsFromContest(Integer uid, Integer contestId, boolean admin) {
+        if (admin) {
+            return contestDao.getProblems(contestId);
         }
 
-        return contestDao.getProblemsWithResult(userId, contestId);
+        if (inviteeDao.checkInvitee(contestId, uid) == null) {
+            // 用户没有被邀请，返回 402
+            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "Invite Key Required");
+        }
+
+        return contestDao.getProblemsWithResult(uid, contestId);
     }
 
     public Optional<Problem> getProblemInContest(Integer contestId, Integer problemId) {
         return Optional.ofNullable(problemDao.getByIdFromContest(contestId, problemId));
     }
 
-    public HttpStatus addProblemToContest(int contestId, int problemId) {
+    public HttpStatus addProblemToContest(Integer contestId, Integer problemId) {
         if (contestDao.addProblem(contestId, problemId) == 1) {
             return HttpStatus.CREATED;
         } else {
@@ -97,7 +121,7 @@ public class ContestService {
         }
     }
 
-    public HttpStatus removeProblem(int contestId, int problemId) {
+    public HttpStatus removeProblem(Integer contestId, Integer problemId) {
         if (contestDao.removeProblem(contestId, problemId) == 1) {
             return HttpStatus.NO_CONTENT;
         } else {

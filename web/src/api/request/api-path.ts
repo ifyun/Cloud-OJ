@@ -12,6 +12,7 @@ const ApiPath = {
   USER: "/api/core/user",
   USER_ADMIN: "/api/core/user/admin",
   CONTEST: "/api/core/contest",
+  CONTEST_INVITATION: "/api/core/contest/invitation",
   CONTEST_ADMIN: "/api/core/contest/admin",
   CONTEST_PROBLEM: "/api/core/contest/problem",
   CONTEST_RANKING: "/api/core/ranking/contest",

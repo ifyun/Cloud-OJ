@@ -6,7 +6,7 @@
       align-items: center;
       justify-content: center;
     ">
-    <n-icon size="180" depth="2">
+    <n-icon size="180" depth="2" color="#409EFF">
       <upcoming-round />
     </n-icon>
     <n-text depth="3" style="margin-top: 12px; font-size: 16px">

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.ContestDao">
     <!-- 查询竞赛状态 -->
@@ -9,22 +10,59 @@
         from contest
         where contest_id = #{contestId}
     </select>
-    <!-- 查询所有竞赛 -->
-    <select id="getContests" resultMap="Map.Contest, Map.Total">
-        select sql_calc_found_rows c.*,
+    <!-- 查询已开始竞赛 -->
+    <select id="getStarted" resultMap="Map.Contest, Map.Total">
+        select sql_calc_found_rows c.contest_id as contest_id,
+                                   contest_name,
+                                   languages,
+                                   start_at,
+                                   end_at,
                                    if(start_at &lt;= unix_timestamp(), true, false) as started,
                                    if(end_at &lt;= unix_timestamp(), true, false)   as ended,
-                                   count(cp.problem_id)                                  as problem_count
+                                   count(cp.problem_id)                             as problem_count
         from contest c
                  left join `contest-problem` cp on c.contest_id = cp.contest_id
         where c.deleted = false
-          and if(#{onlyStarted} = true, start_at &lt;= unix_timestamp(now()), true)
+          and start_at &lt;= unix_timestamp(now())
         group by c.contest_id
         order by started desc, ended
         limit #{start}, #{limit};
         select found_rows()
     </select>
-    <!-- 查询指定竞赛中的所有题目 -->
+    <!-- 查询所有竞赛 -->
+    <select id="getAll" resultMap="Map.Contest, Map.Total">
+        select sql_calc_found_rows c.contest_id                                     as contest_id,
+                                   contest_name,
+                                   invite_key,
+                                   languages,
+                                   start_at,
+                                   end_at,
+                                   create_at,
+                                   if(start_at &lt;= unix_timestamp(), true, false) as started,
+                                   if(end_at &lt;= unix_timestamp(), true, false)   as ended,
+                                   count(cp.problem_id)                             as problem_count
+        from contest c
+                 left join `contest-problem` cp on c.contest_id = cp.contest_id
+        where c.deleted = false
+        group by c.contest_id
+        order by started desc, ended
+        limit #{start}, #{limit};
+        select found_rows()
+    </select>
+    <!-- 查询已开始竞赛中的题目 -->
+    <select id="getProblemsInStarted" resultType="cloud.oj.core.entity.Problem">
+        select contest_id,
+               contest_name,
+               start_at,
+               end_at,
+               problem_id,
+               title,
+               score
+        from contest_problem cp
+        where cp.contest_id = #{contestId}
+          and cp.start_at &lt;= unix_timestamp(now())
+    </select>
+    <!-- 查询竞赛中的题目 -->
     <select id="getProblems" resultType="cloud.oj.core.entity.Problem">
         select contest_id,
                contest_name,
@@ -35,7 +73,6 @@
                score
         from contest_problem cp
         where cp.contest_id = #{contestId}
-          and if(#{onlyStarted} = true, cp.start_at &lt;= unix_timestamp(now()), true)
     </select>
     <select id="getProblemsWithResult" resultType="cloud.oj.core.entity.Problem">
         select cp.contest_id,
@@ -75,9 +112,9 @@
           and deleted = false
     </select>
     <!-- 增加竞赛 -->
-    <insert id="addContest" parameterType="cloud.oj.core.entity.Contest">
-        insert into contest(contest_name, start_at, end_at, languages)
-            value (#{contestName}, #{startAt}, #{endAt}, #{languages})
+    <insert id="createContest" parameterType="cloud.oj.core.entity.Contest">
+        insert into contest(contest_name, invite_key, start_at, end_at, languages)
+            value (#{contestName}, #{inviteKey}, #{startAt}, #{endAt}, #{languages})
     </insert>
     <!-- 更新竞赛信息 -->
     <update id="updateContest" parameterType="cloud.oj.core.entity.Contest">
@@ -94,12 +131,12 @@
         set deleted = true
         where contest_id = #{contestId}
     </update>
-    <!-- 向指定竞赛中增加题目 -->
+    <!-- 向竞赛增加题目 -->
     <insert id="addProblem">
         insert into `contest-problem`(contest_id, problem_id)
             value (#{contestId}, #{problemId})
     </insert>
-    <!-- 从指定竞赛中移除题目 -->
+    <!-- 从竞赛移除题目 -->
     <delete id="removeProblem">
         delete
         from `contest-problem`

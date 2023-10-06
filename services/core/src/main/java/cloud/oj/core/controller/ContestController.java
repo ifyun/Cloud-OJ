@@ -4,6 +4,7 @@ import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.ContestService;
 import cloud.oj.core.service.SystemSettings;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,19 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("contest")
+@RequiredArgsConstructor
 public class ContestController {
 
     private final ContestService contestService;
 
     private final SystemSettings systemSettings;
 
-    public ContestController(ContestService contestService, SystemSettings systemSettings) {
-        this.contestService = contestService;
-        this.systemSettings = systemSettings;
-    }
-
     /**
-     * 获取竞赛/作业
+     * 获取竞赛
      *
      * @return 竞赛列表
      */
@@ -43,7 +40,7 @@ public class ContestController {
     }
 
     /**
-     * 获取竞赛/作业的详细信息
+     * 获取竞赛的详细信息
      *
      * @return {@link cloud.oj.core.entity.Problem}
      */
@@ -55,7 +52,7 @@ public class ContestController {
     }
 
     /**
-     * 获取所有竞赛/作业
+     * 获取所有竞赛
      *
      * @return 竞赛列表
      */
@@ -69,20 +66,20 @@ public class ContestController {
     }
 
     /**
-     * 从已开始的竞赛/作业中获取题目
+     * 从已开始的竞赛中获取题目
      *
      * @return 题目列表
      */
     @GetMapping(path = "problem")
-    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, String userId) {
-        var problems = contestService.getProblemsFromContest(userId, contestId, true);
+    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, Integer uid) {
+        var problems = contestService.getProblemsFromContest(uid, contestId, false);
         return problems.isEmpty() ?
                 ResponseEntity.noContent().build()
                 : ResponseEntity.ok(problems);
     }
 
     /**
-     * 从已开始的竞赛/作业中获取题目的详细信息
+     * 从已开始的竞赛中获取题目的详细信息
      *
      * @return {@link cloud.oj.core.entity.Problem}
      */
@@ -94,20 +91,20 @@ public class ContestController {
     }
 
     /**
-     * 从竞赛/作业中获取题目
+     * 从竞赛中获取题目
      *
      * @return 返回题目列表
      */
     @GetMapping(path = "admin/problem")
     public ResponseEntity<?> getProblemsFromContest(Integer contestId) {
-        var problems = contestService.getProblemsFromContest(null, contestId, false);
+        var problems = contestService.getProblemsFromContest(null, contestId, true);
         return problems.isEmpty() ?
                 ResponseEntity.noContent().build()
                 : ResponseEntity.ok(problems);
     }
 
     /**
-     * 获取不在竞赛/作业中的题目
+     * 获取不在竞赛中的题目
      *
      * @return 题目列表
      */
@@ -122,15 +119,15 @@ public class ContestController {
     }
 
     /**
-     * 创建竞赛/作业
+     * 创建竞赛
      */
     @PostMapping(path = "admin")
     public ResponseEntity<?> addContest(@RequestBody Contest contest) {
-        return ResponseEntity.status(contestService.addContest(contest)).build();
+        return ResponseEntity.status(contestService.create(contest)).build();
     }
 
     /**
-     * 更新竞赛/作业
+     * 更新竞赛
      */
     @PutMapping(path = "admin")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
@@ -138,7 +135,7 @@ public class ContestController {
     }
 
     /**
-     * 删除竞赛/作业
+     * 删除竞赛
      */
     @DeleteMapping(path = "admin/{contestId}")
     public ResponseEntity<?> deleteContest(@PathVariable Integer contestId) {
@@ -146,7 +143,7 @@ public class ContestController {
     }
 
     /**
-     * 向竞赛/作业添加题目
+     * 向竞赛添加题目
      */
     @PostMapping(path = "admin/problem/{contestId}/{problemId}")
     public ResponseEntity<?> addProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
@@ -154,10 +151,18 @@ public class ContestController {
     }
 
     /**
-     * 从竞赛/作业中移除题目
+     * 从竞赛移除题目
      */
     @DeleteMapping(path = "admin/problem/{contestId}/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
         return ResponseEntity.status(contestService.removeProblem(contestId, problemId)).build();
+    }
+
+    /**
+     * 邀请用户到竞赛
+     */
+    @PostMapping("/invitation/{contestId}")
+    public ResponseEntity<?> inviteUser(@RequestHeader Integer uid, @PathVariable Integer contestId, String key) {
+        return contestService.inviteUserWithKey(contestId, uid, key);
     }
 }

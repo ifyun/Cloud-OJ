@@ -7,32 +7,29 @@
     :date-locale="dateZhCN">
     <n-global-style />
     <n-dialog-provider>
-      <n-message-provider>
-        <router-view v-if="!reload" v-slot="{ Component }">
-          <component :is="Component" />
-        </router-view>
-      </n-message-provider>
+      <router-view v-if="!reload" v-slot="{ Component }">
+        <component :is="Component" />
+      </router-view>
     </n-dialog-provider>
   </n-config-provider>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
-import {
-  dateZhCN,
-  NConfigProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  NMessageProvider,
-  zhCN
-} from "naive-ui"
-import moment from "moment-timezone"
-import { themeOverrides } from "@/theme"
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { Mutations } from "@/store"
+import { themeOverrides } from "@/theme"
+import moment from "moment-timezone"
+import {
+  NConfigProvider,
+  NDialogProvider,
+  NGlobalStyle,
+  dateZhCN,
+  zhCN
+} from "naive-ui"
+import { computed, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const store = useStore()
 const route = useRoute()
@@ -64,7 +61,6 @@ router.afterEach(() => {
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
     AuthApi.verify(store.state.userInfo).catch((error: ErrorMessage) => {
-      console.log(error)
       if (error.status === 401) {
         store.commit(Mutations.CLEAR_TOKEN)
         router.push({ name: "auth", params: { tab: "login" } })

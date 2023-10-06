@@ -86,6 +86,8 @@ export class Problem {
   enable = false
   createAt?: number
   score?: number
+  result?: number
+  resultText?: string
   timeout?: number
   memoryLimit?: number
   outputLimit?: number
@@ -94,6 +96,7 @@ export class Problem {
 export class Contest {
   contestId?: number
   contestName = ""
+  inviteKey?: string
   languages = 0
   problemCount = 0
   startAt?: number

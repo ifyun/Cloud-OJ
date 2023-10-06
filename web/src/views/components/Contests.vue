@@ -20,9 +20,19 @@
   </div>
 </template>
 
+<script lang="tsx">
+export default {
+  name: "ContestList"
+}
+</script>
+
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useRouter } from "vue-router"
+import { ContestApi } from "@/api/request"
+import { Contest, ErrorMessage, Page } from "@/api/type"
+import { EmptyData, ErrorResult } from "@/components"
+import { LanguageNames } from "@/type"
+import { LanguageUtil, setTitle, stateTag } from "@/utils"
+import moment from "moment-timezone"
 import {
   DataTableColumns,
   NButton,
@@ -32,19 +42,16 @@ import {
   NPagination,
   NSpace,
   NTag,
-  NText
+  NText,
+  useMessage
 } from "naive-ui"
-import { ErrorResult } from "@/components"
-import moment from "moment-timezone"
-import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, Page } from "@/api/type"
-import { LanguageUtil, setTitle, stateTag } from "@/utils"
-import { LanguageNames } from "@/type"
-import EmptyData from "@/components/EmptyData.vue"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRouter } from "vue-router"
 
 const timeFmt = "yyyy-MM-DD HH:mm"
 
 const router = useRouter()
+const message = useMessage()
 
 const pagination = ref({
   page: 1,
@@ -164,15 +171,22 @@ function queryContests() {
 }
 
 function handleSelect(key: number) {
+  const { contestId, started } = selectedContest.value!
+
+  if (!started) {
+    message.info("还没开始呢！")
+    return
+  }
+
   if (key === 1) {
     router.push({
       name: "contest_problems",
-      params: { cid: selectedContest.value?.contestId }
+      params: { cid: contestId }
     })
   } else if (key === 2) {
     router.push({
       name: "leaderboard",
-      query: { cid: selectedContest.value?.contestId }
+      query: { cid: contestId }
     })
   }
 }

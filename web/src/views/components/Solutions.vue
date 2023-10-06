@@ -130,7 +130,7 @@ const columns: DataTableColumns<JudgeResult> = [
       const { type, text } =
         row.state === 0
           ? { type: ResultTypes[row.result!], text: row.resultText }
-          : { type: ResultTypes[9], text: row.stateText }
+          : { type: "info", text: row.stateText }
 
       return (
         <NTag size="small" bordered={false} type={type as any}>

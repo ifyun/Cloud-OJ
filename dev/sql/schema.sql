@@ -27,6 +27,7 @@ create table contest
 (
     contest_id   int auto_increment primary key      not null,
     contest_name char(64)                            not null,
+    invite_key   char(8)                             not null,
     start_at     bigint                              not null comment '开始时间，10 位 UNIX',
     end_at       bigint                              not null comment '结束时间，10 位 UNIX',
     languages    int        default 0                not null comment '允许的语言',
@@ -43,6 +44,13 @@ create table `contest-problem`
 
 create index idx_cid on `contest-problem` (contest_id);
 create index idx_pid on `contest-problem` (problem_id);
+
+create table invitee
+(
+    contest_id int not null,
+    uid        int not null,
+    primary key (contest_id, uid)
+) engine = Aria;
 
 create table user
 (

@@ -10,7 +10,7 @@
           <n-button type="info" secondary round>
             <template #icon>
               <n-icon>
-                <add-icon />
+                <playlist-add-round />
               </n-icon>
             </template>
             <router-link :to="{ name: 'edit_contest', params: { id: 'new' } }">
@@ -45,9 +45,18 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { ContestApi } from "@/api/request"
+import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
+import { ErrorResult } from "@/components"
+import { LanguageOptions } from "@/type"
+import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
+import {
+  DeleteForeverRound,
+  EditNoteRound,
+  KeyRound,
+  PlaylistAddRound
+} from "@vicons/material"
+import moment from "moment-timezone"
 import {
   DataTableColumns,
   NButton,
@@ -61,19 +70,12 @@ import {
   NTag,
   NText,
   useDialog,
-  useMessage
+  useMessage,
+  useNotification
 } from "naive-ui"
-import {
-  DeleteForeverRound as DelIcon,
-  EditNoteRound as EditIcon,
-  PlaylistAddRound as AddIcon
-} from "@vicons/material"
-import { ErrorResult } from "@/components"
-import moment from "moment-timezone"
-import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
-import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
-import { LanguageOptions } from "@/type"
-import { ContestApi } from "@/api/request"
+import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const timeFmt = "yyyy-MM-DD HH:mm"
 
@@ -82,6 +84,7 @@ const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
+const notification = useNotification()
 
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
@@ -98,8 +101,7 @@ const point = ref({
 
 const showOperations = ref<boolean>(false)
 
-let selectedId: number | undefined
-let selectedTitle: string | undefined
+let selectedContest: Contest | null
 let confirmDelete = ""
 
 const rowProps = (row: Contest): HTMLAttributes => {
@@ -111,8 +113,8 @@ const rowProps = (row: Contest): HTMLAttributes => {
       e.preventDefault()
       showOperations.value = false
       nextTick().then(() => {
-        selectedId = row.contestId
-        selectedTitle = row.contestName
+        // 设置当前选中的竞赛
+        selectedContest = row
         point.value = {
           x: e.clientX,
           y: e.clientY
@@ -125,14 +127,19 @@ const rowProps = (row: Contest): HTMLAttributes => {
 
 const operations = [
   {
+    key: "show_key",
+    label: "查看邀请码",
+    icon: renderIcon(KeyRound, "#18A058")
+  },
+  {
     key: "edit",
     label: "编辑",
-    icon: renderIcon(EditIcon)
+    icon: renderIcon(EditNoteRound, "#409EFF")
   },
   {
     key: "del",
     label: "删除",
-    icon: renderIcon(DelIcon, "#F17C67")
+    icon: renderIcon(DeleteForeverRound, "#F17C67")
   }
 ]
 
@@ -192,7 +199,7 @@ const contestColumns: DataTableColumns<Contest> = [
 const delRule = {
   trigger: ["input", "blur"],
   validator() {
-    if (confirmDelete !== selectedTitle) {
+    if (confirmDelete !== selectedContest!.contestName) {
       return new Error("输入竞赛名称")
     }
   }
@@ -217,8 +224,14 @@ function hideOperation() {
 function operationSelect(key: string) {
   hideOperation()
   switch (key) {
+    case "show_key":
+      showInviteKey()
+      break
     case "edit":
-      router.push({ name: "edit_contest", params: { id: selectedId } })
+      router.push({
+        name: "edit_contest",
+        params: { id: selectedContest!.contestId }
+      })
       break
     case "del":
       deleteContest()
@@ -251,6 +264,14 @@ function queryContests() {
     })
 }
 
+function showInviteKey() {
+  notification.info({
+    title: selectedContest!.contestName,
+    description: `邀请码: ${selectedContest!.inviteKey}`,
+    duration: 6000
+  })
+}
+
 function deleteContest() {
   const d = dialog.error({
     title: "删除竞赛",
@@ -261,7 +282,7 @@ function deleteContest() {
         rule={delRule}
         style="margin-top: 24px">
         <NInput
-          placeholder={selectedTitle}
+          placeholder={selectedContest!.contestName}
           onUpdateValue={(value) => (confirmDelete = value)}
         />
       </NFormItem>
@@ -269,13 +290,13 @@ function deleteContest() {
     negativeText: "取消",
     positiveText: "删除",
     onPositiveClick: () => {
-      if (confirmDelete !== selectedTitle) {
+      if (confirmDelete !== selectedContest!.contestName) {
         return false
       }
       d.loading = true
-      ContestApi.delete(selectedId!, userInfo.value)
+      ContestApi.delete(selectedContest!.contestId!, userInfo.value)
         .then(() => {
-          message.warning(`${selectedTitle} 已删除！`)
+          message.warning(`${selectedContest!.contestName} 已删除！`)
           queryContests()
           return true
         })

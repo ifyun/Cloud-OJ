@@ -65,7 +65,7 @@ const themeOverridesDark: GlobalThemeOverrides = {
     color: "#0D1117FF"
   },
   Dropdown: {
-    color: "#161B22FF"
+    color: "#222D3DFF"
   },
   Table: {
     thColor: "#161B22FF",
@@ -80,6 +80,17 @@ const themeOverridesDark: GlobalThemeOverrides = {
   },
   Transfer: {
     listColor: "#161B22FF"
+  },
+  Message: {
+    color: "#222D3DFF",
+    colorInfo: "#222D3DFF",
+    colorSuccess: "#222D3DFF",
+    colorWarning: "#222D3DFF",
+    colorError: "#222D3DFF",
+    colorLoading: "#222D3DFF"
+  },
+  Notification: {
+    color: "#222D3DFF"
   }
 }
 

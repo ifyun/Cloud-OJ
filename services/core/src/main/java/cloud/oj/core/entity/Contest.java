@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Contest {
     private Integer contestId;
     private String contestName;
+    private String inviteKey;
     private Integer problemCount;
     // UNIX 时间戳(10 位)
     private Long startAt;
