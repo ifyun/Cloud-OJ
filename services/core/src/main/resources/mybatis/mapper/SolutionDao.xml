@@ -45,7 +45,7 @@
     <update id="updateTitle">
         update solution
         set title = #{title}
-        where problem_id = #{problemId}
+        where problem_id = #{pid}
     </update>
     <!-- 根据用户 id 逻辑删除提交 -->
     <update id="deleteByUser">

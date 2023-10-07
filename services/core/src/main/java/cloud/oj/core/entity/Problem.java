@@ -30,6 +30,10 @@ public class Problem {
 
     @SuppressWarnings("unused")
     public void setResult(Integer result) {
+        if (result == null) {
+            return;
+        }
+
         this.result = result;
         this.resultText = R[result];
     }

@@ -74,24 +74,6 @@
         from contest_problem cp
         where cp.contest_id = #{contestId}
     </select>
-    <select id="getProblemsWithResult" resultType="cloud.oj.core.entity.Problem">
-        select cp.contest_id,
-               cp.contest_name,
-               cp.start_at,
-               cp.end_at,
-               cp.problem_id,
-               cp.title,
-               cp.score,
-               result
-        from contest_problem cp
-                 left join (select problem_id, contest_id, min(result - 1) result
-                            from solution
-                            where uid = #{uid}
-                            group by uid, problem_id, contest_id) s
-                           on cp.contest_id = s.contest_id and cp.problem_id = s.problem_id
-        where cp.contest_id = #{contestId}
-          and cp.start_at &lt;= unix_timestamp()
-    </select>
     <!-- 查询不在指定竞赛中的所有题目 -->
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">
         select sql_calc_found_rows *

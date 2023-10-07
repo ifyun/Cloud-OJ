@@ -36,8 +36,6 @@ public interface ContestDao {
 
     List<Problem> getProblemsInStarted(Integer contestId);
 
-    List<Problem> getProblemsWithResult(Integer uid, Integer contestId);
-
     Contest getContestById(Integer contestId);
 
     int createContest(Contest contest);

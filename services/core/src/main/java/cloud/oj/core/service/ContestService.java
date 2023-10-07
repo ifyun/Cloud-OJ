@@ -3,6 +3,7 @@ package cloud.oj.core.service;
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.InviteeDao;
 import cloud.oj.core.dao.ProblemDao;
+import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,11 @@ public class ContestService {
 
     private final ProblemDao problemDao;
 
+    private final SolutionDao solutionDao;
+
+    /**
+     * 为竞赛生成新邀请码
+     */
     public String newInviteKey(Integer contestId) {
         var key = RandomStringUtils.randomNumeric(6);
         contestDao.newInviteKey(contestId, key);
@@ -102,8 +110,13 @@ public class ContestService {
         return contestDao.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
     }
 
+    /**
+     * 隔离级别：读提交
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<Problem> getProblemsFromContest(Integer uid, Integer contestId, boolean admin) {
         if (admin) {
+            // 管理员查询
             return contestDao.getProblems(contestId);
         }
 
@@ -112,7 +125,11 @@ public class ContestService {
             throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "Invite Key Required");
         }
 
-        return contestDao.getProblemsWithResult(uid, contestId);
+        var problems = contestDao.getProblemsInStarted(contestId);
+        // 查询每一题的判题结果
+        problems.forEach((p) -> p.setResult(solutionDao.getResultOfContest(uid, contestId, p.getProblemId())));
+
+        return problems;
     }
 
     public Optional<Problem> getProblemInContest(Integer contestId, Integer problemId) {

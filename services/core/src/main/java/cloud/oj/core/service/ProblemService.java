@@ -75,8 +75,9 @@ public class ProblemService {
     public HttpStatus setEnable(int problemId, boolean enable) {
         if (enable) {
             var contestId = problemDao.isInContest(problemId);
+            var contest = contestDao.getContestById(contestId);
 
-            if (contestId != null && !contestDao.getContestById(contestId).isEnded()) {
+            if (contest != null && !contest.isEnded()) {
                 throw new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目");
             }
         }
