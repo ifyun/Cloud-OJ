@@ -4,6 +4,7 @@ import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.Problem;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -15,6 +16,13 @@ public interface ContestDao {
             where contest_id = #{contestId}
             """)
     String getInviteKey(Integer contestId);
+
+    @Update("""
+            update contest
+            set invite_key = #{key}
+            where contest_id = #{contestId}
+            """)
+    void newInviteKey(Integer contestId, String key);
 
     Contest getState(Integer contestId);
 

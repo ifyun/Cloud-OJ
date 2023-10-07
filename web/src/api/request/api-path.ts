@@ -14,6 +14,7 @@ const ApiPath = {
   CONTEST: "/api/core/contest",
   CONTEST_INVITATION: "/api/core/contest/invitation",
   CONTEST_ADMIN: "/api/core/contest/admin",
+  CONTEST_GEN_KEY: "/api/core/contest/admin/gen_key",
   CONTEST_PROBLEM: "/api/core/contest/problem",
   CONTEST_RANKING: "/api/core/ranking/contest",
   CONTEST_RANKING_ADMIN: "/api/core/ranking/admin/contest",

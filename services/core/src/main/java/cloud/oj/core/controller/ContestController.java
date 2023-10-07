@@ -25,8 +25,8 @@ public class ContestController {
      * @return 竞赛列表
      */
     @GetMapping
-    public ResponseEntity<?> contests(@RequestParam(defaultValue = "1") Integer page,
-                                      @RequestParam(defaultValue = "15") Integer limit) {
+    public ResponseEntity<?> getContests(@RequestParam(defaultValue = "1") Integer page,
+                                         @RequestParam(defaultValue = "15") Integer limit) {
         PagedList contests;
         if (systemSettings.getSettings().isShowAllContest()) {
             contests = PagedList.resolve(contestService.getAllContest(page, limit));
@@ -45,7 +45,7 @@ public class ContestController {
      * @return {@link cloud.oj.core.entity.Problem}
      */
     @GetMapping(path = "detail")
-    public ResponseEntity<?> contest(Integer contestId) {
+    public ResponseEntity<?> getContest(Integer contestId) {
         return contestService.getContest(contestId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -122,7 +122,7 @@ public class ContestController {
      * 创建竞赛
      */
     @PostMapping(path = "admin")
-    public ResponseEntity<?> addContest(@RequestBody Contest contest) {
+    public ResponseEntity<?> create(@RequestBody Contest contest) {
         return ResponseEntity.status(contestService.create(contest)).build();
     }
 
@@ -130,15 +130,26 @@ public class ContestController {
      * 更新竞赛
      */
     @PutMapping(path = "admin")
-    public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
+    public ResponseEntity<?> update(@RequestBody Contest contest) {
         return ResponseEntity.status(contestService.updateContest(contest)).build();
     }
+
+    /**
+     * 重新生成邀请码
+     *
+     * @return 新的邀请码
+     */
+    @PutMapping(path = "admin/gen_key/{contestId}")
+    public ResponseEntity<String> newInviteKey(@PathVariable Integer contestId) {
+        return ResponseEntity.ok(contestService.newInviteKey(contestId));
+    }
+
 
     /**
      * 删除竞赛
      */
     @DeleteMapping(path = "admin/{contestId}")
-    public ResponseEntity<?> deleteContest(@PathVariable Integer contestId) {
+    public ResponseEntity<?> delete(@PathVariable Integer contestId) {
         return ResponseEntity.status(contestService.deleteContest(contestId)).build();
     }
 
@@ -154,7 +165,7 @@ public class ContestController {
      * 从竞赛移除题目
      */
     @DeleteMapping(path = "admin/problem/{contestId}/{problemId}")
-    public ResponseEntity<?> deleteProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
+    public ResponseEntity<?> removeProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
         return ResponseEntity.status(contestService.removeProblem(contestId, problemId)).build();
     }
 

@@ -25,6 +25,12 @@ public class ContestService {
 
     private final ProblemDao problemDao;
 
+    public String newInviteKey(Integer contestId) {
+        var key = RandomStringUtils.randomNumeric(6);
+        contestDao.newInviteKey(contestId, key);
+        return key;
+    }
+
     /**
      * 根据用户输入的邀请码将用户加入竞赛
      */

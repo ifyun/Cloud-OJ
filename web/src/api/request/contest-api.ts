@@ -1,8 +1,8 @@
 import type { Contest, Page, Problem, UserInfo } from "@/api/type"
 import { buildHeaders, resolveError } from "@/api/utils"
-import ApiPath from "./api-path"
 import type { AxiosResponse } from "axios"
 import axios from "axios"
+import ApiPath from "./api-path"
 
 const ContestApi = {
   /**
@@ -24,6 +24,25 @@ const ContestApi = {
       })
         .then((res) => {
           resolve(res)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  /**
+   * 生成新邀请码
+   */
+  newInviteKey(cid: number, userInfo: UserInfo): Promise<string> {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `${ApiPath.CONTEST_GEN_KEY}/${cid}`,
+        method: "PUT",
+        headers: buildHeaders(userInfo)
+      })
+        .then((res) => {
+          resolve(res.data)
         })
         .catch((error) => {
           reject(resolveError(error))

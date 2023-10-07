@@ -24,14 +24,14 @@
                   <n-button quaternary style="padding: 0 6px" @click="collapse">
                     <template #icon>
                       <n-icon>
-                        <menu-open :class="{ rotate: collapsed }" />
+                        <menu-open-round :class="{ rotate: collapsed }" />
                       </n-icon>
                     </template>
                   </n-button>
                   <n-button quaternary style="padding: 0 6px" @click="reload">
                     <template #icon>
                       <n-icon>
-                        <refresh-icon />
+                        <refresh-round />
                       </n-icon>
                     </template>
                   </n-button>
@@ -72,10 +72,7 @@ import { Logo } from "@/components"
 import Mutations from "@/store/mutations"
 import { themeOverridesDark } from "@/theme"
 import { AdminNavbar, ThemeSwitch, UserMenu } from "@/views/layout"
-import {
-  MenuOpenRound as MenuOpen,
-  RefreshRound as RefreshIcon
-} from "@vicons/material"
+import { MenuOpenRound, RefreshRound } from "@vicons/material"
 import {
   GlobalThemeOverrides,
   NBreadcrumb,

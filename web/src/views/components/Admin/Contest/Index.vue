@@ -54,7 +54,8 @@ import {
   DeleteForeverRound,
   EditNoteRound,
   KeyRound,
-  PlaylistAddRound
+  PlaylistAddRound,
+  RefreshRound
 } from "@vicons/material"
 import moment from "moment-timezone"
 import {
@@ -127,14 +128,19 @@ const rowProps = (row: Contest): HTMLAttributes => {
 
 const operations = [
   {
+    key: "edit",
+    label: "编辑",
+    icon: renderIcon(EditNoteRound, "#409EFF")
+  },
+  {
     key: "show_key",
     label: "查看邀请码",
     icon: renderIcon(KeyRound, "#18A058")
   },
   {
-    key: "edit",
-    label: "编辑",
-    icon: renderIcon(EditNoteRound, "#409EFF")
+    key: "new_key",
+    label: "重新生成邀请码",
+    icon: renderIcon(RefreshRound, "#409EFF")
   },
   {
     key: "del",
@@ -224,14 +230,17 @@ function hideOperation() {
 function operationSelect(key: string) {
   hideOperation()
   switch (key) {
-    case "show_key":
-      showInviteKey()
-      break
     case "edit":
       router.push({
         name: "edit_contest",
         params: { id: selectedContest!.contestId }
       })
+      break
+    case "show_key":
+      showInviteKey()
+      break
+    case "new_key":
+      newInviteKey()
       break
     case "del":
       deleteContest()
@@ -270,6 +279,25 @@ function showInviteKey() {
     description: `邀请码: ${selectedContest!.inviteKey}`,
     duration: 6000
   })
+}
+
+function newInviteKey() {
+  ContestApi.newInviteKey(selectedContest!.contestId!, userInfo.value)
+    .then((data) => {
+      selectedContest!.inviteKey = data
+      notification.info({
+        title: selectedContest!.contestName,
+        description: `新邀请码: ${data}`,
+        duration: 6000
+      })
+    })
+    .catch((err: ErrorMessage) => {
+      notification.error({
+        title: "重新生成邀请码失败",
+        description: err.toString(),
+        duration: 3000
+      })
+    })
 }
 
 function deleteContest() {
