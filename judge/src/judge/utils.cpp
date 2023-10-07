@@ -101,13 +101,13 @@ __off_t Utils::get_rtrim_offset(int fd) {
     __off_t offset;
     char buf;
 
-    offset = lseek(fd, -2, SEEK_END);
-
+    offset = lseek(fd, -1, SEEK_END);
     read(fd, &buf, sizeof(buf));
 
     while (true) {
+        // 从文件尾部向前读，不是空格或 LF 就退出
         if (buf != 10 && buf != 32) {
-            offset += 2;
+            offset += 1;
             break;
         }
 
