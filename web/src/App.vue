@@ -47,7 +47,7 @@ const isLoggedIn = computed(() => {
   return store.getters.isLoggedIn
 })
 
-router.afterEach(() => {
+router.beforeEach(() => {
   const routes: Array<string> = []
 
   route.matched.forEach((r) => {

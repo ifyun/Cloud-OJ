@@ -43,9 +43,15 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { ApiPath, ProblemApi } from "@/api/request"
+import { ErrorMessage, Problem, TestData } from "@/api/type"
+import { setTitle } from "@/utils"
+import {
+  ArchiveRound as ArchiveIcon,
+  DeleteForeverRound as DeleteIcon,
+  FileDownloadOutlined as DownloadIcon
+} from "@vicons/material"
+import axios from "axios"
 import {
   DataTableColumns,
   NAlert,
@@ -62,15 +68,9 @@ import {
   UploadFileInfo,
   useMessage
 } from "naive-ui"
-import {
-  ArchiveRound as ArchiveIcon,
-  DeleteForeverRound as DeleteIcon,
-  FileDownloadOutlined as DownloadIcon
-} from "@vicons/material"
-import axios from "axios"
-import { ApiPath, ProblemApi } from "@/api/request"
-import { ErrorMessage, Problem, TestData } from "@/api/type"
-import { setTitle } from "@/utils"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const action = ApiPath.TEST_DATA
 
@@ -136,7 +136,7 @@ const columns: DataTableColumns<TestData> = [
             default: () => <span>下载</span>
           }}
         </NButton>
-        <NPopconfirm>
+        <NPopconfirm onPositiveClick={() => deleteFile(row.fileName)}>
           {{
             trigger: () => (
               <NButton size="small" type="error" secondary={true}>
@@ -148,15 +148,6 @@ const columns: DataTableColumns<TestData> = [
                   ),
                   default: () => <span>删除</span>
                 }}
-              </NButton>
-            ),
-            action: () => (
-              <NButton
-                size="small"
-                type="error"
-                ghost={true}
-                onClick={() => deleteFile(row.fileName)}>
-                确认
               </NButton>
             ),
             default: () => <span>确定要删除吗？</span>
@@ -257,7 +248,7 @@ function handleUploadFinish(options: { file: UploadFileInfo }) {
 }
 
 function downloadFile(fileName: string) {
-  const url = `/api/file/test_data/download/${problem.value!
+  const url = `${ApiPath.TEST_DATA}/download/${problem.value!
     .problemId!}/${fileName}`
   const anchor = document.createElement("a")
   axios

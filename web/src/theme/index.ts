@@ -78,6 +78,9 @@ const themeOverridesDark: GlobalThemeOverrides = {
     tdColorHover: "#161B22FF",
     tdColorStriped: "#161B22FF"
   },
+  Popover: {
+    color: "#222D3DFF"
+  },
   Transfer: {
     listColor: "#161B22FF"
   },
