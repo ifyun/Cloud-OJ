@@ -84,14 +84,14 @@ const props = defineProps<{
 }>()
 
 const error = ref<ErrorMessage | null>(null)
-const userInfo = computed(() => store.state.userInfo)
-
 const loading = ref<boolean>(false)
 const inputKey = ref<boolean>(false)
 const inviteKey = ref<string>("")
 const contest = ref<Contest | null>(null)
 const languages = ref<Array<number>>([])
 const problems = ref<Array<Problem>>([])
+
+const userInfo = computed(() => store.state.userInfo)
 
 const columns: DataTableColumns<Problem> = [
   {
@@ -132,11 +132,7 @@ const columns: DataTableColumns<Problem> = [
     render: (row) => {
       let icon: Component
       if (typeof row.result !== "undefined") {
-        if (row.result! === 0) {
-          icon = CheckCircleFilled
-        } else {
-          icon = ErrorRound
-        }
+        icon = row.result! === 0 ? CheckCircleFilled : ErrorRound
 
         const { type, text } = {
           type: ResultTypes[row.result!],

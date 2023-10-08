@@ -1,8 +1,8 @@
-import { buildHeaders, resolveError } from "@/api/utils"
 import type { Page, Problem, TestData, UserInfo } from "@/api/type"
-import ApiPath from "./api-path"
+import { buildHeaders, resolveError } from "@/api/utils"
 import type { AxiosResponse } from "axios"
 import axios from "axios"
+import ApiPath from "./api-path"
 
 /**
  * 题目接口
@@ -18,12 +18,14 @@ const ProblemApi = {
   getAllOpened(
     page: number,
     limit: number,
-    keyword: string | null = null
+    keyword: string | null = null,
+    userInfo: UserInfo | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM,
         method: "GET",
+        headers: buildHeaders(userInfo),
         params: {
           page,
           limit,

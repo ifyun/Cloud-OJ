@@ -29,8 +29,8 @@ public class SolutionController {
      */
     @GetMapping
     public ResponseEntity<?> getAll(@RequestHeader Integer uid,
-                                    @RequestParam(defaultValue = "1") Integer page,
-                                    @RequestParam(defaultValue = "15") Integer limit,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "15") int limit,
                                     Integer filter,
                                     String filterValue) {
         var solutions = PagedList.resolve(solutionService.getSolutions(uid, page, limit, filter, filterValue));

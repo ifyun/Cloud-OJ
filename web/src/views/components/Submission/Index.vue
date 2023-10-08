@@ -260,6 +260,7 @@ function submit(data: SourceCode) {
 
   .content {
     height: 100%;
+    min-width: 720px;
     display: flex;
     flex-direction: row;
 

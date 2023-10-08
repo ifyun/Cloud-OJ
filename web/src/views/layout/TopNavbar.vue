@@ -58,6 +58,7 @@ const navMenuOptions = [
 
   &.submission {
     width: auto;
+    min-width: calc(720px + var(--layout-padding) * 2);
     padding: 0 calc(var(--layout-padding) * 2);
   }
 

@@ -110,9 +110,6 @@ public class ContestService {
         return contestDao.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
     }
 
-    /**
-     * 隔离级别：读提交
-     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<Problem> getProblemsFromContest(Integer uid, Integer contestId, boolean admin) {
         if (admin) {

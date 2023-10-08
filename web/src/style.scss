@@ -43,6 +43,7 @@
 
     .admin-wrap {
       width: calc(100% - var(--layout-padding) * 2);
+      min-width: 600px;
       padding: var(--layout-padding);
     }
 

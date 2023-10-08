@@ -27,9 +27,10 @@ public class ProblemController {
      */
     @GetMapping
     public ResponseEntity<?> getAllEnable(String keyword,
-                                          @RequestParam(defaultValue = "1") Integer page,
-                                          @RequestParam(defaultValue = "15") Integer limit) {
-        var problems = PagedList.resolve(problemService.getAllEnabled(keyword, page, limit));
+                                          @RequestHeader(required = false) Integer uid,
+                                          @RequestParam(defaultValue = "1") int page,
+                                          @RequestParam(defaultValue = "15") int limit) {
+        var problems = PagedList.resolve(problemService.getAllEnabled(uid, keyword, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)
                 : ResponseEntity.noContent().build();
@@ -42,8 +43,8 @@ public class ProblemController {
      */
     @GetMapping(path = "admin")
     public ResponseEntity<?> getAll(String keyword,
-                                    @RequestParam(defaultValue = "1") Integer page,
-                                    @RequestParam(defaultValue = "15") Integer limit) {
+                                    @RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "15") int limit) {
         var problems = PagedList.resolve(problemService.getAll(keyword, page, limit));
         return problems.getCount() > 0 ?
                 ResponseEntity.ok(problems)
@@ -95,7 +96,7 @@ public class ProblemController {
      */
     @PostMapping(path = "admin", consumes = "application/json")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
-        return ResponseEntity.status(problemService.add(problem)).build();
+        return ResponseEntity.status(problemService.create(problem)).build();
     }
 
     /**

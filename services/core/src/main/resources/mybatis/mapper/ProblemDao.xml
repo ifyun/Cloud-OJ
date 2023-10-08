@@ -29,7 +29,7 @@
         from problem
         where deleted = false
           and if(#{keyword} is not null,
-                 enable = true and title like concat('%', #{keyword}, '%') or find_in_set(#{keyword}, category),
+                 enable = true and (title like concat('%', #{keyword}, '%') or find_in_set(#{keyword}, category)),
                  enable = true)
         limit #{start}, #{limit};
         select found_rows()

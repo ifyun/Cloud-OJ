@@ -18,12 +18,20 @@ public interface SolutionDao {
             """)
     Integer getResultOfContest(Integer uid, Integer cid, Integer pid);
 
+    @Select("""
+            select min(result - 1)
+            from solution
+            where uid = #{uid}
+              and problem_id = #{pid}
+            """)
+    Integer getResult(Integer uid, Integer pid);
+
     /**
      * 隔离级别：读未提交
      */
     Solution getSolutionByUidAndTime(Integer uid, Long time, boolean showPassed);
 
-    List<List<?>> getSolutionsByUser(Integer uid, Integer start, Integer limit, Integer filter, String filterValue);
+    List<List<?>> getSolutionsByUser(Integer uid, int start, int limit, Integer filter, String filterValue);
 
     void updateTitle(String title, Integer pid);
 

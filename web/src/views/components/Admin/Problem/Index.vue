@@ -389,12 +389,13 @@ function queryProblems() {
  * 切换开放/关闭
  */
 function toggleIsEnable(p: Problem, value: boolean) {
+  p.enable = value
   ProblemApi.changeState(p.problemId!, value, userInfo.value)
     .then(() => {
-      p.enable = value
-      message.info(`${p.title} 已${value ? "开放" : "关闭"}`)
+      message.warning(`${p.problemId}.${p.title} 已${value ? "开放" : "禁用"}`)
     })
     .catch((err: ErrorMessage) => {
+      p.enable = !value
       message.error(err.toString())
     })
 }

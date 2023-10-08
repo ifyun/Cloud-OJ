@@ -50,10 +50,12 @@ export default {
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { EmptyData, ErrorResult } from "@/components"
+import { ResultTypes } from "@/type"
 import { setTitle } from "@/utils"
-import { SearchRound } from "@vicons/material"
+import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
 import {
   DataTableColumns,
+  DataTableColumn,
   NButton,
   NDataTable,
   NIcon,
@@ -63,9 +65,11 @@ import {
   NSpace,
   NTag
 } from "naive-ui"
-import { computed, nextTick, onBeforeMount, ref } from "vue"
+import { Component, computed, nextTick, onBeforeMount, ref, render } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -76,6 +80,8 @@ const pagination = ref({
 
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
+
+const userInfo = computed(() => store.state.userInfo)
 
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
@@ -111,6 +117,32 @@ const problemColumns: DataTableColumns<Problem> = [
         {row.title}
       </NButton>
     )
+  },
+  {
+    title: "状态",
+    key: "result",
+    width: 100,
+    align: "center",
+    render: (row) => {
+      let icon: Component
+      if (typeof row.result !== "undefined") {
+        icon = row.result! === 0 ? CheckCircleFilled : ErrorRound
+
+        const { type, text } = {
+          type: ResultTypes[row.result!],
+          text: row.resultText
+        }
+
+        return (
+          <NTag size="small" bordered={false} type={type as any}>
+            {{
+              icon: () => <NIcon component={icon} />,
+              default: () => <span>{text}</span>
+            }}
+          </NTag>
+        )
+      }
+    }
   },
   {
     title: "分类",
@@ -201,7 +233,7 @@ function search() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAllOpened(page, pageSize, keyword.value)
+  ProblemApi.getAllOpened(page, pageSize, keyword.value, userInfo.value)
     .then((data) => {
       problems.value = data
     })

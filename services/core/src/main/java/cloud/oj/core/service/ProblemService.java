@@ -6,11 +6,13 @@ import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,17 +31,27 @@ public class ProblemService {
         this.solutionDao = solutionDao;
     }
 
-    public List<List<?>> getAllEnabled(String keyword, int page, int limit) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<List<?>> getAllEnabled(Integer uid, String keyword, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {
-            return problemDao.getAllEnabled((page - 1) * limit, limit, null);
+            keyword = null;
         }
 
-        return problemDao.getAllEnabled((page - 1) * limit, limit, keyword);
+        var data = problemDao.getAllEnabled((page - 1) * limit, limit, keyword);
+
+        if (uid != null) {
+            data.get(0).forEach((e) -> {
+                var p = (Problem) e;
+                p.setResult(solutionDao.getResult(uid, p.getProblemId()));
+            });
+        }
+
+        return data;
     }
 
     public List<List<?>> getAll(String keyword, int page, int limit) {
         if (keyword == null || keyword.isEmpty()) {
-            problemDao.getAll((page - 1) * limit, limit, null);
+            keyword = null;
         }
 
         return problemDao.getAll((page - 1) * limit, limit, keyword);
@@ -59,6 +71,13 @@ public class ProblemService {
 
         if (contestId != null && contestDao.getContestById(contestId).isStarted()) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "不准修改已开始竞赛中的题目");
+        }
+
+        var categories = problem.getCategory().split(",");
+        // 对标签排序
+        if (categories.length > 1) {
+            Arrays.sort(categories);
+            problem.setCategory(StringUtils.join(categories, ","));
         }
 
         if (problemDao.update(problem) == 1) {
@@ -89,11 +108,18 @@ public class ProblemService {
         }
     }
 
-    public HttpStatus add(Problem problem) {
+    public HttpStatus create(Problem problem) {
+        var categories = problem.getCategory().split(",");
+        // 对标签排序
+        if (categories.length > 1) {
+            Arrays.sort(categories);
+            problem.setCategory(StringUtils.join(categories, ","));
+        }
+
         if (problemDao.add(problem) == 1) {
             return HttpStatus.CREATED;
         } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "无法创建题目");
         }
     }
 
