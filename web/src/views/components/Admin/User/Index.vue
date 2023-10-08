@@ -44,9 +44,17 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { UserApi } from "@/api/request"
+import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
+import { ErrorResult, UserAvatar } from "@/components"
+import { setTitle } from "@/utils"
+import {
+  CalendarCheck as DateIcon,
+  UserShield as RoleIcon,
+  UserTag as UserIcon
+} from "@vicons/fa"
+import { PersonSearchRound as SearchIcon } from "@vicons/material"
+import dayjs from "dayjs"
 import {
   DataTableColumns,
   NButton,
@@ -60,17 +68,9 @@ import {
   NTag,
   NText
 } from "naive-ui"
-import {
-  CalendarCheck as DateIcon,
-  UserShield as RoleIcon,
-  UserTag as UserIcon
-} from "@vicons/fa"
-import { PersonSearchRound as SearchIcon } from "@vicons/material"
-import { ErrorResult, UserAvatar } from "@/components"
-import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
-import { UserApi } from "@/api/request"
-import { setTitle } from "@/utils"
-import moment from "moment"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 const route = useRoute()
 const router = useRouter()
@@ -179,7 +179,7 @@ const columns: DataTableColumns<User> = [
       </NSpace>
     ),
     render: (row) => (
-      <span>{moment.unix(row.createAt!).format("yyyy/MM/DD")}</span>
+      <NText depth="2">{dayjs.unix(row.createAt!).format("YYYY/MM/DD")}</NText>
     )
   }
 ]

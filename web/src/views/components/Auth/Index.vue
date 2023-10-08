@@ -77,6 +77,6 @@ onBeforeMount(async () => {
 })
 
 function tabChange(tab: string) {
-  router.push({ params: { tab } })
+  router.replace({ params: { tab } })
 }
 </script>

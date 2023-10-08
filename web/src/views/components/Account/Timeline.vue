@@ -6,8 +6,8 @@
       <n-timeline-item
         v-for="item in solutions.data"
         :key="item.solutionId"
-        :type="ResultTypes[item.result!].type as any"
-        :title="ResultTypes[item.result!].text"
+        :type="ResultTypes[item.result!]"
+        :title="item.resultText!"
         :content="content(item)"
         :time="time(item)"
         line-type="dashed" />
@@ -16,15 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
 import { UserApi } from "@/api/request"
 import { JudgeResult, Page } from "@/api/type"
 import { LanguageNames, ResultTypes } from "@/type"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
+import { NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
+import { computed, onBeforeMount, ref } from "vue"
+import { useStore } from "vuex"
 
-const timeFmt = "yyyy/MM/DD HH:mm:ss"
+const timeFmt = "YYYY/MM/DD HH:mm:ss"
 
 const store = useStore()
 const userInfo = computed(() => store.state.userInfo)
@@ -41,6 +41,6 @@ function content(item: JudgeResult) {
 }
 
 function time(item: JudgeResult) {
-  return moment.unix(item.submitTime! / 1000).format(timeFmt)
+  return dayjs(item.submitTime!).format(timeFmt)
 }
 </script>

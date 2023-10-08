@@ -154,20 +154,20 @@ const judgeColumns = [
 
 const judgeData = [
   { status: "等待判题", desc: "提交已经加入队列" },
-  { status: "正在编译", desc: "Kotlin 可能会出现这个状态长达数十秒" },
+  { status: "正在编译", desc: "Kotlin 用户会经常看到这个状态" },
   { status: "正在运行", desc: "字面意思，但你可能很少看到这个状态" },
   { status: "部分通过 PA", desc: "可能有一些情况没有考虑到" },
-  { status: "完全正确 AC", desc: "恭喜你通过了所有测试点" },
-  { status: "答案错误 WA", desc: "再接再厉！" },
-  { status: "时间超限 TLE", desc: "注意！时间超限不能说明答案是正确的" },
-  { status: "内存超限 MLE", desc: "注意！内存超限也不能说明答案是正确的" },
+  { status: "完全正确 AC", desc: "字面意思" },
+  { status: "答案错误 WA", desc: "再改亿遍！" },
+  { status: "时间超限 TLE", desc: "时间超限不能说明答案是正确的！" },
+  { status: "内存超限 MLE", desc: "内存超限也不能说明答案是正确的！" },
   { status: "输出超限 OLE", desc: "程序产生的输出超过题目限制" },
-  { status: "编译错误 CE", desc: "如果本地能运行那可能版本不对" },
+  { status: "编译错误 CE", desc: "本地能运行？那可能版本不对" },
   {
     status: "运行错误 RE",
-    desc: "如果是脚本语言可能存在语法错误 / 其它原因导致判题程序中断，具体可以参考错误信息"
+    desc: "语法错误(解释型语言)或其它原因导致判题程序停止"
   },
-  { status: "内部错误 IE", desc: "判题服务器出问题了" }
+  { status: "内部错误 IE", desc: "判题服务器出问题了，快滴滴管理员" }
 ]
 
 onBeforeMount(() => {

@@ -9,7 +9,7 @@
 ![Top Languages](https://img.shields.io/github/languages/top/imcloudfloating/Cloud-OJ?logo=github)
 ![Last Commit](https://img.shields.io/github/last-commit/imcloudfloating/Cloud-OJ?logo=github)
 
-Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js、UNIX API
+Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring Cloud、Vue.js、UNIX API
 
 - Docker 运行
 - 代码高亮
@@ -39,19 +39,24 @@ Cloud OJ 是一个微服务架构的 Online Judge 系统，基于 Spring Cloud�
 - Kotlin
 - Go
 
-## Technologies
+## 相关资源
 
 - [Spring](https://spring.io/)
 - [Consul](https://www.consul.io/)
 - [MariaDB](https://mariadb.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
+- [Vite](https://vitejs.dev/)
 - [Vue 3](https://vuejs.org/)
 - [Naive UI](https://naiveui.com/)
 - [CodeMirror 5](https://codemirror.net/5/)
 - [KaTeX](https://katex.org/)
 - [Apache Echarts](https://echarts.apache.org/)
+- [Day.js](https://day.js.org/)
 - [highlight.js](https://highlightjs.org/)
 - [markdown-it](https://github.com/markdown-it/)
+- [xicons](https://www.xicons.org/)
+
+---
 
 Thanks to JetBrains for providing the Open Source Development license.
 

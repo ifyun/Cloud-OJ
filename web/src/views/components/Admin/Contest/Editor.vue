@@ -45,10 +45,9 @@
                 path="timeRange">
                 <n-date-picker
                   v-model:value="contest.timeRange"
-                  :is-time-disabled="isTimeDisabled"
                   type="datetimerange"
                   clearable
-                  format="yyyy-MM-dd - HH:mm:ss" />
+                  format="yyyy 年 MM 月 dd, HH:mm" />
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="语言限制" path="languages">
@@ -86,7 +85,7 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import { ContestApi } from "@/api/request"
@@ -115,10 +114,11 @@ const rules: FormRules = {
   timeRange: {
     required: true,
     trigger: ["input", "blur"],
-    validator(rule: any, value: Array<number>): Error | boolean {
+    validator(_, value: Array<number>): Error | boolean {
       if (!value) {
         return new Error("请输入时间范围")
       }
+
       return true
     }
   },
@@ -157,8 +157,10 @@ watch(
   (value) => {
     const [start, end] = value!
     // 时间选择器的 UNIX 时间是 13 位的
-    contest.value.startAt = start / 1000
-    contest.value.endAt = end / 1000
+    // 传回后端需要 10 位
+    // 将秒设为 0
+    contest.value.startAt = dayjs(start).second(0).valueOf() / 1000
+    contest.value.endAt = dayjs(end).second(0).valueOf() / 1000
   }
 )
 
@@ -214,12 +216,6 @@ function save() {
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
     })
-}
-
-function isTimeDisabled(ts: number) {
-  return {
-    isSecondDisabled: () => moment.unix(ts).second() !== 0
-  }
 }
 </script>
 

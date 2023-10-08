@@ -57,12 +57,13 @@ import {
   PlaylistAddRound,
   RefreshRound
 } from "@vicons/material"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
 import {
   DataTableColumns,
   NButton,
   NDataTable,
   NDropdown,
+  NEllipsis,
   NFormItem,
   NIcon,
   NInput,
@@ -74,11 +75,11 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { computed, HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { HTMLAttributes, computed, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 
-const timeFmt = "yyyy-MM-DD HH:mm"
+const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
 const store = useStore()
 const route = useRoute()
@@ -184,19 +185,20 @@ const contestColumns: DataTableColumns<Contest> = [
       if (row.languages === 511) {
         return "没有限制"
       }
+
       const languages: Array<string> = []
       LanguageUtil.toArray(row.languages).forEach((value) => {
         languages.push(LanguageOptions[value].label)
       })
-      return (
-        <span style={{ wordBreak: "break-word" }}>{languages.join(" / ")}</span>
-      )
+
+      return <NEllipsis>{languages.join(" / ")}</NEllipsis>
     }
   },
   {
     title: "开始/结束时间",
     key: "startAt",
     align: "center",
+    width: 320,
     render: (row) => <NText>{calcTimeRange(row)}</NText>
   }
 ]
@@ -340,12 +342,14 @@ function deleteContest() {
 }
 
 function calcTimeRange(c: Contest): string {
-  const s = moment.unix(c.startAt!)
-  const e = moment.unix(c.endAt!)
+  const s = dayjs.unix(c.startAt!)
+  const e = dayjs.unix(c.endAt!)
   let str = s.format(timeFmt) + " ~ "
 
-  if (e.isSame(s)) {
-    str += e.format("HH:mm:ss")
+  if (e.isSame(s, "day")) {
+    str += e.format("HH:mm")
+  } else if (e.isSame(s, "year")) {
+    str += e.format("MM 月 DD, HH:mm")
   } else {
     str += e.format(timeFmt)
   }

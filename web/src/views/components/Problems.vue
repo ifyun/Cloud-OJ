@@ -55,7 +55,6 @@ import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
 import {
   DataTableColumns,
-  DataTableColumn,
   NButton,
   NDataTable,
   NIcon,
@@ -65,7 +64,7 @@ import {
   NSpace,
   NTag
 } from "naive-ui"
-import { Component, computed, nextTick, onBeforeMount, ref, render } from "vue"
+import { Component, computed, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 

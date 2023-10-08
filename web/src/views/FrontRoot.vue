@@ -1,24 +1,26 @@
 <template>
   <n-config-provider abstract :theme-overrides="themeOverrides">
     <n-message-provider>
-      <n-layout position="absolute" :native-scrollbar="false">
-        <n-layout-header class="header" bordered>
-          <top-navbar />
-        </n-layout-header>
-        <n-layout-content
-          class="main"
-          :native-scrollbar="false"
-          content-style="display: flex; flex-direction: column">
-          <router-view v-slot="{ Component }">
-            <keep-alive :key="$route.path">
-              <component :is="Component" />
-            </keep-alive>
-          </router-view>
-          <n-layout-footer class="footer">
-            <bottom-info />
-          </n-layout-footer>
-        </n-layout-content>
-      </n-layout>
+      <n-dialog-provider>
+        <n-layout position="absolute" :native-scrollbar="false">
+          <n-layout-header class="header" bordered>
+            <top-navbar />
+          </n-layout-header>
+          <n-layout-content
+            class="main"
+            :native-scrollbar="false"
+            content-style="display: flex; flex-direction: column">
+            <router-view v-slot="{ Component }">
+              <keep-alive :key="$route.path">
+                <component :is="Component" />
+              </keep-alive>
+            </router-view>
+            <n-layout-footer class="footer">
+              <bottom-info />
+            </n-layout-footer>
+          </n-layout-content>
+        </n-layout>
+      </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
 </template>
@@ -29,6 +31,7 @@ import { BottomInfo, TopNavbar } from "@/views/layout"
 import type { GlobalThemeOverrides } from "naive-ui"
 import {
   NConfigProvider,
+  NDialogProvider,
   NLayout,
   NLayoutContent,
   NLayoutFooter,

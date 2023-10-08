@@ -32,7 +32,7 @@ import { Contest, ErrorMessage, Page } from "@/api/type"
 import { EmptyData, ErrorResult } from "@/components"
 import { LanguageNames } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
 import {
   DataTableColumns,
   NButton,
@@ -48,7 +48,7 @@ import {
 import { computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
-const timeFmt = "yyyy-MM-DD HH:mm"
+const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
 const router = useRouter()
 const message = useMessage()
@@ -192,12 +192,14 @@ function handleSelect(key: number) {
 }
 
 function calcTimeRange(c: Contest): string {
-  const s = moment.unix(c.startAt!)
-  const e = moment.unix(c.endAt!)
+  const s = dayjs.unix(c.startAt!)
+  const e = dayjs.unix(c.endAt!)
   let str = s.format(timeFmt) + " ~ "
 
-  if (e.isSame(s)) {
-    str += e.format("HH:mm:ss")
+  if (e.isSame(s, "day")) {
+    str += e.format("HH:mm")
+  } else if (e.isSame(s, "year")) {
+    str += e.format("MM 月 DD, HH:mm")
   } else {
     str += e.format(timeFmt)
   }

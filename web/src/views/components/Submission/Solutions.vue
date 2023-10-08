@@ -38,7 +38,7 @@ import {
   HistoryRound,
   TimelapseRound
 } from "@vicons/material"
-import moment from "moment-timezone"
+import dayjs from "dayjs"
 import {
   DataTableColumns,
   NButton,
@@ -133,12 +133,12 @@ const columns: DataTableColumns<JudgeResult> = [
         {{
           trigger: () => (
             <NButton text={true}>
-              {moment.unix(row.submitTime! / 1000).format("YYYY/MM/DD")}
+              {dayjs(row.submitTime!).format("YYYY/MM/DD")}
             </NButton>
           ),
           default: () => (
             <NText italic={true} style="color: #ffffff">
-              {moment.unix(row.submitTime! / 1000).format("HH:mm:ss")}
+              {dayjs(row.submitTime!).format("HH:mm:ss")}
             </NText>
           )
         }}

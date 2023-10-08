@@ -78,6 +78,9 @@ const themeOverridesDark: GlobalThemeOverrides = {
     tdColorHover: "#161B22FF",
     tdColorStriped: "#161B22FF"
   },
+  DatePicker: {
+    panelColor: "#222D3DFF"
+  },
   Popover: {
     color: "#222D3DFF"
   },

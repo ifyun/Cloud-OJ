@@ -48,7 +48,9 @@ export const LanguageColors = [
   "#00ADD8"
 ]
 
-export const ResultTypes = [
+type ResultType = "default" | "error" | "info" | "success" | "warning"
+
+export const ResultTypes: Array<ResultType> = [
   "success",
   "warning",
   "warning",

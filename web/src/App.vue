@@ -6,11 +6,9 @@
     :locale="zhCN"
     :date-locale="dateZhCN">
     <n-global-style />
-    <n-dialog-provider>
-      <router-view v-if="!reload" v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
-    </n-dialog-provider>
+    <router-view v-if="!reload" v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
   </n-config-provider>
 </template>
 
@@ -19,14 +17,7 @@ import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { Mutations } from "@/store"
 import { themeOverrides } from "@/theme"
-import moment from "moment-timezone"
-import {
-  NConfigProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  dateZhCN,
-  zhCN
-} from "naive-ui"
+import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
 import { computed, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
@@ -70,6 +61,6 @@ router.beforeEach(() => {
 })
 
 onMounted(() => {
-  console.log("Timezone:", moment.tz.guess())
+  console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone)
 })
 </script>
