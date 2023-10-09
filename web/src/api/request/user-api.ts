@@ -1,7 +1,6 @@
-import type { JudgeResult, Overview, Page, User, UserInfo } from "@/api/type"
-import { buildHeaders, resolveError } from "@/api/utils"
-import ApiPath from "./api-path"
-import axios from "axios"
+import axios, { ApiPath, resolveError } from "@/api"
+import type { JudgeResult, Overview, Page, User } from "@/api/type"
+import { AxiosResponse } from "axios"
 
 const UserApi = {
   /**
@@ -9,20 +8,17 @@ const UserApi = {
    * @param page 页数
    * @param limit 每页数量
    * @param params 搜索参数
-   * @param userInfo {@link UserInfo}
    */
   getByFilter(
     page: number,
     limit: number,
     filter: number | null = null,
-    filterValue: string | null = null,
-    userInfo: UserInfo
+    filterValue: string | null = null
   ): Promise<Page<User>> {
     return new Promise<Page<User>>((resolve, reject) => {
       axios({
         url: ApiPath.USER_ADMIN,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
           page,
           limit,
@@ -39,12 +35,11 @@ const UserApi = {
     })
   },
 
-  save(user: User, userInfo: UserInfo | null, create: boolean = false) {
+  save(user: User, create: boolean = false): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: create ? ApiPath.USER : ApiPath.USER_ADMIN,
         method: create ? "POST" : "PUT",
-        headers: buildHeaders(userInfo),
         data: JSON.stringify(user)
       })
         .then((res) => resolve(res))
@@ -92,7 +87,6 @@ const UserApi = {
   getSolutions(
     page: number,
     limit: number,
-    userInfo: UserInfo,
     filter: number | null = null,
     filterValue: string | null = null
   ) {
@@ -100,11 +94,6 @@ const UserApi = {
       axios({
         url: ApiPath.SOLUTION,
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.token!}`,
-          uid: userInfo.uid
-        },
         params: {
           page,
           limit,

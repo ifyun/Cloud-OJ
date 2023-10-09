@@ -45,7 +45,6 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
-import { useStore } from "@/store"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -73,7 +72,6 @@ import {
 import { Component, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -229,13 +227,7 @@ function querySolutions() {
   pagination.value.loading = true
   const { page, pageSize } = pagination.value
 
-  UserApi.getSolutions(
-    page,
-    pageSize,
-    store.user.userInfo!,
-    filter.value,
-    filterValue.value
-  )
+  UserApi.getSolutions(page, pageSize, filter.value, filterValue.value)
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (pagination.value.loading = false))

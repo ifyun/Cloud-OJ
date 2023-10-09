@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -25,7 +26,8 @@ public class SubmitController {
      * 提交代码，普通用户
      */
     @PostMapping("submit")
-    public ResponseEntity<?> submit(@RequestBody SubmitData data) {
+    public ResponseEntity<?> submit(@RequestHeader Integer uid, @RequestBody SubmitData data) {
+        data.setUid(uid);
         return submitService.submitCode(data, false);
     }
 
@@ -33,7 +35,8 @@ public class SubmitController {
      * 提交代码，管理员
      */
     @PostMapping("admin/submit")
-    public ResponseEntity<?> adminSubmit(@RequestBody SubmitData data) {
+    public ResponseEntity<?> adminSubmit(@RequestHeader Integer uid, @RequestBody SubmitData data) {
+        data.setUid(uid);
         return submitService.submitCode(data, true);
     }
 }

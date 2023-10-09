@@ -1,4 +1,3 @@
-export { default as ApiPath } from "./api-path"
 export { default as AuthApi } from "./auth-api"
 export { default as ProblemApi } from "./problem-api"
 export { default as ContestApi } from "./contest-api"

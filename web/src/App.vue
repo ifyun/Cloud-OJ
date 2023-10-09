@@ -50,7 +50,7 @@ router.beforeEach(() => {
 
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    AuthApi.verify(store.user.userInfo!).catch((error: ErrorMessage) => {
+    AuthApi.verify().catch((error: ErrorMessage) => {
       if (error.status === 401) {
         store.user.clearToken()
         router.push({ name: "auth", params: { tab: "login" } })

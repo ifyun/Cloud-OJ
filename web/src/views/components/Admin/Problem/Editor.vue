@@ -275,7 +275,7 @@ function toggleHelp() {
 }
 
 function queryProblem(problemId: number) {
-  ProblemApi.getSingle(problemId, store.user.userInfo!)
+  ProblemApi.getSingle(problemId)
     .then((data) => {
       if (data.category.length > 0) {
         data.tags = data.category.split(",")
@@ -309,7 +309,7 @@ function handleSave() {
  */
 function save() {
   loading.value = true
-  ProblemApi.save(problem.value, store.user.userInfo!, create.value)
+  ProblemApi.save(problem.value, create.value)
     .then(() => {
       message.success(`${problem.value.title} 已保存`)
       create.value && back()

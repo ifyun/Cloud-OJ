@@ -1,7 +1,5 @@
+import axios, { ApiPath, resolveError } from "@/api"
 import type { Page, Ranking } from "@/api/type"
-import { resolveError } from "@/api/utils"
-import ApiPath from "./api-path"
-import axios from "axios"
 
 const RankingApi = {
   get(page: number, limit: number, cid: number | null): Promise<Page<Ranking>> {

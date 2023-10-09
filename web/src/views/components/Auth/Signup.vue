@@ -200,7 +200,7 @@ function signup() {
     if (!errors) {
       loading.value = true
       user.value.password = hashSync(user.value.password!, 10)
-      UserApi.save(user.value, null, true)
+      UserApi.save(user.value, true)
         .then(() => {
           message.success("注册成功")
           router.push({ params: { tab: "login" } })

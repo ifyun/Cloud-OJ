@@ -66,7 +66,7 @@ withDefaults(defineProps<{ tab: string }>(), { tab: "login" })
 onBeforeMount(async () => {
   if (store.user.userInfo != null) {
     try {
-      await AuthApi.verify(store.user.userInfo)
+      await AuthApi.verify()
       await router.push({ path: "/" })
     } catch (error) {
       checked.value = true

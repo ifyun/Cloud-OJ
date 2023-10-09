@@ -48,7 +48,6 @@
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Page } from "@/api/type"
 import { ErrorResult } from "@/components"
-import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import {
@@ -81,7 +80,6 @@ import { useRoute, useRouter } from "vue-router"
 
 const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -261,7 +259,7 @@ function pageChange(page: number) {
 function queryContests() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ContestApi.getAll(page, pageSize, store.user.userInfo!)
+  ContestApi.getAll(page, pageSize)
     .then((data) => {
       contests.value = data
     })
@@ -282,7 +280,7 @@ function showInviteKey() {
 }
 
 function newInviteKey() {
-  ContestApi.newInviteKey(selectedContest!.contestId!, store.user.userInfo!)
+  ContestApi.newInviteKey(selectedContest!.contestId!)
     .then((data) => {
       selectedContest!.inviteKey = data
       notification.info({
@@ -322,7 +320,7 @@ function deleteContest() {
         return false
       }
       d.loading = true
-      ContestApi.delete(selectedContest!.contestId!, store.user.userInfo!)
+      ContestApi.delete(selectedContest!.contestId!)
         .then(() => {
           message.warning(`${selectedContest!.contestName} 已删除！`)
           queryContests()

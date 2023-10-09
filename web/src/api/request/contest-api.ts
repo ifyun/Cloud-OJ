@@ -1,23 +1,17 @@
-import type { Contest, Page, Problem, UserInfo } from "@/api/type"
-import { buildHeaders, resolveError } from "@/api/utils"
+import axios, { ApiPath, resolveError } from "@/api"
+import type { Contest, Page, Problem } from "@/api/type"
+import { useStore } from "@/store"
 import type { AxiosResponse } from "axios"
-import axios from "axios"
-import ApiPath from "./api-path"
 
 const ContestApi = {
   /**
    * 使用邀请码加入竞赛
    */
-  joinContest(
-    userInfo: UserInfo,
-    cid: number,
-    key: string
-  ): Promise<AxiosResponse> {
+  joinContest(cid: number, key: string): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_INVITATION}/${cid}`,
         method: "POST",
-        headers: buildHeaders(userInfo),
         params: {
           key
         }
@@ -34,12 +28,11 @@ const ContestApi = {
   /**
    * 生成新邀请码
    */
-  newInviteKey(cid: number, userInfo: UserInfo): Promise<string> {
+  newInviteKey(cid: number): Promise<string> {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_GEN_KEY}/${cid}`,
-        method: "PUT",
-        headers: buildHeaders(userInfo)
+        method: "PUT"
       })
         .then((res) => {
           resolve(res.data)
@@ -53,27 +46,17 @@ const ContestApi = {
   /**
    * 获取所有竞赛
    */
-  getAll(
-    page: number,
-    limit: number,
-    userInfo: UserInfo | null = null
-  ): Promise<Page<Contest>> {
-    let path: string
-    let headers: any
-
-    if (userInfo == null) {
-      path = ApiPath.CONTEST
-      headers = null
-    } else {
-      path = ApiPath.CONTEST_ADMIN
-      headers = buildHeaders(userInfo)
-    }
+  getAll(page: number, limit: number): Promise<Page<Contest>> {
+    const userInfo = useStore().user.userInfo
+    const path =
+      userInfo == null || userInfo.role === 1
+        ? ApiPath.CONTEST
+        : ApiPath.CONTEST_ADMIN
 
     return new Promise<Page<Contest>>((resolve, reject) => {
       axios({
         url: path,
         method: "GET",
-        headers,
         params: {
           page,
           limit
@@ -91,18 +74,13 @@ const ContestApi = {
   /**
    * 获取已开始竞赛/作业中的题目
    */
-  getProblemsFromStarted(
-    contestId: number,
-    userInfo: UserInfo
-  ): Promise<Array<Problem>> {
+  getProblemsFromStarted(contestId: number): Promise<Array<Problem>> {
     return new Promise<Array<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_PROBLEM}`,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
-          contestId,
-          uid: userInfo.uid
+          contestId
         }
       })
         .then((res) => {
@@ -117,12 +95,11 @@ const ContestApi = {
   /**
    * 获取竞赛中的所有题目
    */
-  getProblems(contestId: number, userInfo: UserInfo): Promise<Array<Problem>> {
+  getProblems(contestId: number): Promise<Array<Problem>> {
     return new Promise<Array<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problem`,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
           contestId
         }
@@ -142,14 +119,12 @@ const ContestApi = {
   getProblemsNotInContest(
     contestId: number,
     page: number,
-    limit: number,
-    userInfo: UserInfo
+    limit: number
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problems_not_in_contest/${contestId}`,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
           page,
           limit
@@ -167,16 +142,11 @@ const ContestApi = {
   /**
    * 获取竞赛中的指定题目
    */
-  getProblem(
-    contestId: number,
-    problemId: number,
-    userInfo: UserInfo
-  ): Promise<Problem> {
+  getProblem(contestId: number, problemId: number): Promise<Problem> {
     return new Promise<Problem>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_PROBLEM}/${contestId}/${problemId}`,
-        method: "GET",
-        headers: buildHeaders(userInfo)
+        method: "GET"
       })
         .then((res) => {
           resolve(res.data)
@@ -212,19 +182,13 @@ const ContestApi = {
   /**
    * 保存/创建竞赛
    * @param contest {@link Contest}
-   * @param userInfo {@link UserInfo}
    * @param create true -> 创建
    */
-  save(
-    contest: Contest,
-    userInfo: UserInfo,
-    create = false
-  ): Promise<AxiosResponse> {
+  save(contest: Contest, create = false): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: ApiPath.CONTEST_ADMIN,
         method: create ? "POST" : "PUT",
-        headers: buildHeaders(userInfo),
         data: JSON.stringify(contest)
       })
         .then((res) => {
@@ -240,18 +204,12 @@ const ContestApi = {
    * 向竞赛添加题目
    * @param contestId 竞赛 Id
    * @param problemId 题目Id
-   * @param userInfo {@link UserInfo}
    */
-  addProblem(
-    contestId: number,
-    problemId: number,
-    userInfo: UserInfo
-  ): Promise<AxiosResponse> {
+  addProblem(contestId: number, problemId: number): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
-        method: "POST",
-        headers: buildHeaders(userInfo)
+        method: "POST"
       })
         .then((res) => {
           resolve(res)
@@ -266,14 +224,12 @@ const ContestApi = {
    * 从竞赛中删除题目
    * @param contestId 题目 Id
    * @param problemId 竞赛 Id
-   * @param userInfo {@link UserInfo}
    */
-  removeProblem(contestId: number, problemId: number, userInfo: UserInfo) {
+  removeProblem(contestId: number, problemId: number) {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
-        method: "DELETE",
-        headers: buildHeaders(userInfo)
+        method: "DELETE"
       })
         .then((res) => {
           resolve(res)
@@ -287,14 +243,12 @@ const ContestApi = {
   /**
    * 删除竞赛
    * @param contestId 竞赛 Id
-   * @param userInfo {@link UserInfo}
    */
-  delete(contestId: number, userInfo: UserInfo): Promise<AxiosResponse> {
+  delete(contestId: number): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/${contestId}`,
-        method: "DELETE",
-        headers: buildHeaders(userInfo)
+        method: "DELETE"
       })
         .then((res) => {
           resolve(res)

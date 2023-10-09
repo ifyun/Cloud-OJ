@@ -229,8 +229,7 @@ function queryUsers() {
     pagination.value.page,
     pagination.value.pageSize,
     filter.value,
-    filterValue.value,
-    store.user.userInfo!
+    filterValue.value
   )
     .then((data) => {
       users.value = data

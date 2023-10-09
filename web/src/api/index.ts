@@ -1,0 +1,82 @@
+import { useStore } from "@/store"
+import _axios, { AxiosError } from "axios"
+import { ErrorMessage, UserInfo } from "./type"
+
+const ApiPath = {
+  LOGIN: "/api/auth/login",
+  LOGOFF: "/api/auth/logoff",
+  REFRESH_TOKEN: "/api/auth/refresh_token",
+  VERIFY: "/api/auth/verify",
+  IMAGE: "/api/core/file/img",
+  AVATAR: "/api/core/file/img/avatar",
+  TEST_DATA: "/api/core/file/data",
+  PROBLEM_IMAGE: "/api/core/file/img/problem",
+  PROBLEM_ADMIN: "/api/core/problem/admin",
+  PROBLEM: "/api/core/problem",
+  USER: "/api/core/user",
+  USER_ADMIN: "/api/core/user/admin",
+  CONTEST: "/api/core/contest",
+  CONTEST_INVITATION: "/api/core/contest/invitation",
+  CONTEST_ADMIN: "/api/core/contest/admin",
+  CONTEST_GEN_KEY: "/api/core/contest/admin/gen_key",
+  CONTEST_PROBLEM: "/api/core/contest/problem",
+  CONTEST_RANKING: "/api/core/ranking/contest",
+  CONTEST_RANKING_ADMIN: "/api/core/ranking/admin/contest",
+  CONTEST_SCORE_DETAIL: "/api/core/ranking/admin/contest/detail",
+  RANKING: "/api/core/ranking",
+  SOLUTION: "/api/core/solution",
+  SUBMIT: "/api/judge/submit",
+  ADMIN_SUBMIT: "/api/judge/submit",
+  QUEUE_INFO: "/api/judge/admin/queue_info",
+  PROFILE: "/api/core/user/profile",
+  OVERVIEW: "/api/core/user/overview",
+  SETTINGS: "/api/core/settings"
+}
+
+function resolveError(error: any): ErrorMessage {
+  const err = error as AxiosError
+  if (err.response) {
+    if (
+      err.response.data &&
+      err.response.headers["content-type"] === "application/json"
+    ) {
+      return ErrorMessage.from(err.response.data)
+    } else {
+      return new ErrorMessage(err.response.status, err.response.statusText)
+    }
+  } else if (err.request) {
+    return new ErrorMessage(0, "请求失败")
+  } else {
+    return new ErrorMessage(-1, err.message)
+  }
+}
+
+function buildHeaders(userInfo: UserInfo | null): any {
+  if (userInfo == null) {
+    return {
+      "Content-Type": "application/json"
+    }
+  } else {
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Baerer ${userInfo.token}`
+    }
+  }
+}
+
+const axios = _axios.create()
+
+// 请求拦截器
+axios.interceptors.request.use(
+  (config) => {
+    const user = useStore().user
+    config.headers = buildHeaders(user.userInfo)
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+export default axios
+export { ApiPath, resolveError }

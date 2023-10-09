@@ -78,7 +78,6 @@
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
-import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
 import {
   PostAddRound as AddIcon,
@@ -108,7 +107,6 @@ import {
 import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -346,7 +344,7 @@ function deleteProblem() {
         return false
       }
       d.loading = true
-      ProblemApi.delete(selectedId!, store.user.userInfo!)
+      ProblemApi.delete(selectedId!)
         .then(() => {
           message.warning(`${selectedTitle} 已删除！`)
           queryProblems()
@@ -369,7 +367,7 @@ function deleteProblem() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAll(page, pageSize, keyword.value, store.user.userInfo!)
+  ProblemApi.getAll(page, pageSize, keyword.value)
     .then((data) => {
       problems.value = data
     })
@@ -386,7 +384,7 @@ function queryProblems() {
  */
 function toggleIsEnable(p: Problem, value: boolean) {
   p.enable = value
-  ProblemApi.changeState(p.problemId!, value, store.user.userInfo!)
+  ProblemApi.changeState(p.problemId!, value)
     .then(() => {
       message.warning(`${p.problemId}.${p.title} 已${value ? "开放" : "禁用"}`)
     })

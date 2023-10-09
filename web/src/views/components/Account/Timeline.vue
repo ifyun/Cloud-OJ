@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import { UserApi } from "@/api/request"
 import { JudgeResult, Page } from "@/api/type"
-import { useStore } from "@/store"
 import { LanguageNames, ResultTypes } from "@/type"
 import dayjs from "dayjs"
 import { NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
@@ -26,11 +25,10 @@ import { onBeforeMount, ref } from "vue"
 
 const timeFmt = "YYYY/MM/DD HH:mm:ss"
 
-const store = useStore()
 const solutions = ref<Page<JudgeResult>>({ data: [], count: 0 })
 
 onBeforeMount(() => {
-  UserApi.getSolutions(1, 5, store.user.userInfo!).then((data) => {
+  UserApi.getSolutions(1, 5).then((data) => {
     solutions.value = data
   })
 })

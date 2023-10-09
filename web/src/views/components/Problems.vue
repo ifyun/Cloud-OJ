@@ -50,7 +50,6 @@ export default {
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { EmptyData, ErrorResult } from "@/components"
-import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
@@ -68,7 +67,6 @@ import {
 import { Component, computed, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -230,7 +228,7 @@ function search() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAllOpened(page, pageSize, keyword.value, store.user.userInfo)
+  ProblemApi.getAllOpened(page, pageSize, keyword.value)
     .then((data) => {
       problems.value = data
     })

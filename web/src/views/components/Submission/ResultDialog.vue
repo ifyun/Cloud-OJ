@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ApiPath } from "@/api/request"
+import { ApiPath } from "@/api"
 import { ErrorMessage, JudgeResult } from "@/api/type"
 import { useStore } from "@/store"
 import { ResultTypes } from "@/type"

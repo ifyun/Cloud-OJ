@@ -176,7 +176,7 @@ function changeTab(value: string) {
 function queryProblem() {
   if (contestId == null) {
     // 非竞赛题目
-    ProblemApi.getSingle(problemId!, store.user.userInfo!)
+    ProblemApi.getSingle(problemId!)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -185,7 +185,7 @@ function queryProblem() {
       .finally(() => (loading.value = false))
   } else {
     // 竞赛题目
-    ContestApi.getProblem(contestId, problemId!, store.user.userInfo!)
+    ContestApi.getProblem(contestId, problemId!)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -214,7 +214,7 @@ function submit(data: SourceCode) {
     uid: store.user.userInfo!.uid!
   }
 
-  JudgeApi.submit(submitData, store.user.userInfo!)
+  JudgeApi.submit(submitData)
     .then((time) => {
       submitTime.value = time
       showResult.value = true

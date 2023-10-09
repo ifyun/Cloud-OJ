@@ -111,13 +111,13 @@ onBeforeMount(() => {
 })
 
 function getSettings() {
-  SettingsApi.get(store.user.userInfo!)
+  SettingsApi.get()
     .then((data) => (settings.value = data))
     .catch((err: ErrorMessage) => (error.value = err))
 }
 
 function saveSettings() {
-  SettingsApi.save(settings.value, store.user.userInfo!)
+  SettingsApi.save(settings.value)
     .then(() => message.success("设置已保存"))
     .catch((err: ErrorMessage) => message.error(err.toString()))
 }

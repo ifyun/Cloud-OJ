@@ -43,7 +43,8 @@
 </template>
 
 <script setup lang="tsx">
-import { ApiPath, ProblemApi } from "@/api/request"
+import { ApiPath } from "@/api"
+import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, TestData } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
@@ -52,7 +53,6 @@ import {
   DeleteForeverRound as DeleteIcon,
   FileDownloadOutlined as DownloadIcon
 } from "@vicons/material"
-import axios from "axios"
 import {
   DataTableColumns,
   NAlert,
@@ -195,7 +195,7 @@ onBeforeMount(() => {
   if (reg.test(id)) {
     loading.value = true
     const problemId = Number(id)
-    ProblemApi.getSingle(problemId, store.user.userInfo!)
+    ProblemApi.getSingle(problemId)
       .then((p) => {
         problem.value = p
         queryData(p.problemId!)
@@ -208,7 +208,7 @@ onBeforeMount(() => {
 })
 
 function queryData(id: number) {
-  ProblemApi.getTestData(id, store.user.userInfo!)
+  ProblemApi.getTestData(id)
     .then((data) => {
       testData.value = data
     })
@@ -243,29 +243,15 @@ function handleUploadFinish(options: { file: UploadFileInfo }) {
 }
 
 function downloadFile(fileName: string) {
-  const url = `${ApiPath.TEST_DATA}/download/${problem.value!
-    .problemId!}/${fileName}`
-  const anchor = document.createElement("a")
-  axios
-    .get(url, { headers: headers.value, responseType: "blob" })
-    .then((res) => {
-      const objectUrl = window.URL.createObjectURL(res.data)
-      anchor.href = objectUrl
-      anchor.download = fileName
-      anchor.click()
-      window.URL.revokeObjectURL(objectUrl)
-    })
-    .catch((error) => {
-      message.error(error.toString())
-    })
+  ProblemApi.downloadData(problem.value!.problemId!, fileName).catch(
+    (err: ErrorMessage) => {
+      message.error(err.toString())
+    }
+  )
 }
 
 function deleteFile(fileName: string) {
-  ProblemApi.deleteTestData(
-    problem.value!.problemId!,
-    fileName,
-    store.user.userInfo!
-  )
+  ProblemApi.deleteTestData(problem.value!.problemId!, fileName)
     .then(() => {
       message.warning(`${fileName} 已删除`)
       queryData(problem.value!.problemId!)

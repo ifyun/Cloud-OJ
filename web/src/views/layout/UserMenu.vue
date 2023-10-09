@@ -108,7 +108,7 @@ function login() {
 }
 
 function logoff() {
-  AuthApi.logoff(userInfo.value!)
+  AuthApi.logoff()
     .catch((err: ErrorMessage) => {
       message.warning(err.toString())
     })

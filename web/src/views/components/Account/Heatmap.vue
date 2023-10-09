@@ -71,8 +71,9 @@ const dark = {
   }
 }
 
-const props = defineProps<{ data: Array<Activity>; year: string }>()
 const store = useStore()
+const props = defineProps<{ data: Array<Activity>; year: string }>()
+
 const heatmapTheme = computed(() => {
   return store.app.theme == null ? light : dark
 })

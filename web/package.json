@@ -6,6 +6,7 @@
     "dev": "vite",
     "preview": "vite preview --port 4173",
     "build": "vite build",
+    "watch": "vue-tsc --noEmit --watch",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {

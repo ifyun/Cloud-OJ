@@ -23,8 +23,8 @@
                 :has-avatar="userInfo!.hasAvatar"
                 :timestamp="t" />
               <n-upload
-                action="/api/core/file/img/avatar"
                 accept=".jpg,.jpeg,.png"
+                :action="uploadUrl"
                 :show-file-list="false"
                 :headers="headers"
                 :on-finish="uploadFinish">
@@ -84,9 +84,10 @@
 </template>
 
 <script setup lang="ts">
+import { ApiPath } from "@/api"
 import { AuthApi, UserApi } from "@/api/request"
 import { ErrorMessage, User } from "@/api/type"
-import UserAvatar from "@/components/UserAvatar.vue"
+import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
@@ -106,6 +107,8 @@ import {
 } from "naive-ui"
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
+
+const uploadUrl = ApiPath.AVATAR
 
 const store = useStore()
 const router = useRouter()
@@ -199,7 +202,7 @@ function save() {
     if (!errors) {
       loading.value = true
       user.value.password = hashSync(user.value.password!, 10)
-      UserApi.save(user.value, userInfo.value)
+      UserApi.save(user.value)
         .then(() => {
           message.success("个人信息已更新")
           refresh()
@@ -226,7 +229,7 @@ function uploadFinish() {
 }
 
 function refresh() {
-  AuthApi.refresh_token(userInfo.value!)
+  AuthApi.refresh_token()
     .then((token) => {
       store.user.saveToken(token)
       location.reload()

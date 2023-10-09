@@ -152,7 +152,7 @@ onBeforeMount(() => {
 
 function querySolutions() {
   loading.value = true
-  UserApi.getSolutions(1, 15, store.user.userInfo!, 1, props.problemId)
+  UserApi.getSolutions(1, 15, 1, props.problemId)
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (loading.value = false))

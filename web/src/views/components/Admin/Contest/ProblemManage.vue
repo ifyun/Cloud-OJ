@@ -23,7 +23,6 @@
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
-import { useStore } from "@/store"
 import {
   DataTableColumns,
   NButton,
@@ -38,7 +37,6 @@ import { useRouter } from "vue-router"
 
 const props = defineProps<{ contestId?: number }>()
 
-const store = useStore()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
@@ -155,12 +153,7 @@ watch(
 function queryProblems() {
   pagination.value.loading = true
   const { page, pageSize } = pagination.value
-  ContestApi.getProblemsNotInContest(
-    props.contestId!,
-    page,
-    pageSize,
-    store.user.userInfo!
-  )
+  ContestApi.getProblemsNotInContest(props.contestId!, page, pageSize)
     .then((data) => {
       problems.value = data
     })
@@ -176,7 +169,7 @@ function queryProblems() {
  * 获取当前竞赛的题目
  */
 function queryContestProblems() {
-  ContestApi.getProblems(props.contestId!, store.user.userInfo!)
+  ContestApi.getProblems(props.contestId!)
     .then((data) => {
       contestProblems.value = data
     })
@@ -198,7 +191,7 @@ function toSubmission(p: Problem) {
  * 将题目添加到当前竞赛
  */
 function addToContest(p: Problem) {
-  ContestApi.addProblem(props.contestId!, p.problemId!, store.user.userInfo!)
+  ContestApi.addProblem(props.contestId!, p.problemId!)
     .then(() => {
       message.success(`[${p.title}] 已添加`)
     })
@@ -224,7 +217,7 @@ function handleRemove(p: Problem) {
  * 从竞赛中移除题目
  */
 function remove(p: Problem) {
-  ContestApi.removeProblem(props.contestId!, p.problemId!, store.user.userInfo!)
+  ContestApi.removeProblem(props.contestId!, p.problemId!)
     .then(() => {
       message.warning(`[${p.title}] 已移除`)
     })

@@ -68,7 +68,6 @@
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage } from "@/api/type"
-import { useStore } from "@/store"
 import { LanguageOption, LanguageOptions } from "@/type"
 import { LanguageUtil, setTitle } from "@/utils"
 import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
@@ -93,7 +92,6 @@ import {
 import { computed, onBeforeMount, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -206,9 +204,9 @@ function handleSave() {
 }
 
 function save() {
-  ContestApi.save(contest.value, store.user.userInfo!, create.value)
+  ContestApi.save(contest.value, create.value)
     .then(() => {
-      message.success(`${contest.value.contestName} 保存成功`)
+      message.success(`${contest.value.contestName} 已保存`)
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())

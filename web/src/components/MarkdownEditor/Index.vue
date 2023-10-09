@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="tsx">
-import { ApiPath } from "@/api/request"
+import { ApiPath } from "@/api"
 import { ArchiveRound as ArchiveIcon } from "@vicons/material"
 import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
 import "codemirror/addon/scroll/simplescrollbars"

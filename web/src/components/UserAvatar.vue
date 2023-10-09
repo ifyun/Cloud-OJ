@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ApiPath } from "@/api/request"
+import { ApiPath } from "@/api"
 import { NAvatar } from "naive-ui"
 import { ref, watch } from "vue"
 

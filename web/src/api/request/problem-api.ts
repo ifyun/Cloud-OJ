@@ -1,8 +1,7 @@
-import type { Page, Problem, TestData, UserInfo } from "@/api/type"
-import { buildHeaders, resolveError } from "@/api/utils"
+import axios, { ApiPath, resolveError } from "@/api"
+import type { Page, Problem, TestData } from "@/api/type"
+import { useStore } from "@/store"
 import type { AxiosResponse } from "axios"
-import axios from "axios"
-import ApiPath from "./api-path"
 
 /**
  * 题目接口
@@ -18,14 +17,12 @@ const ProblemApi = {
   getAllOpened(
     page: number,
     limit: number,
-    keyword: string | null = null,
-    userInfo: UserInfo | null = null
+    keyword: string | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
           page,
           limit,
@@ -48,14 +45,12 @@ const ProblemApi = {
   getAll(
     page: number,
     limit: number,
-    keyword: string | null = null,
-    userInfo: UserInfo
+    keyword: string | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM_ADMIN,
         method: "GET",
-        headers: buildHeaders(userInfo),
         params: {
           page,
           limit,
@@ -81,25 +76,17 @@ const ProblemApi = {
    * @param problemId 题目 Id
    * @param userInfo 指定此参数时请求 admin 接口
    */
-  getSingle(
-    problemId: number,
-    userInfo: UserInfo | null = null
-  ): Promise<Problem> {
-    let path: string, headers: any
-
-    if (userInfo == null || userInfo.role == 1) {
-      path = ApiPath.PROBLEM
-      headers = null
-    } else {
-      path = ApiPath.PROBLEM_ADMIN
-      headers = buildHeaders(userInfo)
-    }
+  getSingle(problemId: number): Promise<Problem> {
+    const userInfo = useStore().user.userInfo
+    const path =
+      userInfo == null || userInfo.role === 1
+        ? ApiPath.PROBLEM
+        : ApiPath.PROBLEM_ADMIN
 
     return new Promise<Problem>((resolve, reject) => {
       axios({
         url: `${path}/${problemId}`,
-        method: "GET",
-        headers
+        method: "GET"
       })
         .then((res) => {
           resolve(res.data as Problem)
@@ -114,18 +101,12 @@ const ProblemApi = {
    * 切换开放/关闭
    * @param problemId 题目 Id
    * @param enable 是否开放
-   * @param userInfo {@link UserInfo}
    */
-  changeState(
-    problemId: number,
-    enable: boolean,
-    userInfo: UserInfo
-  ): Promise<AxiosResponse> {
+  changeState(problemId: number, enable: boolean): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
         url: `${ApiPath.PROBLEM_ADMIN}/${problemId}`,
         method: "PUT",
-        headers: buildHeaders(userInfo),
         params: {
           enable
         }
@@ -142,15 +123,13 @@ const ProblemApi = {
   /**
    * 保存题目
    * @param p {@link Problem}
-   * @param userInfo {@link UserInfo}
    * @param create true -> 创建新题目
    */
-  save(p: Problem, userInfo: UserInfo, create = false): Promise<AxiosResponse> {
+  save(p: Problem, create = false): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM_ADMIN,
         method: create ? "POST" : "PUT",
-        headers: buildHeaders(userInfo),
         data: JSON.stringify(p)
       })
         .then((res) => {
@@ -165,14 +144,12 @@ const ProblemApi = {
   /**
    * 删除题目
    * @param problemId 题目 Id
-   * @param userInfo {@link UserInfo}
    */
-  delete(problemId: number, userInfo: UserInfo): Promise<AxiosResponse> {
+  delete(problemId: number): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
         url: `${ApiPath.PROBLEM_ADMIN}/${problemId}`,
-        method: "DELETE",
-        headers: buildHeaders(userInfo)
+        method: "DELETE"
       })
         .then((res) => {
           resolve(res)
@@ -186,14 +163,12 @@ const ProblemApi = {
   /**
    * 获取测试数据
    * @param problemId 题目 Id
-   * @param userInfo {@link UserInfo}
    */
-  getTestData(problemId: number, userInfo: UserInfo): Promise<Array<TestData>> {
+  getTestData(problemId: number): Promise<Array<TestData>> {
     return new Promise<Array<TestData>>((resolve, reject) => {
       axios({
         url: `${ApiPath.TEST_DATA}/${problemId}`,
-        method: "GET",
-        headers: buildHeaders(userInfo)
+        method: "GET"
       })
         .then((res) => {
           if (res.status === 200) {
@@ -209,21 +184,41 @@ const ProblemApi = {
   },
 
   /**
+   * 下载测试数据
+   */
+  downloadData(problemId: number, fileName: string): Promise<void> {
+    const url = `${ApiPath.TEST_DATA}/download/${problemId}/${fileName}`
+
+    return new Promise((_, reject) => {
+      axios({
+        url,
+        method: "GET",
+        responseType: "blob"
+      })
+        .then((res) => {
+          const objectUrl = window.URL.createObjectURL(res.data)
+          const anchor = document.createElement("a")
+          anchor.href = objectUrl
+          anchor.download = fileName
+          anchor.click()
+          window.URL.revokeObjectURL(objectUrl)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  /**
    * 删除测试数据
    * @param problemId 题目 Id
    * @param fileName 文件名
-   * @param userInfo {@link UserInfo}
    */
-  deleteTestData(
-    problemId: number,
-    fileName: string,
-    userInfo: UserInfo
-  ): Promise<AxiosResponse> {
+  deleteTestData(problemId: number, fileName: string): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.TEST_DATA}/${problemId}`,
         method: "DELETE",
-        headers: buildHeaders(userInfo),
         params: {
           name: fileName
         }

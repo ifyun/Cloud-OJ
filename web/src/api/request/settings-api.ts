@@ -1,27 +1,24 @@
-import { UserInfo, Settings } from "@/api/type"
-import { buildHeaders, resolveError } from "@/api/utils"
-import ApiPath from "./api-path"
-import axios, { AxiosResponse } from "axios"
+import axios, { ApiPath, resolveError } from "@/api"
+import { Settings } from "@/api/type"
+import { AxiosResponse } from "axios"
 
 const SettingsApi = {
-  get(userInfo: UserInfo): Promise<Settings> {
+  get(): Promise<Settings> {
     return new Promise<Settings>((resolve, reject) => {
       axios({
         url: ApiPath.SETTINGS,
-        method: "GET",
-        headers: buildHeaders(userInfo)
+        method: "GET"
       })
         .then((res) => resolve(res.data))
         .catch((error) => reject(resolveError(error)))
     })
   },
 
-  save(settings: Settings, userInfo: UserInfo): Promise<AxiosResponse> {
+  save(settings: Settings): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: ApiPath.SETTINGS,
         method: "PUT",
-        headers: buildHeaders(userInfo),
         data: JSON.stringify(settings)
       })
         .then((res) => resolve(res))

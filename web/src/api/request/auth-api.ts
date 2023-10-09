@@ -1,13 +1,11 @@
-import { buildHeaders, resolveError } from "@/api/utils"
-import type { UserInfo, UsernamePassword } from "@/api/type"
-import ApiPath from "./api-path"
+import axios, { ApiPath, resolveError } from "@/api"
+import type { UsernamePassword } from "@/api/type"
 import type { AxiosResponse } from "axios"
-import axios from "axios"
 
 /**
  * 授权验证接口
  */
-class AuthApi {
+const AuthApi = {
   /**
    * 登录
    *
@@ -18,9 +16,6 @@ class AuthApi {
       axios({
         url: ApiPath.LOGIN,
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         data: JSON.stringify(user)
       })
         .then((res) => {
@@ -30,19 +25,16 @@ class AuthApi {
           reject(resolveError(error))
         })
     })
-  }
+  },
 
   /**
    * 登出
-   *
-   * @param userInfo {@link UserInfo}
    */
-  logoff(userInfo: UserInfo): Promise<AxiosResponse> {
+  logoff(): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: ApiPath.LOGOFF,
-        method: "DELETE",
-        headers: buildHeaders(userInfo)
+        method: "DELETE"
       })
         .then((res) => {
           resolve(res)
@@ -51,19 +43,16 @@ class AuthApi {
           reject(resolveError(error))
         })
     })
-  }
+  },
 
   /**
    * 刷新 Token
-   * @param userInfo {@link UserInfo}
-   * @returns
    */
-  refresh_token(userInfo: UserInfo): Promise<string> {
+  refresh_token(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       axios({
         url: ApiPath.REFRESH_TOKEN,
-        method: "GET",
-        headers: buildHeaders(userInfo)
+        method: "GET"
       })
         .then((res) => {
           resolve(res.data)
@@ -72,20 +61,16 @@ class AuthApi {
           reject(resolveError(error))
         })
     })
-  }
+  },
 
   /**
    * 验证 Token
-   *
-   * @param userInfo {@link UserInfo}
-   * @returns
    */
-  verify(userInfo: UserInfo): Promise<AxiosResponse> {
+  verify(): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         url: ApiPath.VERIFY,
-        method: "GET",
-        headers: buildHeaders(userInfo)
+        method: "GET"
       })
         .then((res) => {
           resolve(res)
@@ -97,4 +82,4 @@ class AuthApi {
   }
 }
 
-export default new AuthApi()
+export default AuthApi

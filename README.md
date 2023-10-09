@@ -23,10 +23,6 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 </tr>
 </table>
 
-## 文档
-
-[构建 & 运行](BUILD.md)
-
 ## 语言支持
 
 - C
@@ -39,6 +35,10 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 - Kotlin
 - Go
 
+## 文档
+
+[构建 & 运行](BUILD.md)
+
 ## 相关资源
 
 - [Spring](https://spring.io/)
@@ -49,6 +49,7 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 - [Vue 3](https://vuejs.org/)
 - [Pinia](https://pinia.vuejs.org/)
 - [Naive UI](https://naiveui.com/)
+- [Axios](https://github.com/axios/axios)
 - [Day.js](https://day.js.org/)
 - [CodeMirror 5](https://codemirror.net/5/)
 - [KaTeX](https://katex.org/)

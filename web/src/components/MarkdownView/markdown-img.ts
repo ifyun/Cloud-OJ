@@ -1,4 +1,4 @@
-import { ApiPath } from "@/api/request"
+import { ApiPath } from "@/api"
 
 /**
  * markdown-it 图片插件

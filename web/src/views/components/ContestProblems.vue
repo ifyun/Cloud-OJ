@@ -53,7 +53,6 @@
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
-import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import {
@@ -77,7 +76,6 @@ import {
 import { Component, computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
-const store = useStore()
 const router = useRouter()
 const message = useMessage()
 
@@ -195,7 +193,7 @@ function queryContest(cid: number) {
 
 function queryProblems(cid: number) {
   loading.value = true
-  ContestApi.getProblemsFromStarted(cid, store.user.userInfo!)
+  ContestApi.getProblemsFromStarted(cid)
     .then((data) => {
       problems.value = data
     })
@@ -214,7 +212,7 @@ function queryProblems(cid: number) {
 function inputInviteKey() {
   const cid = contest.value!.contestId!
 
-  ContestApi.joinContest(store.user.userInfo!, cid, inviteKey.value)
+  ContestApi.joinContest(cid, inviteKey.value)
     .then(() => {
       inputKey.value = false
       queryProblems(cid)
