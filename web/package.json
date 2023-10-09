@@ -19,9 +19,9 @@
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.2",
     "markdown-it-container": "^3.0.0",
+    "pinia": "^2.1.6",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.5",
-    "vuex": "^4.1.0"
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.4",

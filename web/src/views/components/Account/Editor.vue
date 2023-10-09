@@ -18,9 +18,9 @@
             <n-space vertical align="center" size="large">
               <user-avatar
                 :size="128"
-                :uid="userInfo.uid"
-                :nickname="userInfo.nickname"
-                :has-avatar="userInfo.hasAvatar"
+                :uid="userInfo!.uid!"
+                :nickname="userInfo!.nickname!"
+                :has-avatar="userInfo!.hasAvatar"
                 :timestamp="t" />
               <n-upload
                 action="/api/core/file/img/avatar"
@@ -84,9 +84,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue"
-import { useRouter } from "vue-router"
-import { useStore } from "vuex"
+import { AuthApi, UserApi } from "@/api/request"
+import { ErrorMessage, User } from "@/api/type"
+import UserAvatar from "@/components/UserAvatar.vue"
+import { useStore } from "@/store"
+import { setTitle } from "@/utils"
+import { FileUploadOutlined, SaveRound } from "@vicons/material"
+import { hashSync } from "bcryptjs"
 import {
   FormRules,
   NButton,
@@ -100,39 +104,32 @@ import {
   NUpload,
   useMessage
 } from "naive-ui"
-import { FileUploadOutlined, SaveRound } from "@vicons/material"
-import { hashSync } from "bcryptjs"
-import UserAvatar from "@/components/UserAvatar.vue"
-import { AuthApi, UserApi } from "@/api/request"
-import { ErrorMessage, User } from "@/api/type"
-import { setTitle } from "@/utils"
-import { Mutations } from "@/store"
+import { computed, onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-const router = useRouter()
 const store = useStore()
+const router = useRouter()
 const message = useMessage()
 
 const loading = ref<boolean>(false)
 const userForm = ref<HTMLFormElement | null>(null)
-
-const userInfo = computed(() => {
-  return store.state.userInfo
-})
-
-const headers = computed(() => {
-  return {
-    userId: userInfo.value.userId,
-    Authorization: `Baerer ${userInfo.value.token}`
-  }
-})
-
 const user = ref<User>(new User())
 const t = ref<number>(Date.now())
+
+const userInfo = computed(() => {
+  return store.user.userInfo
+})
+
+const headers = computed<Record<string, string>>(() => {
+  return {
+    Authorization: `Baerer ${userInfo.value!.token}`
+  }
+})
 
 const rules: FormRules = {
   nickname: {
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入昵称")
       } else if (value.length < 2) {
@@ -145,7 +142,7 @@ const rules: FormRules = {
   password: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       const regx = /^[a-zA-Z0-9_.-]*$/
 
       if (!value) {
@@ -162,7 +159,7 @@ const rules: FormRules = {
   confirmPassword: {
     required: true,
     trigger: ["blur", "input"],
-    validator: (rule: any, value: string): Error | boolean => {
+    validator: (_, value: string): Error | boolean => {
       if (!value) {
         return new Error("请确认密码")
       } else if (value !== user.value.password) {
@@ -173,7 +170,7 @@ const rules: FormRules = {
   },
   email: {
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       const regex =
         /^[a-zA-Z\d.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/
       if (value.length === 0) {
@@ -229,9 +226,9 @@ function uploadFinish() {
 }
 
 function refresh() {
-  AuthApi.refresh_token(userInfo.value)
+  AuthApi.refresh_token(userInfo.value!)
     .then((token) => {
-      store.commit(Mutations.SAVE_TOKEN, token)
+      store.user.saveToken(token)
       location.reload()
     })
     .catch((err: ErrorMessage) => {

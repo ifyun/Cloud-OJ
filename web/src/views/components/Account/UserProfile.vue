@@ -3,7 +3,7 @@
     <user-avatar
       :size="72"
       :uid="uid"
-      :nickname="profile.nickname"
+      :nickname="profile.nickname ?? ''"
       :has-avatar="profile.hasAvatar" />
     <div>
       <n-space vertical size="small">
@@ -25,13 +25,13 @@
 </template>
 
 <script setup lang="ts">
+import { UserApi } from "@/api/request"
+import { ErrorMessage, User } from "@/api/type"
+import { UserAvatar } from "@/components"
+import { UserEdit } from "@vicons/fa"
+import { NButton, NIcon, NSpace, NText, useMessage } from "naive-ui"
 import { onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
-import { NButton, NIcon, NSpace, NText, useMessage } from "naive-ui"
-import { UserEdit } from "@vicons/fa"
-import { UserAvatar } from "@/components"
-import { ErrorMessage, User } from "@/api/type"
-import { UserApi } from "@/api/request"
 
 const router = useRouter()
 const message = useMessage()

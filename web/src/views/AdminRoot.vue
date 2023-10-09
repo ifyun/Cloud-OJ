@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { Logo } from "@/components"
-import Mutations from "@/store/mutations"
+import { useStore } from "@/store"
 import { themeOverridesDark } from "@/theme"
 import { AdminNavbar, ThemeSwitch, UserMenu } from "@/views/layout"
 import { MenuOpenRound, RefreshRound } from "@vicons/material"
@@ -94,36 +94,32 @@ import {
   NNotificationProvider,
   NSpace
 } from "naive-ui"
-import { computed, nextTick } from "vue"
-import { useStore } from "vuex"
+import { computed } from "vue"
 
 const store = useStore()
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.state.theme != null) {
+  if (store.app.theme != null) {
     return themeOverridesDark
   }
 
   return {}
 })
 
-const breadcrumb = computed<Array<string>>(() => {
-  return store.state.breadcrumb
+const breadcrumb = computed(() => {
+  return store.app.breadcrumb
 })
 
-const collapsed = computed<boolean>(() => {
-  return store.state.menuCollapsed
+const collapsed = computed(() => {
+  return store.app.menuCollapsed
 })
 
 function reload() {
-  store.commit(Mutations.SET_RELOAD, true)
-  nextTick(() => {
-    store.commit(Mutations.SET_RELOAD, false)
-  })
+  store.app.refresh()
 }
 
 function collapse() {
-  store.commit(Mutations.TOGGLE_MENU_COLLAPSED)
+  store.app.menuCollapse()
 }
 </script>
 

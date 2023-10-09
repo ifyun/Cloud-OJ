@@ -24,7 +24,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue"
+import type { LanguageOption, SourceCode } from "@/type"
+import { LanguageOptions } from "@/type"
+import { LanguageUtil } from "@/utils"
+import { SendRound } from "@vicons/material"
+import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
+import "codemirror/addon/edit/closebrackets.js"
+import "codemirror/addon/edit/matchbrackets.js"
+import "codemirror/lib/codemirror.css"
+import "codemirror/mode/clike/clike.js"
+import "codemirror/mode/go/go.js"
+import "codemirror/mode/javascript/javascript.js"
+import "codemirror/mode/python/python.js"
+import "codemirror/mode/shell/shell.js"
+import "codemirror/mode/sql/sql.js"
+import "codemirror/theme/material-darker.css"
+import "codemirror/theme/ttcn.css"
 import {
   NButton,
   NIcon,
@@ -32,23 +47,7 @@ import {
   NInputGroupLabel,
   NSelect
 } from "naive-ui"
-import { SendRound } from "@vicons/material"
-import type { LanguageOption, SourceCode } from "@/type"
-import { LanguageOptions } from "@/type"
-import { LanguageUtil } from "@/utils"
-import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/clike/clike.js"
-import "codemirror/mode/go/go.js"
-import "codemirror/mode/python/python.js"
-import "codemirror/mode/shell/shell.js"
-import "codemirror/mode/javascript/javascript.js"
-import "codemirror/mode/sql/sql.js"
-import "codemirror/addon/edit/matchbrackets.js"
-import "codemirror/addon/edit/closebrackets.js"
-import "codemirror/theme/ttcn.css"
-import "codemirror/theme/material-darker.css"
-import store from "@/store"
+import { nextTick, onMounted, ref, watch } from "vue"
 
 // CodeMirror 语言模式
 const Modes = [
@@ -86,9 +85,10 @@ let cmEditor: Editor | null = null
 
 const props = withDefaults(
   defineProps<{
-    loading: boolean
     value: string
+    loading: boolean
     availableLanguages: number | null // 可用语言，未指定时使用所有语言
+    theme: "light" | "dark"
   }>(),
   {
     loading: false,
@@ -103,10 +103,6 @@ const emit = defineEmits<{
   // eslint-disable-next-line no-unused-vars
   (e: "submit", value: SourceCode): void
 }>()
-
-const theme = computed<string>(() =>
-  store.state.theme != null ? "dark" : "light"
-)
 
 watch(
   () => props.availableLanguages,
@@ -125,7 +121,7 @@ watch(
 )
 
 watch(
-  theme,
+  () => props.theme,
   (val) => {
     if (val === "light") {
       cmOptions.value.theme = "ttcn"

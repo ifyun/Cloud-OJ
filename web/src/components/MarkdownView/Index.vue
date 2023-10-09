@@ -3,18 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { useStore } from "vuex"
-import MarkdownIt from "markdown-it"
-import { ImgPlugin } from "./markdown-img"
-import { KatexPlugin } from "./markdown-katex"
-import markdownItContainer from "markdown-it-container"
 import highlightJs from "highlight.js/lib/core"
-import markdown from "highlight.js/lib/languages/markdown"
 import c from "highlight.js/lib/languages/c"
 import cpp from "highlight.js/lib/languages/cpp"
-import python from "highlight.js/lib/languages/python"
 import java from "highlight.js/lib/languages/java"
+import markdown from "highlight.js/lib/languages/markdown"
+import python from "highlight.js/lib/languages/python"
+import MarkdownIt from "markdown-it"
+import markdownItContainer from "markdown-it-container"
+import { computed } from "vue"
+import { ImgPlugin } from "./markdown-img"
+import { KatexPlugin } from "./markdown-katex"
 
 highlightJs.registerLanguage("markdown", markdown)
 highlightJs.registerLanguage("c", c)
@@ -76,16 +75,12 @@ md.use(markdownItContainer, "info", {
     }
   })
 
-const store = useStore()
-
 const props = defineProps<{
   content: string
+  theme: "light" | "dark"
 }>()
 
 const html = computed<string>(() => md.render(props.content))
-const theme = computed<string>(() =>
-  store.state.theme != null ? "dark" : "light"
-)
 </script>
 
 <style lang="scss">

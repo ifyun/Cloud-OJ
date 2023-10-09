@@ -2,17 +2,17 @@
   <n-space v-if="isLoggedIn" align="center" size="small">
     <user-avatar
       size="small"
-      :uid="userInfo.uid!"
-      :nickname="userInfo.nickname!"
-      :has-avatar="userInfo.hasAvatar" />
+      :uid="userInfo!.uid!"
+      :nickname="userInfo!.nickname!"
+      :has-avatar="userInfo!.hasAvatar" />
     <n-dropdown
       trigger="click"
       :show-arrow="true"
       placement="bottom-end"
-      :options="userInfo.role === 1 ? userMenuOptions : adminMenuOptions"
+      :options="userInfo!.role === 1 ? userMenuOptions : adminMenuOptions"
       @select="userMenuSelect">
       <n-button text icon-placement="right">
-        {{ userInfo.nickname }}
+        {{ userInfo!.nickname }}
         <template #icon>
           <n-icon>
             <arrow-drop-down-round />
@@ -30,9 +30,9 @@
 
 <script setup lang="tsx">
 import { AuthApi } from "@/api/request"
-import { ErrorMessage, UserInfo } from "@/api/type"
+import { ErrorMessage } from "@/api/type"
 import { UserAvatar } from "@/components"
-import { Mutations } from "@/store"
+import { useStore } from "@/store"
 import { renderIcon } from "@/utils"
 import { HouseUser } from "@vicons/fa"
 import {
@@ -50,7 +50,6 @@ import {
 } from "naive-ui"
 import { computed } from "vue"
 import { RouterLink, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const store = useStore()
 const router = useRouter()
@@ -90,12 +89,12 @@ const adminMenuOptions = [
   }
 ]
 
-const isLoggedIn = computed<boolean>(() => {
-  return store.getters.isLoggedIn
+const isLoggedIn = computed(() => {
+  return store.user.isLoggedIn
 })
 
-const userInfo = computed<UserInfo>(() => {
-  return store.state.userInfo
+const userInfo = computed(() => {
+  return store.user.userInfo
 })
 
 function userMenuSelect(key: string) {
@@ -109,12 +108,12 @@ function login() {
 }
 
 function logoff() {
-  AuthApi.logoff(userInfo.value)
+  AuthApi.logoff(userInfo.value!)
     .catch((err: ErrorMessage) => {
       message.warning(err.toString())
     })
     .finally(() => {
-      store.commit(Mutations.CLEAR_TOKEN)
+      store.user.clearToken()
       login()
     })
 }

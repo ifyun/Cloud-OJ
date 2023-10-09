@@ -19,29 +19,24 @@
 </template>
 
 <script setup lang="ts">
+import { useStore } from "@/store"
 import { setTitle } from "@/utils"
-import { computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
-import UserProfile from "./UserProfile.vue"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import Overview from "./Overview.vue"
-import SolutionList from "@/views/components/Solutions.vue"
-import { UserInfo } from "@/api/type"
+import SolutionList from "./Solutions.vue"
+import UserProfile from "./UserProfile.vue"
 
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
-const userInfo = computed<UserInfo | null>(() => {
-  return store.state.userInfo
-})
-
-const uid = computed<number | null>(() => {
+const uid = computed(() => {
   if (route.params.id) {
     return Number(route.params.id)
-  } else if (userInfo.value != null) {
-    return userInfo.value.uid!
+  } else if (store.user.userInfo != null) {
+    return store.user.userInfo.uid!
   } else {
     return null
   }

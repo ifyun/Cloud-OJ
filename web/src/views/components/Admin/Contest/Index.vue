@@ -46,8 +46,9 @@
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, Page, UserInfo } from "@/api/type"
+import { Contest, ErrorMessage, Page } from "@/api/type"
 import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import {
@@ -75,9 +76,8 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { HTMLAttributes, computed, nextTick, onBeforeMount, ref } from "vue"
+import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
@@ -218,8 +218,6 @@ const contests = ref<Page<Contest>>({
   count: 0
 })
 
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
-
 onBeforeMount(() => {
   setTitle(route.meta.title as string)
   queryContests()
@@ -263,7 +261,7 @@ function pageChange(page: number) {
 function queryContests() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ContestApi.getAll(page, pageSize, userInfo.value)
+  ContestApi.getAll(page, pageSize, store.user.userInfo!)
     .then((data) => {
       contests.value = data
     })
@@ -284,7 +282,7 @@ function showInviteKey() {
 }
 
 function newInviteKey() {
-  ContestApi.newInviteKey(selectedContest!.contestId!, userInfo.value)
+  ContestApi.newInviteKey(selectedContest!.contestId!, store.user.userInfo!)
     .then((data) => {
       selectedContest!.inviteKey = data
       notification.info({
@@ -324,7 +322,7 @@ function deleteContest() {
         return false
       }
       d.loading = true
-      ContestApi.delete(selectedContest!.contestId!, userInfo.value)
+      ContestApi.delete(selectedContest!.contestId!, store.user.userInfo!)
         .then(() => {
           message.warning(`${selectedContest!.contestName} 已删除！`)
           queryContests()

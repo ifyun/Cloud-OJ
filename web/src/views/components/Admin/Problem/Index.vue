@@ -76,8 +76,9 @@
 
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
-import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
+import { ErrorMessage, Page, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
 import {
   PostAddRound as AddIcon,
@@ -104,13 +105,12 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { HTMLAttributes, computed, nextTick, onBeforeMount, ref } from "vue"
+import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
 const dialog = useDialog()
 
@@ -258,10 +258,6 @@ const delRule = {
   }
 }
 
-const userInfo = computed<UserInfo>(() => {
-  return store.state.userInfo
-})
-
 onBeforeMount(() => {
   setTitle("题目管理")
 
@@ -350,7 +346,7 @@ function deleteProblem() {
         return false
       }
       d.loading = true
-      ProblemApi.delete(selectedId!, userInfo.value)
+      ProblemApi.delete(selectedId!, store.user.userInfo!)
         .then(() => {
           message.warning(`${selectedTitle} 已删除！`)
           queryProblems()
@@ -373,7 +369,7 @@ function deleteProblem() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAll(page, pageSize, keyword.value, userInfo.value)
+  ProblemApi.getAll(page, pageSize, keyword.value, store.user.userInfo!)
     .then((data) => {
       problems.value = data
     })
@@ -390,7 +386,7 @@ function queryProblems() {
  */
 function toggleIsEnable(p: Problem, value: boolean) {
   p.enable = value
-  ProblemApi.changeState(p.problemId!, value, userInfo.value)
+  ProblemApi.changeState(p.problemId!, value, store.user.userInfo!)
     .then(() => {
       message.warning(`${p.problemId}.${p.title} 已${value ? "开放" : "禁用"}`)
     })

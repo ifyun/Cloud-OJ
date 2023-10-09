@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
 import { ErrorMessage, UsernamePassword } from "@/api/type"
-import { Mutations } from "@/store"
+import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { Lock as PasswordIcon, User as UserIcon } from "@vicons/fa"
 import {
@@ -49,25 +49,23 @@ import {
 } from "naive-ui"
 import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useStore } from "vuex"
 
-const loading = ref<boolean>(false)
 const store = useStore()
 const router = useRouter()
 const message = useMessage()
 
+const loading = ref<boolean>(false)
+const loginForm = ref<HTMLFormElement | null>(null)
 const user = ref<UsernamePassword>({
   username: "",
   password: ""
 })
 
-const loginForm = ref<HTMLFormElement | null>(null)
-
 const loginRules: FormRules = {
   username: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入用户名")
       } else if (value.length < 4) {
@@ -79,7 +77,7 @@ const loginRules: FormRules = {
   password: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入密码")
       } else if (value.length < 4) {
@@ -100,8 +98,8 @@ function login() {
       loading.value = true
       AuthApi.login(user.value)
         .then((token) => {
-          store.commit(Mutations.SAVE_TOKEN, token)
-          if (store.state.userInfo.role == 1) {
+          store.user.saveToken(token)
+          if (store.user.userInfo!.role == 1) {
             router.push({ path: "/" })
           } else {
             router.push({ path: "/admin/problem" })

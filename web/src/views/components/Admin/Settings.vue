@@ -79,31 +79,31 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue"
-import { useRoute } from "vue-router"
+import { SettingsApi } from "@/api/request"
+import { ErrorMessage, Settings } from "@/api/type"
+import ErrorResult from "@/components/ErrorResult.vue"
+import { useStore } from "@/store"
+import { setTitle } from "@/utils"
+import { SaveRound } from "@vicons/material"
 import {
   NButton,
   NCard,
-  NText,
   NIcon,
   NSpace,
   NSwitch,
+  NText,
   NThing,
   useMessage
 } from "naive-ui"
-import { SaveRound } from "@vicons/material"
-import ErrorResult from "@/components/ErrorResult.vue"
-import store from "@/store"
-import { ErrorMessage, Settings, UserInfo } from "@/api/type"
-import { SettingsApi } from "@/api/request"
-import { setTitle } from "@/utils"
+import { onBeforeMount, ref } from "vue"
+import { useRoute } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const message = useMessage()
 
 const error = ref<ErrorMessage | null>(null)
 const settings = ref<Settings>({})
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
 
 onBeforeMount(() => {
   setTitle(route.meta.title as string)
@@ -111,13 +111,13 @@ onBeforeMount(() => {
 })
 
 function getSettings() {
-  SettingsApi.get(userInfo.value)
+  SettingsApi.get(store.user.userInfo!)
     .then((data) => (settings.value = data))
     .catch((err: ErrorMessage) => (error.value = err))
 }
 
 function saveSettings() {
-  SettingsApi.save(settings.value, userInfo.value)
+  SettingsApi.save(settings.value, store.user.userInfo!)
     .then(() => message.success("设置已保存"))
     .catch((err: ErrorMessage) => message.error(err.toString()))
 }

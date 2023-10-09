@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue"
-import { NAvatar } from "naive-ui"
 import { ApiPath } from "@/api/request"
+import { NAvatar } from "naive-ui"
+import { ref, watch } from "vue"
 
 interface Props {
   uid: number

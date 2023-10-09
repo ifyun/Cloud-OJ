@@ -1,9 +1,11 @@
-import { createApp } from "vue"
 import router from "@/router"
-import store from "@/store"
-import "vfonts/Inter.css"
+import { createPinia } from "pinia"
 import "vfonts/FiraCode.css"
+import "vfonts/Inter.css"
+import { createApp } from "vue"
 import App from "./App.vue"
 import "./style.scss"
 
-createApp(App).use(router).use(store).mount("#app")
+const pinia = createPinia()
+
+createApp(App).use(router).use(pinia).mount("#app")

@@ -95,12 +95,17 @@
       <!-- 题目内容编辑器 -->
       <div class="editor-markdown">
         <div>
-          <markdown-editor v-model="problem.description" :read-only="loading" />
+          <markdown-editor
+            v-model="problem.description"
+            :read-only="loading"
+            :theme="theme"
+            :headers="headers" />
         </div>
         <div>
           <n-scrollbar style="max-height: 100%">
             <markdown-view
               :content="problem.description"
+              :theme="theme"
               style="margin: 30px 0 12px 0" />
           </n-scrollbar>
         </div>
@@ -109,15 +114,21 @@
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
     <n-drawer-content :native-scrollbar="false" body-content-style="padding: 0">
-      <markdown-view :content="helpDoc" style="padding: 24px" />
+      <markdown-view :content="helpDoc" :theme="theme" style="padding: 24px" />
     </n-drawer-content>
   </n-drawer>
 </template>
 
 <script setup lang="tsx">
-import { computed, onMounted, ref, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
+import { ProblemApi } from "@/api/request"
+import { ErrorMessage, Problem } from "@/api/type"
+import { MarkdownEditor, MarkdownView } from "@/components"
+import { useStore } from "@/store"
+import { setTitle } from "@/utils"
+import {
+  HelpOutlineRound as HelpIcon,
+  SaveOutlined as SaveIcon
+} from "@vicons/material"
 import {
   FormRules,
   NButton,
@@ -136,21 +147,15 @@ import {
   NSpin,
   useMessage
 } from "naive-ui"
-import {
-  HelpOutlineRound as HelpIcon,
-  SaveOutlined as SaveIcon
-} from "@vicons/material"
-import { MarkdownEditor, MarkdownView } from "@/components"
-import { ErrorMessage, Problem, UserInfo } from "@/api/type"
-import { ProblemApi } from "@/api/request"
-import { setTitle } from "@/utils"
+import { computed, onMounted, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import MarkdownHelp from "./help.md?raw"
 
 const problemForm = ref<HTMLFormElement | null>(null)
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
 
 const problem = ref<Problem>(new Problem())
@@ -171,7 +176,7 @@ const rules: FormRules = {
   score: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: number): Error | boolean {
+    validator(_, value: number): Error | boolean {
       if (value < 0 || value > 100) {
         return new Error("请输入分数")
       }
@@ -181,7 +186,7 @@ const rules: FormRules = {
   timeout: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: number): Error | boolean {
+    validator(_, value: number): Error | boolean {
       if (value < 100 || value > 10000) {
         return new Error("请输入时间限制")
       }
@@ -191,7 +196,7 @@ const rules: FormRules = {
   memoryLimit: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: number): Error | boolean {
+    validator(_, value: number): Error | boolean {
       if (value < 16 || value > 256) {
         return new Error("请输入内存限制")
       }
@@ -201,7 +206,7 @@ const rules: FormRules = {
   outputLimit: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: number): Error | boolean {
+    validator(_, value: number): Error | boolean {
       if (value < 1 || value > 128) {
         return new Error("请输入输出限制")
       }
@@ -210,12 +215,16 @@ const rules: FormRules = {
   }
 }
 
-const helpDoc = computed(() => {
-  return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
+const theme = computed(() => (store.app.theme != null ? "dark" : "light"))
+
+const headers = computed(() => {
+  return {
+    Authorization: `Baerer ${store.user.userInfo!.token}`
+  }
 })
 
-const userInfo = computed<UserInfo>(() => {
-  return store.state.userInfo
+const helpDoc = computed(() => {
+  return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
 })
 
 const title = computed<string>(() => {
@@ -266,7 +275,7 @@ function toggleHelp() {
 }
 
 function queryProblem(problemId: number) {
-  ProblemApi.getSingle(problemId, userInfo.value)
+  ProblemApi.getSingle(problemId, store.user.userInfo!)
     .then((data) => {
       if (data.category.length > 0) {
         data.tags = data.category.split(",")
@@ -300,7 +309,7 @@ function handleSave() {
  */
 function save() {
   loading.value = true
-  ProblemApi.save(problem.value, userInfo.value, create.value)
+  ProblemApi.save(problem.value, store.user.userInfo!, create.value)
     .then(() => {
       message.success(`${problem.value.title} 已保存`)
       create.value && back()

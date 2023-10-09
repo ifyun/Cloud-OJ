@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { NButton, NDivider, NIcon } from "naive-ui"
 import { Github as GithubIcon } from "@vicons/fa"
+import { NButton, NDivider, NIcon } from "naive-ui"
 </script>
 
 <template>

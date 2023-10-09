@@ -1,5 +1,6 @@
 <template>
   <div v-if="error == null" class="wrap">
+    <!-- 输入邀请码部分 -->
     <n-space v-if="inputKey" vertical align="center">
       <n-form-item
         label="输入竞赛邀请码"
@@ -18,6 +19,7 @@
         </template>
       </n-button>
     </n-space>
+    <!-- 题目部分 -->
     <n-space v-else vertical size="large">
       <n-space align="center">
         <n-skeleton v-if="contestState == null" round width="120" />
@@ -51,6 +53,7 @@
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import {
@@ -73,7 +76,6 @@ import {
 } from "naive-ui"
 import { Component, computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const store = useStore()
 const router = useRouter()
@@ -91,15 +93,13 @@ const contest = ref<Contest | null>(null)
 const languages = ref<Array<number>>([])
 const problems = ref<Array<Problem>>([])
 
-const userInfo = computed(() => store.state.userInfo)
-
 const columns: DataTableColumns<Problem> = [
   {
     title: "#",
     key: "#",
     align: "right",
     width: 50,
-    render: (row, rowIndex: number) => <span>{rowIndex + 1}</span>
+    render: (_, rowIndex: number) => <span>{rowIndex + 1}</span>
   },
   {
     title: "ID",
@@ -195,7 +195,7 @@ function queryContest(cid: number) {
 
 function queryProblems(cid: number) {
   loading.value = true
-  ContestApi.getProblemsFromStarted(cid, userInfo.value)
+  ContestApi.getProblemsFromStarted(cid, store.user.userInfo!)
     .then((data) => {
       problems.value = data
     })
@@ -214,7 +214,7 @@ function queryProblems(cid: number) {
 function inputInviteKey() {
   const cid = contest.value!.contestId!
 
-  ContestApi.joinContest(userInfo.value, cid, inviteKey.value)
+  ContestApi.joinContest(store.user.userInfo!, cid, inviteKey.value)
     .then(() => {
       inputKey.value = false
       queryProblems(cid)

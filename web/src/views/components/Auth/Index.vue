@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
 import AppLogo from "@/components/Logo.vue"
+import { useStore } from "@/store"
 import { themeOverridesDark } from "@/theme"
 import BottomInfo from "@/views/layout/BottomInfo.vue"
 import {
@@ -45,7 +46,6 @@ import {
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useStore } from "vuex"
 import Login from "./Login.vue"
 import Signup from "./Signup.vue"
 
@@ -54,7 +54,7 @@ const router = useRouter()
 const checked = ref<boolean>(false)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.state.theme != null) {
+  if (store.app.theme != null) {
     return themeOverridesDark
   }
 
@@ -64,9 +64,9 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
 withDefaults(defineProps<{ tab: string }>(), { tab: "login" })
 
 onBeforeMount(async () => {
-  if (store.state.userInfo != null) {
+  if (store.user.userInfo != null) {
     try {
-      await AuthApi.verify(store.state.userInfo)
+      await AuthApi.verify(store.user.userInfo)
       await router.push({ path: "/" })
     } catch (error) {
       checked.value = true

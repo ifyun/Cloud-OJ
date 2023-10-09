@@ -10,9 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue"
-import { NResult } from "naive-ui"
 import { ErrorMessage } from "@/api/type"
+import { NResult } from "naive-ui"
+import { ref, watch } from "vue"
 
 const props = defineProps<{
   error: ErrorMessage

@@ -23,12 +23,12 @@
 
 <script setup lang="ts">
 import { ApiPath } from "@/api/request"
-import { ErrorMessage, JudgeResult, UserInfo } from "@/api/type"
+import { ErrorMessage, JudgeResult } from "@/api/type"
+import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { ramUsage } from "@/utils"
 import { NResult, NSpace, NText } from "naive-ui"
 import { computed, onMounted, onUnmounted, ref } from "vue"
-import { useStore } from "vuex"
 
 interface Result {
   status: any
@@ -46,8 +46,7 @@ const store = useStore()
 const error = ref<ErrorMessage | null>(null)
 const solution = ref<JudgeResult | null>(null)
 
-const darkTheme = computed<boolean>(() => store.state.theme != null)
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
+const darkTheme = computed(() => store.app.theme != null)
 
 const result = computed<Result>(() => {
   const s = solution.value
@@ -95,7 +94,9 @@ function usage(r: JudgeResult) {
  */
 function fetchResult() {
   sse = new EventSource(
-    `${ApiPath.SOLUTION}/${userInfo.value.uid}/${props.submitTime}?token=${userInfo.value.token}`
+    `${ApiPath.SOLUTION}/${store.user.userInfo!.uid}/${
+      props.submitTime
+    }?token=${store.user.userInfo!.token}`
   )
 
   sse.onmessage = (event) => {

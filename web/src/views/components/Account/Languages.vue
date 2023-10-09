@@ -31,11 +31,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { NEmpty, NH3, NIcon, NText } from "naive-ui"
-import { CircleRound } from "@vicons/material"
 import { Language } from "@/api/type"
 import { LanguageColors, LanguageNames } from "@/type"
+import { CircleRound } from "@vicons/material"
+import { NEmpty, NH3, NIcon, NText } from "naive-ui"
+import { computed } from "vue"
 
 const props = defineProps<{ languages: Array<Language> }>()
 

@@ -21,9 +21,9 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, ref, watch } from "vue"
-import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { ContestApi } from "@/api/request"
+import { ErrorMessage, Page, Problem } from "@/api/type"
+import { useStore } from "@/store"
 import {
   DataTableColumns,
   NButton,
@@ -33,8 +33,8 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { ErrorMessage, Page, Problem, UserInfo } from "@/api/type"
-import { ContestApi } from "@/api/request"
+import { ref, watch } from "vue"
+import { useRouter } from "vue-router"
 
 const props = defineProps<{ contestId?: number }>()
 
@@ -138,10 +138,6 @@ const columns2: DataTableColumns<Problem> = [
   }
 ]
 
-const userInfo = computed<UserInfo>(() => {
-  return store.state.userInfo
-})
-
 watch(
   () => props.contestId,
   (value) => {
@@ -163,7 +159,7 @@ function queryProblems() {
     props.contestId!,
     page,
     pageSize,
-    userInfo.value
+    store.user.userInfo!
   )
     .then((data) => {
       problems.value = data
@@ -180,7 +176,7 @@ function queryProblems() {
  * 获取当前竞赛的题目
  */
 function queryContestProblems() {
-  ContestApi.getProblems(props.contestId!, userInfo.value)
+  ContestApi.getProblems(props.contestId!, store.user.userInfo!)
     .then((data) => {
       contestProblems.value = data
     })
@@ -202,7 +198,7 @@ function toSubmission(p: Problem) {
  * 将题目添加到当前竞赛
  */
 function addToContest(p: Problem) {
-  ContestApi.addProblem(props.contestId!, p.problemId!, userInfo.value)
+  ContestApi.addProblem(props.contestId!, p.problemId!, store.user.userInfo!)
     .then(() => {
       message.success(`[${p.title}] 已添加`)
     })
@@ -228,7 +224,7 @@ function handleRemove(p: Problem) {
  * 从竞赛中移除题目
  */
 function remove(p: Problem) {
-  ContestApi.removeProblem(props.contestId!, p.problemId!, userInfo.value)
+  ContestApi.removeProblem(props.contestId!, p.problemId!, store.user.userInfo!)
     .then(() => {
       message.warning(`[${p.title}] 已移除`)
     })

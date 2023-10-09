@@ -5,11 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, watch } from "vue"
-import { useStore } from "vuex"
-import * as echarts from "echarts/core"
-import { EChartsType } from "echarts/core"
-import { SVGRenderer } from "echarts/renderers"
+import { Activity } from "@/api/type"
+import { useStore } from "@/store"
 import { HeatmapChart, HeatmapSeriesOption } from "echarts/charts"
 import {
   CalendarComponent,
@@ -17,7 +14,10 @@ import {
   VisualMapComponent,
   VisualMapComponentOption
 } from "echarts/components"
-import { Activity } from "@/api/type"
+import * as echarts from "echarts/core"
+import { EChartsType } from "echarts/core"
+import { SVGRenderer } from "echarts/renderers"
+import { computed, nextTick, onMounted, watch } from "vue"
 
 type ECOption = echarts.ComposeOption<
   HeatmapSeriesOption | CalendarComponentOption | VisualMapComponentOption
@@ -73,9 +73,8 @@ const dark = {
 
 const props = defineProps<{ data: Array<Activity>; year: string }>()
 const store = useStore()
-const theme = computed(() => store.state.theme)
 const heatmapTheme = computed(() => {
-  return theme.value == null ? light : dark
+  return store.app.theme == null ? light : dark
 })
 
 let heatmap: EChartsType | null = null

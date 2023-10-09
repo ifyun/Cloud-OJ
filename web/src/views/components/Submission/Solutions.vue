@@ -29,6 +29,7 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { useStore } from "@/store"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -49,14 +50,12 @@ import {
   NText,
   NTooltip
 } from "naive-ui"
-import { Component, computed, onBeforeMount, ref } from "vue"
-import { useStore } from "vuex"
+import { Component, onBeforeMount, ref } from "vue"
 
 const store = useStore()
 
 const props = defineProps<{ problemId: string }>()
 
-const userInfo = computed(() => store.state.userInfo)
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
 const solutions = ref<Page<JudgeResult>>({
@@ -153,7 +152,7 @@ onBeforeMount(() => {
 
 function querySolutions() {
   loading.value = true
-  UserApi.getSolutions(1, 15, userInfo.value, 1, props.problemId)
+  UserApi.getSolutions(1, 15, store.user.userInfo!, 1, props.problemId)
     .then((data) => (solutions.value = data))
     .catch((err) => (error.value = err))
     .finally(() => (loading.value = false))

@@ -45,6 +45,7 @@
 <script setup lang="tsx">
 import { ApiPath, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, TestData } from "@/api/type"
+import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import {
   ArchiveRound as ArchiveIcon,
@@ -70,13 +71,12 @@ import {
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const action = ApiPath.TEST_DATA
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
 
 const loading = ref<boolean>(false)
@@ -166,14 +166,9 @@ const title = computed(() => {
   }
 })
 
-const userInfo = computed(() => {
-  return store.state.userInfo
-})
-
 const headers = computed(() => {
   return {
-    userId: userInfo.value.userId,
-    Authorization: `Baerer ${userInfo.value.token}`
+    Authorization: `Baerer ${store.user.userInfo!.token}`
   }
 })
 
@@ -200,7 +195,7 @@ onBeforeMount(() => {
   if (reg.test(id)) {
     loading.value = true
     const problemId = Number(id)
-    ProblemApi.getSingle(problemId, userInfo.value)
+    ProblemApi.getSingle(problemId, store.user.userInfo!)
       .then((p) => {
         problem.value = p
         queryData(p.problemId!)
@@ -213,7 +208,7 @@ onBeforeMount(() => {
 })
 
 function queryData(id: number) {
-  ProblemApi.getTestData(id, userInfo.value)
+  ProblemApi.getTestData(id, store.user.userInfo!)
     .then((data) => {
       testData.value = data
     })
@@ -266,7 +261,11 @@ function downloadFile(fileName: string) {
 }
 
 function deleteFile(fileName: string) {
-  ProblemApi.deleteTestData(problem.value!.problemId!, fileName, userInfo.value)
+  ProblemApi.deleteTestData(
+    problem.value!.problemId!,
+    fileName,
+    store.user.userInfo!
+  )
     .then(() => {
       message.warning(`${fileName} 已删除`)
       queryData(problem.value!.problemId!)

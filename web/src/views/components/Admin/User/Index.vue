@@ -45,8 +45,9 @@
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, Page, User, UserInfo } from "@/api/type"
+import { ErrorMessage, Page, User } from "@/api/type"
 import { ErrorResult, UserAvatar } from "@/components"
+import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import {
   CalendarCheck as DateIcon,
@@ -68,13 +69,12 @@ import {
   NTag,
   NText
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
@@ -104,7 +104,7 @@ const columns: DataTableColumns<User> = [
     key: "#",
     align: "right",
     width: 50,
-    render: (row, rowIndex: number) => (
+    render: (_, rowIndex: number) => (
       <span>
         {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
       </span>
@@ -130,13 +130,13 @@ const columns: DataTableColumns<User> = [
         <UserAvatar
           size="small"
           uid={row.uid!}
-          nickname={row.nickname}
+          nickname={row.nickname!}
           hasAvatar={row.hasAvatar}
         />
         <NButton text={true} strong={true}>
           {row.nickname}
         </NButton>
-        {row.uid == userInfo.value.uid ? (
+        {row.uid == store.user.userInfo!.uid ? (
           <NTag type="primary" size="small" round={true}>
             你自己
           </NTag>
@@ -184,8 +184,6 @@ const columns: DataTableColumns<User> = [
   }
 ]
 
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
-
 onBeforeMount(() => {
   setTitle(route.meta.title as string)
 
@@ -232,7 +230,7 @@ function queryUsers() {
     pagination.value.pageSize,
     filter.value,
     filterValue.value,
-    userInfo.value
+    store.user.userInfo!
   )
     .then((data) => {
       users.value = data

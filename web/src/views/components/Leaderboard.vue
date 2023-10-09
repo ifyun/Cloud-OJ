@@ -29,8 +29,11 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { ContestApi, RankingApi } from "@/api/request"
+import { Contest, ErrorMessage, Page, Ranking } from "@/api/type"
+import { ErrorResult, UserAvatar } from "@/components"
+import EmptyData from "@/components/EmptyData.vue"
+import { StateTag, setTitle, stateTag } from "@/utils"
 import {
   DataTableColumns,
   NDataTable,
@@ -40,11 +43,8 @@ import {
   NTag,
   NText
 } from "naive-ui"
-import { ErrorResult, UserAvatar } from "@/components"
-import { ContestApi, RankingApi } from "@/api/request"
-import { Contest, ErrorMessage, Page, Ranking } from "@/api/type"
-import { StateTag, setTitle, stateTag } from "@/utils"
-import EmptyData from "@/components/EmptyData.vue"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 const route = useRoute()
 const router = useRouter()

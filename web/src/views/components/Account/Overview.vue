@@ -12,21 +12,21 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue"
-import { NDivider, NSpace, useMessage } from "naive-ui"
-import Languages from "./Languages.vue"
-import ResultsPanel from "./ResultsPanel.vue"
-import Heatmap from "./Heatmap.vue"
-import Timeline from "./Timeline.vue"
 import { UserApi } from "@/api/request"
 import { ErrorMessage, Overview } from "@/api/type"
-import moment from "moment"
+import dayjs from "dayjs"
+import { NDivider, NSpace, useMessage } from "naive-ui"
+import { onBeforeMount, ref } from "vue"
+import Heatmap from "./Heatmap.vue"
+import Languages from "./Languages.vue"
+import ResultsPanel from "./ResultsPanel.vue"
+import Timeline from "./Timeline.vue"
 
 const props = defineProps<{ uid: number }>()
 
 const message = useMessage()
 
-const year = ref<number>(moment().year())
+const year = ref<number>(dayjs().year())
 const overview = ref<Overview>(new Overview())
 
 onBeforeMount(() => {

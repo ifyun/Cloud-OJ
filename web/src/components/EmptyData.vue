@@ -16,6 +16,6 @@
 </template>
 
 <script setup>
-import { NText, NIcon } from "naive-ui"
 import { UpcomingRound } from "@vicons/material"
+import { NIcon, NText } from "naive-ui"
 </script>

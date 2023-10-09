@@ -16,12 +16,12 @@
 </template>
 
 <script setup lang="tsx">
-import { RouterLink, useRoute } from "vue-router"
-import { NMenu, NSpace } from "naive-ui"
 import { Logo } from "@/components"
+import { NMenu, NSpace } from "naive-ui"
+import { computed } from "vue"
+import { RouterLink, useRoute } from "vue-router"
 import ThemeSwitch from "./ThemeSwitch.vue"
 import UserMenu from "./UserMenu.vue"
-import { computed } from "vue"
 
 const route = useRoute()
 

@@ -88,8 +88,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
-import { useRouter } from "vue-router"
+import { UserApi } from "@/api/request"
+import { ErrorMessage, User } from "@/api/type"
+import { setTitle } from "@/utils"
+import {
+  Building,
+  Envelope as MailIcon,
+  Lock as PasswordIcon,
+  User as UserIcon,
+  IdCard as UsernameIcon
+} from "@vicons/fa"
+import { hashSync } from "bcryptjs"
 import {
   FormRules,
   NButton,
@@ -99,30 +108,21 @@ import {
   NInput,
   useMessage
 } from "naive-ui"
-import {
-  Building,
-  Envelope as MailIcon,
-  Lock as PasswordIcon,
-  IdCard as UsernameIcon,
-  User as UserIcon
-} from "@vicons/fa"
-import { hashSync } from "bcryptjs"
-import { ErrorMessage, User } from "@/api/type"
-import { setTitle } from "@/utils"
-import { UserApi } from "@/api/request"
+import { onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
 const router = useRouter()
 const message = useMessage()
 
 const loading = ref<boolean>(false)
-const user = ref<User>(new User())
 const signupForm = ref<HTMLFormElement | null>(null)
+const user = ref<User>(new User())
 
 const signupRules: FormRules = {
   username: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入用户名")
       } else if (value.length < 6) {
@@ -135,7 +135,7 @@ const signupRules: FormRules = {
   nickname: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入昵称")
       } else if (value.length < 2) {
@@ -148,7 +148,7 @@ const signupRules: FormRules = {
   password: {
     required: true,
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       const regx = /^[a-zA-Z0-9_.-]*$/
 
       if (!value) {
@@ -165,7 +165,7 @@ const signupRules: FormRules = {
   confirmPassword: {
     required: true,
     trigger: ["blur", "input"],
-    validator: (rule: any, value: string): Error | boolean => {
+    validator: (_, value: string): Error | boolean => {
       if (!value) {
         return new Error("请确认密码")
       } else if (value !== user.value.password) {
@@ -176,7 +176,7 @@ const signupRules: FormRules = {
   },
   email: {
     trigger: ["blur", "input"],
-    validator(rule: any, value: string): Error | boolean {
+    validator(_, value: string): Error | boolean {
       const regex =
         /^[a-zA-Z\d.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/
       if (value.length === 0) {

@@ -7,21 +7,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, CSSProperties, RendererNode } from "vue"
-import { useStore } from "vuex"
-import { NIcon, NSwitch } from "naive-ui"
+import { useStore } from "@/store"
 import { DarkModeRound, LightModeRound } from "@vicons/material"
-import { Mutations } from "@/store"
+import { NIcon, NSwitch } from "naive-ui"
+import { computed, CSSProperties, RendererNode } from "vue"
 
 let icon: RendererNode | null = null
 
 const store = useStore()
 const isDarkTheme = computed<boolean>({
   get: () => {
-    return store.state.theme != null
+    return store.app.theme != null
   },
   set: (value) => {
-    store.commit(Mutations.CHANGE_THEME, value ? "dark" : "light")
+    store.app.setTheme(value ? "dark" : "light")
   }
 })
 

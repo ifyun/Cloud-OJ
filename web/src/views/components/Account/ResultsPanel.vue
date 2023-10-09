@@ -5,11 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, watch } from "vue"
-import { useStore } from "vuex"
-import * as echarts from "echarts/core"
-import { EChartsType } from "echarts/core"
-import { SVGRenderer } from "echarts/renderers"
+import { Statistics } from "@/api/type"
 import { PieChart, PieSeriesOption } from "echarts/charts"
 import {
   LegendComponent,
@@ -19,7 +15,11 @@ import {
   TooltipComponent,
   TooltipComponentOption
 } from "echarts/components"
-import { Statistics } from "@/api/type"
+import * as echarts from "echarts/core"
+import { EChartsType } from "echarts/core"
+import { SVGRenderer } from "echarts/renderers"
+import { computed, nextTick, onMounted, watch } from "vue"
+import { useStore } from "@/store"
 
 type ECOption = echarts.ComposeOption<
   | PieSeriesOption
@@ -72,13 +72,14 @@ const dark = {
 
 const keys = ["AC", "WA", "TLE", "MLE", "RE", "CE"]
 
+const store = useStore()
+
 const props = defineProps<{
   data: Statistics
 }>()
-const store = useStore()
-const theme = computed(() => store.state.theme)
+
 const chartTheme = computed(() => {
-  return theme.value == null ? light : dark
+  return store.app.theme == null ? light : dark
 })
 
 const option: ECOption = {

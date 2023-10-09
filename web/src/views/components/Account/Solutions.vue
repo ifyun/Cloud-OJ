@@ -45,6 +45,7 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { useStore } from "@/store"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -69,9 +70,8 @@ import {
   NText,
   NTooltip
 } from "naive-ui"
-import { Component, computed, onBeforeMount, ref } from "vue"
+import { Component, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const store = useStore()
 const route = useRoute()
@@ -82,8 +82,6 @@ const pagination = ref({
   pageSize: 15,
   loading: true
 })
-
-const userInfo = computed(() => store.state.userInfo)
 
 const error = ref<ErrorMessage | null>(null)
 const solutions = ref<Page<JudgeResult>>({
@@ -234,7 +232,7 @@ function querySolutions() {
   UserApi.getSolutions(
     page,
     pageSize,
-    userInfo.value,
+    store.user.userInfo!,
     filter.value,
     filterValue.value
   )

@@ -10,8 +10,17 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, nextTick, onMounted, ref, watch } from "vue"
-import { useStore } from "vuex"
+import { ApiPath } from "@/api/request"
+import { ArchiveRound as ArchiveIcon } from "@vicons/material"
+import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
+import "codemirror/addon/scroll/simplescrollbars"
+import "codemirror/addon/scroll/simplescrollbars.css"
+import "codemirror/lib/codemirror.css"
+import "codemirror/mode/markdown/markdown.js"
+import "codemirror/theme/ayu-dark.css"
+import "codemirror/theme/juejin.css"
+import "codemirror/theme/material-darker.css"
+import debounce from "lodash/debounce"
 import {
   NIcon,
   NText,
@@ -21,23 +30,12 @@ import {
   UploadInst,
   useDialog
 } from "naive-ui"
-import { ArchiveRound as ArchiveIcon } from "@vicons/material"
-import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
-import "codemirror/lib/codemirror.css"
-import "codemirror/theme/ayu-dark.css"
-import "codemirror/theme/material-darker.css"
-import "codemirror/theme/juejin.css"
-import "codemirror/addon/scroll/simplescrollbars.css"
-import "codemirror/addon/scroll/simplescrollbars"
-import "codemirror/mode/markdown/markdown.js"
+import { nextTick, onMounted, ref, watch } from "vue"
 import MarkdownToolbar from "./Toolbar.vue"
-import debounce from "lodash/debounce"
-import { ApiPath } from "@/api/request"
 
 let cmEditor: Editor | null = null
 const action = ApiPath.PROBLEM_IMAGE
 
-const store = useStore()
 const dialog = useDialog()
 
 const cmOptions: EditorConfiguration = {
@@ -57,6 +55,8 @@ const props = withDefaults(
   defineProps<{
     modelValue: string
     readOnly: boolean
+    theme: "light" | "dark"
+    headers: Record<string, string>
   }>(),
   {
     modelValue: "",
@@ -69,17 +69,9 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: string): void
 }>()
 
-const theme = computed(() => store.state.theme)
 const fileCount = ref<number>(0)
 const uploaded = ref<boolean>(false)
 const uploadRef = ref<UploadInst | null>(null)
-
-const headers = computed(() => {
-  return {
-    userId: store.state.userInfo.userId,
-    Authorization: `Baerer ${store.state.userInfo.token}`
-  }
-})
 
 watch(
   () => props.readOnly,
@@ -89,10 +81,10 @@ watch(
 )
 
 watch(
-  theme,
+  () => props.theme,
   (val) => {
     nextTick(() => {
-      if (val == null) {
+      if (val === "light") {
         cmEditor!.setOption("theme", "juejin")
       } else {
         cmEditor!.setOption("theme", "ayu-dark")
@@ -302,7 +294,7 @@ function addImage(link: boolean) {
         <NUpload
           ref={uploadRef}
           action={action}
-          headers={headers.value}
+          headers={props.headers}
           showRetryButton={false}
           accept=".jpg,.png,.svg"
           onChange={fileListChange}

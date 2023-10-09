@@ -69,7 +69,12 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { onBeforeMount } from "vue"
+import { setTitle } from "@/utils"
+import highlightJs from "highlight.js/lib/core"
+import cpp from "highlight.js/lib/languages/cpp"
+import java from "highlight.js/lib/languages/java"
+import kotlin from "highlight.js/lib/languages/kotlin"
+import py from "highlight.js/lib/languages/python"
 import {
   NAlert,
   NCard,
@@ -79,12 +84,7 @@ import {
   NH2,
   NH3
 } from "naive-ui"
-import highlightJs from "highlight.js/lib/core"
-import cpp from "highlight.js/lib/languages/cpp"
-import py from "highlight.js/lib/languages/python"
-import java from "highlight.js/lib/languages/java"
-import kotlin from "highlight.js/lib/languages/kotlin"
-import { setTitle } from "@/utils"
+import { onBeforeMount } from "vue"
 
 highlightJs.registerLanguage("cpp", cpp)
 highlightJs.registerLanguage("py", py)

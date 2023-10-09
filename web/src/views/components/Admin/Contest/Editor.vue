@@ -66,9 +66,14 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, onBeforeMount, ref, watch } from "vue"
-import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
+import { ContestApi } from "@/api/request"
+import { Contest, ErrorMessage } from "@/api/type"
+import { useStore } from "@/store"
+import { LanguageOption, LanguageOptions } from "@/type"
+import { LanguageUtil, setTitle } from "@/utils"
+import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
+import { SaveOutlined as SaveIcon } from "@vicons/material"
+import dayjs from "dayjs"
 import {
   FormRules,
   NButton,
@@ -85,17 +90,12 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
-import dayjs from "dayjs"
-import { SaveOutlined as SaveIcon } from "@vicons/material"
-import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
-import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, UserInfo } from "@/api/type"
-import { LanguageOption, LanguageOptions } from "@/type"
-import { LanguageUtil, setTitle } from "@/utils"
+import { computed, onBeforeMount, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
 
 const contest = ref<Contest>(new Contest())
@@ -104,6 +104,7 @@ const languages = ref<Array<number>>([])
 const loading = ref<boolean>(false)
 const currentTab = ref<string>("base-info")
 const create = ref<boolean>(false)
+const contestForm = ref<HTMLFormElement | null>(null)
 
 const rules: FormRules = {
   contestName: {
@@ -146,11 +147,7 @@ const subtitle = computed(() => {
   }
 })
 
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
-
 const showSaveButton = computed<boolean>(() => currentTab.value === "base-info")
-
-const contestForm = ref<HTMLFormElement | null>(null)
 
 watch(
   () => contest.value.timeRange,
@@ -209,7 +206,7 @@ function handleSave() {
 }
 
 function save() {
-  ContestApi.save(contest.value, userInfo.value, create.value)
+  ContestApi.save(contest.value, store.user.userInfo!, create.value)
     .then(() => {
       message.success(`${contest.value.contestName} 保存成功`)
     })

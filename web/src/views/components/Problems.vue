@@ -50,6 +50,7 @@ export default {
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { EmptyData, ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
@@ -66,7 +67,6 @@ import {
 } from "naive-ui"
 import { Component, computed, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 
 const store = useStore()
 const route = useRoute()
@@ -80,8 +80,6 @@ const pagination = ref({
 const loading = ref<boolean>(true)
 const error = ref<ErrorMessage | null>(null)
 
-const userInfo = computed(() => store.state.userInfo)
-
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
   {
@@ -89,7 +87,7 @@ const problemColumns: DataTableColumns<Problem> = [
     key: "#",
     align: "right",
     width: 50,
-    render: (row, rowIndex: number) => (
+    render: (_, rowIndex: number) => (
       <span>
         {(pagination.value.page - 1) * pagination.value.pageSize + rowIndex + 1}
       </span>
@@ -232,7 +230,7 @@ function search() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAllOpened(page, pageSize, keyword.value, userInfo.value)
+  ProblemApi.getAllOpened(page, pageSize, keyword.value, store.user.userInfo)
     .then((data) => {
       problems.value = data
     })

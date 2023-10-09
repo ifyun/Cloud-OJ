@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { useStore } from "@/store"
 import { themeOverridesDark } from "@/theme"
 import { BottomInfo, TopNavbar } from "@/views/layout"
 import type { GlobalThemeOverrides } from "naive-ui"
@@ -39,12 +40,11 @@ import {
   NMessageProvider
 } from "naive-ui"
 import { computed } from "vue"
-import { useStore } from "vuex"
 
 const store = useStore()
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.state.theme != null) {
+  if (store.app.theme != null) {
     return themeOverridesDark
   }
 

@@ -15,27 +15,26 @@
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
-import { Mutations } from "@/store"
 import { themeOverrides } from "@/theme"
 import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
 import { computed, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
+import { useStore } from "@/store"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
 const theme = computed(() => {
-  return store.state.theme
+  return store.app.theme
 })
 
 const reload = computed(() => {
-  return store.state.reload
+  return store.app.reload
 })
 
 const isLoggedIn = computed(() => {
-  return store.getters.isLoggedIn
+  return store.user.isLoggedIn
 })
 
 router.beforeEach(() => {
@@ -47,13 +46,13 @@ router.beforeEach(() => {
     }
   })
 
-  store.commit(Mutations.SET_BREADCRUMB, routes)
+  store.app.setBreadcrumb(routes)
 
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    AuthApi.verify(store.state.userInfo).catch((error: ErrorMessage) => {
+    AuthApi.verify(store.user.userInfo!).catch((error: ErrorMessage) => {
       if (error.status === 401) {
-        store.commit(Mutations.CLEAR_TOKEN)
+        store.user.clearToken()
         router.push({ name: "auth", params: { tab: "login" } })
       }
     })

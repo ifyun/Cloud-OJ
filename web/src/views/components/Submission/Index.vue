@@ -43,6 +43,7 @@
                 <!-- 题目内容 -->
                 <markdown-view
                   :content="problem.description"
+                  :theme="theme"
                   style="margin-top: 12px" />
               </n-tab-pane>
               <n-tab-pane
@@ -61,8 +62,9 @@
         <div style="overflow: hidden">
           <code-editor
             :value="code"
-            :available-languages="problem.languages"
+            :theme="theme"
             :loading="disableSubmit"
+            :available-languages="problem.languages"
             @submit="submitClick" />
         </div>
       </div>
@@ -80,8 +82,9 @@
 
 <script setup lang="ts">
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
-import { ErrorMessage, Problem, SubmitData, UserInfo } from "@/api/type"
+import { ErrorMessage, Problem, SubmitData } from "@/api/type"
 import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
+import { useStore } from "@/store"
 import { SourceCode } from "@/type"
 import { setTitle } from "@/utils"
 import {
@@ -105,14 +108,13 @@ import {
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "vuex"
 import ResultDialog from "./ResultDialog.vue"
 import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
 
 const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
@@ -128,7 +130,8 @@ const error = ref<ErrorMessage | null>(null)
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
 const submitTime = ref<number>(0)
-const userInfo = computed<UserInfo>(() => store.state.userInfo)
+
+const theme = computed(() => (store.app.theme != null ? "dark" : "light"))
 
 let problemId: number | null = null
 let contestId: number | null = null
@@ -173,7 +176,7 @@ function changeTab(value: string) {
 function queryProblem() {
   if (contestId == null) {
     // 非竞赛题目
-    ProblemApi.getSingle(problemId!, userInfo.value)
+    ProblemApi.getSingle(problemId!, store.user.userInfo!)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -182,7 +185,7 @@ function queryProblem() {
       .finally(() => (loading.value = false))
   } else {
     // 竞赛题目
-    ContestApi.getProblem(contestId, problemId!, userInfo.value)
+    ContestApi.getProblem(contestId, problemId!, store.user.userInfo!)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -208,10 +211,10 @@ function submit(data: SourceCode) {
     contestId,
     sourceCode: data.code.trim(),
     type: 0,
-    uid: userInfo.value.uid!
+    uid: store.user.userInfo!.uid!
   }
 
-  JudgeApi.submit(submitData, userInfo.value)
+  JudgeApi.submit(submitData, store.user.userInfo!)
     .then((time) => {
       submitTime.value = time
       showResult.value = true
