@@ -70,7 +70,6 @@ import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage } from "@/api/type"
 import { LanguageOption, LanguageOptions } from "@/type"
 import { LanguageUtil, setTitle } from "@/utils"
-import ProblemManage from "@/views/components/Admin/Contest/ProblemManage.vue"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import dayjs from "dayjs"
 import {
@@ -91,6 +90,7 @@ import {
 } from "naive-ui"
 import { computed, onBeforeMount, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import ProblemManage from "./ProblemManage.vue"
 
 const route = useRoute()
 const router = useRouter()

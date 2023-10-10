@@ -1,7 +1,6 @@
 <template>
   <div class="admin-wrap">
-    <error-result v-if="error != null" :error="error" />
-    <n-space v-else vertical size="large">
+    <n-space v-if="!loading" vertical size="large">
       <n-card>
         <n-thing>
           <template #header>显示所有竞赛</template>
@@ -81,7 +80,6 @@ export default {
 <script setup lang="ts">
 import { SettingsApi } from "@/api/request"
 import { ErrorMessage, Settings } from "@/api/type"
-import ErrorResult from "@/components/ErrorResult.vue"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { SaveRound } from "@vicons/material"
@@ -102,7 +100,7 @@ const store = useStore()
 const route = useRoute()
 const message = useMessage()
 
-const error = ref<ErrorMessage | null>(null)
+const loading = ref<boolean>(true)
 const settings = ref<Settings>({})
 
 onBeforeMount(() => {
@@ -112,13 +110,24 @@ onBeforeMount(() => {
 
 function getSettings() {
   SettingsApi.get()
-    .then((data) => (settings.value = data))
-    .catch((err: ErrorMessage) => (error.value = err))
+    .then((data) => {
+      settings.value = data
+    })
+    .catch((err: ErrorMessage) => {
+      store.app.setError(err)
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function saveSettings() {
   SettingsApi.save(settings.value)
-    .then(() => message.success("设置已保存"))
-    .catch((err: ErrorMessage) => message.error(err.toString()))
+    .then(() => {
+      message.success("设置已保存")
+    })
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
+    })
 }
 </script>

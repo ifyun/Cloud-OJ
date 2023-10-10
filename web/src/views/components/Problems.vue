@@ -1,7 +1,6 @@
 <template>
   <div class="wrap">
-    <error-result v-if="error != null" :error="error" />
-    <empty-data v-else-if="noContent" style="margin-top: 48px" />
+    <empty-data v-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical size="large">
         <n-space align="center">
@@ -49,7 +48,8 @@ export default {
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
-import { EmptyData, ErrorResult } from "@/components"
+import { EmptyData } from "@/components"
+import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
@@ -65,8 +65,9 @@ import {
   NTag
 } from "naive-ui"
 import { Component, computed, nextTick, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { RouterLink, useRoute, useRouter } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -76,7 +77,6 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
 
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
@@ -101,22 +101,17 @@ const problemColumns: DataTableColumns<Problem> = [
     title: "题名",
     key: "title",
     render: (row) => (
-      <NButton
-        text
-        onClick={() =>
-          router.push({
-            name: "submission",
-            params: { pid: row.problemId }
-          })
-        }>
-        {row.title}
-      </NButton>
+      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+        <NButton text={true} strong={true}>
+          {row.title}
+        </NButton>
+      </RouterLink>
     )
   },
   {
-    title: "状态",
+    title: () => (store.user.isLoggedIn ? "状态" : ""),
     key: "result",
-    width: 100,
+    width: store.user.isLoggedIn ? 100 : 0,
     align: "center",
     render: (row) => {
       let icon: Component
@@ -233,7 +228,7 @@ function queryProblems() {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

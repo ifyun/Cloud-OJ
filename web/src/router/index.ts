@@ -13,6 +13,7 @@ const HelpDoc = () => import("@/views/components/Help.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
 const AccountEditor = () => import("@/views/components/Account/Editor.vue")
 const NotFound = () => import("@/views/components/NotFound.vue")
+const ErrorPage = () => import("@/views/components/Error.vue")
 
 const Admin = () => import("@/views/AdminRoot.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
@@ -83,7 +84,7 @@ const router = createRouter({
           component: HelpDoc
         },
         {
-          path: "/account",
+          path: "/account/:uid?",
           name: "account",
           component: Account
         },
@@ -91,6 +92,14 @@ const router = createRouter({
           path: "/account/edit",
           name: "edit_account",
           component: AccountEditor
+        },
+        {
+          path: "/error",
+          name: "error",
+          meta: {
+            title: "错误"
+          },
+          component: ErrorPage
         },
         {
           path: "/:catchAll(.*)",

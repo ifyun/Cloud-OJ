@@ -1,10 +1,6 @@
 <template>
   <div class="admin-wrap">
-    <error-result
-      v-if="error != null"
-      :error="error"
-      style="margin-top: 48px" />
-    <div v-else style="margin: 4px">
+    <div style="margin: 4px">
       <n-space vertical size="large">
         <n-input-group style="width: 520px">
           <n-select
@@ -46,7 +42,7 @@
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, Page, User } from "@/api/type"
-import { ErrorResult, UserAvatar } from "@/components"
+import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import {
@@ -70,14 +66,11 @@ import {
   NText
 } from "naive-ui"
 import { onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-
-const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
 
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
@@ -87,7 +80,7 @@ const filterOptions = [
 
 const filter = ref<number>(0)
 const filterValue = ref<string>("")
-
+const loading = ref<boolean>(true)
 const users = ref<Page<User>>({
   data: [],
   count: 0
@@ -133,9 +126,11 @@ const columns: DataTableColumns<User> = [
           nickname={row.nickname!}
           hasAvatar={row.hasAvatar}
         />
-        <NButton text={true} strong={true}>
-          {row.nickname}
-        </NButton>
+        <RouterLink to={{ name: "account", params: { uid: row.uid! } }}>
+          <NButton text={true} strong={true}>
+            {row.nickname}
+          </NButton>
+        </RouterLink>
         {row.uid == store.user.userInfo!.uid ? (
           <NTag type="primary" size="small" round={true}>
             你自己
@@ -235,7 +230,7 @@ function queryUsers() {
       users.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

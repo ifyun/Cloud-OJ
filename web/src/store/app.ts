@@ -1,5 +1,6 @@
-import { defineStore } from "pinia"
+import { ErrorMessage } from "@/api/type"
 import { GlobalTheme, darkTheme } from "naive-ui"
+import { defineStore } from "pinia"
 import { nextTick } from "vue"
 
 const THEME = "theme"
@@ -10,6 +11,7 @@ interface State {
   menuCollapsed: boolean
   breadcrumb: Array<string> | null
   theme: GlobalTheme | null
+  error: ErrorMessage | null
 }
 
 export const useAppStore = defineStore("app", {
@@ -17,7 +19,8 @@ export const useAppStore = defineStore("app", {
     reload: false,
     menuCollapsed: false,
     breadcrumb: null,
-    theme: theme === "dark" ? darkTheme : null
+    theme: theme === "dark" ? darkTheme : null,
+    error: null
   }),
   actions: {
     refresh() {
@@ -37,6 +40,12 @@ export const useAppStore = defineStore("app", {
       } else {
         this.theme = null
         localStorage.removeItem(THEME)
+      }
+    },
+    setError(value: ErrorMessage | null) {
+      this.error = value
+      if (value != null) {
+        this.router.replace({ name: "error" })
       }
     }
   }

@@ -1,7 +1,6 @@
 <template>
   <div class="wrap">
-    <error-result v-if="error != null" :error="error" />
-    <empty-data v-else-if="noContent" style="margin-top: 48px" />
+    <empty-data v-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical>
         <n-space v-if="contestState != null" align="center">
@@ -31,11 +30,12 @@
 <script setup lang="tsx">
 import { ContestApi, RankingApi } from "@/api/request"
 import { Contest, ErrorMessage, Page, Ranking } from "@/api/type"
-import { ErrorResult, UserAvatar } from "@/components"
-import EmptyData from "@/components/EmptyData.vue"
+import { EmptyData, UserAvatar } from "@/components"
+import { useStore } from "@/store"
 import { StateTag, setTitle, stateTag } from "@/utils"
 import {
   DataTableColumns,
+  NButton,
   NDataTable,
   NIcon,
   NPagination,
@@ -44,8 +44,9 @@ import {
   NText
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { RouterLink, useRoute, useRouter } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -65,7 +66,6 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
 const contest = ref<Contest | null>(null)
 const rankings = ref<Page<Ranking>>({
   data: [],
@@ -94,7 +94,11 @@ const rankingColumns: DataTableColumns<Ranking> = [
           nickname={row.nickname}
           hasAvatar={row.hasAvatar}
         />
-        <NText>{row.nickname}</NText>
+        <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
+          <NButton text={true} strong={true}>
+            {row.nickname}
+          </NButton>
+        </RouterLink>
       </NSpace>
     )
   },
@@ -137,13 +141,11 @@ onBeforeMount(() => {
     contestId = Number(props.cid)
     queryContest()
   } else {
-    error.value = {
+    store.app.setError({
       status: 404,
       error: "Not Found",
       message: "找不到竞赛"
-    }
-
-    loading.value = false
+    })
   }
 })
 
@@ -163,8 +165,7 @@ function queryContest() {
       queryRankings()
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
-      loading.value = false
+      store.app.setError(err)
     })
 }
 
@@ -174,7 +175,7 @@ function queryRankings() {
       rankings.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

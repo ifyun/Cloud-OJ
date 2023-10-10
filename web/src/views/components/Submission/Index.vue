@@ -2,7 +2,6 @@
   <div class="submission">
     <n-card style="height: 100%">
       <Skeleton v-if="loading" />
-      <error-result v-else-if="!loading && error != null" :error="error" />
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
@@ -83,7 +82,7 @@
 <script setup lang="ts">
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, SubmitData } from "@/api/type"
-import { CodeEditor, ErrorResult, MarkdownView } from "@/components"
+import { CodeEditor, MarkdownView } from "@/components"
 import { useStore } from "@/store"
 import { SourceCode } from "@/type"
 import { setTitle } from "@/utils"
@@ -125,8 +124,6 @@ const loading = ref<boolean>(true)
 const tab = ref<string>("problem")
 const showResult = ref<boolean>(false)
 const disableSubmit = ref<boolean>(false)
-const error = ref<ErrorMessage | null>(null)
-
 const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
 const submitTime = ref<number>(0)
@@ -153,13 +150,11 @@ onBeforeMount(() => {
     problemId = Number(props.pid)
     queryProblem()
   } else {
-    error.value = {
+    store.app.setError({
       status: 404,
       error: "Not Found",
       message: "找不到题目"
-    }
-
-    loading.value = false
+    })
   }
 })
 
@@ -181,8 +176,12 @@ function queryProblem() {
         setTitle(data.title)
         problem.value = data
       })
-      .catch((err: ErrorMessage) => (error.value = err))
-      .finally(() => (loading.value = false))
+      .catch((err: ErrorMessage) => {
+        store.app.setError(err)
+      })
+      .finally(() => {
+        loading.value = false
+      })
   } else {
     // 竞赛题目
     ContestApi.getProblem(contestId, problemId!)
@@ -190,8 +189,12 @@ function queryProblem() {
         setTitle(data.title)
         problem.value = data
       })
-      .catch((err: ErrorMessage) => (error.value = err))
-      .finally(() => (loading.value = false))
+      .catch((err: ErrorMessage) => {
+        store.app.setError(err)
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 }
 

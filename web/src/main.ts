@@ -7,5 +7,6 @@ import App from "./App.vue"
 import "./style.scss"
 
 const pinia = createPinia()
+pinia.use(() => ({ router }))
 
 createApp(App).use(router).use(pinia).mount("#app")

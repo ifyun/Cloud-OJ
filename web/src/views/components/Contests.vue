@@ -1,7 +1,6 @@
 <template>
   <div class="wrap">
-    <error-result v-if="error != null" :error="error" />
-    <empty-data v-else-if="noContent" style="margin-top: 48px" />
+    <empty-data v-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical size="large">
         <n-data-table
@@ -29,7 +28,8 @@ export default {
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Page } from "@/api/type"
-import { EmptyData, ErrorResult } from "@/components"
+import { EmptyData } from "@/components"
+import { useStore } from "@/store"
 import { LanguageNames } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import dayjs from "dayjs"
@@ -50,6 +50,7 @@ import { useRouter } from "vue-router"
 
 const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
+const store = useStore()
 const router = useRouter()
 const message = useMessage()
 
@@ -59,8 +60,6 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
-
 const selectedContest = ref<Contest | null>(null)
 const contests = ref<Page<Contest>>({
   data: [],
@@ -163,7 +162,7 @@ function queryContests() {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

@@ -25,20 +25,20 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const theme = computed(() => {
-  return store.app.theme
-})
+const theme = computed(() => store.app.theme)
+const reload = computed(() => store.app.reload)
+const isLoggedIn = computed(() => store.user.isLoggedIn)
 
-const reload = computed(() => {
-  return store.app.reload
-})
-
-const isLoggedIn = computed(() => {
-  return store.user.isLoggedIn
-})
-
-router.beforeEach(() => {
+router.beforeEach((to, from) => {
   const routes: Array<string> = []
+
+  if (to.name !== "error") {
+    // 进入正常页面，清空错误信息
+    store.app.setError(null)
+  } else if (store.app.error == null) {
+    // 意外进入错误页面却没有错误信息，返回上一页
+    router.replace({ name: from.name! })
+  }
 
   route.matched.forEach((r) => {
     if (r.meta.title) {

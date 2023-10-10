@@ -78,6 +78,7 @@
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Page, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
 import {
   PostAddRound as AddIcon,
@@ -105,8 +106,9 @@ import {
   useMessage
 } from "naive-ui"
 import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { RouterLink, useRoute, useRouter } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -190,16 +192,9 @@ const problemColumns: DataTableColumns<Problem> = [
     title: "题目名称",
     key: "title",
     render: (row) => (
-      <NButton
-        text
-        onClick={() =>
-          router.push({
-            name: "submission",
-            params: { pid: row.problemId }
-          })
-        }>
-        {row.title}
-      </NButton>
+      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+        <NButton text>{row.title}</NButton>
+      </RouterLink>
     )
   },
   {
@@ -372,7 +367,7 @@ function queryProblems() {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

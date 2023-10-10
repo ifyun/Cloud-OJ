@@ -113,7 +113,7 @@ const columns: DataTableColumns<TestData> = [
     title: "文件长度",
     key: "size",
     align: "right",
-    render: (row) => <span>{row.size} 字节</span>
+    render: (row) => <NText>{row.size} 字节</NText>
   },
   {
     title: "",

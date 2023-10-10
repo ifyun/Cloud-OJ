@@ -1,5 +1,5 @@
 <template>
-  <div v-if="error == null" class="wrap">
+  <div v-if="!loading" class="wrap">
     <!-- 输入邀请码部分 -->
     <n-space v-if="inputKey" vertical align="center">
       <n-form-item
@@ -44,15 +44,12 @@
         :loading="loading" />
     </n-space>
   </div>
-  <div v-else>
-    <error-result :error="error" />
-  </div>
 </template>
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
-import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import {
@@ -76,6 +73,7 @@ import {
 import { Component, computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
+const store = useStore()
 const router = useRouter()
 const message = useMessage()
 
@@ -83,7 +81,6 @@ const props = defineProps<{
   cid: string
 }>()
 
-const error = ref<ErrorMessage | null>(null)
 const loading = ref<boolean>(false)
 const inputKey = ref<boolean>(false)
 const inviteKey = ref<string>("")
@@ -164,13 +161,11 @@ onBeforeMount(() => {
   if (reg.test(props.cid)) {
     queryContest(Number(props.cid))
   } else {
-    error.value = {
+    store.app.setError({
       status: 404,
       error: "Not Found",
       message: "找不到竞赛"
-    }
-
-    loading.value = false
+    })
   }
 })
 
@@ -186,8 +181,7 @@ function queryContest(cid: number) {
       queryProblems(cid)
     })
     .catch((err) => {
-      error.value = err
-      loading.value = false
+      store.app.setError(err)
     })
 }
 
@@ -201,7 +195,7 @@ function queryProblems(cid: number) {
       if (err.status === 402) {
         inputKey.value = true
       } else {
-        error.value = err
+        store.app.setError(err)
       }
     })
     .finally(() => {

@@ -1,10 +1,6 @@
 <template>
   <div class="admin-wrap">
-    <error-result
-      v-if="error != null"
-      :error="error"
-      style="margin-top: 48px" />
-    <div v-else style="margin: 4px">
+    <div style="margin: 4px">
       <n-space vertical size="large">
         <n-space>
           <n-button type="info" secondary round>
@@ -47,7 +43,7 @@
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Page } from "@/api/type"
-import { ErrorResult } from "@/components"
+import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
 import {
@@ -80,6 +76,7 @@ import { useRoute, useRouter } from "vue-router"
 
 const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -87,7 +84,6 @@ const dialog = useDialog()
 const notification = useNotification()
 
 const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
 
 const pagination = ref({
   page: 1,
@@ -264,7 +260,7 @@ function queryContests() {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      error.value = err
+      store.app.setError(err)
     })
     .finally(() => {
       loading.value = false

@@ -6,8 +6,8 @@
     </div>
     <n-divider />
     <heatmap :data="overview.activities" :year="year.toString()" />
-    <n-divider />
-    <timeline />
+    <n-divider v-if="showTimeline" />
+    <timeline v-if="showTimeline" />
   </n-space>
 </template>
 
@@ -22,7 +22,7 @@ import Languages from "./Languages.vue"
 import ResultsPanel from "./ResultsPanel.vue"
 import Timeline from "./Timeline.vue"
 
-const props = defineProps<{ uid: number }>()
+const props = defineProps<{ uid: number; showTimeline: boolean }>()
 
 const message = useMessage()
 
