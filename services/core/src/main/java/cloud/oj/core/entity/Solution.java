@@ -28,7 +28,6 @@ public class Solution {
     private Double score;
     private Long time;
     private Long memory;
-    private String errorInfo;
     private Integer language;
     private Integer state;
     private Integer result;
@@ -36,6 +35,8 @@ public class Solution {
     private String resultText;
     // UNIX 时间戳(13 位)
     private Long submitTime;
+    private String errorInfo;
+    private String sourceCode;
 
     public void setState(Integer state) {
         this.state = state;

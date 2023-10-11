@@ -112,6 +112,21 @@ const UserApi = {
           reject(resolveError(error))
         })
     })
+  },
+
+  getSolution(sid: number): Promise<JudgeResult> {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `${ApiPath.SOLUTION}/${sid}`,
+        method: "GET"
+      })
+        .then((res) => {
+          resolve(res.data)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
   }
 }
 

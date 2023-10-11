@@ -147,12 +147,14 @@ export class JudgeResult {
   result?: number
   stateText?: string
   resultText?: string
+  score?: number
   total?: number
   passed?: number
   passRate?: number
   time?: number
   memory?: number
   errorInfo?: string
+  sourceCode?: string
   /**
    * UNIX_TIMESTAMP(毫秒)
    */

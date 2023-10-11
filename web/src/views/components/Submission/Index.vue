@@ -5,7 +5,7 @@
       <div v-else class="content">
         <div>
           <n-scrollbar style="height: 100%">
-            <n-tabs v-model:value="tab" type="line" @update:value="changeTab">
+            <n-tabs type="line">
               <n-tab-pane
                 name="problem"
                 tab="题目描述"
@@ -106,14 +106,11 @@ import {
   useMessage
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
 import ResultDialog from "./ResultDialog.vue"
 import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
 
 const store = useStore()
-const route = useRoute()
-const router = useRouter()
 const message = useMessage()
 
 const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
@@ -121,7 +118,6 @@ const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
 })
 
 const loading = ref<boolean>(true)
-const tab = ref<string>("problem")
 const showResult = ref<boolean>(false)
 const disableSubmit = ref<boolean>(false)
 const problem = ref<Problem>(new Problem())
@@ -138,10 +134,6 @@ const submitClick = _.throttle(submit, 1000)
 onBeforeMount(() => {
   const reg = /^\d+$/
 
-  if (route.query.tab && route.query.tab.toString() === "solutions") {
-    tab.value = "solutions"
-  }
-
   if (props.cid != null && reg.test(props.cid)) {
     contestId = Number(props.cid)
   }
@@ -157,13 +149,6 @@ onBeforeMount(() => {
     })
   }
 })
-
-function changeTab(value: string) {
-  tab.value = value
-  router.push({
-    query: { tab: value }
-  })
-}
 
 /**
  * 获取题目数据

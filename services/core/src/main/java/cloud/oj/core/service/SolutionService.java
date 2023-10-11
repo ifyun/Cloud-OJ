@@ -1,6 +1,7 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.dao.SolutionDao;
+import cloud.oj.core.entity.Solution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +39,7 @@ public class SolutionService {
      *
      * @return {@link SseEmitter}
      */
-    public SseEmitter getBySolutionId(Integer uid, Long time) {
+    public SseEmitter getSolutionByUidAndTime(Integer uid, Long time) {
         var emitter = new SseEmitter(0L);
         var executor = Executors.newSingleThreadExecutor();
         var settings = systemSettings.getSettings();
@@ -78,5 +80,15 @@ public class SolutionService {
         });
 
         return emitter;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Optional<Solution> getSolution(Integer uid, Integer sid) {
+        var settings = systemSettings.getSettings();
+        var data = solutionDao.getSolution(uid, sid, settings.isShowPassedPoints());
+
+        data.ifPresent((s) -> s.setSourceCode(solutionDao.getSourceCode(sid)));
+
+        return data;
     }
 }

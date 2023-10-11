@@ -1,39 +1,45 @@
 <template>
-  <n-space vertical>
-    <n-input-group style="width: 520px">
-      <n-select
-        v-model:value="filter"
-        :options="filterOptions"
-        style="width: 180px"
-        @update:value="filterChange" />
-      <n-input v-model:value="filterValue" :disabled="filter == 0" />
-      <n-button
-        :disabled="filter == 0"
-        type="primary"
-        secondary
-        @click="search">
-        搜索记录
-        <template #icon>
-          <n-icon>
-            <search-round />
-          </n-icon>
-        </template>
-      </n-button>
-    </n-input-group>
-    <n-data-table
-      single-column
-      :columns="columns"
-      :data="solutions.data"
-      :loading="pagination.loading" />
-    <n-pagination
-      v-model:page="pagination.page"
-      simple
-      :page-size="pagination.pageSize"
-      :item-count="solutions.count"
-      @update:page="pageChange">
-      <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
-    </n-pagination>
-  </n-space>
+  <div>
+    <source-code-view
+      v-if="showSource"
+      v-model:show="showSource"
+      :data="solution!" />
+    <n-space v-else vertical>
+      <n-input-group style="width: 520px">
+        <n-select
+          v-model:value="filter"
+          :options="filterOptions"
+          style="width: 180px"
+          @update:value="filterChange" />
+        <n-input v-model:value="filterValue" :disabled="filter == 0" />
+        <n-button
+          :disabled="filter == 0"
+          type="primary"
+          secondary
+          @click="search">
+          搜索记录
+          <template #icon>
+            <n-icon>
+              <search-round />
+            </n-icon>
+          </template>
+        </n-button>
+      </n-input-group>
+      <n-data-table
+        single-column
+        :columns="columns"
+        :data="solutions.data"
+        :loading="loading" />
+      <n-pagination
+        v-model:page="pagination.page"
+        simple
+        :page-size="pagination.pageSize"
+        :item-count="solutions.count"
+        @update:page="pageChange">
+        <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+      </n-pagination>
+    </n-space>
+  </div>
 </template>
 
 <script lang="tsx">
@@ -45,6 +51,8 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { SourceCodeView } from "@/components"
+import { useStore } from "@/store"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -67,26 +75,30 @@ import {
   NSpace,
   NTag,
   NText,
-  NTooltip
+  NTooltip,
+  useMessage
 } from "naive-ui"
-import { Component, onBeforeMount, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { Component, nextTick, onBeforeMount, ref } from "vue"
+import { RouterLink, useRoute, useRouter } from "vue-router"
 
+const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const message = useMessage()
 
+const loading = ref<boolean>(true)
+const showSource = ref<boolean>(false)
 const pagination = ref({
   page: 1,
-  pageSize: 15,
-  loading: true
+  pageSize: 15
 })
 
-const error = ref<ErrorMessage | null>(null)
 const solutions = ref<Page<JudgeResult>>({
   data: [],
   count: 0
 })
 
+const solution = ref<JudgeResult | null>(null)
 const filter = ref<number>(0)
 const filterValue = ref<string>("")
 const filterOptions = [
@@ -129,7 +141,13 @@ const columns: DataTableColumns<JudgeResult> = [
           : { type: "info", text: row.stateText }
 
       return (
-        <NTag size="small" bordered={false} type={type as any}>
+        <NTag
+          class="resultTag"
+          size="small"
+          bordered={false}
+          type={type as any}
+          // @ts-ignore
+          onClick={() => querySolution(row.solutionId)}>
           {{
             icon: () => <NIcon component={icon} />,
             default: () => <span>{text}</span>
@@ -142,16 +160,9 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "题名",
     key: "title",
     render: (row) => (
-      <NButton
-        text
-        onClick={() =>
-          router.push({
-            name: "submission",
-            params: { pid: row.problemId }
-          })
-        }>
-        {row.title}
-      </NButton>
+      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+        <NButton text>{row.title}</NButton>
+      </RouterLink>
     )
   },
   {
@@ -194,14 +205,10 @@ const columns: DataTableColumns<JudgeResult> = [
     render: (row) => (
       <NTooltip trigger="click" placement="left">
         {{
-          trigger: () => (
-            <NButton text={true}>
-              {dayjs(row.submitTime!).format("YYYY/MM/DD")}
-            </NButton>
-          ),
+          trigger: () => <NButton text>{date(row.submitTime!)}</NButton>,
           default: () => (
             <NText italic={true} style="color: #ffffff">
-              {dayjs(row.submitTime!).format("HH:mm:ss")}
+              {dayjs(row.submitTime!).format("H:mm:ss")}
             </NText>
           )
         }}
@@ -224,13 +231,30 @@ onBeforeMount(() => {
 })
 
 function querySolutions() {
-  pagination.value.loading = true
+  loading.value = true
   const { page, pageSize } = pagination.value
 
   UserApi.getSolutions(page, pageSize, filter.value, filterValue.value)
-    .then((data) => (solutions.value = data))
-    .catch((err) => (error.value = err))
-    .finally(() => (pagination.value.loading = false))
+    .then((data) => {
+      solutions.value = data
+    })
+    .catch((err) => {
+      store.app.setError(err)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+function querySolution(sid: number) {
+  UserApi.getSolution(sid)
+    .then((data) => {
+      solution.value = data
+      nextTick(() => (showSource.value = true))
+    })
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
+    })
 }
 
 function pageChange(page: number) {
@@ -257,4 +281,25 @@ function filterChange(value: number) {
 function search() {
   pageChange(1)
 }
+
+function date(time: number) {
+  const now = dayjs()
+  const t = dayjs(time)
+
+  if (t.isSame(now, "day")) {
+    return "今天"
+  } else if (t.isSame(now, "year")) {
+    return t.format("M 月 D 日")
+  }
+}
 </script>
+
+<style>
+.resultTag {
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+</style>

@@ -18,7 +18,26 @@
         where uid = #{uid}
           and submit_time = #{time}
     </select>
-    <!-- 查询指定用户的所有提交 -->
+    <select id="getSolution" resultMap="Map.Solution">
+        select problem_id,
+               title,
+               language,
+               state - 1                                      as state,
+               result - 1                                     as result,
+               truncate(pass_rate, 2)                         as pass_rate,
+               truncate(score, 2)                             as score,
+               case when #{showPassed} = true then total end  as total,
+               case when #{showPassed} = true then passed end as passed,
+               time,
+               memory,
+               submit_time,
+               error_info
+        from solution
+        where solution_id = #{sid}
+          and uid = #{uid}
+          and deleted = 0
+    </select>
+    <!-- 查询用户的所有提交 -->
     <select id="getSolutionsByUser" resultMap="Map.Solution, Map.Total">
         select sql_calc_found_rows solution_id,
                                    problem_id,
@@ -30,7 +49,6 @@
                                    truncate(score, 2)     as score,
                                    time,
                                    memory,
-                                   error_info,
                                    submit_time
         from solution
         where deleted = 0
