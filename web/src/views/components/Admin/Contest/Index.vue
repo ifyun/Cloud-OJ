@@ -74,8 +74,6 @@ import {
 import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
-
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
@@ -192,7 +190,6 @@ const contestColumns: DataTableColumns<Contest> = [
     title: "开始/结束时间",
     key: "startAt",
     align: "center",
-    width: 320,
     render: (row) => <NText>{calcTimeRange(row)}</NText>
   }
 ]
@@ -334,14 +331,23 @@ function deleteContest() {
 }
 
 function calcTimeRange(c: Contest): string {
+  const timeFmt = "YYYY 年 M 月 D 日 H:mm"
+  const now = dayjs()
   const s = dayjs.unix(c.startAt!)
   const e = dayjs.unix(c.endAt!)
-  let str = s.format(timeFmt) + " ~ "
+
+  let str = ""
+
+  if (s.isSame(now, "day")) {
+    str = s.format("今天 H:mm ~ ")
+  } else {
+    str = s.format(timeFmt) + " ~ "
+  }
 
   if (e.isSame(s, "day")) {
-    str += e.format("HH:mm")
+    str += e.format("H:mm")
   } else if (e.isSame(s, "year")) {
-    str += e.format("MM 月 DD, HH:mm")
+    str += e.format("M 月 D 日 HH:mm")
   } else {
     str += e.format(timeFmt)
   }

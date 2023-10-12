@@ -1,11 +1,15 @@
 <template>
   <div>
-    <div id="pie" style="width: 100%; height: 210px" />
+    <n-h3 strong>结果统计</n-h3>
+    <div
+      id="pie"
+      style="margin-top: -36px; width: 100%; height: 210px; z-index: 10" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { Statistics } from "@/api/type"
+import { useStore } from "@/store"
 import { PieChart, PieSeriesOption } from "echarts/charts"
 import {
   LegendComponent,
@@ -18,8 +22,8 @@ import {
 import * as echarts from "echarts/core"
 import { EChartsType } from "echarts/core"
 import { SVGRenderer } from "echarts/renderers"
+import { NH3 } from "naive-ui"
 import { computed, nextTick, onMounted, watch } from "vue"
-import { useStore } from "@/store"
 
 type ECOption = echarts.ComposeOption<
   | PieSeriesOption
@@ -40,12 +44,12 @@ echarts.use([
 let pieChart: EChartsType | null = null
 
 const chartColor = [
-  "#4eaa25",
-  "#d14748",
-  "#f9a825",
-  "#0288d1",
-  "#777777",
-  "#673ab7"
+  "#18A058",
+  "#F56C6C",
+  "#EBB563",
+  "#409EFF",
+  "#777770",
+  "#DDDDD0"
 ]
 
 const light = {
@@ -57,7 +61,7 @@ const dark = {
   color: chartColor,
   title: {
     textStyle: {
-      color: "white"
+      color: "#FFFFFFE6"
     }
   },
   legend: {
@@ -83,16 +87,9 @@ const chartTheme = computed(() => {
 })
 
 const option: ECOption = {
-  title: {
-    text: "结果统计",
-    textStyle: {
-      fontSize: 18,
-      fontWeight: 500
-    }
-  },
   legend: {
     left: "right",
-    top: 20,
+    top: 32,
     orient: "vertical",
     data: keys
   },
@@ -101,10 +98,6 @@ const option: ECOption = {
   },
   series: {
     type: "pie",
-    itemStyle: {
-      borderRadius: 4,
-      borderWidth: 2
-    },
     center: ["50%", "50%"],
     radius: ["40%", "60%"],
     data: []
@@ -122,18 +115,20 @@ watch(
   (val: Statistics) => {
     nextTick(() => {
       ;(option.series as PieSeriesOption).data = []
-      keys.forEach((key) => {
-        ;(option.series as PieSeriesOption).data?.push({
-          name: key,
-          value: (val as any)[key]
+
+      if (val.total === 0) {
+        ;(option.legend as LegendComponentOption).data = []
+      } else {
+        ;(option.legend as LegendComponentOption).data = keys
+        keys.forEach((key) => {
+          ;(option.series as PieSeriesOption).data?.push({
+            name: key,
+            value: (val as any)[key]
+          })
         })
-      })
+      }
+
       pieChart?.setOption(option)
-      pieChart?.dispatchAction({
-        type: "highlight",
-        seriesIndex: 0,
-        dataIndex: 0
-      })
     })
   }
 )
@@ -145,6 +140,7 @@ onMounted(() => {
       value: (props.data as any)[key]
     })
   })
+
   pieChart = echarts.init(document.getElementById("pie")!, chartTheme.value)
   pieChart.setOption(option)
 })

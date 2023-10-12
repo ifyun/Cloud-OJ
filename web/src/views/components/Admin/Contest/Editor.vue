@@ -47,7 +47,7 @@
                   v-model:value="contest.timeRange"
                   type="datetimerange"
                   clearable
-                  format="yyyy 年 MM 月 dd, HH:mm" />
+                  format="yyyy 年 M 月 d 日 H:mm" />
               </n-form-item-grid-item>
             </n-grid>
             <n-form-item label="语言限制" path="languages">

@@ -26,7 +26,7 @@
         </n-button>
       </n-input-group>
       <n-data-table
-        single-column
+        :single-column="false"
         :columns="columns"
         :data="solutions.data"
         :loading="loading" />
@@ -71,11 +71,11 @@ import {
   NInput,
   NInputGroup,
   NPagination,
+  NPopover,
   NSelect,
   NSpace,
   NTag,
   NText,
-  NTooltip,
   useMessage
 } from "naive-ui"
 import { Component, nextTick, onBeforeMount, ref } from "vue"
@@ -193,7 +193,7 @@ const columns: DataTableColumns<JudgeResult> = [
     render: (row) => <NText>{ramUsage(row.memory)}</NText>
   },
   {
-    title: "分数",
+    title: "得分",
     key: "score",
     align: "right"
   },
@@ -203,16 +203,16 @@ const columns: DataTableColumns<JudgeResult> = [
     width: "140",
     align: "right",
     render: (row) => (
-      <NTooltip trigger="click" placement="left">
+      <NPopover trigger="click" placement="left">
         {{
           trigger: () => <NButton text>{date(row.submitTime!)}</NButton>,
           default: () => (
-            <NText italic={true} style="color: #ffffff">
+            <NText italic={true}>
               {dayjs(row.submitTime!).format("H:mm:ss")}
             </NText>
           )
         }}
-      </NTooltip>
+      </NPopover>
     )
   }
 ]

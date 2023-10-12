@@ -30,11 +30,6 @@ const light = {
     itemStyle: {
       color: "#EBEEF5",
       borderColor: "#FFFFFF"
-    },
-    splitLine: {
-      lineStyle: {
-        color: "#EFEFF5"
-      }
     }
   },
   visualMap: {
@@ -45,8 +40,8 @@ const light = {
 const dark = {
   calendar: {
     itemStyle: {
-      color: "#161b22",
-      borderColor: "#0d1117"
+      color: "#161B22",
+      borderColor: "#0D1117"
     },
     dayLabel: {
       color: "#FFFFFF"
@@ -56,11 +51,6 @@ const dark = {
     },
     yearLabel: {
       color: "#FFFFFF"
-    },
-    splitLine: {
-      lineStyle: {
-        color: "#21262D"
-      }
     }
   },
   visualMap: {
@@ -95,13 +85,10 @@ const option: ECOption = {
       show: true
     },
     splitLine: {
-      show: true,
-      lineStyle: {
-        width: 0.5
-      }
+      show: false
     },
     itemStyle: {
-      borderWidth: 4
+      borderWidth: 3
     }
   },
   visualMap: {

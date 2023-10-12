@@ -44,10 +44,10 @@ import {
   NButton,
   NDataTable,
   NIcon,
+  NPopover,
   NSpace,
   NTag,
   NText,
-  NTooltip,
   useMessage
 } from "naive-ui"
 import { Component, onBeforeMount, ref } from "vue"
@@ -127,20 +127,16 @@ const columns: DataTableColumns<JudgeResult> = [
     width: "120",
     align: "right",
     render: (row) => (
-      <NTooltip trigger="click" placement="left">
+      <NPopover trigger="click" placement="left">
         {{
-          trigger: () => (
-            <NButton text={true}>
-              {dayjs(row.submitTime!).format("YYYY/MM/DD")}
-            </NButton>
-          ),
+          trigger: () => <NButton text={true}>{date(row.submitTime!)}</NButton>,
           default: () => (
-            <NText italic={true} style="color: #ffffff">
-              {dayjs(row.submitTime!).format("HH:mm:ss")}
+            <NText italic={true}>
+              {dayjs(row.submitTime!).format("H:mm:ss")}
             </NText>
           )
         }}
-      </NTooltip>
+      </NPopover>
     )
   }
 ]
@@ -161,5 +157,16 @@ function querySolutions() {
     .finally(() => {
       loading.value = false
     })
+}
+
+function date(time: number) {
+  const now = dayjs()
+  const t = dayjs(time)
+
+  if (t.isSame(now, "day")) {
+    return "今天"
+  } else if (t.isSame(now, "year")) {
+    return t.format("M 月 D 日")
+  }
 }
 </script>

@@ -30,8 +30,6 @@ const reload = computed(() => store.app.reload)
 const isLoggedIn = computed(() => store.user.isLoggedIn)
 
 router.beforeEach((to, from) => {
-  const routes: Array<string> = []
-
   if (to.name !== "error") {
     // 进入正常页面，清空错误信息
     store.app.setError(null)
@@ -39,14 +37,6 @@ router.beforeEach((to, from) => {
     // 意外进入错误页面却没有错误信息，返回上一页
     router.replace({ name: from.name! })
   }
-
-  route.matched.forEach((r) => {
-    if (r.meta.title) {
-      routes.push(r.meta.title as string)
-    }
-  })
-
-  store.app.setBreadcrumb(routes)
 
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
@@ -57,6 +47,19 @@ router.beforeEach((to, from) => {
       }
     })
   }
+})
+
+// 根据路由生成管理页面导航
+router.afterEach(() => {
+  const routes: Array<string> = []
+
+  route.matched.forEach((r) => {
+    if (r.meta.title) {
+      routes.push(r.meta.title as string)
+    }
+  })
+
+  store.app.setBreadcrumb(routes)
 })
 
 onMounted(() => {

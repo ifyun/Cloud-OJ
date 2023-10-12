@@ -48,8 +48,6 @@ import {
 import { computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
-const timeFmt = "YYYY 年 MM 月 DD, HH:mm"
-
 const store = useStore()
 const router = useRouter()
 const message = useMessage()
@@ -191,14 +189,23 @@ function handleSelect(key: number) {
 }
 
 function calcTimeRange(c: Contest): string {
+  const timeFmt = "YYYY 年 M 月 D 日 H:mm"
+  const now = dayjs()
   const s = dayjs.unix(c.startAt!)
   const e = dayjs.unix(c.endAt!)
-  let str = s.format(timeFmt) + " ~ "
+
+  let str = ""
+
+  if (s.isSame(now, "day")) {
+    str = s.format("今天 H:mm ~ ")
+  } else {
+    str = s.format(timeFmt) + " ~ "
+  }
 
   if (e.isSame(s, "day")) {
-    str += e.format("HH:mm")
+    str += e.format("H:mm")
   } else if (e.isSame(s, "year")) {
-    str += e.format("MM 月 DD, HH:mm")
+    str += e.format("M 月 D 日 HH:mm")
   } else {
     str += e.format(timeFmt)
   }
