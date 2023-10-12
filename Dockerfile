@@ -1,18 +1,21 @@
 # build environment
 FROM openjdk:17-jdk-bullseye as build-env
 RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
-  && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+  && mkdir -p /etc/apt/keyrings \
+  && apt-get update \
+  && apt-get install -y ca-certificates gnupg --no-install-recommends \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" \
+    | tee /etc/apt/sources.list.d/nodesource.list \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
-    libboost-iostreams-dev \
-    libboost-program-options-dev \
     maven \
     nodejs \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* \
-RUN npm config set registry registry.npm.taobao.org
+  && rm -rf /var/lib/apt/lists/*
 COPY . /build
 WORKDIR /build
 ARG TARGET=""
