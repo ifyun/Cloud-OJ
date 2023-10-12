@@ -28,6 +28,11 @@ services:
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
   core:
     image: cloud-oj:core
     depends_on:
@@ -44,6 +49,11 @@ services:
       DB_HOST: "mariadb:3306"
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
   judge:
     image: cloud-oj:judge
     privileged: true
@@ -66,6 +76,11 @@ services:
       RABBIT_USER: ${RABBIT_USER}
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
       JUDGE_CPUS: 1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
   web:
     image: cloud-oj:web
     networks:
