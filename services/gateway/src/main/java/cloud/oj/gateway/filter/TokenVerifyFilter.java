@@ -59,7 +59,7 @@ public class TokenVerifyFilter implements WebFilter {
         }
 
         try {
-            var uid = JwtUtil.getSubject(token);
+            var uid = JwtUtil.getUid(token);
 
             if (uid == null) {
                 throw new JwtException("错误的Token");

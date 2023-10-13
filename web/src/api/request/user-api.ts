@@ -47,6 +47,18 @@ const UserApi = {
     })
   },
 
+  update(user: User): Promise<AxiosResponse> {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: ApiPath.PROFILE,
+        method: "PUT",
+        data: JSON.stringify(user)
+      })
+        .then((res) => resolve(res))
+        .catch((error) => reject(resolveError(error)))
+    })
+  },
+
   getProfile(uid: number): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       axios({

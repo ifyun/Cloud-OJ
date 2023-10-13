@@ -18,8 +18,8 @@ export class User {
   password?: string
   confirmPassword: string = ""
   role?: number
-  email: string = ""
-  section: string = ""
+  email?: string
+  section?: string
   hasAvatar: boolean = false
   createAt?: number
 }
@@ -31,8 +31,8 @@ export class UserInfo {
   uid?: number
   username?: string
   nickname?: string
-  email: string = ""
-  section: string = ""
+  email?: string
+  section?: string
   token?: string
   hasAvatar: boolean = false
   role = 1

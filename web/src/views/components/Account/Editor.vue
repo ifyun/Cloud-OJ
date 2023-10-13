@@ -190,11 +190,7 @@ const rules: FormRules = {
 
 onMounted(() => {
   setTitle("编辑个人信息")
-  user.value.uid = userInfo.value!.uid
-  user.value.username = userInfo.value!.username
-  user.value.nickname = userInfo.value!.nickname
-  user.value.email = userInfo.value!.email
-  user.value.section = userInfo.value!.section
+  user.value = userInfo.value! as User
 })
 
 function save() {
@@ -202,7 +198,7 @@ function save() {
     if (!errors) {
       loading.value = true
       user.value.password = hashSync(user.value.password!, 10)
-      UserApi.save(user.value)
+      UserApi.update(user.value)
         .then(() => {
           message.success("个人信息已更新")
           refresh()

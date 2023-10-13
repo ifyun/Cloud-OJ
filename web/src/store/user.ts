@@ -4,19 +4,16 @@ import { defineStore } from "pinia"
 const TOKEN = "userToken"
 const token = localStorage.getItem(TOKEN)
 
+/**
+ * 解析 JWT 中的用户信息
+ * @param token Base64Url
+ * @returns
+ */
 function resolveToken(token: string): UserInfo {
-  const json: any = JSON.parse(
-    decodeURIComponent(escape(window.atob(token.split(".")[1])))
-  )
-  const userInfo: UserInfo = new UserInfo()
+  const claims = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+  const userInfo = JSON.parse(decodeURIComponent(escape(window.atob(claims))))
   userInfo.token = token
-  userInfo.role = json.role
-  userInfo.uid = Number(json.sub)
-  userInfo.username = json.username
-  userInfo.nickname = json.nickname
-  userInfo.email = json.email ?? ""
-  userInfo.section = json.section ?? ""
-  userInfo.hasAvatar = json.hasAvatar
+
   return userInfo
 }
 

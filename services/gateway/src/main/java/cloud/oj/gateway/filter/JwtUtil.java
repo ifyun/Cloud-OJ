@@ -23,9 +23,9 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setIssuer("Cloud OJ")
-                .setSubject(user.getUid().toString())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(expire))
+                .claim("uid", user.getUid())
                 .claim("username", user.getUsername())
                 .claim("nickname", user.getNickname())
                 .claim("email", user.getEmail())
@@ -52,17 +52,19 @@ public class JwtUtil {
     }
 
     /**
-     * 从 JWT 中取出 Subject(uid)
+     * 从 JWT 中取出 uid
      * <p>此操作不验证 JWT 签名</p>
      *
-     * @return Subject or null
+     * @return uid or null
      */
-    public static Integer getSubject(String jwt) throws StringIndexOutOfBoundsException {
-        var payload = new String(
-                Base64.getDecoder().decode(jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.')))
-        );
+    public static Integer getUid(String jwt) throws StringIndexOutOfBoundsException {
+        // JWT 是 Base64Url 编码
+        var base64 = jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.'))
+                .replaceAll("-", "+")
+                .replaceAll("_", "/");
 
-        var matcher = Pattern.compile("\"sub\":(\"(.+?)\"|(\\d*))").matcher(payload);
+        var payload = new String(Base64.getDecoder().decode(base64));
+        var matcher = Pattern.compile("\"uid\":((.+?)|(\\d*))").matcher(payload);
 
         if (matcher.find()) {
             return Integer.valueOf(matcher.group(2));

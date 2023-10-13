@@ -71,7 +71,7 @@ public class AuthController {
     @DeleteMapping(path = "logoff")
     public Mono<ResponseEntity<?>> logoff(@RequestHeader String Authorization) {
         var token = Authorization.substring(6);
-        var uid = JwtUtil.getSubject(token);
+        var uid = JwtUtil.getUid(token);
         var secret = userService.getSecret(uid);
 
         try {
@@ -96,7 +96,7 @@ public class AuthController {
     @GetMapping(path = "refresh_token")
     public Mono<ResponseEntity<?>> refreshToken(@RequestHeader String Authorization, Authentication auth) {
         var token = Authorization.substring(6);
-        var uid = JwtUtil.getSubject(token);
+        var uid = JwtUtil.getUid(token);
         var user = userService.findById(uid);
         var authorities = auth.getAuthorities();
         var secret = newUUID();
