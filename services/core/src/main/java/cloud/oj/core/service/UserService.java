@@ -8,6 +8,7 @@ import cloud.oj.core.entity.User;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ public class UserService {
     private final SolutionDao solutionDao;
 
     private final DatabaseConfig databaseConfig;
+
+    private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
     public UserService(UserDao userDao, RankingDao rankingDao,
                        SolutionDao solutionDao, DatabaseConfig databaseConfig) {
@@ -54,6 +57,7 @@ public class UserService {
         }
 
         user.setRole(1);
+        user.setPassword(bcrypt.encode(user.getPassword()));
         user.setSecret(newUUID());
         if (userDao.add(user) == 1) {
             return HttpStatus.CREATED;
@@ -63,6 +67,8 @@ public class UserService {
     }
 
     public HttpStatus updateUser(User user) {
+        user.setPassword(bcrypt.encode(user.getPassword()));
+
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
         } else {
@@ -71,8 +77,9 @@ public class UserService {
     }
 
     public HttpStatus updateProfile(Integer uid, User user) {
-        user.setRole(null);
         user.setUid(uid);
+        user.setRole(null);
+        user.setPassword(bcrypt.encode(user.getPassword()));
 
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
@@ -95,7 +102,7 @@ public class UserService {
         }
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public HashMap<String, Object> getOverview(Integer uid, Integer year, String tz) {
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
             var offset = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();

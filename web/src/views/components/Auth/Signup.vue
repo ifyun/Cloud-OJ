@@ -98,7 +98,6 @@ import {
   User as UserIcon,
   IdCard as UsernameIcon
 } from "@vicons/fa"
-import { hashSync } from "bcryptjs"
 import {
   FormRules,
   NButton,
@@ -199,7 +198,6 @@ function signup() {
   signupForm.value?.validate((errors: any) => {
     if (!errors) {
       loading.value = true
-      user.value.password = hashSync(user.value.password!, 10)
       UserApi.save(user.value, true)
         .then(() => {
           message.success("注册成功")

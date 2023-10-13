@@ -91,7 +91,6 @@ import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
-import { hashSync } from "bcryptjs"
 import {
   FormRules,
   NButton,
@@ -197,7 +196,6 @@ function save() {
   userForm.value?.validate((errors: any) => {
     if (!errors) {
       loading.value = true
-      user.value.password = hashSync(user.value.password!, 10)
       UserApi.update(user.value)
         .then(() => {
           message.success("个人信息已更新")

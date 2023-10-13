@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "axios": "^1.5.1",
-    "bcryptjs": "^2.4.3",
     "codemirror": "^5.65.6",
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
@@ -25,7 +24,6 @@
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.4",
     "@types/codemirror": "^5.60.10",
     "@types/katex": "^0.16.3",
     "@types/lodash": "^4.14.199",
