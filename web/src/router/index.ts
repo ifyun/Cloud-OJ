@@ -116,66 +116,67 @@ const router = createRouter({
       children: [
         {
           path: "problem",
+          redirect: "/admin/problem/index",
           component: RouterLayout,
-          meta: {
-            title: "题目管理"
-          },
           children: [
             {
               path: "index",
               name: "problem_admin",
+              meta: {
+                title: "题目管理"
+              },
               component: ProblemAdmin
             },
             {
               path: "edit/:id",
               name: "edit_problem",
-              component: ProblemEditor,
               meta: {
                 title: "编辑题目"
-              }
+              },
+              component: ProblemEditor
             },
             {
               path: "data/:id",
               name: "test_data",
-              component: TestData,
               meta: {
                 title: "测试数据管理"
-              }
+              },
+              component: TestData
             }
           ]
         },
         {
           path: "contest",
           component: RouterLayout,
-          meta: {
-            title: "竞赛管理"
-          },
           children: [
             {
               path: "index",
               name: "contest_admin",
+              meta: {
+                title: "竞赛管理"
+              },
               component: ContestAdmin
             },
             {
               path: "edit/:id",
               name: "edit_contest",
-              component: ContestEditor,
               meta: {
                 title: "编辑竞赛"
-              }
+              },
+              component: ContestEditor
             }
           ]
         },
         {
           path: "user",
           component: RouterLayout,
-          meta: {
-            title: "用户管理"
-          },
           children: [
             {
               path: "index",
               name: "user_admin",
+              meta: {
+                title: "用户管理"
+              },
               component: UserAdmin
             }
           ]
@@ -183,10 +184,10 @@ const router = createRouter({
         {
           path: "settings",
           name: "settings",
-          component: SystemSettings,
           meta: {
             title: "系统设置"
-          }
+          },
+          component: SystemSettings
         }
       ]
     }

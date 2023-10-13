@@ -100,9 +100,9 @@ function login() {
         .then((token) => {
           store.user.saveToken(token)
           if (store.user.userInfo!.role == 1) {
-            router.push({ path: "/" })
+            router.push({ name: "index" })
           } else {
-            router.push({ path: "/admin/problem" })
+            router.push({ name: "admin" })
           }
         })
         .catch((err: ErrorMessage) => {
