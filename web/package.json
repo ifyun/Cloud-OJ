@@ -15,7 +15,7 @@
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "highlight.js": "^11.8.0",
-    "katex": "^0.16.8",
+    "katex": "^0.16.9",
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.2",
     "markdown-it-container": "^3.0.0",
@@ -31,19 +31,19 @@
     "@types/markdown-it-container": "^2.0.7",
     "@vicons/fa": "^0.12.0",
     "@vicons/material": "^0.12.0",
-    "@vitejs/plugin-vue": "^4.3.4",
+    "@vitejs/plugin-vue": "^4.4.0",
     "@vitejs/plugin-vue-jsx": "^3.0.2",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
-    "eslint": "^8.50.0",
+    "eslint": "^8.51.0",
     "eslint-plugin-vue": "^9.17.0",
     "naive-ui": "^2.35.0",
     "prettier": "^3.0.3",
-    "sass": "^1.68.0",
+    "sass": "^1.69.3",
     "typescript": "^5.2.2",
     "vfonts": "^0.0.3",
-    "vite": "^4.4.9",
+    "vite": "^4.4.11",
     "vite-plugin-compression": "^0.5.1",
-    "vue-tsc": "^1.8.15"
+    "vue-tsc": "^1.8.19"
   }
 }
