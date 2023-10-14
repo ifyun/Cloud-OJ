@@ -178,9 +178,11 @@ const signupRules: FormRules = {
     validator(_, value: string): Error | boolean {
       const regex =
         /^[a-zA-Z\d.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/
-      if (value.length === 0) {
+
+      if (!value || value.length === 0) {
         return true
       }
+
       if (regex.test(value)) {
         return true
       } else {
