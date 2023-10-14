@@ -142,14 +142,15 @@ const rules: FormRules = {
     }
   },
   password: {
-    required: true,
     trigger: ["blur", "input"],
     validator(_, value: string): Error | boolean {
       const regx = /^[a-zA-Z0-9_.-]*$/
 
       if (!value) {
-        return new Error("请输入密码")
-      } else if (value.length < 6) {
+        return true
+      }
+
+      if (value.length < 6) {
         return new Error("至少 6 位!")
       } else if (!regx.test(value)) {
         return new Error("包含非法字符")
@@ -159,14 +160,18 @@ const rules: FormRules = {
     }
   },
   confirmPassword: {
-    required: true,
     trigger: ["blur", "input"],
     validator: (_, value: string): Error | boolean => {
+      if (!user.value.password) {
+        return true
+      }
+
       if (!value) {
         return new Error("请确认密码")
       } else if (value !== user.value.password) {
         return new Error("密码不一致!")
       }
+
       return true
     }
   },

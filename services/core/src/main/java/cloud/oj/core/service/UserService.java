@@ -67,7 +67,9 @@ public class UserService {
     }
 
     public HttpStatus updateUser(User user) {
-        user.setPassword(bcrypt.encode(user.getPassword()));
+        if (user.getPassword() != null) {
+            user.setPassword(bcrypt.encode(user.getPassword()));
+        }
 
         if (userDao.update(user) == 1) {
             return HttpStatus.OK;
@@ -79,13 +81,8 @@ public class UserService {
     public HttpStatus updateProfile(Integer uid, User user) {
         user.setUid(uid);
         user.setRole(null);
-        user.setPassword(bcrypt.encode(user.getPassword()));
 
-        if (userDao.update(user) == 1) {
-            return HttpStatus.OK;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("用户(%s)更新失败", user.getUid()));
-        }
+        return updateUser(user);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
