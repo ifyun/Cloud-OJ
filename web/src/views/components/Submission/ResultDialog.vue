@@ -3,21 +3,46 @@
     <!-- 错误 -->
     <n-result
       v-if="error != null"
+      size="small"
       status="warning"
       :title="error.error"
       :description="error.message">
     </n-result>
     <!-- 结果 -->
-    <n-result
-      v-else
-      size="small"
-      :status="result.status"
-      :title="result.title"
-      :description="result.desc">
+    <n-result v-else size="small" :status="result.status">
+      <n-table
+        size="small"
+        style="text-align: center; margin-bottom: 12px"
+        :single-line="false">
+        <thead>
+          <tr>
+            <th>状态</th>
+            <th>CPU 时间</th>
+            <th>内存占用</th>
+            <th>得分</th>
+            <th>通过测试点</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <n-text strong :type="result.status">
+                {{ result.statusText }}
+              </n-text>
+            </td>
+            <td>{{ result.time }}</td>
+            <td>{{ result.ram }}</td>
+            <td>
+              <n-text strong>{{ result.score }}</n-text>
+            </td>
+            <td>{{ result.passed }}</td>
+          </tr>
+        </tbody>
+      </n-table>
+      <n-text v-if="result.error" type="error">
+        <pre :class="{ dark: darkTheme }">{{ result.error }}</pre>
+      </n-text>
     </n-result>
-    <n-text v-if="result.error" type="error">
-      <pre :class="{ dark: darkTheme }">{{ result.error }}</pre>
-    </n-text>
   </n-space>
 </template>
 
@@ -26,14 +51,17 @@ import { ApiPath } from "@/api"
 import { ErrorMessage, JudgeResult } from "@/api/type"
 import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
-import { ramUsage } from "@/utils"
-import { NResult, NSpace, NText } from "naive-ui"
+import { ramUsage, timeUsage } from "@/utils"
+import { NTable, NResult, NSpace, NText } from "naive-ui"
 import { computed, onMounted, onUnmounted, ref } from "vue"
 
 interface Result {
   status: any
-  title: string
-  desc?: string
+  statusText: string
+  time?: string
+  ram?: string
+  score?: string | number
+  passed?: string
   error?: string
 }
 
@@ -50,18 +78,22 @@ const darkTheme = computed(() => store.app.theme != null)
 
 const result = computed<Result>(() => {
   const s = solution.value
+
   if (s == null) {
-    return { status: "418", title: "提交成功，正在获取结果" }
+    return { status: "418", statusText: "提交成功" }
   }
   // 等待/编译/运行状态
   if (s.state !== 0) {
-    return { status: "418", title: s.stateText! }
+    return { status: "418", statusText: s.stateText! }
   }
   // 运行结束
   return {
     status: ResultTypes[s.result!],
-    title: s.resultText!,
-    desc: [5, 6, 7, 8].indexOf(s.result!) === -1 ? usage(s) : undefined,
+    statusText: s.resultText!,
+    time: s.time ? timeUsage(s.time) : "-",
+    ram: s.memory ? ramUsage(s.memory) : "-",
+    score: s.score ?? "-",
+    passed: s.passed ? `${s.passed}/${s.total}` : "-",
     error: s.errorInfo
   }
 })
@@ -76,27 +108,14 @@ onUnmounted(() => {
   sse.close()
 })
 
-function usage(r: JudgeResult) {
-  const { time, memory } = r
-  const t = (time! / 1000).toFixed(2)
-  const m = ramUsage(memory)
-  const text = `运行时间: ${t} ms, 内存占用: ${m}`
-
-  if (r.passed) {
-    return `${text}, 通过: ${r.passed}/${r.total}`
-  } else {
-    return text
-  }
-}
-
 /**
  * 获取结果
  */
 function fetchResult() {
   sse = new EventSource(
-    `${ApiPath.SOLUTION}/${store.user.userInfo!.uid}/${
-      props.submitTime
-    }?token=${store.user.userInfo!.token}`
+    `${ApiPath.SOLUTION}/time/${props.submitTime}?token=${
+      store.user.userInfo!.token
+    }`
   )
 
   sse.onmessage = (event) => {

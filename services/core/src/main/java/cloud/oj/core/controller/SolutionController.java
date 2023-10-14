@@ -45,8 +45,8 @@ public class SolutionController {
      *
      * @return {@link SseEmitter} 由服务端轮询并推送结果
      */
-    @GetMapping("{uid}/{time}")
-    public SseEmitter getByUidAndTime(@PathVariable Integer uid, @PathVariable Long time) {
+    @GetMapping("time/{time}")
+    public SseEmitter getByUidAndTime(@RequestHeader Integer uid, @PathVariable Long time) {
         return solutionService.getSolutionByUidAndTime(uid, time);
     }
 

@@ -13,18 +13,14 @@
         :style="{ flexGrow: item.percent, backgroundColor: item.color }" />
     </div>
     <div class="language-detail">
-      <div v-for="item in data" :key="item.name">
-        <div class="item">
-          <n-icon :color="item.color" size="12">
-            <circle-round />
-          </n-icon>
-          <n-text depth="1" strong style="margin-left: 12px"
-            >{{ item.name }}
-          </n-text>
-          <n-text depth="3" style="margin-left: 6px"
-            >{{ item.percent }}%
-          </n-text>
-        </div>
+      <div v-for="item in data" :key="item.name" class="item">
+        <n-icon :color="item.color" size="12">
+          <circle-round />
+        </n-icon>
+        <n-text depth="1" strong style="margin-left: 12px"
+          >{{ item.name }}
+        </n-text>
+        <n-text depth="3" style="margin-left: 6px">{{ item.percent }}% </n-text>
       </div>
     </div>
   </div>
@@ -93,8 +89,7 @@ const data = computed<Array<LanguageItem>>(() => {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: left;
-  width: 250px;
+  width: 350px;
   margin-top: 10px;
 
   *:nth-child(odd) {
@@ -108,7 +103,8 @@ const data = computed<Array<LanguageItem>>(() => {
   .item {
     display: flex;
     align-items: center;
-    margin-top: 3px;
+    margin-top: 4px;
+    width: 135px;
   }
 }
 </style>

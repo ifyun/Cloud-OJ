@@ -101,9 +101,8 @@ public class Compiler {
             }
         } catch (IOException e) {
             log.error("编译错误({}): {}", solutionId, e.getMessage());
-            return new Compile(solutionId, -1, "编译器可能不存在");
+            return new Compile(solutionId, -1, e.getMessage());
         } catch (InterruptedException | CompileError e) {
-            log.error("编译错误({}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
