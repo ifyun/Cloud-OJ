@@ -5,41 +5,39 @@
     <!-- 查询排名 -->
     <select id="getRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
-                                   r.*
-        from (select u.uid,
-                     u.username,
-                     u.nickname,
-                     u.has_avatar,
-                     committed,
-                     passed,
-                     truncate(score, 2) as score
-              from leaderboard l
-                       join user u on l.deleted = false and l.uid = u.uid
-              where u.role = 1
-                and score &gt; 0
-              order by score desc, update_time) r,
-             (select @ranking := #{start}) rn
+                                   u.uid,
+                                   u.username,
+                                   u.nickname,
+                                   u.has_avatar,
+                                   committed,
+                                   passed,
+                                   truncate(score, 2)         as score
+        from leaderboard l
+                 join user u on l.deleted = false and l.uid = u.uid
+                 join (select @ranking := #{start}) rn
+        where u.role = 1
+          and score &gt; 0
+        order by score desc, update_time
         limit #{start}, #{limit};
         select found_rows();
     </select>
     <!-- 查询指定竞赛的排名 -->
     <select id="getContestRanking" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
-                                   r.*
-        from (select u.uid,
-                     u.username,
-                     u.nickname,
-                     u.has_avatar,
-                     committed,
-                     passed,
-                     truncate(score, 2) as score
-              from leaderboard_contest lc
-                       join user u on lc.deleted = false and lc.uid = u.uid
-              where contest_id = #{contestId}
-                and u.role = 1
-                and score &gt; 0
-              order by score desc, update_time) r,
-             (select @ranking := #{start}) rn
+                                   u.uid,
+                                   u.username,
+                                   u.nickname,
+                                   u.has_avatar,
+                                   committed,
+                                   passed,
+                                   truncate(score, 2)         as score
+        from leaderboard_contest lc
+                 join user u on lc.deleted = false and lc.uid = u.uid
+                 join (select @ranking := #{start}) rn
+        where contest_id = #{contestId}
+          and u.role = 1
+          and score &gt; 0
+        order by score desc, update_time
         limit #{start}, #{limit};
         select found_rows();
     </select>
