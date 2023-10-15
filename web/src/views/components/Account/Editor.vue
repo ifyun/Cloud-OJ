@@ -224,7 +224,7 @@ function back() {
 
 function uploadFinish() {
   t.value = Date.now()
-  location.reload()
+  store.app.refresh()
 }
 
 function refresh() {

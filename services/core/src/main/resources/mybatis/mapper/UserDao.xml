@@ -24,7 +24,7 @@
     <select id="getById" resultMap="Map.User">
         select uid, username, nickname, email, section, has_avatar
         from user
-        where uid = #{userId}
+        where uid = #{uid}
           and deleted = false
     </select>
     <select id="exists" resultType="java.lang.Boolean">
@@ -59,7 +59,7 @@
         where uid = #{uid}
     </update>
     <!-- 设置为有头像 -->
-    <update id="updateAvatar" parameterType="java.lang.String">
+    <update id="updateAvatar">
         update user
         set has_avatar = true
         where uid = #{uid}
