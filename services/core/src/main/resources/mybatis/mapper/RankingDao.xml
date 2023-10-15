@@ -13,8 +13,8 @@
                                    passed,
                                    truncate(score, 2)         as score
         from leaderboard l
-                 join user u on l.deleted = false and l.uid = u.uid
-                 join (select @ranking := #{start}) rn
+                 join user u on l.deleted = false and l.uid = u.uid,
+             (select @ranking := #{start}) rn
         where u.role = 1
           and score &gt; 0
         order by score desc, update_time
@@ -32,8 +32,8 @@
                                    passed,
                                    truncate(score, 2)         as score
         from leaderboard_contest lc
-                 join user u on lc.deleted = false and lc.uid = u.uid
-                 join (select @ranking := #{start}) rn
+                 join user u on lc.deleted = false and lc.uid = u.uid,
+             (select @ranking := #{start}) rn
         where contest_id = #{contestId}
           and u.role = 1
           and score &gt; 0

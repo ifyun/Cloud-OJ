@@ -62,7 +62,7 @@ public class TokenVerifyFilter implements WebFilter {
             var uid = JwtUtil.getUid(token);
 
             if (uid == null) {
-                throw new JwtException("错误的Token");
+                throw new JwtException("错误的 Token");
             }
 
             log.debug("Verify token: [Path: {}, User: {}]", request.getPath(), uid);

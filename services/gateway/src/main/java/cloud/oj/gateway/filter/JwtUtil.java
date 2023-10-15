@@ -1,18 +1,23 @@
 package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.entity.User;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Date;
-import java.util.regex.Pattern;
 
+@Slf4j
 public class JwtUtil {
+    private final static ObjectMapper mapper = new ObjectMapper();
+
     private static SecretKey stringToSecretKey(String secret) {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
@@ -57,18 +62,19 @@ public class JwtUtil {
      *
      * @return uid or null
      */
-    public static Integer getUid(String jwt) throws StringIndexOutOfBoundsException {
+    public static Integer getUid(String jwt) {
         // JWT 是 Base64Url 编码
         var base64 = jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.'))
                 .replaceAll("-", "+")
                 .replaceAll("_", "/");
 
         var payload = new String(Base64.getDecoder().decode(base64));
-        var matcher = Pattern.compile("\"uid\":((.+?)|(\\d*))").matcher(payload);
 
-        if (matcher.find()) {
-            return Integer.valueOf(matcher.group(2));
-        } else {
+        try {
+            var node = mapper.readTree(payload);
+            return node.get("uid").intValue();
+        } catch (JacksonException e) {
+            log.error("Cannot read uid from token");
             return null;
         }
     }
