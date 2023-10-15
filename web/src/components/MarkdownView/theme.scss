@@ -91,14 +91,15 @@
   p code {
     font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
     background-color: #f8f8f8;
-    padding: 1px 4px;
+    border-radius: 2px;
+    padding: 2px 4px;
   }
 
   pre {
     font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
     background-color: #f8f8f8;
     padding: 15px;
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: auto;
 
     code {
@@ -153,7 +154,7 @@
     @import "highlight.js/scss/github-dark";
 
     --code-block-color: #161b22;
-    --code-line-color: #343942;
+    --code-line-color: #21262d;
     --table-header-color: #161b22;
     --table-border-color: #21262d;
 

@@ -296,7 +296,7 @@ function addImage(link: boolean) {
           action={action}
           headers={props.headers}
           showRetryButton={false}
-          accept=".jpg,.png,.svg"
+          accept=".jpg,.png,.svg,.gif"
           onChange={fileListChange}
           onFinish={uploadFinish}>
           <NUploadDragger>
