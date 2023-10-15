@@ -46,6 +46,7 @@
                   style="margin-top: 12px" />
               </n-tab-pane>
               <n-tab-pane
+                v-if="isLoggedIn"
                 name="solutions"
                 tab="提交记录"
                 display-directive="show">
@@ -125,6 +126,7 @@ const code = ref<string>("")
 const submitTime = ref<number>(0)
 
 const theme = computed(() => (store.app.theme != null ? "dark" : "light"))
+const isLoggedIn = computed(() => store.user.isLoggedIn)
 
 let problemId: number | null = null
 let contestId: number | null = null
