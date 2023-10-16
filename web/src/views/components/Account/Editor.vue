@@ -224,17 +224,19 @@ function back() {
 
 function uploadFinish() {
   t.value = Date.now()
-  store.app.refresh()
+  refresh()
 }
 
 function refresh() {
   AuthApi.refresh_token()
     .then((token) => {
       store.user.saveToken(token)
-      location.reload()
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
+    })
+    .finally(() => {
+      store.app.refresh()
     })
 }
 </script>
