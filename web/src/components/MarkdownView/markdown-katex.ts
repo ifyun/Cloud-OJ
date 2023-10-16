@@ -50,14 +50,14 @@ export const KatexPlugin = (md: any) => {
       try {
         match.forEach((value) => {
           const katexElement = katex.renderToString(
-            value.substr(1, value.length - 2)
+            value.substring(1, value.length - 1)
           )
           content = content.replace(value, katexElement)
         })
 
         return content
       } catch (error) {
-        return `<code>${error}</code>`
+        return `<code>语法错误</code>`
       }
     }
 
@@ -85,7 +85,7 @@ export const KatexPlugin = (md: any) => {
       try {
         return `<pre class="math-block">${katex.renderToString(code)}</pre>`
       } catch (error) {
-        return `<pre>${error}</pre>`
+        return `<pre>语法错误</pre>`
       }
     }
 
