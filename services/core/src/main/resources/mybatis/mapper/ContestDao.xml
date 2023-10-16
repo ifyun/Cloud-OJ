@@ -33,7 +33,7 @@
     <select id="getAll" resultMap="Map.Contest, Map.Total">
         select sql_calc_found_rows c.contest_id                                     as contest_id,
                                    contest_name,
-                                   invite_key,
+                                   if(#{admin}, invite_key, null)                   as invite_key,
                                    languages,
                                    start_at,
                                    end_at,

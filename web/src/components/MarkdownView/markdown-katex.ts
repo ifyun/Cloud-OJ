@@ -22,11 +22,11 @@ export const KatexPlugin = (md: any) => {
     let code = tokens[index].content as string
 
     if (code.startsWith("$") && code.endsWith("$")) {
-      code = code.substr(1, code.length - 2)
+      code = code.substring(1, code.length - 1)
       try {
         return katex.renderToString(code)
-      } catch (error) {
-        return `<code>${error}</code>`
+      } catch {
+        return `<code>语法错误</code>`
       }
     }
 
@@ -56,7 +56,7 @@ export const KatexPlugin = (md: any) => {
         })
 
         return content
-      } catch (error) {
+      } catch {
         return `<code>语法错误</code>`
       }
     }
@@ -84,7 +84,7 @@ export const KatexPlugin = (md: any) => {
     ) {
       try {
         return `<pre class="math-block">${katex.renderToString(code)}</pre>`
-      } catch (error) {
+      } catch {
         return `<pre>语法错误</pre>`
       }
     }

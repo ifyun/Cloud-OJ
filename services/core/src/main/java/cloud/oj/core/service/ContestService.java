@@ -55,7 +55,11 @@ public class ContestService {
     }
 
     public List<List<?>> getAllContest(int page, int limit) {
-        return contestDao.getAll((page - 1) * limit, limit);
+        return contestDao.getAll(false,(page - 1) * limit, limit);
+    }
+
+    public List<List<?>> getAllContestAdmin(int page, int limit) {
+        return contestDao.getAll(true,(page - 1) * limit, limit);
     }
 
     public Optional<Contest> getContest(Integer contestId) {

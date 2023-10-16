@@ -26,7 +26,7 @@ public interface ContestDao {
 
     Contest getState(Integer contestId);
 
-    List<List<?>> getAll(int start, int limit);
+    List<List<?>> getAll(boolean admin, int start, int limit);
 
     List<List<?>> getStarted(int start, int limit);
 

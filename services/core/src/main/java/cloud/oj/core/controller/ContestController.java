@@ -59,7 +59,7 @@ public class ContestController {
     @GetMapping(path = "admin")
     public ResponseEntity<?> allContests(@RequestParam(defaultValue = "1") Integer page,
                                          @RequestParam(defaultValue = "15") Integer limit) {
-        var contests = PagedList.resolve(contestService.getAllContest(page, limit));
+        var contests = PagedList.resolve(contestService.getAllContestAdmin(page, limit));
         return contests.getCount() > 0 ?
                 ResponseEntity.ok(contests)
                 : ResponseEntity.noContent().build();
