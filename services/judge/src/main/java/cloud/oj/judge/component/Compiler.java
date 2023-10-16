@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 public class Compiler {
 
     private static final Map<Integer, String[]> CMD = Map.of(
-            Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.c", "-o", "Solution"},
-            Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "-lm", "Solution.cpp", "-o", "Solution"},
+            Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "Solution.c", "-o", "Solution", "-lm"},
+            Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "Solution.cpp", "-o", "Solution"},
             Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "Solution.java"},
             Language.C_SHARP, new String[]{"mcs", "Solution.cs"},
             Language.KOTLIN, new String[]{"kotlinc-native", "Solution.kt", "-o", "Solution"},
