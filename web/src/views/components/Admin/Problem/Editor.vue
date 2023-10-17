@@ -93,7 +93,7 @@
         </n-spin>
       </n-space>
       <!-- 题目内容编辑器 -->
-      <div class="editor-markdown">
+      <div class="editor-area">
         <div>
           <markdown-editor
             v-model="problem.description"
@@ -102,19 +102,25 @@
             :headers="headers" />
         </div>
         <div>
-          <n-scrollbar style="max-height: 100%">
-            <markdown-view
-              :content="problem.description"
-              :theme="theme"
-              style="margin: 30px 0 12px 0" />
-          </n-scrollbar>
+          <markdown-view
+            :content="problem.description"
+            :theme="theme"
+            style="
+              margin-top: 30px;
+              padding: 0 8px 0 8px;
+              overflow: auto;
+              max-height: calc(100% - 30px);
+            " />
         </div>
       </div>
     </div>
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
-    <n-drawer-content :native-scrollbar="false" body-content-style="padding: 0">
-      <markdown-view :content="helpDoc" :theme="theme" style="padding: 24px" />
+    <n-drawer-content
+      title="Markdown 帮助"
+      closable
+      body-content-style="padding: 0">
+      <markdown-view :content="helpDoc" :theme="theme" style="padding: 20px" />
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -142,7 +148,6 @@ import {
   NInput,
   NInputNumber,
   NPageHeader,
-  NScrollbar,
   NSpace,
   NSpin,
   useMessage
@@ -336,7 +341,7 @@ function save() {
     margin-bottom: 12px;
   }
 
-  .editor-markdown {
+  .editor-area {
     margin-top: -12px;
     display: flex;
     flex-direction: row;

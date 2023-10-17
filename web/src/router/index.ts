@@ -27,6 +27,9 @@ const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
 const SystemSettings = () => import("@/views/components/Admin/Settings.vue")
 
 const router = createRouter({
+  scrollBehavior() {
+    return { top: 0 }
+  },
   history: createWebHistory(),
   routes: [
     {

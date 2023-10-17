@@ -18,7 +18,7 @@
                 <admin-navbar />
               </div>
             </n-layout-sider>
-            <n-layout :native-scrollbar="false">
+            <n-layout>
               <n-layout-header class="header" position="absolute" bordered>
                 <div class="admin-nav">
                   <n-space align="center" size="small">

@@ -17,7 +17,7 @@ import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { themeOverrides } from "@/theme"
 import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "@/store"
 
@@ -28,6 +28,17 @@ const router = useRouter()
 const theme = computed(() => store.app.theme)
 const reload = computed(() => store.app.reload)
 const isLoggedIn = computed(() => store.user.isLoggedIn)
+
+watch(
+  theme,
+  (val) => {
+    document.documentElement.setAttribute(
+      "data-color-scheme",
+      val == null ? "light" : "dark"
+    )
+  },
+  { immediate: true }
+)
 
 router.beforeEach((to, from) => {
   if (to.name !== "error") {

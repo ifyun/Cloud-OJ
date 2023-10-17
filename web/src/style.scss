@@ -4,6 +4,10 @@
   --primary-color: #18a058;
 }
 
+[data-color-scheme="dark"] {
+  color-scheme: dark;
+}
+
 #app {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

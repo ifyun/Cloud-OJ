@@ -2,13 +2,12 @@
   <n-config-provider abstract :theme-overrides="themeOverrides">
     <n-message-provider>
       <n-dialog-provider>
-        <n-layout position="absolute" :native-scrollbar="false">
+        <n-layout>
           <n-layout-header class="header" bordered>
             <top-navbar />
           </n-layout-header>
           <n-layout-content
             class="main"
-            :native-scrollbar="false"
             content-style="display: flex; flex-direction: column">
             <router-view v-slot="{ Component }">
               <keep-alive :key="$route.path">
