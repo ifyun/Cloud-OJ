@@ -6,7 +6,7 @@
     :locale="zhCN"
     :date-locale="dateZhCN">
     <n-global-style />
-    <router-view v-if="!reload" v-slot="{ Component }">
+    <router-view v-if="show" v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
   </n-config-provider>
@@ -17,7 +17,7 @@ import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { themeOverrides } from "@/theme"
 import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
-import { computed, onMounted, watch } from "vue"
+import { computed, nextTick, onMounted, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "@/store"
 
@@ -25,9 +25,16 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
+const show = ref(true)
 const theme = computed(() => store.app.theme)
-const reload = computed(() => store.app.reload)
 const isLoggedIn = computed(() => store.user.isLoggedIn)
+
+provide("reload", reload)
+
+function reload() {
+  show.value = false
+  nextTick(() => (show.value = true))
+}
 
 watch(
   theme,

@@ -104,7 +104,7 @@ import {
   NUpload,
   useMessage
 } from "naive-ui"
-import { computed, onMounted, ref } from "vue"
+import { computed, inject, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const uploadUrl = ApiPath.AVATAR
@@ -192,6 +192,8 @@ const rules: FormRules = {
   }
 }
 
+const reload = inject("reload", () => {})
+
 onMounted(() => {
   setTitle("编辑个人信息")
   user.value = userInfo.value! as User
@@ -236,7 +238,7 @@ function refresh() {
       message.error(err.toString())
     })
     .finally(() => {
-      store.app.refresh()
+      reload()
     })
 }
 </script>

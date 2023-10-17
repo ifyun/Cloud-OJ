@@ -94,7 +94,7 @@ import {
   NNotificationProvider,
   NSpace
 } from "naive-ui"
-import { computed } from "vue"
+import { computed, inject } from "vue"
 
 const store = useStore()
 
@@ -114,9 +114,7 @@ const collapsed = computed(() => {
   return store.app.menuCollapsed
 })
 
-function reload() {
-  store.app.refresh()
-}
+const reload = inject("reload", () => {})
 
 function collapse() {
   store.app.menuCollapse()
