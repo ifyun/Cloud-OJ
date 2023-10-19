@@ -271,14 +271,17 @@ function pageChange(page: number) {
 }
 
 function filterChange(value: number) {
+  // 关闭过滤条件
   if (value == 0) {
     filter.value = 0
     filterValue.value = ""
+    pagination.value.page = 1
     pageChange(1)
   }
 }
 
 function search() {
+  pagination.value.page = 1
   pageChange(1)
 }
 

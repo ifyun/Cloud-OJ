@@ -208,12 +208,13 @@ function tagClick(tag: string) {
 function search() {
   nextTick(() => {
     if (keyword.value !== "") {
+      pagination.value.page = 1
       router.push({
-        query: { keyword: keyword.value }
+        query: { keyword: keyword.value, page: 1 }
       })
     }
 
-    pageChange(1)
+    queryProblems()
   })
 }
 
