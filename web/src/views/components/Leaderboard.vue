@@ -3,14 +3,22 @@
     <empty-data v-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical>
-        <n-space v-if="contestState != null" align="center">
-          <n-tag round :bordered="false" :type="contestState.type">
-            <template #icon>
-              <n-icon :component="contestState.icon" />
-            </template>
-            {{ contestState.state }}
-          </n-tag>
-          <n-text strong>{{ contest?.contestName }} - 排名</n-text>
+        <n-space v-if="contestState != null" justify="space-between">
+          <n-space align="center">
+            <n-tag round :bordered="false" :type="contestState.type">
+              <template #icon>
+                <n-icon :component="contestState.icon" />
+              </template>
+              {{ contestState.state }}
+            </n-tag>
+            <n-h4 style="margin-bottom: 4px">
+              {{ contest?.contestName }} - 排名
+            </n-h4>
+          </n-space>
+          <n-switch v-model:value="autoRefresh" :round="false">
+            <template #checked>自动刷新</template>
+            <template #unchecked>自动刷新</template>
+          </n-switch>
         </n-space>
         <n-data-table
           single-column
@@ -18,6 +26,7 @@
           :columns="rankingColumns"
           :data="rankings.data" />
         <n-pagination
+          v-if="!autoRefresh"
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="rankings.count"
@@ -37,13 +46,15 @@ import {
   DataTableColumns,
   NButton,
   NDataTable,
+  NH4,
   NIcon,
   NPagination,
   NSpace,
+  NSwitch,
   NTag,
   NText
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, nextTick, onBeforeMount, onUnmounted, ref, watch } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -59,6 +70,7 @@ const props = withDefaults(
 
 let contestId: number | null = null
 let contestState: StateTag | null = null
+let timeout: number | undefined
 
 const pagination = ref({
   page: 1,
@@ -66,6 +78,7 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
+const autoRefresh = ref<boolean>(false)
 const contest = ref<Contest | null>(null)
 const rankings = ref<Page<Ranking>>({
   data: [],
@@ -127,6 +140,16 @@ const rankingColumns: DataTableColumns<Ranking> = [
   }
 ]
 
+watch(autoRefresh, (val) => {
+  window.clearTimeout(timeout)
+  if (val === true) {
+    pagination.value = { page: 1, pageSize: 30 }
+    nextTick(() => queryContest())
+  } else {
+    pagination.value = { page: 1, pageSize: 15 }
+  }
+})
+
 onBeforeMount(() => {
   const reg = /^\d+$/
   setTitle("排名")
@@ -149,6 +172,10 @@ onBeforeMount(() => {
   }
 })
 
+onUnmounted(() => {
+  window.clearTimeout(timeout)
+})
+
 function pageChange(page: number) {
   router.push({
     query: { page }
@@ -162,10 +189,16 @@ function queryContest() {
     .then((data) => {
       contest.value = data
       contestState = stateTag(data)
+      setTitle(`${data.contestName} | 排名`)
       queryRankings()
     })
     .catch((err: ErrorMessage) => {
       store.app.setError(err)
+    })
+    .finally(() => {
+      if (autoRefresh.value === true) {
+        timeout = window.setTimeout(queryContest, 15000)
+      }
     })
 }
 

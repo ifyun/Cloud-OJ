@@ -1,74 +1,65 @@
 <template>
   <div class="submission">
-    <n-card style="height: 100%">
-      <Skeleton v-if="loading" />
-      <div v-else class="content">
-        <div>
-          <n-scrollbar style="height: 100%">
-            <n-tabs type="line">
-              <n-tab-pane
-                name="problem"
-                tab="题目描述"
-                display-directive="show">
-                <n-h2 style="margin-bottom: 6px">
-                  {{ `${problem.problemId}.${problem.title}` }}
-                </n-h2>
-                <n-space size="small">
-                  <n-tag type="success" size="small" round :bordered="false">
-                    <template #icon>
-                      <n-icon :component="HelpRound" />
-                    </template>
-                    {{ problem.score }} 分
-                  </n-tag>
-                  <n-tag type="error" size="small" round :bordered="false">
-                    <template #icon>
-                      <n-icon :component="TimerOutlined" />
-                    </template>
-                    时间限制 {{ problem.timeout }} ms
-                  </n-tag>
-                  <n-tag type="warning" size="small" round :bordered="false">
-                    <template #icon>
-                      <n-icon :component="DataSaverOffRound" />
-                    </template>
-                    内存限制 {{ problem.memoryLimit }} MB
-                  </n-tag>
-                  <n-tag type="info" size="small" round :bordered="false">
-                    <template #icon>
-                      <n-icon :component="PrintRound" />
-                    </template>
-                    输出限制 {{ problem.outputLimit }} MB
-                  </n-tag>
-                </n-space>
-                <!-- 题目内容 -->
-                <markdown-view
-                  :content="problem.description"
-                  :theme="theme"
-                  style="margin-top: 12px" />
-              </n-tab-pane>
-              <n-tab-pane
-                v-if="isLoggedIn"
-                name="solutions"
-                tab="提交记录"
-                display-directive="show">
-                <n-h2 style="margin-bottom: 6px">
-                  {{ `${problem.problemId}.${problem.title}` }}
-                </n-h2>
-                <solution-single :problem-id="pid" />
-              </n-tab-pane>
-            </n-tabs>
-          </n-scrollbar>
-        </div>
-        <!-- 代码编辑器 -->
-        <div style="overflow: hidden">
-          <code-editor
-            :value="code"
+    <Skeleton v-if="loading" />
+    <div v-else class="content">
+      <n-tabs type="line">
+        <n-tab-pane name="problem" tab="题目描述" display-directive="show">
+          <n-h2 style="margin-bottom: 6px">
+            {{ `${problem.problemId}.${problem.title}` }}
+          </n-h2>
+          <n-space size="small">
+            <n-tag type="success" size="small" round :bordered="false">
+              <template #icon>
+                <n-icon :component="HelpRound" />
+              </template>
+              {{ problem.score }} 分
+            </n-tag>
+            <n-tag type="error" size="small" round :bordered="false">
+              <template #icon>
+                <n-icon :component="TimerOutlined" />
+              </template>
+              时间限制 {{ problem.timeout }} ms
+            </n-tag>
+            <n-tag type="warning" size="small" round :bordered="false">
+              <template #icon>
+                <n-icon :component="DataSaverOffRound" />
+              </template>
+              内存限制 {{ problem.memoryLimit }} MB
+            </n-tag>
+            <n-tag type="info" size="small" round :bordered="false">
+              <template #icon>
+                <n-icon :component="PrintRound" />
+              </template>
+              输出限制 {{ problem.outputLimit }} MB
+            </n-tag>
+          </n-space>
+          <!-- 题目内容 -->
+          <markdown-view
+            :content="problem.description"
             :theme="theme"
-            :loading="disableSubmit"
-            :available-languages="problem.languages"
-            @submit="submitClick" />
-        </div>
+            style="margin-top: 12px" />
+        </n-tab-pane>
+        <n-tab-pane
+          v-if="isLoggedIn"
+          name="solutions"
+          tab="提交记录"
+          display-directive="show">
+          <n-h2 style="margin-bottom: 6px">
+            {{ `${problem.problemId}.${problem.title}` }}
+          </n-h2>
+          <solution-single :problem-id="pid" />
+        </n-tab-pane>
+      </n-tabs>
+      <!-- 代码编辑器 -->
+      <div>
+        <code-editor
+          :value="code"
+          :theme="theme"
+          :loading="disableSubmit"
+          :available-languages="problem.languages"
+          @submit="submitClick" />
       </div>
-    </n-card>
+    </div>
   </div>
   <n-modal
     v-model:show="showResult"
@@ -95,11 +86,9 @@ import {
 } from "@vicons/material"
 import _ from "lodash"
 import {
-  NCard,
   NH2,
   NIcon,
   NModal,
-  NScrollbar,
   NSpace,
   NTabPane,
   NTabs,
@@ -247,12 +236,13 @@ function submit(data: SourceCode) {
 
 <style scoped lang="scss">
 .submission {
-  width: calc(100% - var(--layout-padding) * 2);
-  min-height: 900px;
-  padding: var(--layout-padding);
+  width: calc(100% - var(--layout-padding) * 4);
+  padding-top: var(--layout-padding);
+  padding-left: calc(var(--layout-padding) * 2);
+  padding-right: calc(var(--layout-padding) * 2);
 
   .content {
-    height: 100%;
+    min-height: 800px;
     min-width: 720px;
     display: flex;
     flex-direction: row;

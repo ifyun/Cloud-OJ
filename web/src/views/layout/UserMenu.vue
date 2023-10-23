@@ -7,9 +7,9 @@
       :has-avatar="userInfo!.hasAvatar" />
     <n-dropdown
       trigger="click"
-      :show-arrow="true"
       placement="bottom-end"
-      :options="userInfo!.role === 1 ? userMenuOptions : adminMenuOptions"
+      :show-arrow="true"
+      :options="menuOptions"
       @select="userMenuSelect">
       <n-button text icon-placement="right">
         {{ userInfo!.nickname }}
@@ -56,39 +56,6 @@ const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 
-const userMenuOptions = [
-  {
-    label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
-    key: "account",
-    icon: renderIcon(HouseUser)
-  },
-  {
-    label: "退出",
-    key: "exit",
-    icon: renderIcon(ExitToAppRound)
-  }
-]
-
-const adminMenuOptions = [
-  {
-    label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
-    key: "account",
-    icon: renderIcon(HouseUser)
-  },
-  {
-    label: () => (
-      <RouterLink to={{ name: "problem_admin" }}>系统管理</RouterLink>
-    ),
-    key: "admin",
-    icon: renderIcon(DashboardRound)
-  },
-  {
-    label: "退出登录",
-    key: "exit",
-    icon: renderIcon(ExitToAppRound)
-  }
-]
-
 const isLoggedIn = computed(() => {
   return store.user.isLoggedIn
 })
@@ -96,6 +63,27 @@ const isLoggedIn = computed(() => {
 const userInfo = computed(() => {
   return store.user.userInfo
 })
+
+const menuOptions = [
+  {
+    key: "account",
+    label: () => <RouterLink to={{ name: "account" }}>个人中心</RouterLink>,
+    icon: renderIcon(HouseUser)
+  },
+  {
+    key: "admin",
+    show: userInfo.value?.role === 0,
+    label: () => (
+      <RouterLink to={{ name: "problem_admin" }}>系统管理</RouterLink>
+    ),
+    icon: renderIcon(DashboardRound)
+  },
+  {
+    key: "exit",
+    label: "退出登录",
+    icon: renderIcon(ExitToAppRound)
+  }
+]
 
 function userMenuSelect(key: string) {
   if (key === "exit") {
