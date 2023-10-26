@@ -8,12 +8,14 @@ import org.apache.ibatis.annotations.Select;
 public interface InviteeDao {
 
     @Select("""
-            select 1
-            from invitee
-            where contest_id = #{contestId}
-            and uid = #{uid}
+            select exists(
+                select 1
+                from invitee
+                where contest_id = #{contestId}
+                  and uid = #{uid}
+            )
             """)
-    Boolean checkInvitee(Integer contestId, Integer uid);
+    Boolean isInvited(Integer contestId, Integer uid);
 
     @Insert("""
             insert into invitee(contest_id, uid)

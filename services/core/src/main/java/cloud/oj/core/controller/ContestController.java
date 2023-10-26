@@ -71,7 +71,7 @@ public class ContestController {
      * @return 题目列表
      */
     @GetMapping(path = "problem")
-    public ResponseEntity<?> getProblemsFromStartedContest(Integer contestId, Integer uid) {
+    public ResponseEntity<?> getProblemsFromStartedContest(@RequestHeader Integer uid, Integer contestId) {
         var problems = contestService.getProblemsFromContest(uid, contestId, false);
         return problems.isEmpty() ?
                 ResponseEntity.noContent().build()
@@ -84,8 +84,8 @@ public class ContestController {
      * @return {@link cloud.oj.core.entity.Problem}
      */
     @GetMapping(path = "problem/{contestId}/{problemId}")
-    public ResponseEntity<?> getProblemInContest(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return contestService.getProblemInContest(contestId, problemId)
+    public ResponseEntity<?> getProblemInContest(@RequestHeader Integer uid, @PathVariable Integer contestId, @PathVariable Integer problemId) {
+        return contestService.getProblemInContest(uid, contestId, problemId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

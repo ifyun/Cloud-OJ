@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class ContestService {
             throw new GenericException(HttpStatus.NOT_ACCEPTABLE, "Invalid Invite Key");
         }
 
-        if (inviteeDao.checkInvitee(contestId, uid) == null) {
+        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
             inviteeDao.inviteUser(contestId, uid);
         }
 
@@ -55,11 +56,11 @@ public class ContestService {
     }
 
     public List<List<?>> getAllContest(int page, int limit) {
-        return contestDao.getAll(false,(page - 1) * limit, limit);
+        return contestDao.getAll(false, (page - 1) * limit, limit);
     }
 
     public List<List<?>> getAllContestAdmin(int page, int limit) {
-        return contestDao.getAll(true,(page - 1) * limit, limit);
+        return contestDao.getAll(true, (page - 1) * limit, limit);
     }
 
     public Optional<Contest> getContest(Integer contestId) {
@@ -121,9 +122,9 @@ public class ContestService {
             return contestDao.getProblems(contestId);
         }
 
-        if (inviteeDao.checkInvitee(contestId, uid) == null) {
+        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
             // 用户没有被邀请，返回 402
-            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "Invite Key Required");
+            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "请使用邀请码加入竞赛");
         }
 
         var problems = contestDao.getProblemsInStarted(contestId);
@@ -133,7 +134,12 @@ public class ContestService {
         return problems;
     }
 
-    public Optional<Problem> getProblemInContest(Integer contestId, Integer problemId) {
+    public Optional<Problem> getProblemInContest(@RequestHeader Integer uid, Integer contestId, Integer problemId) {
+        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
+            // 用户未被邀请
+            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "未加入竞赛");
+        }
+
         return Optional.ofNullable(problemDao.getByIdFromContest(contestId, problemId));
     }
 
