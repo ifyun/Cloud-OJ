@@ -122,13 +122,14 @@ create index idx_score_time on leaderboard (score desc, update_time asc);
 # 竞赛排名
 create table leaderboard_contest
 (
-    uid         int primary key      not null,
+    uid         int                  not null,
     contest_id  int                  not null,
     committed   int        default 0 not null,
     passed      int        default 0 not null,
     score       int        default 0 not null,
     update_time bigint               not null comment '毫秒级',
-    deleted     tinyint(1) default 0 not null
+    deleted     tinyint(1) default 0 not null,
+    primary key (uid, contest_id)
 );
 
 create index idx_cid_score_time on leaderboard_contest (contest_id, score desc, update_time asc);
