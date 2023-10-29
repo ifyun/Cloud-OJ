@@ -67,13 +67,11 @@ RUN curl -LJO \
     && rm kotlin-native-linux-x86_64-1.8.22.tar.gz
 # install dependencies
 RUN kotlinc-native foo.kt || true
-COPY --from=build-env /build/services/judge/entrypoint.sh /app/entrypoint.sh
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar
 COPY --from=build-env \
     /build/judge/cmake-build-release/judge \
-    /build/judge/cmake-build-release/judged \
     /usr/bin/
 WORKDIR /app
 EXPOSE 8380
 ENV JVM_OPTS="-Xmx200m"
-CMD ["bash", "entrypoint.sh"]
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar judge.jar

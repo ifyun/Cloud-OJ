@@ -18,12 +18,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.StandardProtocolFamily;
-import java.net.UnixDomainSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 
 import static cloud.oj.judge.constant.Language.*;
 import static cloud.oj.judge.constant.Result.*;
@@ -35,8 +32,6 @@ public class Judgement {
 
     private final AppConfig appConfig;
 
-    private final ObjectMapper objectMapper;
-
     private final ProblemDao problemDao;
 
     private final SolutionDao solutionDao;
@@ -47,7 +42,11 @@ public class Judgement {
 
     private final HashMap<String, Integer> cpuMap;
 
-    private final static UnixDomainSocketAddress addr = UnixDomainSocketAddress.of("/var/run/judge.sock");
+    private final ObjectMapper objectMapper;
+
+    private final ProcessBuilder processBuilder = new ProcessBuilder();
+
+    private final ArrayList<String> argv = new ArrayList<>();
 
     /**
      * 判题入口
@@ -138,30 +137,33 @@ public class Judgement {
      */
     private JudgeResult execute(Solution solution, Problem problem) {
         JudgeResult result;
+        Process process = null;
 
         try {
-            var testDataDir = appConfig.getFileDir() + "data/" + solution.getProblemId();
-            var argv = buildCommand(solution, problem, testDataDir);
-            var buf = ByteBuffer.allocate(2048);
-            var channel = SocketChannel.open(StandardProtocolFamily.UNIX);
-            channel.connect(addr);
-            channel.write(ByteBuffer.wrap(argv.getBytes()));
-            channel.read(buf);
-            channel.close();
-            buf.flip();
-            var bytes = new byte[buf.remaining()];
-            buf.get(bytes);
-            result = objectMapper.readValue(bytes, JudgeResult.class);
+            buildCommand(solution, problem, appConfig.getFileDir() + "data/" + solution.getProblemId());
+            process = processBuilder.command(argv).start();
 
-            if (result.getCode() == 1) {
-                result.setResult(RE);
-            } else if (result.getCode() == 2) {
+            if (process.waitFor(120, TimeUnit.SECONDS)) {
+                result = objectMapper.readValue(process.getInputStream(), JudgeResult.class);
+
+                if (result.getCode() == 1) {
+                    result.setResult(RE);
+                } else if (result.getCode() == 2) {
+                    result.setResult(IE);
+                }
+            } else {
+                result = new JudgeResult();
                 result.setResult(IE);
+                result.setError("wait timeout");
             }
-        } catch (IOException | UnsupportedLanguageError e) {
+        } catch (IOException | UnsupportedLanguageError | InterruptedException e) {
             result = new JudgeResult();
             result.setResult(IE);
             result.setError(e.getMessage());
+        } finally {
+            if (process != null) {
+                process.destroyForcibly();
+            }
         }
 
         return result;
@@ -170,7 +172,7 @@ public class Judgement {
     /**
      * 生成命令
      */
-    private String buildCommand(Solution solution, Problem problem, String dataDir)
+    private void buildCommand(Solution solution, Problem problem, String dataDir)
             throws UnsupportedLanguageError {
         var language = solution.getLanguage();
         Language.check(language);
@@ -181,7 +183,8 @@ public class Judgement {
         var memoryLimit = problem.getMemoryLimit();
         var outputLimit = problem.getOutputLimit();
 
-        StringJoiner argv = new StringJoiner(" ");
+        argv.clear();
+        argv.add("judge");
 
         switch (language) {
             case C, CPP, GO -> argv.add("--cmd=./Solution");
@@ -193,13 +196,12 @@ public class Judgement {
             case C_SHARP -> argv.add("--cmd=mono@Solution.exe");
         }
 
-        return argv.add("--time=" + timeLimit)
-                .add("--ram=" + memoryLimit)
-                .add("--output=" + outputLimit)
-                .add("--workdir=" + workDir)
-                .add("--data=" + dataDir)
-                .add("--lang=" + solution.getLanguage())
-                .add("--cpu=" + cpu)
-                .toString();
+        argv.add("--time=" + timeLimit);
+        argv.add("--ram=" + memoryLimit);
+        argv.add("--output=" + outputLimit);
+        argv.add("--workdir=" + workDir);
+        argv.add("--data=" + dataDir);
+        argv.add("--lang=" + solution.getLanguage());
+        argv.add("--cpu=" + cpu);
     }
 }

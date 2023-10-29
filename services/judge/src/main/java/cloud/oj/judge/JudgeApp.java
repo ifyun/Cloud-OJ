@@ -2,33 +2,25 @@ package cloud.oj.judge;
 
 import cloud.oj.judge.config.AppConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SystemUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * <h2>使用 root 权限调试</h2>
+ *
+ * <code>mvn spring-boot:run -pl judge</code>
+ */
 @Slf4j
-@EnableTransactionManagement
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableConfigurationProperties(AppConfig.class)
+@EnableTransactionManagement
 public class JudgeApp {
-    private static void checkSystem() {
-        if (!SystemUtils.IS_OS_LINUX) {
-            log.error("Please run on Linux");
-            System.exit(1);
-        }
-
-        if (!System.getProperty("os.arch").equals("amd64")) {
-            log.error("Please run on x86-64");
-            System.exit(1);
-        }
-    }
 
     public static void main(String[] args) {
-        checkSystem();
         SpringApplication.run(JudgeApp.class, args);
     }
 }
