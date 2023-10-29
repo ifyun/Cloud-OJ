@@ -1,7 +1,6 @@
 #include <iostream>
 #include <unistd.h>
 #include "runner.h"
-#include "options.h"
 #include "common.h"
 
 int main(int argc, char *argv[]) {

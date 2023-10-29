@@ -11,7 +11,7 @@
 #define OLE 4
 #define PA 5
 
-#define ALARM_SECONDS 7    // ALARM 触发时间
+#define ALARM_SECONDS 15    // ALARM 触发时间
 
 extern pid_t child_pid;
 
@@ -61,11 +61,6 @@ private:
     SyscallRule *syscall_rule;
 private:
     int set_cpu() const;
-
-    /**
-    * 设置当前进程的资源限制
-    */
-    void set_limit() const;
 
     /**
     * 使用 execvp 执行 Solution

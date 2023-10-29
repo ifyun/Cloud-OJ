@@ -1,6 +1,7 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
+#include <sys/prctl.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -44,7 +45,7 @@ int Runner::set_cpu() const {
     return sched_setaffinity(0, sizeof(cpu_set_t), &mask);
 }
 
-inline void Runner::set_limit() const {
+inline int Runner::run_cmd() {
     struct rlimit rl{};
 
     rl.rlim_cur = (config.timeout / 1000) + 1;
@@ -56,14 +57,12 @@ inline void Runner::set_limit() const {
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_FSIZE, &rl);
-}
 
-inline int Runner::run_cmd() {
-    set_limit();
     dup2(config.in, STDIN_FILENO);
     dup2(config.out, STDOUT_FILENO);
     dup2(config.out, STDERR_FILENO);
-    setuid(99);
+
+    setuid(65534);
     ptrace(PTRACE_TRACEME, 0, 0, 0);
 
     if (execvp(argv[0], argv) == -1) {
@@ -196,7 +195,7 @@ Result Runner::run() {
     }
 
     chroot(work_dir);
-    pid_t pid = fork();
+    pid_t pid = vfork();
 
     if (pid < 0) {
         Result res = {.status=INTERNAL_ERROR};
@@ -204,6 +203,7 @@ Result Runner::run() {
         fprintf(stderr, "%s", res.err);
         return res;
     } else if (pid == 0) {
+        prctl(PR_SET_PDEATHSIG, SIGTERM);
         _exit(run_cmd());
     } else {
         child_pid = pid;

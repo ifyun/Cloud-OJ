@@ -8,14 +8,10 @@ include_directories(
         include
 )
 
-aux_source_directory(src/judge JUDGE)
-aux_source_directory(src/judged JUDGED)
-
-add_executable(judge src/common.cpp ${JUDGE})
-add_executable(judged src/common.cpp ${JUDGED})
-target_link_libraries(judged pthread)
+aux_source_directory(src JUDGE)
+add_executable(judge ${JUDGE})
 
 install(
-        TARGETS judged judge
+        TARGETS judge
         RUNTIME DESTINATION ${INSTALL_DIR}
 )

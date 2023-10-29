@@ -12,11 +12,6 @@ Online Judge 判题程序。
 
 2. 运行 `./build` 生成可执行文件
 
-生成的可执行文件有两个：
-
-- judge： 判题程序
-- judged：守护进程
-
 ## Install
 
 ```bash
@@ -25,7 +20,7 @@ sudo ./build install
 
 - 可执行文件将被复制到 `/usr/local/bin` 目录
 
-## judge
+## judge 用法
 
 ```bash
 judge <options>
@@ -128,18 +123,3 @@ judge -c java@-Xmx256m@Solution \
 
 - `1` 表示运行错误(用户程序运行出错)
 - `2` 表示内部错误(判题程序自身出错)
-
-## judged
-
-`judged` 使用 UNIX Domain Socket 通信，接收参数调用 `judge` 判题并将结果写回客户端。
-
-- `judged` 默认创建一个大小等于 CPU 核心数的线程池
-- Socket 文件路径为 `/var/run/judge.sock`
-- 客户端发送的数据为 `judge` 的选项参数(字节流)，用空格分隔
-
-直接执行 `judged` 会在前台运行，日志输出到终端：
-
-```text
-2022-09-19 11:00:35  INFO [      main] judged start, listen /var/run/judge.sock.
-2022-09-19 11:00:35  INFO [      main] create pool, size=16.
-```
