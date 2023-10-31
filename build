@@ -129,6 +129,6 @@ elif [ "$1" == "docker" ]; then
     esac
   fi
 else
-  err "Inlaid Arg"
+  err "Invalid Arg"
   exit 1
 fi
