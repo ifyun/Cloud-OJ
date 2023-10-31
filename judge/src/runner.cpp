@@ -58,6 +58,16 @@ inline int Runner::run_cmd() {
 
     setrlimit(RLIMIT_FSIZE, &rl);
 
+    if (set_cpu() != 0) {
+        goto exit;
+    }
+
+#ifdef DEBUG
+    cpu_set_t mask;
+    sched_getaffinity(0, sizeof(cpu_set_t), &mask);
+    printf("PID: %d, CPU_COUNT: %d\n", getpid(), CPU_COUNT(&mask));
+#endif
+
     dup2(config.in, STDIN_FILENO);
     dup2(config.out, STDOUT_FILENO);
     dup2(config.out, STDERR_FILENO);
@@ -65,12 +75,14 @@ inline int Runner::run_cmd() {
     setuid(65534);
     ptrace(PTRACE_TRACEME, 0, 0, 0);
 
-    if (execvp(argv[0], argv) == -1) {
-        perror("无法创建进程");
-        return INTERNAL_ERROR;
+    // * exec 成功不会返回
+    if (execvp(argv[0], argv) != 0) {
+        goto exit;
     }
 
-    return 0;
+    exit:
+    perror("ERROR");
+    return INTERNAL_ERROR;
 }
 
 /**
@@ -203,8 +215,8 @@ Result Runner::run() {
         fprintf(stderr, "%s", res.err);
         return res;
     } else if (pid == 0) {
-        prctl(PR_SET_PDEATHSIG, SIGTERM);
-        _exit(run_cmd());
+        prctl(PR_SET_PDEATHSIG, SIGKILL);
+        run_cmd();
     } else {
         child_pid = pid;
         signal(SIGALRM, alarm_child);
@@ -230,14 +242,7 @@ RTN Runner::judge() {
     }
 
     closedir(dp);
-
     root_fd = open("/", O_RDONLY);
-
-    if (set_cpu() == -1) {
-        rtn = {INTERNAL_ERROR, strerror(errno)};
-        goto exit;
-    }
-
     setup_env(work_dir);
 
     try {

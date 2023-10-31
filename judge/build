@@ -18,6 +18,7 @@ cmake -B ${build_dir} \
 
 if [ "$1" == "install" ]; then
   sudo cmake --build ${build_dir} --target all install
+  sudo rm -r ${build_dir}
 else
   cmake --build ${build_dir} --target all
 fi

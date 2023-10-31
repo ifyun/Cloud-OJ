@@ -51,9 +51,10 @@ public class SubmitService {
         }
 
         if (contestId != null) {
+            // 竞赛提交
             var contest = contestDao.getContest(contestId);
 
-            if (inviteeDao.checkInvitee(contestId, data.getUid()) < 1) {
+            if (Boolean.FALSE.equals(inviteeDao.checkInvitee(contestId, data.getUid()))) {
                 throw new GenericException(HttpStatus.FORBIDDEN, "非邀请用户");
             }
 
@@ -73,6 +74,7 @@ public class SubmitService {
                 throw new GenericException(HttpStatus.BAD_REQUEST, "不准使用该语言");
             }
         } else {
+            // 非竞赛提交
             if (!isAdmin && !problemDao.isEnable(data.getProblemId())) {
                 throw new GenericException(HttpStatus.FORBIDDEN, "未开放，不准提交");
             }
