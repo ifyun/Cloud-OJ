@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +24,11 @@ public class Contest {
     private boolean ended;
     // UNIX 时间戳(10 位)
     private Long createAt;
+
+    private List<Ranking> ranking;
+
+    public Contest withoutKey() {
+        this.inviteKey = null;
+        return this;
+    }
 }

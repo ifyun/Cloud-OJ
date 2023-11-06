@@ -31,36 +31,17 @@ public class RankingController {
      * 获取竞赛排行榜
      */
     @GetMapping(path = "contest/{contestId}")
-    public ResponseEntity<?> getContestRanking(@PathVariable Integer contestId,
-                                               @RequestParam(defaultValue = "1") Integer page,
-                                               @RequestParam(defaultValue = "15") Integer limit) {
-        var rankings = PagedList.resolve(rankingService.getContestRanking(contestId, page, limit));
-        return rankings.getCount() > 0 ?
-                ResponseEntity.ok(rankings)
-                : ResponseEntity.noContent().build();
+    public ResponseEntity<?> getContestRanking(@PathVariable Integer contestId) {
+        var scoreboard = rankingService.getContestRanking(contestId);
+        return scoreboard.getRanking().isEmpty() ? ResponseEntity.noContent().build() :
+                ResponseEntity.ok(scoreboard);
     }
 
     /**
      * 获取竞赛排行榜(管理员用)
      */
     @GetMapping(path = "admin/contest/{contestId}")
-    public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId,
-                                                 @RequestParam(defaultValue = "1") Integer page,
-                                                 @RequestParam(defaultValue = "15") Integer limit) {
-        var rankings = PagedList.resolve(rankingService.getContestRanking(contestId, page, limit));
-        return rankings.getCount() > 0 ?
-                ResponseEntity.ok(rankings)
-                : ResponseEntity.noContent().build();
-    }
-
-    /**
-     * 获取用户的详细得分情况
-     */
-    @GetMapping(path = "admin/contest/detail")
-    public ResponseEntity<?> getDetail(Integer contestId, Integer uid) {
-        var detail = rankingService.getDetail(contestId, uid);
-        return !detail.isEmpty() ?
-                ResponseEntity.ok(detail)
-                : ResponseEntity.noContent().build();
+    public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId) {
+        return ResponseEntity.ok(rankingService.getContestRanking(contestId));
     }
 }

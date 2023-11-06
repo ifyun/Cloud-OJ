@@ -1,6 +1,6 @@
 <template>
   <n-config-provider :hljs="highlightJs">
-    <div class="help">
+    <div class="wrap help">
       <n-h2>语言支持</n-h2>
       <n-data-table
         single-column
@@ -179,9 +179,6 @@ onBeforeMount(() => {
 .help {
   display: flex;
   flex-direction: column;
-  width: 1100px;
-  padding: var(--layout-padding) 0;
-  margin: 0 auto;
 
   ul {
     margin: 0;

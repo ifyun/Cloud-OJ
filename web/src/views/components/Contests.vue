@@ -182,8 +182,8 @@ function handleSelect(key: number) {
     })
   } else if (key === 2) {
     router.push({
-      name: "leaderboard",
-      query: { cid: contestId }
+      name: "scoreboard_contest",
+      params: { cid: contestId }
     })
   }
 }

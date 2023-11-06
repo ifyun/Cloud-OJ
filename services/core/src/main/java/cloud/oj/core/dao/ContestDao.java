@@ -24,6 +24,22 @@ public interface ContestDao {
             """)
     void newInviteKey(Integer contestId, String key);
 
+    @Select("""
+            select problem_id
+            from `contest-problem`
+            where contest_id = #{cid}
+            order by problem_id
+            """
+    )
+    List<Integer> getProblemIds(Integer cid);
+
+    @Select("""
+            select count(problem_id)
+            from `contest-problem`
+            where contest_id = #{cid}
+            """)
+    Integer countProblems(Integer cid);
+
     Contest getState(Integer contestId);
 
     List<List<?>> getAll(boolean admin, int start, int limit);

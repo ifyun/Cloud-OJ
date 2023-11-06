@@ -92,15 +92,11 @@ const columns: DataTableColumns<Problem> = [
   {
     title: "#",
     key: "#",
-    align: "right",
-    width: 50,
-    render: (_, rowIndex: number) => <span>{rowIndex + 1}</span>
-  },
-  {
-    title: "ID",
-    key: "problemId",
-    align: "right",
-    width: 70
+    align: "center",
+    width: 100,
+    render: (_, rowIndex: number) => (
+      <NText>{String.fromCharCode(rowIndex + 65)}</NText>
+    )
   },
   {
     title: "题名",

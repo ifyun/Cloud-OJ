@@ -144,6 +144,10 @@ public class ContestService {
     }
 
     public HttpStatus addProblemToContest(Integer contestId, Integer problemId) {
+        if (contestDao.countProblems(contestId) == 13) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不能超过 13 题");
+        }
+
         if (contestDao.addProblem(contestId, problemId) == 1) {
             return HttpStatus.CREATED;
         } else {

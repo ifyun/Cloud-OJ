@@ -3,6 +3,8 @@ package cloud.oj.core.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 public class Ranking {
@@ -14,4 +16,6 @@ public class Ranking {
     private Integer passed;
     private Double score;
     private Boolean hasAvatar;
+
+    private Set<ScoreDetail> details;
 }

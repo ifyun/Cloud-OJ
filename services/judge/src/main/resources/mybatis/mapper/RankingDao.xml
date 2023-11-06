@@ -4,7 +4,7 @@
 <mapper namespace="cloud.oj.judge.dao.RankingDao">
     <!-- 提交次数 + 1 -->
     <insert id="incCommitted">
-        insert into leaderboard
+        insert into scoreboard
         set uid   = #{uid},
             committed = committed + 1,
             update_time = #{time}
@@ -12,7 +12,7 @@
     </insert>
     <!-- 提交次数 + 1 (竞赛) -->
     <insert id="incCommittedForContest">
-        insert into leaderboard_contest
+        insert into scoreboard_contest
         set uid         = #{uid},
             contest_id  = #{contestId},
             committed   = committed + 1,
@@ -21,7 +21,7 @@
     </insert>
     <!-- 更新排名 -->
     <insert id="update">
-        replace into leaderboard(uid, committed, passed, score, update_time)
+        replace into scoreboard(uid, committed, passed, score, update_time)
         select #{uid}                                        as uid,
                sum(committed)                                as committed,
                count((case when (pass_rate = 1) then 1 end)) as passed,
@@ -37,7 +37,7 @@
     </insert>
     <!-- 更新竞赛排名 -->
     <insert id="updateForContest">
-        replace into leaderboard_contest(uid, contest_id, committed, passed, score, update_time)
+        replace into scoreboard_contest(uid, contest_id, committed, passed, score, update_time)
         select #{uid}                                        as uid,
                #{contestId}                                  as contest_id,
                sum(committed)                                as committed,

@@ -292,7 +292,7 @@ function date(time: number) {
   if (t.isSame(now, "day")) {
     return "今天"
   } else if (t.isSame(now, "year")) {
-    return t.format("M 月 D 日")
+    return t.format("M 月 D")
   }
 }
 </script>

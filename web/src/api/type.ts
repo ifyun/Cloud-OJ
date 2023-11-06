@@ -109,6 +109,12 @@ export class Contest {
   timeRange?: [number, number]
 }
 
+export class ScoreDetail {
+  problemId?: number
+  score?: number
+  result?: number
+}
+
 export class Ranking {
   rank: number = 0
   uid?: number
@@ -118,6 +124,13 @@ export class Ranking {
   committed: number = 0
   passed: number = 0
   score: number = 0
+  details?: Array<ScoreDetail>
+}
+
+export class RankingContest {
+  contest?: Contest
+  problemIds?: Array<number>
+  ranking?: Array<Ranking>
 }
 
 /**

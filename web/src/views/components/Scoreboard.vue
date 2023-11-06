@@ -3,30 +3,12 @@
     <empty-data v-if="noContent" style="margin-top: 48px" />
     <div v-else>
       <n-space vertical>
-        <n-space v-if="contestState != null" justify="space-between">
-          <n-space align="center">
-            <n-tag round :bordered="false" :type="contestState.type">
-              <template #icon>
-                <n-icon :component="contestState.icon" />
-              </template>
-              {{ contestState.state }}
-            </n-tag>
-            <n-h4 style="margin-bottom: 4px">
-              {{ contest?.contestName }} - 排名
-            </n-h4>
-          </n-space>
-          <n-switch v-model:value="autoRefresh" :round="false">
-            <template #checked>自动刷新</template>
-            <template #unchecked>自动刷新</template>
-          </n-switch>
-        </n-space>
         <n-data-table
           single-column
           :loading="loading"
           :columns="rankingColumns"
           :data="rankings.data" />
         <n-pagination
-          v-if="!autoRefresh"
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
           :item-count="rankings.count"
@@ -37,40 +19,25 @@
 </template>
 
 <script setup lang="tsx">
-import { ContestApi, RankingApi } from "@/api/request"
-import { Contest, ErrorMessage, Page, Ranking } from "@/api/type"
+import { RankingApi } from "@/api/request"
+import { ErrorMessage, Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { StateTag, setTitle, stateTag } from "@/utils"
+import { setTitle } from "@/utils"
 import {
   DataTableColumns,
   NButton,
   NDataTable,
-  NH4,
-  NIcon,
   NPagination,
   NSpace,
-  NSwitch,
-  NTag,
   NText
 } from "naive-ui"
-import { computed, nextTick, onBeforeMount, onUnmounted, ref, watch } from "vue"
+import { computed, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
-
-const props = withDefaults(
-  defineProps<{
-    cid: string | null
-  }>(),
-  { cid: null }
-)
-
-let contestId: number | null = null
-let contestState: StateTag | null = null
-let timeout: number | undefined
 
 const pagination = ref({
   page: 1,
@@ -78,8 +45,6 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
-const autoRefresh = ref<boolean>(false)
-const contest = ref<Contest | null>(null)
 const rankings = ref<Page<Ranking>>({
   data: [],
   count: 0
@@ -140,40 +105,14 @@ const rankingColumns: DataTableColumns<Ranking> = [
   }
 ]
 
-watch(autoRefresh, (val) => {
-  window.clearTimeout(timeout)
-  if (val === true) {
-    pagination.value = { page: 1, pageSize: 30 }
-    nextTick(() => queryContest())
-  } else {
-    pagination.value = { page: 1, pageSize: 15 }
-  }
-})
-
 onBeforeMount(() => {
-  const reg = /^\d+$/
   setTitle("排名")
 
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)
   }
 
-  if (props.cid == null) {
-    queryRankings()
-  } else if (reg.test(props.cid)) {
-    contestId = Number(props.cid)
-    queryContest()
-  } else {
-    store.app.setError({
-      status: 404,
-      error: "Not Found",
-      message: "找不到竞赛"
-    })
-  }
-})
-
-onUnmounted(() => {
-  window.clearTimeout(timeout)
+  queryRankings()
 })
 
 function pageChange(page: number) {
@@ -184,26 +123,8 @@ function pageChange(page: number) {
   queryRankings()
 }
 
-function queryContest() {
-  ContestApi.getById(contestId!)
-    .then((data) => {
-      contest.value = data
-      contestState = stateTag(data)
-      setTitle(`${data.contestName} | 排名`)
-      queryRankings()
-    })
-    .catch((err: ErrorMessage) => {
-      store.app.setError(err)
-    })
-    .finally(() => {
-      if (autoRefresh.value === true) {
-        timeout = window.setTimeout(queryContest, 15000)
-      }
-    })
-}
-
 function queryRankings() {
-  RankingApi.get(pagination.value.page, pagination.value.pageSize, contestId)
+  RankingApi.get(pagination.value.page, pagination.value.pageSize)
     .then((data) => {
       rankings.value = data
     })

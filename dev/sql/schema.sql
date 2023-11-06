@@ -21,6 +21,7 @@ create table problem
 create index idx_title on problem (title);
 create index idx_time on problem (create_at);
 create index idx_enable on problem (enable);
+create index idx_category on problem (category);
 
 # 竞赛
 create table contest
@@ -107,7 +108,7 @@ create table source_code
 );
 
 # 排名
-create table leaderboard
+create table scoreboard
 (
     uid         int primary key      not null,
     committed   int        default 0 not null,
@@ -117,22 +118,22 @@ create table leaderboard
     deleted     tinyint(1) default 0 not null
 );
 
-create index idx_score_time on leaderboard (score desc, update_time asc);
+create index idx_score_time on scoreboard (score desc, update_time asc);
 
 # 竞赛排名
-create table leaderboard_contest
+create table scoreboard_contest
 (
     uid         int                  not null,
     contest_id  int                  not null,
     committed   int        default 0 not null,
     passed      int        default 0 not null,
-    score       int        default 0 not null,
+    score       double     default 0 not null,
     update_time bigint               not null comment '毫秒级',
     deleted     tinyint(1) default 0 not null,
     primary key (uid, contest_id)
 );
 
-create index idx_cid_score_time on leaderboard_contest (contest_id, score desc, update_time asc);
+create index idx_cid_score_time on scoreboard_contest (contest_id, score desc, update_time asc);
 
 create table settings
 (

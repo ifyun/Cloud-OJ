@@ -31,6 +31,7 @@ const themeOverrides: GlobalThemeOverrides = {
 
 const themeOverridesDark: GlobalThemeOverrides = {
   common: {
+    bodyColor: "#0D1117FF",
     borderColor: "#21262DFF"
   },
   Layout: {
@@ -69,11 +70,11 @@ const themeOverridesDark: GlobalThemeOverrides = {
   },
   Table: {
     borderColor: "#161B22FF",
+    borderColorModal: "#26292FFF",
     thColor: "#161B22FF",
     tdColor: "#00000000",
     tdColorHover: "#161B22FF",
     tdColorStriped: "#161B22FF",
-    borderColorModal: "#26292FFF",
     thColorModal: "#26292FFF",
     tdColorModal: "#00000000"
   },

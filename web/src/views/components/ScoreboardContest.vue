@@ -1,0 +1,198 @@
+<template>
+  <div class="wrap" style="max-width: 100%">
+    <empty-data v-if="noContent" style="margin-top: 48px" />
+    <div v-else>
+      <n-space vertical>
+        <n-space v-if="contestState != null" justify="space-between">
+          <n-space align="center">
+            <n-tag round :bordered="false" :type="contestState.type">
+              <template #icon>
+                <n-icon :component="contestState.icon" />
+              </template>
+              {{ contestState.state }}
+            </n-tag>
+            <n-h4 style="margin-bottom: 2px">
+              {{ ranking!.contest!.contestName }}
+            </n-h4>
+          </n-space>
+        </n-space>
+        <n-table>
+          <thead>
+            <tr>
+              <th class="table-rank">排名</th>
+              <th class="table-user">用户</th>
+              <th
+                v-for="(id, i) in ranking?.problemIds"
+                :key="id"
+                class="table-score">
+                {{ String.fromCharCode(i + 65) }}
+              </th>
+              <th class="table-sum">提交 & 总分</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in ranking?.ranking" :key="user.uid">
+              <td class="table-rank">{{ user.rank }}</td>
+              <!-- User -->
+              <td class="table-user">
+                <n-space size="small" align="center">
+                  <user-avatar
+                    size="small"
+                    :uid="user.uid!"
+                    :nickname="user.nickname"
+                    :has-avatar="user.hasAvatar" />
+                  <RouterLink
+                    :to="{ name: 'account', params: { uid: user.uid } }">
+                    <n-button strong text>
+                      {{ user.nickname }}
+                    </n-button>
+                  </RouterLink>
+                </n-space>
+              </td>
+              <td
+                v-for="item in user.details"
+                :key="item.problemId"
+                class="table-score">
+                <n-text :style="{ color: resultColor(item.result) }">
+                  {{ item.score ?? "" }}
+                </n-text>
+              </td>
+              <td class="table-sum">
+                <n-space justify="center">
+                  <n-text depth="3">
+                    {{ user.committed }}
+                  </n-text>
+                  <n-text type="success" strong>
+                    {{ user.score }}
+                  </n-text>
+                </n-space>
+              </td>
+            </tr>
+          </tbody>
+        </n-table>
+      </n-space>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { RankingApi } from "@/api/request"
+import { ErrorMessage, RankingContest } from "@/api/type"
+import { EmptyData, UserAvatar } from "@/components"
+import { useStore } from "@/store"
+import { StateTag, setTitle, stateTag } from "@/utils"
+import dayjs from "dayjs"
+import {
+  NButton,
+  NH4,
+  NIcon,
+  NSpace,
+  NTable,
+  NTag,
+  NText,
+  useThemeVars
+} from "naive-ui"
+import {
+  computed,
+  nextTick,
+  onBeforeMount,
+  onUnmounted,
+  ref,
+  shallowRef
+} from "vue"
+
+const props = defineProps<{
+  cid: string
+}>()
+
+const store = useStore()
+const themeVars = useThemeVars()
+
+const loading = ref<boolean>(true)
+const ranking = ref<RankingContest | null>(null)
+const contestState = shallowRef<StateTag | null>(null)
+
+const noContent = computed<boolean>(
+  () => !loading.value && ranking.value == null
+)
+
+let contestId: number
+let timeout: number | undefined
+
+onBeforeMount(() => {
+  const reg = /^\d+$/
+  if (reg.test(props.cid)) {
+    contestId = Number(props.cid)
+    queryRanking()
+  } else {
+    store.app.setError({
+      status: 404,
+      error: "Not Found",
+      message: "找不到竞赛"
+    })
+  }
+})
+
+onUnmounted(() => {
+  window.clearTimeout(timeout)
+})
+
+function queryRanking() {
+  loading.value = true
+  RankingApi.getContestRanking(contestId)
+    .then((data) => {
+      setTitle(`${data.contest!.contestName} | 排名`)
+      contestState.value = stateTag(data.contest!)
+      ranking.value = data
+
+      nextTick(() => {
+        const time = dayjs.unix(data.contest!.endAt! + 1800)
+        if (dayjs().isBefore(time, "second")) {
+          timeout = window.setTimeout(queryRanking, 30000)
+        }
+      })
+    })
+    .catch((err: ErrorMessage) => {
+      store.app.setError(err)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+function resultColor(r?: number) {
+  if (typeof r === "undefined") {
+    return themeVars.value.textColor3
+  }
+
+  if (r === 0) {
+    return themeVars.value.successColor
+  } else if (r === 3) {
+    return themeVars.value.warningColor
+  } else {
+    return themeVars.value.errorColor
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.table-rank {
+  text-align: center;
+  width: 30px;
+}
+
+.table-user {
+  text-align: start;
+  width: 220px;
+}
+
+.table-score {
+  text-align: center;
+  width: 30px;
+}
+
+.table-sum {
+  text-align: center;
+  width: 100px;
+}
+</style>

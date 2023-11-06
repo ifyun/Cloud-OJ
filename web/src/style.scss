@@ -8,6 +8,10 @@
   color-scheme: dark;
 }
 
+body {
+  min-width: 900px;
+}
+
 #app {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -40,14 +44,14 @@
     }
 
     .wrap {
-      width: 1100px;
+      width: calc(100% - var(--layout-padding) * 4);
+      max-width: 1080px;
       padding: calc(var(--layout-padding) * 2) 0;
       margin: 0 auto;
     }
 
     .admin-wrap {
       width: calc(100% - var(--layout-padding) * 2);
-      min-width: 600px;
       padding: var(--layout-padding);
     }
 

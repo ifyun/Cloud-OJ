@@ -1,5 +1,6 @@
 <template>
   <n-config-provider abstract :theme-overrides="themeOverrides">
+    <n-global-style />
     <n-notification-provider>
       <n-message-provider>
         <n-dialog-provider>
@@ -85,6 +86,7 @@ import {
   NButton,
   NConfigProvider,
   NDialogProvider,
+  NGlobalStyle,
   NIcon,
   NLayout,
   NLayoutContent,

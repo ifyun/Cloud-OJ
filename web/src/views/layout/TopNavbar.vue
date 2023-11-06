@@ -37,7 +37,7 @@ const navMenuOptions = [
     key: "contests"
   },
   {
-    label: () => <RouterLink to={{ name: "leaderboard" }}>排名</RouterLink>,
+    label: () => <RouterLink to={{ name: "scoreboard" }}>排名</RouterLink>,
     key: "leaderboard"
   },
   {
@@ -49,17 +49,15 @@ const navMenuOptions = [
 
 <style scoped lang="scss">
 .top-nav {
-  width: 1100px;
   height: var(--header-height);
+  padding: 0 calc(var(--layout-padding) * 2);
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 
   &.submission {
-    width: auto;
     min-width: calc(720px + var(--layout-padding) * 2);
-    padding: 0 calc(var(--layout-padding) * 2);
   }
 
   .app-name {

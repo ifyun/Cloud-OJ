@@ -73,10 +73,10 @@ let heatmap: EChartsType | null = null
 const option: ECOption = {
   calendar: {
     top: 24,
-    left: 50,
-    right: 0,
+    left: 100,
+    right: 100,
     range: props.year,
-    cellSize: ["auto", 14],
+    cellSize: ["auto", 12],
     dayLabel: {
       firstDay: 1,
       nameMap: "EN"
@@ -88,7 +88,7 @@ const option: ECOption = {
       show: false
     },
     itemStyle: {
-      borderWidth: 3
+      borderWidth: 2
     }
   },
   visualMap: {

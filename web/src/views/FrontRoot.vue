@@ -1,5 +1,6 @@
 <template>
   <n-config-provider abstract :theme-overrides="themeOverrides">
+    <n-global-style />
     <n-message-provider>
       <n-dialog-provider>
         <n-layout>
@@ -32,6 +33,7 @@ import type { GlobalThemeOverrides } from "naive-ui"
 import {
   NConfigProvider,
   NDialogProvider,
+  NGlobalStyle,
   NLayout,
   NLayoutContent,
   NLayoutFooter,

@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 1100px; padding: var(--layout-padding) 0; margin: 0 auto">
+  <div class="wrap">
     <n-card v-if="uid">
       <template #cover>
         <user-profile

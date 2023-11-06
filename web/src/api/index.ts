@@ -22,7 +22,6 @@ const ApiPath = {
   CONTEST_PROBLEM: "/api/core/contest/problem",
   CONTEST_RANKING: "/api/core/ranking/contest",
   CONTEST_RANKING_ADMIN: "/api/core/ranking/admin/contest",
-  CONTEST_SCORE_DETAIL: "/api/core/ranking/admin/contest/detail",
   RANKING: "/api/core/ranking",
   SOLUTION: "/api/core/solution",
   SUBMIT: "/api/judge/submit",

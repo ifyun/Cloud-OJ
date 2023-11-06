@@ -7,7 +7,9 @@ const ProblemList = () => import("@/views/components/Problems.vue")
 const ContestList = () => import("@/views/components/Contests.vue")
 const ContestProblemList = () =>
   import("@/views/components/ContestProblems.vue")
-const Leaderboard = () => import("@/views/components/Leaderboard.vue")
+const Scoreboard = () => import("@/views/components/Scoreboard.vue")
+const ScoreboardContest = () =>
+  import("@/views/components/ScoreboardContest.vue")
 const Submission = () => import("@/views/components/Submission/Index.vue")
 const HelpDoc = () => import("@/views/components/Help.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
@@ -65,11 +67,16 @@ const router = createRouter({
           })
         },
         {
-          path: "/leaderboard",
-          name: "leaderboard",
-          component: Leaderboard,
+          path: "/scoreboard",
+          name: "scoreboard",
+          component: Scoreboard
+        },
+        {
+          path: "/scoreboard/:cid",
+          name: "scoreboard_contest",
+          component: ScoreboardContest,
           props: (route) => ({
-            cid: route.query.cid
+            cid: route.params.cid
           })
         },
         {
