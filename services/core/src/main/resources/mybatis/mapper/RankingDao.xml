@@ -44,7 +44,7 @@
         select *
         from (select problem_id,
                      result - 1                                                  as result,
-                     score,
+                     truncate(score, 2)                                          as score,
                      row_number() over (partition by problem_id order by result) as rn
               from solution
               where contest_id = #{cid}
