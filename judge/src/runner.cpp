@@ -48,7 +48,7 @@ int Runner::set_cpu() const {
 inline int Runner::run_cmd() {
     struct rlimit rl{};
 
-    rl.rlim_cur = (config.timeout / 1000) + 1;
+    rl.rlim_cur = (config.timeout / 1000000) + 1;
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_CPU, &rl);

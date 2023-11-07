@@ -21,7 +21,7 @@ void alarm_child(int sig);
  * 运行配置(资源限制和文件路径)
  */
 struct Config {
-    long timeout;            // 运行时间(us)
+    long timeout;            // 运行时间(μs)
     long memory;             // 内存限制，用于判断是否超出限制(MB)
     long output_size;        // 输出限制(MB)
     int cpu = 0;             // CPU 核心，将进程绑定到指定核心减少切换
