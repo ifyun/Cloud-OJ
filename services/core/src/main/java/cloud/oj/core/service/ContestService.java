@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -109,6 +110,16 @@ public class ContestService {
         }
 
         return HttpStatus.NO_CONTENT;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void changeOrder(Integer contestId, List<Integer> problems) {
+        AtomicInteger order = new AtomicInteger();
+        // 按前端传回的顺序设置 order
+        problems.forEach(p -> {
+            contestDao.setProblemOrder(contestId, p, order.get());
+            order.addAndGet(1);
+        });
     }
 
     public List<List<?>> getProblemsNotInContest(Integer contestId, int page, int limit) {

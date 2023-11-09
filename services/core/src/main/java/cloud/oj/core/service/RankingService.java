@@ -2,8 +2,9 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.dao.ContestDao;
 import cloud.oj.core.dao.RankingDao;
-import cloud.oj.core.entity.ScoreDetail;
+import cloud.oj.core.entity.ProblemOrder;
 import cloud.oj.core.entity.RankingContest;
+import cloud.oj.core.entity.ScoreDetail;
 import cloud.oj.core.error.GenericException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class RankingService {
     }
 
     public List<List<?>> getRanking(int page, int limit) {
-        return rankingDao.getRanking((page - 1) * limit, limit);
+        return rankingDao.get((page - 1) * limit, limit);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -47,18 +48,28 @@ public class RankingService {
             throw new GenericException(HttpStatus.NOT_FOUND, "竞赛不存在");
         }
 
-        var data = new RankingContest(contest.withoutKey());
-        var idList = contestDao.getProblemIds(cid);
-        var ranking = rankingDao.getContestRanking(cid);
+        var data = new RankingContest(contest.withoutKey());    // 排名顶层包装
+        var problemOrders = contestDao.getProblemOrders(cid);   // 题目 id 和 order
+        var ranking = rankingDao.getForContest(cid);            // 排名
 
-        ranking.forEach((e) -> {
-            var t = rankingDao.getDetail(e.getUid(), cid);
-            // 使用 Set 合并没有提交过的题目(数据为 null)
-            TreeSet<ScoreDetail> details = new TreeSet<>(t);
-            idList.forEach((id) -> details.add(new ScoreDetail(id)));
-            e.setDetails(details);
+        ranking.forEach((r) -> {
+            var detailList = rankingDao.getDetail(r.getUid(), cid);
+            // 取 order 字段到 detailList
+            detailList.forEach(d -> {
+                var order = problemOrders.stream().filter(p -> d.getProblemId().equals(p.getProblemId()))
+                        .findAny()
+                        // 理论上不会为 null
+                        .orElse(new ProblemOrder(0))
+                        .getOrder();
+                d.setOrder(order);
+            });
+            // 使用 Set 合并没有提交过的题目，按 order 字段排序
+            TreeSet<ScoreDetail> detailSet = new TreeSet<>(detailList);
+            problemOrders.forEach((p) -> detailSet.add(new ScoreDetail(p.getProblemId(), p.getOrder())));
+            r.setDetails(detailSet);
         });
-
+        // 取 problemId，按 order 字段排序
+        var idList = problemOrders.stream().sorted().map(ProblemOrder::getProblemId).toList();
         data.setProblemIds(idList);
         data.setRanking(ranking);
 

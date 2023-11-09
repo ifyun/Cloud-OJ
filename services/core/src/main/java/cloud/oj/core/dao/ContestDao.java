@@ -2,6 +2,7 @@ package cloud.oj.core.dao;
 
 import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.Problem;
+import cloud.oj.core.entity.ProblemOrder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -25,13 +26,25 @@ public interface ContestDao {
     void newInviteKey(Integer contestId, String key);
 
     @Select("""
-            select problem_id
+            select problem_id,
+                   `order`
             from `contest-problem`
             where contest_id = #{cid}
             order by problem_id
             """
     )
-    List<Integer> getProblemIds(Integer cid);
+    List<ProblemOrder> getProblemOrders(Integer cid);
+
+    /**
+     * 改变竞赛中题目的顺序
+     */
+    @Update("""
+            update `contest-problem`
+            set `order` = #{order}
+            where contest_id = #{cid}
+              and problem_id = #{pid}
+            """)
+    void setProblemOrder(Integer cid, Integer pid, Integer order);
 
     @Select("""
             select count(problem_id)

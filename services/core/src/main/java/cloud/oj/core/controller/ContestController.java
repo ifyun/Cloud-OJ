@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("contest")
@@ -103,12 +105,18 @@ public class ContestController {
                 : ResponseEntity.ok(problems);
     }
 
+    @PutMapping(path = "admin/problem_order/{contestId}")
+    public ResponseEntity<?> changeOrder(@PathVariable Integer contestId, @RequestBody List<Integer> problems) {
+        contestService.changeOrder(contestId, problems);
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * 获取不在竞赛中的题目
      *
      * @return 题目列表
      */
-    @GetMapping("admin/problems_not_in_contest/{contestId}")
+    @GetMapping("admin/available_problem/{contestId}")
     public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId,
                                                      @RequestParam(defaultValue = "1") Integer page,
                                                      @RequestParam(defaultValue = "15") Integer limit) {

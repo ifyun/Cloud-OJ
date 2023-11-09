@@ -91,6 +91,7 @@ export class Problem {
   timeout?: number
   memoryLimit?: number
   outputLimit?: number
+  order: number = 0
 }
 
 export class Contest {

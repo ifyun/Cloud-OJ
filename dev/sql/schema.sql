@@ -40,11 +40,13 @@ create table `contest-problem`
 (
     contest_id int not null,
     problem_id int null,
+    `order`    int not null default 0,
     primary key (contest_id, problem_id)
 ) engine = Aria;
 
 create index idx_cid on `contest-problem` (contest_id);
 create index idx_pid on `contest-problem` (problem_id);
+create index idx_order on `contest-problem` (`order`);
 
 create table invitee
 (
@@ -158,7 +160,8 @@ select `c`.`contest_id`   AS `contest_id`,
        `p`.`output_limit` AS `output_limit`,
        `p`.`score`        AS `score`,
        `p`.`category`     AS `category`,
-       `p`.`create_at`    AS `create_at`
+       `p`.`create_at`    AS `create_at`,
+       `cp`.`order`       AS `order`
 from ((`cloud_oj`.`contest-problem` `cp` join `cloud_oj`.`problem` `p` on (`cp`.`problem_id` = `p`.`problem_id`))
     join `cloud_oj`.`contest` `c` on (`c`.`deleted` = 0 and `cp`.`contest_id` = `c`.`contest_id`));
 

@@ -123,7 +123,7 @@ const ContestApi = {
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problems_not_in_contest/${contestId}`,
+        url: `${ApiPath.CONTEST_ADMIN}/available_problem/${contestId}`,
         method: "GET",
         params: {
           page,
@@ -136,6 +136,24 @@ const ContestApi = {
         .catch((error) => {
           reject(resolveError(error))
         })
+    })
+  },
+
+  /**
+   * @param contestId 改变竞赛题目顺序
+   */
+  changeOrder(
+    contestId: number,
+    problems: Array<number>
+  ): Promise<AxiosResponse> {
+    return new Promise<AxiosResponse>((resolve, reject) => {
+      axios({
+        url: `${ApiPath.CONTEST_PROBLEM_ORDER}/${contestId}`,
+        method: "PUT",
+        data: JSON.stringify(problems)
+      })
+        .then((res) => resolve(res))
+        .catch((error) => reject(resolveError(error)))
     })
   },
 

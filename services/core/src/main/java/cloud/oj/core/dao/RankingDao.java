@@ -9,9 +9,9 @@ import java.util.List;
 @Mapper
 public interface RankingDao {
 
-    List<List<?>> getRanking(int start, int limit);
+    List<List<?>> get(int start, int limit);
 
-    List<Ranking> getContestRanking(Integer contestId);
+    List<Ranking> getForContest(Integer contestId);
 
     List<ScoreDetail> getDetail(Integer uid, Integer cid);
 

@@ -1,9 +1,6 @@
 <template>
   <div class="contest-editor">
-    <n-page-header
-      class="page-header"
-      :subtitle="subtitle"
-      @back="router.back()">
+    <n-page-header class="page-header" @back="router.back()">
       <template #title>{{ title }}</template>
       <template #extra>
         <n-button
@@ -133,11 +130,11 @@ const rules: FormRules = {
   }
 }
 
-const title = computed<string>(() => {
-  return create.value ? "创建新竞赛" : "编辑竞赛"
-})
+const title = computed(() => {
+  if (create.value) {
+    return "创建新竞赛"
+  }
 
-const subtitle = computed(() => {
   if (typeof contest.value.contestId === "undefined") {
     return ""
   } else {

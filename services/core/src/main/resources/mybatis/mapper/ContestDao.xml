@@ -61,6 +61,7 @@
         from contest_problem cp
         where cp.contest_id = #{contestId}
           and cp.start_at &lt;= unix_timestamp(now())
+        order by `order`, problem_id
     </select>
     <!-- 查询竞赛中的题目 -->
     <select id="getProblems" resultType="cloud.oj.core.entity.Problem">
@@ -73,6 +74,7 @@
                score
         from contest_problem cp
         where cp.contest_id = #{contestId}
+        order by `order`, problem_id
     </select>
     <!-- 查询不在指定竞赛中的所有题目 -->
     <select id="getProblemsNotInContest" resultMap="Map.Problem, Map.Total">
