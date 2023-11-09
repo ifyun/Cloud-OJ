@@ -67,13 +67,6 @@ public class ProblemService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public HttpStatus update(Problem problem) {
-        var contestId = problemDao.isInContest(problem.getProblemId());
-        var contest = contestDao.getContestById(contestId);
-
-        if (contest != null && contest.isStarted()) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准修改已开始竞赛中的题目");
-        }
-
         var categories = problem.getCategory().split(",");
         // 对标签排序
         if (categories.length > 1) {
