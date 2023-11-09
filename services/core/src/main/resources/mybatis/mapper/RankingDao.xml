@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.oj.core.dao.RankingDao">
     <!-- 查询排名 -->
-    <select id="getRanking" resultMap="Map.Ranking, Map.Total">
+    <select id="get" resultMap="Map.Ranking, Map.Total">
         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                    u.uid,
                                    u.username,
@@ -22,7 +22,7 @@
         select found_rows();
     </select>
     <!-- 查询指定竞赛的排名 -->
-    <select id="getContestRanking" resultType="cloud.oj.core.entity.Ranking">
+    <select id="getForContest" resultType="cloud.oj.core.entity.Ranking">
         select (@ranking := @ranking + 1) as `rank`,
                u.uid,
                u.username,
