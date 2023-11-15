@@ -21,6 +21,7 @@ export class User {
   email?: string
   section?: string
   hasAvatar: boolean = false
+  star: boolean = false
   createAt?: number
 }
 
@@ -122,6 +123,7 @@ export class Ranking {
   username: string = ""
   nickname: string = ""
   hasAvatar: boolean = false
+  star: boolean = false
   committed: number = 0
   passed: number = 0
   score: number = 0

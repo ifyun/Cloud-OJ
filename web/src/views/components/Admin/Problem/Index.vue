@@ -146,8 +146,10 @@ const rowProps = (row: Problem): HTMLAttributes => {
       if ((e.target as Element).tagName !== "TD") {
         return
       }
+
       e.preventDefault()
       showOperations.value = false
+
       nextTick().then(() => {
         selectedId = row.problemId
         selectedTitle = row.title
@@ -155,6 +157,7 @@ const rowProps = (row: Problem): HTMLAttributes => {
           x: e.clientX,
           y: e.clientY
         }
+
         showOperations.value = true
       })
     }

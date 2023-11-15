@@ -24,10 +24,12 @@ import { ErrorMessage, Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
+import { StarsRound } from "@vicons/material"
 import {
   DataTableColumns,
   NButton,
   NDataTable,
+  NIcon,
   NPagination,
   NSpace,
   NText
@@ -73,8 +75,11 @@ const rankingColumns: DataTableColumns<Ranking> = [
           hasAvatar={row.hasAvatar}
         />
         <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
-          <NButton text={true} strong={true}>
-            {row.nickname}
+          <NButton text strong iconPlacement="right">
+            {{
+              default: () => row.nickname,
+              icon: () => (row.star ? <NIcon component={StarsRound} /> : null)
+            }}
           </NButton>
         </RouterLink>
       </NSpace>

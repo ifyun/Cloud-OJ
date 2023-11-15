@@ -16,6 +16,7 @@ public class Ranking {
     private Integer passed;
     private Double score;
     private Boolean hasAvatar;
+    private Boolean star;
 
     private Set<ScoreDetail> details;
 }

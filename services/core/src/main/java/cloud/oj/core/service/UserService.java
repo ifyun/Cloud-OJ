@@ -66,9 +66,16 @@ public class UserService {
         }
     }
 
+    /**
+     * 更新用户信息(管理员)
+     */
     public HttpStatus updateUser(User user) {
         if (user.getPassword() != null) {
             user.setPassword(bcrypt.encode(user.getPassword()));
+        }
+
+        if (user.getUid() == 1 && user.getRole() != 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
         }
 
         if (userDao.update(user) == 1) {
@@ -78,6 +85,9 @@ public class UserService {
         }
     }
 
+    /**
+     * 更新用户信息(个人)
+     */
     public HttpStatus updateProfile(Integer uid, User user) {
         user.setUid(uid);
         user.setRole(null);

@@ -10,6 +10,7 @@
                                    email,
                                    section,
                                    has_avatar,
+                                   star,
                                    role,
                                    create_at
         from user
@@ -22,7 +23,13 @@
     </select>
     <!-- 根据 id 查询用户 -->
     <select id="getById" resultMap="Map.User">
-        select uid, username, nickname, email, section, has_avatar
+        select uid,
+               username,
+               nickname,
+               email,
+               section,
+               has_avatar,
+               star
         from user
         where uid = #{uid}
           and deleted = false
@@ -46,7 +53,7 @@
         </choose>
         <choose>
             <when test="role != null">
-                role = #{roleId},
+                role = #{role},
             </when>
         </choose>
         <choose>
@@ -54,6 +61,7 @@
                 secret = #{secret},
             </when>
         </choose>
+        star = #{star},
         email = #{email},
         section = #{section}
         where uid = #{uid}

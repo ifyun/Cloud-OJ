@@ -176,10 +176,14 @@ function handleSelect(key: number) {
   }
 
   if (key === 1) {
-    router.push({
-      name: "contest_problems",
-      params: { cid: contestId }
-    })
+    if (store.user.isLoggedIn) {
+      router.push({
+        name: "contest_problems",
+        params: { cid: contestId }
+      })
+    } else {
+      router.push({ name: "auth" })
+    }
   } else if (key === 2) {
     router.push({
       name: "scoreboard_contest",

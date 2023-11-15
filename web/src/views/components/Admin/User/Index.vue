@@ -24,6 +24,7 @@
           </n-button>
         </n-input-group>
         <n-data-table
+          :row-props="rowProps"
           :columns="columns"
           :data="users.data"
           :loading="loading" />
@@ -37,6 +38,16 @@
       </n-space>
     </div>
   </div>
+  <n-dropdown
+    trigger="manual"
+    placement="bottom-start"
+    :show-arrow="true"
+    :x="point.x"
+    :y="point.y"
+    :options="operations"
+    :show="showOperations"
+    :on-clickoutside="hideOperation"
+    @select="operationSelect" />
 </template>
 
 <script setup lang="tsx">
@@ -44,18 +55,23 @@ import { UserApi } from "@/api/request"
 import { ErrorMessage, Page, User } from "@/api/type"
 import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
+import { renderIcon, setTitle } from "@/utils"
 import {
   CalendarCheck as DateIcon,
   UserShield as RoleIcon,
   UserTag as UserIcon
 } from "@vicons/fa"
-import { PersonSearchRound as SearchIcon } from "@vicons/material"
+import {
+  AdminPanelSettingsRound as AdminIcon,
+  PersonSearchRound as SearchIcon,
+  StarsRound
+} from "@vicons/material"
 import dayjs from "dayjs"
 import {
   DataTableColumns,
   NButton,
   NDataTable,
+  NDropdown,
   NIcon,
   NInput,
   NInputGroup,
@@ -63,14 +79,16 @@ import {
   NSelect,
   NSpace,
   NTag,
-  NText
+  NText,
+  useMessage
 } from "naive-ui"
-import { onBeforeMount, ref } from "vue"
+import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const message = useMessage()
 
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
@@ -81,6 +99,7 @@ const filterOptions = [
 const filter = ref<number>(0)
 const filterValue = ref<string>("")
 const loading = ref<boolean>(true)
+const showOperations = ref<boolean>(false)
 const users = ref<Page<User>>({
   data: [],
   count: 0
@@ -90,6 +109,49 @@ const pagination = ref({
   page: 1,
   pageSize: 15
 })
+
+const point = ref({
+  x: 0,
+  y: 0
+})
+
+let selectedUser: User | undefined
+
+const rowProps = (row: User): HTMLAttributes => {
+  return {
+    onContextmenu: (e: MouseEvent) => {
+      if ((e.target as Element).tagName !== "SPAN") {
+        return
+      }
+
+      e.preventDefault()
+      showOperations.value = false
+
+      nextTick().then(() => {
+        selectedUser = row
+        point.value = {
+          x: e.clientX,
+          y: e.clientY
+        }
+
+        showOperations.value = true
+      })
+    }
+  }
+}
+
+const operations = [
+  {
+    key: "set_admin",
+    label: () => (selectedUser!.role === 0 ? "取消管理员" : "设为管理员"),
+    icon: renderIcon(AdminIcon, "#409EFF")
+  },
+  {
+    key: "set_star",
+    label: () => (selectedUser!.star ? "取消打星用户" : "设为打星用户"),
+    icon: renderIcon(StarsRound, "#E6A23C")
+  }
+]
 
 const columns: DataTableColumns<User> = [
   {
@@ -106,10 +168,11 @@ const columns: DataTableColumns<User> = [
   {
     title: "用户名",
     key: "username",
-    width: 140
+    width: 150
   },
   {
-    key: "name",
+    key: "nickname",
+    width: 300,
     title: () => (
       <NSpace size="small" align="center" style="margin-left: 7px">
         <NIcon style="display: flex">
@@ -119,7 +182,7 @@ const columns: DataTableColumns<User> = [
       </NSpace>
     ),
     render: (row) => (
-      <NSpace align="center">
+      <NSpace align="center" size="small">
         <UserAvatar
           size="small"
           uid={row.uid!}
@@ -127,16 +190,19 @@ const columns: DataTableColumns<User> = [
           hasAvatar={row.hasAvatar}
         />
         <RouterLink to={{ name: "account", params: { uid: row.uid! } }}>
-          <NButton text={true} strong={true}>
-            {row.nickname}
+          <NButton text strong iconPlacement="right">
+            {{
+              default: () => row.nickname,
+              icon: () => (row.star ? <NIcon component={StarsRound} /> : null)
+            }}
           </NButton>
         </RouterLink>
-        {row.uid == store.user.userInfo!.uid ? (
-          <NTag type="primary" size="small" round={true}>
+        {row.uid === store.user.userInfo!.uid ? (
+          <NTag type="primary" size="small" round>
             你自己
           </NTag>
         ) : (
-          <span></span>
+          <span />
         )}
       </NSpace>
     )
@@ -155,8 +221,11 @@ const columns: DataTableColumns<User> = [
     render: (row) => {
       if (row.role! == 0) {
         return (
-          <NTag size="small" type="primary">
-            管理员
+          <NTag round size="small" type="info">
+            {{
+              default: () => "管理员",
+              icon: () => <NIcon component={AdminIcon} />
+            }}
           </NTag>
         )
       }
@@ -215,6 +284,7 @@ function pageChange(page: number) {
 }
 
 function search() {
+  pagination.value.page = 1
   pageChange(1)
 }
 
@@ -235,5 +305,34 @@ function queryUsers() {
     .finally(() => {
       loading.value = false
     })
+}
+
+function updateUser() {
+  UserApi.update(selectedUser!, true)
+    .then(() => {
+      message.success("用户信息已更新")
+    })
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
+    })
+    .finally(() => {
+      queryUsers()
+    })
+}
+
+function hideOperation() {
+  showOperations.value = false
+}
+
+function operationSelect(key: string) {
+  if (key === "set_admin") {
+    selectedUser!.role! ^= 1
+    updateUser()
+  } else if (key === "set_star") {
+    selectedUser!.star = !selectedUser!.star
+    updateUser()
+  }
+
+  hideOperation()
 }
 </script>

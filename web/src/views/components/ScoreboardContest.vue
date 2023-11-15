@@ -43,8 +43,11 @@
                     :has-avatar="user.hasAvatar" />
                   <RouterLink
                     :to="{ name: 'account', params: { uid: user.uid } }">
-                    <n-button strong text>
+                    <n-button text strong icon-placement="right">
                       {{ user.nickname }}
+                      <template #icon>
+                        <n-icon v-if="user.star" :component="StarsRound" />
+                      </template>
                     </n-button>
                   </RouterLink>
                 </n-space>
@@ -81,6 +84,7 @@ import { ErrorMessage, RankingContest } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { StateTag, setTitle, stateTag } from "@/utils"
+import { StarsRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
   NButton,

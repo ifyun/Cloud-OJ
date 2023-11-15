@@ -47,10 +47,10 @@ const UserApi = {
     })
   },
 
-  update(user: User): Promise<AxiosResponse> {
+  update(user: User, admin: boolean = false): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: ApiPath.PROFILE,
+        url: admin ? ApiPath.USER_ADMIN : ApiPath.PROFILE,
         method: "PUT",
         data: JSON.stringify(user)
       })

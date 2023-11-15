@@ -14,8 +14,8 @@ public class User {
     private String email;
     private String section;
     private Boolean hasAvatar;
+    private Boolean star;
     private Integer role;
-    private String roleName;
     // UNIX 时间戳(10位)
     private Long createAt;
 }

@@ -9,6 +9,7 @@
                                    u.username,
                                    u.nickname,
                                    u.has_avatar,
+                                   u.star,
                                    committed,
                                    passed,
                                    truncate(score, 2)         as score
@@ -28,6 +29,7 @@
                u.username,
                u.nickname,
                u.has_avatar,
+               u.star,
                committed,
                passed,
                truncate(score, 2)         as score

@@ -104,8 +104,10 @@ const rowProps = (row: Contest): HTMLAttributes => {
       if ((e.target as Element).tagName !== "TD") {
         return
       }
+
       e.preventDefault()
       showOperations.value = false
+
       nextTick().then(() => {
         // 设置当前选中的竞赛
         selectedContest = row
@@ -113,6 +115,7 @@ const rowProps = (row: Contest): HTMLAttributes => {
           x: e.clientX,
           y: e.clientY
         }
+
         showOperations.value = true
       })
     }

@@ -65,6 +65,7 @@ create table user
     email      char(32)                            null,
     section    char(16)                            null,
     has_avatar tinyint(1) default 0                not null,
+    star       tinyint(1) default 0                not null,
     role       int        default 1                not null,
     create_at  bigint     default unix_timestamp() not null comment '秒级',
     deleted    tinyint(1) default 0                not null,
