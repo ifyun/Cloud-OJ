@@ -182,7 +182,7 @@ function handleSelect(key: number) {
         params: { cid: contestId }
       })
     } else {
-      router.push({ name: "auth" })
+      router.push({ name: "auth", params: { tab: "login" } })
     }
   } else if (key === 2) {
     router.push({
