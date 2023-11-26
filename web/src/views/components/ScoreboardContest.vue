@@ -16,7 +16,8 @@
             </n-h4>
           </n-space>
         </n-space>
-        <n-table>
+        <empty-data v-if="noRanking" style="margin-top: 48px" />
+        <n-table v-else>
           <thead>
             <tr>
               <th class="table-rank">排名</th>
@@ -127,6 +128,10 @@ const contestState = shallowRef<StateTag | null>(null)
 
 const noContent = computed<boolean>(
   () => !loading.value && ranking.value == null
+)
+
+const noRanking = computed<boolean>(
+  () => ranking.value != null && ranking.value.ranking?.length === 0
 )
 
 let contestId: number

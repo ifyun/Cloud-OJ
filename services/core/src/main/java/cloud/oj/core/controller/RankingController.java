@@ -33,8 +33,7 @@ public class RankingController {
     @GetMapping(path = "contest/{contestId}")
     public ResponseEntity<?> getContestRanking(@PathVariable Integer contestId) {
         var scoreboard = rankingService.getContestRanking(contestId);
-        return scoreboard.getRanking().isEmpty() ? ResponseEntity.noContent().build() :
-                ResponseEntity.ok(scoreboard);
+        return ResponseEntity.ok(scoreboard);
     }
 
     /**
