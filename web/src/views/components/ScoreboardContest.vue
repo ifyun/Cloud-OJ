@@ -21,6 +21,7 @@
             <tr>
               <th class="table-rank">排名</th>
               <th class="table-user">用户</th>
+              <th class="table-medal"></th>
               <th
                 v-for="(id, i) in ranking?.problemIds"
                 :key="id"
@@ -51,6 +52,14 @@
                     </n-button>
                   </RouterLink>
                 </n-space>
+              </td>
+              <td class="table-medal" valign="middle">
+                <img
+                  v-if="user.rank < 35"
+                  class="medal"
+                  align="center"
+                  alt="medal"
+                  :src="medal(user.rank)" />
               </td>
               <td
                 v-for="item in user.details"
@@ -177,12 +186,38 @@ function resultColor(r?: number) {
     return themeVars.value.errorColor
   }
 }
+
+function medal(rank: number): string {
+  if (rank < 5) {
+    return "/medal/1.png"
+  }
+
+  if (rank < 10) {
+    return "/medal/2.png"
+  }
+
+  if (rank < 25) {
+    return "/medal/3.png"
+  }
+
+  if (rank < 35) {
+    return "/medal/4.png"
+  }
+
+  return ""
+}
 </script>
 
 <style lang="scss" scoped>
 .table-rank {
   text-align: center;
   width: 30px;
+}
+
+.table-medal {
+  table-layout: fixed;
+  text-align: center;
+  width: 40px;
 }
 
 .table-user {
@@ -198,5 +233,9 @@ function resultColor(r?: number) {
 .table-sum {
   text-align: center;
   width: 100px;
+}
+
+.medal {
+  height: 28px;
 }
 </style>
