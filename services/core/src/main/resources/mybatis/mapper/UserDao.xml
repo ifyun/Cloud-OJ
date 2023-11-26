@@ -61,7 +61,11 @@
                 secret = #{secret},
             </when>
         </choose>
-        star = #{star},
+        <choose>
+            <when test="star != null">
+                star = #{star},
+            </when>
+        </choose>
         email = #{email},
         section = #{section}
         where uid = #{uid}

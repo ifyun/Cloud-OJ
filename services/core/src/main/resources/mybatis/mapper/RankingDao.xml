@@ -45,9 +45,9 @@
     <select id="getDetail" resultType="cloud.oj.core.entity.ScoreDetail">
         select *
         from (select problem_id,
-                     result - 1                                                  as result,
-                     truncate(score, 2)                                          as score,
-                     row_number() over (partition by problem_id order by result) as rn
+                     result - 1                                                          as result,
+                     truncate(score, 2)                                                  as score,
+                     row_number() over (partition by problem_id order by pass_rate desc) as rn
               from solution
               where contest_id = #{cid}
                 and uid = #{uid}
