@@ -122,6 +122,7 @@ export class Ranking {
   uid?: number
   username: string = ""
   nickname: string = ""
+  badge: string = ""
   hasAvatar: boolean = false
   star: boolean = false
   committed: number = 0

@@ -1,5 +1,6 @@
 package cloud.oj.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,34 @@ public class Ranking {
     private Boolean star;
 
     private Set<ScoreDetail> details;
+
+    @JsonGetter
+    public String badge() {
+        // 🏅
+        if (rank == 1) {
+            return "\uD83C\uDFC5";
+        }
+
+        // 🥇
+        if (rank < 5) {
+            return "\uD83E\uDD47";
+        }
+
+        // 🥈
+        if (rank < 10) {
+            return "\uD83E\uDD48";
+        }
+
+        // 🥉
+        if (rank < 25) {
+            return "\uD83E\uDD49";
+        }
+
+        // 🎉
+        if (rank < 35) {
+            return "\uD83C\uDF89";
+        }
+
+        return "";
+    }
 }
