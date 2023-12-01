@@ -4,59 +4,60 @@
 #include <string>
 #include "syscall_rule.h"
 
-#define AC 0
-#define WA 1
+#define AC 1
 #define TLE 2
 #define MLE 3
-#define OLE 4
-#define PA 5
+#define PA 4
+#define WA 5
+#define RE 7
+#define IE 8
+#define OLE 9
 
-#define ALARM_SECONDS 15    // ALARM 触发时间
-
-extern pid_t child_pid;
-
-void alarm_child(int sig);
+#define ALARM_SECONDS 15
 
 /**
  * 运行配置(资源限制和文件路径)
  */
 struct Config {
-    long timeout;            // 运行时间(μs)
-    long memory;             // 内存限制，用于判断是否超出限制(MB)
-    long output_size;        // 输出限制(MB)
-    int cpu = 0;             // CPU 核心，将进程绑定到指定核心减少切换
-    int in;                  // 输入文件 fd
-    int out;                 // 输出文件 fd(实际输出)
-    char out_path[128];      // 输出文件路径(实际输出)
-    char expect_path[128];   // 输出文件路径(正确输出)
+    long timeout{};            // 运行时间(μs)
+    long memory{};             // 内存限制(MiB)，用于判断是否超出限制
+    long output_size{};        // 输出限制(MiB)
+    int cpu = 0;               // CPU 核心，将进程绑定到指定核心减少切换
+    int in{};                  // 输入文件 fd
+    int out{};                 // 输出文件 fd(用户输出，用于重定向)
+    int user_out{};            // 输出文件 fd(用户输出，用于对比)
+    int expect_out{};          // 输出文件 fd(正确输出，用于对比)
 };
 
 /**
  * 每个测试点的运行结果
  */
 struct Result {
-    int code;
     int status;
-    long timeUsed;
-    long memUsed;
-    char err[64];
+    long time;
+    long mem;
+    char err[128];
 };
 
 /**
  * 最终结果
  */
 struct RTN {
-    int code = 0;           // 0 -> 无错误
-    std::string err;        // 错误信息
-    std::string result;     // 判题结果(JSON String)
+    int result;
+    int total;
+    int passed;
+    double passRate;
+    long long time;     // μs
+    long long memory;   // KiB
+    char err[128];      // 错误信息
 };
 
 class Runner {
 private:
+    int root_fd;                // 根目录 fd
     char *argv[16]{};
     char *work_dir;             // 工作目录(用户程序所在目录)
     char *data_dir;             // 测试数据目录
-    std::string tmp_data_dir;   // 沙盒环境中的测试数据目录
     Config config;
     SyscallRule *syscall_rule;
 private:
@@ -65,7 +66,7 @@ private:
     /**
     * 使用 execvp 执行 Solution
     */
-    int run_cmd();
+    void run_cmd();
 
     Result watch_result(pid_t pid);
 

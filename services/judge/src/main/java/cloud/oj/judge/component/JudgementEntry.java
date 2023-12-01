@@ -10,7 +10,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import static cloud.oj.judge.constant.Result.IE;
+import static cloud.oj.judge.entity.Result.IE;
 
 @Slf4j
 @Component

@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Problem {
-    private long timeout;
+    private int timeout;
     private int memoryLimit;
     private int outputLimit;
     private int score;

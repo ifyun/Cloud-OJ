@@ -1,29 +1,29 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
-import cloud.oj.judge.constant.Language;
 import cloud.oj.judge.constant.State;
 import cloud.oj.judge.dao.ProblemDao;
 import cloud.oj.judge.dao.RankingDao;
 import cloud.oj.judge.dao.SolutionDao;
-import cloud.oj.judge.entity.JudgeResult;
 import cloud.oj.judge.entity.Problem;
+import cloud.oj.judge.entity.Result;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import static cloud.oj.judge.constant.Language.*;
-import static cloud.oj.judge.constant.Result.*;
+import static cloud.oj.judge.entity.Result.*;
 
 @Slf4j
 @Component
@@ -45,8 +45,6 @@ public class Judgement {
     private final ObjectMapper objectMapper;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
-
-    private final ArrayList<String> argv = new ArrayList<>();
 
     /**
      * 判题入口
@@ -77,12 +75,11 @@ public class Judgement {
      * 保存判题结果
      * <p>计算分数并更新排名</p>
      *
-     * @param result {@link JudgeResult}
+     * @param result {@link Result}
      */
-    private void saveResult(Solution solution, JudgeResult result, Problem problem) {
+    private void saveResult(Solution solution, Result result, Problem problem) {
         // 运行错误/内部错误
         if (result.getResult().equals(RE) || result.getResult().equals(IE)) {
-            log.warn("运行时/内部错误({}): {}", solution.getSolutionId(), result.getError());
             solution.endWithError(result.getResult(), result.getError());
             solutionDao.updateWithResult(solution);
             return;
@@ -133,75 +130,60 @@ public class Judgement {
     /**
      * 运行用户程序
      *
-     * @return 运行结果 {@link JudgeResult}
+     * @return 运行结果 {@link Result}
      */
-    private JudgeResult execute(Solution solution, Problem problem) {
-        JudgeResult result;
+    private Result execute(Solution solution, Problem problem) {
         Process process = null;
+        Result result;
 
         try {
-            buildCommand(solution, problem, appConfig.getFileDir() + "data/" + solution.getProblemId());
-            process = processBuilder.command(argv).start();
+            check(solution.getLanguage());
+            var argv = new ArrayList<String>() {{
+                add("judge");
 
-            if (process.waitFor(120, TimeUnit.SECONDS)) {
-                result = objectMapper.readValue(process.getInputStream(), JudgeResult.class);
-
-                if (result.getCode() == 1) {
-                    result.setResult(RE);
-                } else if (result.getCode() == 2) {
-                    result.setResult(IE);
+                switch (solution.getLanguage()) {
+                    case C, CPP, GO -> add("--cmd=./Solution");
+                    case JAVA -> add("--cmd=java@@Solution");
+                    case KOTLIN -> add("--cmd=./Solution.kexe");
+                    case JAVA_SCRIPT -> add("--cmd=node@Solution.js");
+                    case PYTHON -> add("--cmd=python3@Solution.py");
+                    case BASH -> add("--cmd=sh@Solution.sh");
+                    case C_SHARP -> add("--cmd=mono@Solution.exe");
                 }
+
+                add("--lang=" + solution.getLanguage());
+                add("--time=" + problem.getTimeout());
+                add("--ram=" + problem.getMemoryLimit());
+                add("--output=" + problem.getOutputLimit());
+                add("--cpu=" + cpuMap.get(Thread.currentThread().getName()));
+                add("--workdir=" + appConfig.getCodeDir() + solution.getSolutionId());
+                add("--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId());
+            }};
+
+            process = processBuilder.command(argv).start();
+            process.waitFor();
+
+            if (process.exitValue() != 0) {
+                // 非零退出
+                log.error(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
+                result = Result.withError(IE, "JUDGE NON-ZERO EXIT");
             } else {
-                result = new JudgeResult();
-                result.setResult(IE);
-                result.setError("wait timeout");
+                result = objectMapper.readValue(process.getInputStream(), Result.class);
             }
-        } catch (IOException | UnsupportedLanguageError | InterruptedException e) {
-            result = new JudgeResult();
-            result.setResult(IE);
-            result.setError(e.getMessage());
+        } catch (UnsupportedLanguageError e) {
+            result = Result.withError(IE, e.getMessage());
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            result = Result.withError(IE, "JUDGE THREAD ERROR");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            result = Result.withError(IE, "JUDGE THREAD IO ERROR");
         } finally {
             if (process != null) {
-                process.destroyForcibly();
+                process.destroy();
             }
         }
 
         return result;
-    }
-
-    /**
-     * 生成命令
-     */
-    private void buildCommand(Solution solution, Problem problem, String dataDir)
-            throws UnsupportedLanguageError {
-        var language = solution.getLanguage();
-        Language.check(language);
-
-        var cpu = cpuMap.get(Thread.currentThread().getName());
-        var workDir = appConfig.getCodeDir() + solution.getSolutionId();
-        var timeLimit = problem.getTimeout();
-        var memoryLimit = problem.getMemoryLimit();
-        var outputLimit = problem.getOutputLimit();
-
-        argv.clear();
-        argv.add("judge");
-
-        switch (language) {
-            case C, CPP, GO -> argv.add("--cmd=./Solution");
-            case JAVA -> argv.add("--cmd=java@@Solution");
-            case KOTLIN -> argv.add("--cmd=./Solution.kexe");
-            case JAVA_SCRIPT -> argv.add("--cmd=node@Solution.js");
-            case PYTHON -> argv.add("--cmd=python3@Solution.py");
-            case BASH -> argv.add("--cmd=sh@Solution.sh");
-            case C_SHARP -> argv.add("--cmd=mono@Solution.exe");
-        }
-
-        argv.add("--time=" + timeLimit);
-        argv.add("--ram=" + memoryLimit);
-        argv.add("--output=" + outputLimit);
-        argv.add("--workdir=" + workDir);
-        argv.add("--data=" + dataDir);
-        argv.add("--lang=" + solution.getLanguage());
-        argv.add("--cpu=" + cpu);
     }
 }

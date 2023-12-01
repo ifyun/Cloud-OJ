@@ -8,12 +8,6 @@
 class Utils {
 private:
     /**
-    * @brief 计算结果、通过率
-    * @return 判题结果的 JSON 字符串
-    */
-    static std::string calc_results(const std::vector<Result> &results);
-
-    /**
     * @brief 返回去除文件末尾所有空格/换行符后的偏移量
     * @param path 文件路径
     * @return 偏移量
@@ -30,11 +24,16 @@ public:
 
     /**
     * @brief 比较文件
-    * @return @c true - 不同, @c false - 相同
+    * @param fd1 用户输出 fd
+    * @param fd2 正确输出 fd
+    * @return @c true - 相同, @c false - 不同
     */
-    static bool diff(const std::string &, const std::string &);
+    static bool compare(int fd1, int fd2);
 
-    static void write_result(RTN &rtn, const std::vector<Result> &results, const std::string& work_dir);
+    /**
+    * @brief 计算结果
+    */
+    static void calc_results(RTN &rtn, const std::vector<Result> &results);
 };
 
 #endif // UTILS_H

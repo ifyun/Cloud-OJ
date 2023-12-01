@@ -1,7 +1,5 @@
 package cloud.oj.judge.entity;
 
-import cloud.oj.judge.constant.Result;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,18 +12,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class JudgeResult {
-    private Integer code;
+public class Result {
+    public static final int CE = 6;  // 编译错误
+    public static final int RE = 7;  // 运行错误
+    public static final int IE = 8;  // 内部错误
+
     private Integer result;
-    private String error;
     private Integer total;
     private Integer passed;
     private Double passRate;
     private Long time;
     private Long memory;
+    private String error;
 
-    @JsonSetter("result")
-    public void setResultStr(String result) {
-        this.result = Result.ofString(result);
+    public static Result withError(Integer result, String error) {
+        var instance = new Result();
+        instance.result = result;
+        instance.error = error;
+        return instance;
     }
 }

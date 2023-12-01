@@ -12,25 +12,18 @@
 #include "env_setup.h"
 #include "common.h"
 
-int root_fd;
-pid_t child_pid;
-
 Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config) {
     split(this->argv, cmd, "@");
     this->work_dir = work_dir;
     this->data_dir = data_dir;
     this->syscall_rule = new SyscallRule(language);
     this->config = config;
+    root_fd = open("/", O_RDONLY);
 }
 
 Runner::~Runner() {
     delete this->syscall_rule;
-    close(config.in);
-    close(config.out);
-}
-
-void alarm_child(int sig) {
-    kill(child_pid, sig);
+    close(root_fd);
 }
 
 /**
@@ -45,7 +38,7 @@ int Runner::set_cpu() const {
     return sched_setaffinity(0, sizeof(cpu_set_t), &mask);
 }
 
-inline int Runner::run_cmd() {
+inline void Runner::run_cmd() {
     struct rlimit rl{};
 
     rl.rlim_cur = (config.timeout / 1000000) + 1;
@@ -73,16 +66,15 @@ inline int Runner::run_cmd() {
     dup2(config.out, STDERR_FILENO);
 
     setuid(65534);
+    alarm(ALARM_SECONDS);
     ptrace(PTRACE_TRACEME, 0, 0, 0);
-
     // * exec 成功不会返回
     if (execvp(argv[0], argv) != 0) {
         goto exit;
     }
 
     exit:
-    perror("ERROR");
-    return INTERNAL_ERROR;
+    _exit(IE);
 }
 
 /**
@@ -92,7 +84,7 @@ Result Runner::watch_result(pid_t pid) {
     int syscall_number = 0;
     int status;
     struct rusage ru{};
-    struct Result res{.memUsed = 0};
+    struct Result res{.mem = 0};
 
     while (wait4(pid, &status, 0, &ru) > 0) {
         int stop_sig;
@@ -107,17 +99,19 @@ Result Runner::watch_result(pid_t pid) {
         }
 
         // * Code + Data + Stack
-        res.memUsed = ru.ru_minflt * getpagesize() / 1024;
+        res.mem = ru.ru_minflt * getpagesize() / 1024;
         // ? 检查内存占用
-        if (res.memUsed > config.memory) {
+        if (res.mem > config.memory) {
             kill(pid, SIGUSR1);
         }
 
-        res.timeUsed = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
-                       + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
+        res.time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
+                   + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGTRAP
-            && stop_sig != SIGURG && stop_sig != SIGCHLD) {
+        if (WIFSTOPPED(status)
+            && (stop_sig = WSTOPSIG(status)) != SIGTRAP
+            && stop_sig != SIGURG
+            && stop_sig != SIGCHLD) {
             // ? 子进程停止
             // * 忽略 ptrace 产生的 SIGTRAP 信号
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
@@ -127,20 +121,20 @@ Result Runner::watch_result(pid_t pid) {
                     res.status = MLE;
                     return res;
                 case SIGALRM:
-                    sprintf(res.err, "SIGALRM(CPU: %dms)", (int) res.timeUsed);
-                    res.code = RUNTIME_ERROR;
+                    sprintf(res.err, "SIGALRM(CPU: %.2fms)", (int) res.time / 1000.0);
+                    res.status = RE;
                     return res;
                 case SIGSEGV:
                     sprintf(res.err, "段错误(SIGSEGV)");
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
                 case SIGSYS:
                     sprintf(res.err, "非法调用(SYSCALL: %d)", syscall_number);
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
                 default:
                     sprintf(res.err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
             }
         }
@@ -160,19 +154,19 @@ Result Runner::watch_result(pid_t pid) {
                     break;
                 case SIGKILL:
                     sprintf(res.err, "程序终止(SIGKILL)");
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
                 case SIGSEGV:
                     sprintf(res.err, "段错误(SIGSEGV)");
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
                 case SIGSYS:
                     sprintf(res.err, "非法调用(SYSCALL: %d)", syscall_number);
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
                 default:
                     sprintf(res.err, "程序终止(%d: %s)", sig, strsignal(sig));
-                    res.code = RUNTIME_ERROR;
+                    res.status = RE;
                     return res;
             }
         }
@@ -181,14 +175,14 @@ Result Runner::watch_result(pid_t pid) {
             // ? 子进程退出
             auto exit_code = WEXITSTATUS(status);
 
-            if (res.timeUsed > config.timeout) {
+            if (res.time > config.timeout) {
                 res.status = TLE;
             } else if (exit_code != 0) {
                 sprintf(res.err, "非零退出(%d)", exit_code);
-                res.code = RUNTIME_ERROR;
+                res.status = RE;
                 return res;
             } else {
-                res.status = Utils::diff(config.out_path, config.expect_path) ? WA : AC;
+                res.status = Utils::compare(config.user_out, config.expect_out) ? AC : WA;
             }
         }
 
@@ -200,7 +194,7 @@ Result Runner::watch_result(pid_t pid) {
 
 Result Runner::run() {
     if (chdir(work_dir) != 0) {
-        Result res = {.status=INTERNAL_ERROR};
+        Result res = {.status=IE};
         sprintf(res.err, "chdir: %s", strerror(errno));
         fprintf(stderr, "%s", res.err);
         return res;
@@ -210,66 +204,77 @@ Result Runner::run() {
     pid_t pid = vfork();
 
     if (pid < 0) {
-        Result res = {.status=INTERNAL_ERROR};
+        Result res = {.status=IE};
+
         sprintf(res.err, "fork: %s", strerror(errno));
         fprintf(stderr, "%s", res.err);
+
         return res;
     } else if (pid == 0) {
+        // child process
         prctl(PR_SET_PDEATHSIG, SIGKILL);
         run_cmd();
     } else {
-        child_pid = pid;
-        signal(SIGALRM, alarm_child);
-        alarm(ALARM_SECONDS);
+        Result result = watch_result(pid);
+
+        close(config.in);
+        close(config.out);
+        close(config.user_out);
+        close(config.expect_out);
+        // exit sandbox env
         fchdir(root_fd);
         chroot(".");
-        Result result = watch_result(pid);
-        alarm(0);
+
         return result;
     }
 }
 
 RTN Runner::judge() {
-    RTN rtn;
+    RTN rtn{};
     std::vector<std::string> input_files;
     std::vector<std::string> output_files;
     std::vector<Result> results;
     DIR *dp = opendir(work_dir);
 
     if (dp == nullptr) {
-        rtn = {INTERNAL_ERROR, "工作目录不存在"};
+        rtn = {.result = IE, .err = "工作目录不存在"};
         goto exit;
     }
 
     closedir(dp);
-    root_fd = open("/", O_RDONLY);
     setup_env(work_dir);
 
     try {
         // * 获取测试数据
-        input_files = Utils::get_files(data_dir, "in");
-        output_files = Utils::get_files(data_dir, "out");
+        input_files = Utils::get_files(data_dir, ".in");
+        output_files = Utils::get_files(data_dir, ".out");
     } catch (const std::invalid_argument &error) {
-        rtn = {INTERNAL_ERROR, error.what()};
+        rtn.result = IE;
+        strcpy(rtn.err, error.what());
         goto exit;
     }
 
+    char out_path[128];     // 用户输出文件路径
+
     if (!input_files.empty() && !output_files.empty()) {
         if (input_files.size() != output_files.size()) {
-            rtn = {INTERNAL_ERROR, "测试数据文件数量不一致"};
+            rtn = {.result = IE, .err = "测试数据文件数量不一致"};
             goto exit;
         }
 
+        // * 多组数据
         for (auto i = 0; i < input_files.size(); i++) {
-            strcpy(config.expect_path, output_files[i].c_str());
-            sprintf(config.out_path, "%s/%d.out", work_dir, i + 1);
+            sprintf(out_path, "%s/%d.out", work_dir, i + 1);
             config.in = open(input_files[i].c_str(), O_RDONLY, 0644);
-            config.out = open(config.out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            config.out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            config.user_out = open(out_path, O_RDONLY, 0644);
+            config.expect_out = open(output_files[i].c_str(), O_RDONLY, 0644);
 
             Result res = run();
 
-            if (res.code != 0) {
-                rtn = {res.code, res.err};
+            if (res.status == RE || res.status == IE) {
+                rtn.result = res.status;
+                strcpy(rtn.err, res.err);
                 goto exit;
             }
 
@@ -277,25 +282,27 @@ RTN Runner::judge() {
         }
     } else if (!output_files.empty()) {
         // * 没有输入数据，读取第一个 .out 文件
-        strcpy(config.expect_path, output_files[0].c_str());
-        sprintf(config.out_path, "%s/%s", work_dir, "1.out");
+        sprintf(out_path, "%s/%s", work_dir, "1.out");
         config.in = open("/dev/null", O_RDONLY, 0644);
-        config.out = open(config.out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        config.out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        config.user_out = open(out_path, O_RDONLY, 0644);
+        config.expect_out = open(output_files[0].c_str(), O_RDONLY, 0644);
 
         Result res = run();
 
-        if (res.code != 0) {
-            rtn = {res.code, res.err};
+        if (res.status == RE || res.status == IE) {
+            rtn.result = res.status;
+            strcpy(rtn.err, res.err);
             goto exit;
         }
 
         results.push_back(res);
     } else {
-        rtn = {INTERNAL_ERROR, "无测试数据"};
+        rtn = {.result = IE, .err = "无测试数据"};
     }
 
     exit:
-    Utils::write_result(rtn, results, work_dir);
+    Utils::calc_results(rtn, results);
     end_env(work_dir);
     return rtn;
 }

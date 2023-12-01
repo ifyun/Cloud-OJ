@@ -3,9 +3,6 @@
 
 #include "runner.h"
 
-#define RUNTIME_ERROR 1
-#define INTERNAL_ERROR 2
-
 /// 解析参数
 int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char datadir[], Config &config);
 

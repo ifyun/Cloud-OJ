@@ -74,8 +74,6 @@ public class SolutionService {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
-                // complete 会触发客户端 EventSource 的 onerror 方法
-                emitter.complete();
             }
         });
 

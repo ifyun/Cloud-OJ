@@ -10,7 +10,7 @@ Online Judge 判题程序。
    sudo apt-get install cmake build-essential
    ```
 
-2. 运行 `./build` 生成可执行文件
+2. 运行 `./build` 生成可执行文件和动态库
 
 ## Install
 
@@ -37,17 +37,17 @@ judge <options>
 
 `--lang` 取值：
 
-| 参数 | 语言         |
-|----|------------|
-| 0  | C          |
-| 1  | C++        |
-| 2  | Java       |
-| 3  | Python     |
-| 4  | Bash       |
-| 5  | C#         |
-| 6  | JavaScript |
-| 7  | Kotlin     |
-| 8  | Go         |
+| Number | Language   |
+|--------|------------|
+| 0      | C          |
+| 1      | C++        |
+| 2      | Java       |
+| 3      | Python     |
+| 4      | Bash       |
+| 5      | C#         |
+| 6      | JavaScript |
+| 7      | Kotlin     |
+| 8      | Go         |
 
 ### 示例
 
@@ -76,15 +76,14 @@ judge -c java@-Xmx256m@Solution \
 ### 判题结果
 
 - 用户的输出保存在工作目录的 `*.out`
-- 判题结果保存在工作目录的 `result.json` 并打印到 `stdout`
+- 判题结果输出到 `stdout`
 
 `result.json` 示例:
 
 ```json
 {
-  "code": 0,
-  "status": 0,
-  "result": "AC",
+  "result": 1,
+  "desc": "AC",
   "total": 1,
   "passed": 1,
   "passRate": 1,
@@ -93,33 +92,29 @@ judge -c java@-Xmx256m@Solution \
 }
 ```
 
-- `code`: 0 表示没有错误
 - `time`: 运行时间，单位：微秒
-- `memory`: 内存占用，单位：KB
+- `memory`: 内存占用，单位：KiB
 - `total`: 测试点数量
 - `passed`: 通过测试点数量
 
 > `time` 和 `memory` 为所有测试点中的最大值。
 
-`status` 的取值如下:
+`result` 的取值如下:
 
-- 0: 通过
-- 1: 答案错误
-- 2: 超时
-- 3: 内存超限
-- 4: 输出超限
-- 5: 部分通过
+- 1: 通过(AC)
+- 2: 超时(TLE)
+- 3: 内存超限(MLE)
+- 4: 部分通过(PA)
+- 5: 答案错误(WA)
+- 7: 运行错误(RE)
+- 8: 内部错误(IE)
+- 9: 输出超限(OLE)
 
-如果发生错误，`result.json` 如下：
+如果发生错误(RE，IE)，输出如下：
 
 ```json
 {
-  "code": 1,
-  "error": "错误信息"
+  "result": 7,
+  "error": "错误信息..."
 }
 ```
-
-`code`:
-
-- `1` 表示运行错误(用户程序运行出错)
-- `2` 表示内部错误(判题程序自身出错)
