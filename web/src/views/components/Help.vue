@@ -141,7 +141,7 @@ const languageData = [
   { lang: "C#", compiler: "Mono", version: "C# 6.0(部分支持7.0)" },
   { lang: "JavaScript", compiler: "Node.js", version: "18.x" },
   { lang: "Kotlin", compiler: "kotlinc-native", version: "1.8.x" },
-  { lang: "Go", compiler: "-", version: "1.20.x" }
+  { lang: "Go", compiler: "-", version: "1.21.x" }
 ]
 
 const judgeColumns = [

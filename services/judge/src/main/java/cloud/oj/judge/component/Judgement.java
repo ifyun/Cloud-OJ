@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static cloud.oj.judge.constant.Language.*;
@@ -138,46 +137,44 @@ public class Judgement {
 
         try {
             check(solution.getLanguage());
-            var argv = new ArrayList<String>() {{
-                add("judge");
 
-                switch (solution.getLanguage()) {
-                    case C, CPP, GO -> add("--cmd=./Solution");
-                    case JAVA -> add("--cmd=java@@Solution");
-                    case KOTLIN -> add("--cmd=./Solution.kexe");
-                    case JAVA_SCRIPT -> add("--cmd=node@Solution.js");
-                    case PYTHON -> add("--cmd=python3@Solution.py");
-                    case BASH -> add("--cmd=sh@Solution.sh");
-                    case C_SHARP -> add("--cmd=mono@Solution.exe");
-                }
+            var bin = "judge";
+            var lang = "--lang=" + solution.getLanguage();
+            var time = "--time=" + problem.getTimeout();
+            var ram = "--ram=" + problem.getMemoryLimit();
+            var output = "--output=" + problem.getOutputLimit();
+            var cpu = "--cpu=" + cpuMap.get(Thread.currentThread().getName());
+            var workdir = "--workdir=" + appConfig.getCodeDir() + solution.getSolutionId();
+            var data = "--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId();
+            var cmd = switch (solution.getLanguage()) {
+                case C, CPP, GO -> "--cmd=./Solution";
+                case JAVA -> "--cmd=java@-Xmx256m@Solution";
+                case KOTLIN -> "--cmd=./Solution.kexe";
+                case JAVA_SCRIPT -> "--cmd=node@Solution.js";
+                case PYTHON -> "--cmd=python3@Solution.py";
+                case BASH -> "--cmd=sh@Solution.sh";
+                case C_SHARP -> "--cmd=mono@Solution.exe";
+                default -> "";
+            };
 
-                add("--lang=" + solution.getLanguage());
-                add("--time=" + problem.getTimeout());
-                add("--ram=" + problem.getMemoryLimit());
-                add("--output=" + problem.getOutputLimit());
-                add("--cpu=" + cpuMap.get(Thread.currentThread().getName()));
-                add("--workdir=" + appConfig.getCodeDir() + solution.getSolutionId());
-                add("--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId());
-            }};
-
-            process = processBuilder.command(argv).start();
+            process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
             process.waitFor();
 
             if (process.exitValue() != 0) {
                 // 非零退出
                 log.error(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
-                result = Result.withError(IE, "JUDGE NON-ZERO EXIT");
+                result = withError(IE, "JUDGE NON-ZERO EXIT");
             } else {
                 result = objectMapper.readValue(process.getInputStream(), Result.class);
             }
         } catch (UnsupportedLanguageError e) {
-            result = Result.withError(IE, e.getMessage());
+            result = withError(IE, e.getMessage());
         } catch (InterruptedException e) {
             log.error(e.getMessage());
-            result = Result.withError(IE, "JUDGE THREAD ERROR");
+            result = withError(IE, "JUDGE THREAD ERROR");
         } catch (IOException e) {
             log.error(e.getMessage());
-            result = Result.withError(IE, "JUDGE THREAD IO ERROR");
+            result = withError(IE, "JUDGE THREAD IO ERROR");
         } finally {
             if (process != null) {
                 process.destroy();

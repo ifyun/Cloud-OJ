@@ -18,16 +18,18 @@ int main(int argc, char *argv[]) {
     if (getuid() != 0) {
         ss << "{\n"
            << R"( "result": )" << IE << ",\n"
-           << R"( "error": "RUN AS ROOT")"
+           << R"( "error": "RUN AS ROOT")" << "\n"
            << "}\n";
+        std::cout << ss.str();
         return 0;
     }
 
     if (get_args(argc, argv, cmd, lang, work_dir, data_dir, config) != 0) {
         ss << "{\n"
            << R"( "result": )" << IE << ",\n"
-           << R"( "error": "INVALID ARGS")"
+           << R"( "error": "INVALID ARGS")" << "\n"
            << "}\n";
+        std::cout << ss.str();
         return 0;
     }
 

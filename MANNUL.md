@@ -5,7 +5,7 @@
 ## 构建 Docker 镜像
 
 ```bash
-./build docker
+./build --docker
 ```
 
 构建完成后，编排文件将复制到 `~/cloud-oj` 目录
@@ -15,10 +15,10 @@
 仅构建 `cloudoj-web` 镜像：
 
 ```bash
-./build docker web
+./build --docker --target=web
 ```
 
-可选参数：
+`--target` 可选参数：
 
 - web
 - core
@@ -26,7 +26,13 @@
 - judge
 - mariadb
 
-如果构建因为网络问题容易出错，可以用这种方式重新构建。
+如果构建时有一些镜像失败，可以用这种方式重新构建。
+
+构建 `judge` 可能需要代理，使用 `--proxy` 选项：
+
+```bash
+./build --docker --target=judge --proxy=192.168.1.100:10809
+```
 
 ## 运行
 
@@ -49,7 +55,7 @@ docker compose up -d
 
 | Service  | Port(s)     |
 |----------|-------------|
-| Consul   | 8500        |
+| consul   | 8500        |
 | gateway  | 8080        |
 | core     | 8180        |
 | judge    | 8280        |

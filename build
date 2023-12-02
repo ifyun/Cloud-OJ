@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+OPT=""
+TARGET=""
+PROXY=""
 SCRIPT=$(readlink -f "$0")
 ROOT_DIR=$(dirname "${SCRIPT}")
 
@@ -17,27 +20,38 @@ function err() {
   echo -e "\e[31m$1\e[0m"
 }
 
-# clean && exit
-if [ "$1" == "clean" ]; then
-  if has_command mvn; then
-    cd services && mvn clean && cd "${ROOT_DIR}"
-  else
-    err "command 'mvn' not found."
+ARGS=$(getopt -o "" --long clean,docker,target:,proxy: -n "$0" -- "$@")
+eval set -- "${ARGS}"
+
+while true
+do
+  case "$1" in
+  --clean)
+    OPT="clean"
+    shift
+    ;;
+  --docker)
+    OPT="docker"
+    shift
+    ;;
+  --target)
+    TARGET="$2";
+    shift 2
+    ;;
+  --proxy)
+    PROXY="$2";
+    shift 2;
+    ;;
+  --)
+    shift
+    break
+    ;;
+  *)
+    echo "Invalid Argument(s)"
     exit 1
-  fi
-  if [ -d "judge/cmake-build-debug" ]; then
-    rm -r judge/cmake-build-debug
-  fi
-  if [ -d "judge/cmake-build-release" ]; then
-    rm -r judge/cmake-build-release
-  fi
-  if [ -d "web/dist" ]; then
-    rm -r web/dist
-  fi
-  info "CLEAN COMPLETE"
-  cd "${ROOT_DIR}"
-  exit 0
-fi
+    ;;
+  esac
+done
 
 function vue_build() {
   if cd web && npm install && npm run build; then
@@ -69,38 +83,62 @@ function mvn_build() {
   fi
 }
 
-# build
-if [ "$1" == "" ]; then
+# clean && exit
+if [ "${OPT}" == "clean" ]; then
+  if has_command mvn; then
+    cd services && mvn clean && cd "${ROOT_DIR}"
+  else
+    err "command 'mvn' not found."
+    exit 1
+  fi
+  if [ -d "judge/cmake-build-debug" ]; then
+    rm -r judge/cmake-build-debug
+  fi
+  if [ -d "judge/cmake-build-release" ]; then
+    rm -r judge/cmake-build-release
+  fi
+  if [ -d "web/dist" ]; then
+    rm -r web/dist
+  fi
+  info "CLEAN COMPLETE"
+  cd "${ROOT_DIR}"
+  exit 0
+fi
+# build all in host
+if [ "${OPT}" == "" ] && [ "${TARGET}" == "" ]; then
   info "BUILD START..."
   cmake_build
   mvn_build core,gateway,judge
   vue_build
   info "BUILD COMPLETE"
   exit 0
-elif [ "$1" == "target" ]; then
-  case "$2" in
+fi
+# build in docker
+if [ "${OPT}" == "" ]; then
+  case "${TARGET}" in
   "web")
     vue_build
     ;;
   "core" | "gateway")
-    mvn_build "$2"
+    mvn_build "${TARGET}"
     ;;
   "judge")
     cmake_build
-    mvn_build "$2"
+    mvn_build "${TARGET}"
     ;;
   *)
-    err "Invalid Target: $2"
+    err "Invalid Target: ${TARGET}"
     exit 1
     ;;
   esac
-elif [ "$1" == "docker" ]; then
-  # build docker images
+# build in docker
+elif [ "${OPT}" == "docker" ]; then
   if ! (has_command docker); then
     err "docker not found!"
     exit 1
   fi
-  if [ "$2" == "" ]; then
+  # build all in docker
+  if [ "${TARGET}" == "" ]; then
     docker build --target=core --build-arg="TARGET=core" -t cloud-oj:core .
     docker build --target=gateway --build-arg="TARGET=gateway" -t cloud-oj:gateway .
     docker build --target=judge --build-arg="TARGET=judge" -t cloud-oj:judge .
@@ -112,7 +150,7 @@ elif [ "$1" == "docker" ]; then
       cp -r docker/. "${HOME}/cloud-oj/"
     fi
   else
-    case "$2" in
+    case "${TARGET}" in
     "mariadb")
       docker build -t cloud-oj:mariadb dev/sql
       ;;
@@ -120,15 +158,15 @@ elif [ "$1" == "docker" ]; then
       docker build --target=web --build-arg="TARGET=web" -t cloud-oj:web .
       ;;
     "core" | "gateway" | "judge")
-      docker build --target="$2" --build-arg="TARGET=$2" -t cloud-oj:"$2" .
+      docker build --target="${TARGET}" --build-arg="TARGET=${TARGET}" --build-arg="PROXY=${PROXY}" -t cloud-oj:"${TARGET}" .
       ;;
     *)
-      err "Invalid Target: $2"
+      err "Invalid Target: ${TARGET}"
       exit 1
       ;;
     esac
   fi
 else
-  err "Invalid Arg"
+  err "Invalid Argument(s)"
   exit 1
 fi
