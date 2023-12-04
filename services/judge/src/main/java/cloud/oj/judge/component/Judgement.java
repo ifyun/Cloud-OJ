@@ -77,11 +77,17 @@ public class Judgement {
      * @param result {@link Result}
      */
     private void saveResult(Solution solution, Result result, Problem problem) {
-        // 运行错误/内部错误
-        if (result.getResult().equals(RE) || result.getResult().equals(IE)) {
+        // 内部错误
+        if (result.getResult().equals(IE)) {
             solution.endWithError(result.getResult(), result.getError());
             solutionDao.updateWithResult(solution);
             return;
+        }
+
+        var err = result.getError();
+        // 运行时错误
+        if (err != null && err.isEmpty()) {
+            solution.setErrorInfo(result.getError());
         }
 
         var uid = solution.getUid();

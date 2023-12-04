@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     Runner runner(cmd, work_dir, data_dir, lang, config);
     RTN rtn = runner.judge();
 
-    if (rtn.result == RE || rtn.result == IE) {
+    if (rtn.result == IE) {
         ss << "{\n"
            << R"( "result": )" << rtn.result << ",\n"
            << R"( "error": ")" << rtn.err << "\"\n"
@@ -44,12 +44,13 @@ int main(int argc, char *argv[]) {
     } else {
         ss << "{\n"
            << R"( "result": )" << rtn.result << ",\n"
-           << R"( "desc": ")" << RESULT_STR[rtn.result] << R"(",)" << "\n"
+           << R"( "desc": ")" << RESULT_STR[rtn.result] << "\",\n"
            << R"( "total": )" << rtn.total << ",\n"
            << R"( "passed": )" << rtn.passed << ",\n"
            << R"( "passRate": )" << rtn.passRate << ",\n"
            << R"( "time": )" << rtn.time << ",\n"
            << R"( "memory": )" << rtn.memory << "\n"
+           << R"( "error": ")" << rtn.err << "\"\n"
            << "}\n";
     }
 

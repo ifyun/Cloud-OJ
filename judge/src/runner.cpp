@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <cstring>
+#include <dlfcn.h>
 #include "runner.h"
 #include "utils.h"
 #include "env_setup.h"
@@ -14,16 +15,28 @@
 
 Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config) {
     split(this->argv, cmd, "@");
+    root_fd = open("/", O_RDONLY);
     this->work_dir = work_dir;
     this->data_dir = data_dir;
     this->syscall_rule = new SyscallRule(language);
     this->config = config;
-    root_fd = open("/", O_RDONLY);
+
+    char spj_path[192];
+    sprintf(spj_path, "%s/%s", data_dir, "spj.so");
+    dl_handler = dlopen(spj_path, RTLD_NOW);
+
+    if (dl_handler != nullptr) {
+        spj = (spj_func) dlsym(dl_handler, "spj");
+    }
 }
 
 Runner::~Runner() {
     delete this->syscall_rule;
     close(root_fd);
+
+    if (dl_handler != nullptr) {
+        dlclose(dl_handler);
+    }
 }
 
 /**
@@ -61,9 +74,9 @@ inline void Runner::run_cmd() {
     printf("PID: %d, CPU_COUNT: %d\n", getpid(), CPU_COUNT(&mask));
 #endif
 
-    dup2(config.in, STDIN_FILENO);
-    dup2(config.out, STDOUT_FILENO);
-    dup2(config.out, STDERR_FILENO);
+    dup2(config.std_in, STDIN_FILENO);
+    dup2(config.std_out, STDOUT_FILENO);
+    dup2(config.std_out, STDERR_FILENO);
 
     setuid(65534);
     alarm(ALARM_SECONDS);
@@ -182,7 +195,7 @@ Result Runner::watch_result(pid_t pid) {
                 res.status = RE;
                 return res;
             } else {
-                res.status = Utils::compare(config.user_out, config.expect_out) ? AC : WA;
+                res.status = Utils::compare(config.input, config.user_out, config.expect_out, spj) ? AC : WA;
             }
         }
 
@@ -217,8 +230,9 @@ Result Runner::run() {
     } else {
         Result result = watch_result(pid);
 
-        close(config.in);
-        close(config.out);
+        close(config.input);
+        close(config.std_in);
+        close(config.std_out);
         close(config.user_out);
         close(config.expect_out);
         // exit sandbox env
@@ -262,47 +276,47 @@ RTN Runner::judge() {
             goto exit;
         }
 
-        // * 多组数据
+        // * N 组数据(N >= 1)
         for (auto i = 0; i < input_files.size(); i++) {
             sprintf(out_path, "%s/%d.out", work_dir, i + 1);
-            config.in = open(input_files[i].c_str(), O_RDONLY, 0644);
-            config.out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            config.input = open(input_files[i].c_str(), O_RDONLY, 0644);
+            config.std_in = open(input_files[i].c_str(), O_RDONLY, 0644);
+            config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             config.user_out = open(out_path, O_RDONLY, 0644);
             config.expect_out = open(output_files[i].c_str(), O_RDONLY, 0644);
 
             Result res = run();
+            results.push_back(res);
 
             if (res.status == RE || res.status == IE) {
                 rtn.result = res.status;
                 strcpy(rtn.err, res.err);
                 goto exit;
             }
-
-            results.push_back(res);
         }
     } else if (!output_files.empty()) {
-        // * 没有输入数据，读取第一个 .out 文件
+        // * 没有输入数据，读取第一个 .std_out 文件
         sprintf(out_path, "%s/%s", work_dir, "1.out");
-        config.in = open("/dev/null", O_RDONLY, 0644);
-        config.out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        config.input = open("/dev/null", O_RDONLY, 0644);
+        config.std_in = open("/dev/null", O_RDONLY, 0644);
+        config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         config.user_out = open(out_path, O_RDONLY, 0644);
         config.expect_out = open(output_files[0].c_str(), O_RDONLY, 0644);
 
         Result res = run();
+        results.push_back(res);
 
         if (res.status == RE || res.status == IE) {
             rtn.result = res.status;
             strcpy(rtn.err, res.err);
             goto exit;
         }
-
-        results.push_back(res);
     } else {
         rtn = {.result = IE, .err = "无测试数据"};
     }
 
     exit:
-    Utils::calc_results(rtn, results);
+    Utils::calc_results(rtn, results, (int) input_files.size());
     end_env(work_dir);
     return rtn;
 }

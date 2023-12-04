@@ -24,16 +24,17 @@ public:
 
     /**
     * @brief 比较文件
+    * @param fd0 输入 fd
     * @param fd1 用户输出 fd
     * @param fd2 正确输出 fd
     * @return @c true - 相同, @c false - 不同
     */
-    static bool compare(int fd1, int fd2);
+    static bool compare(int fd0, int fd1, int fd2, spj_func spj);
 
     /**
     * @brief 计算结果
     */
-    static void calc_results(RTN &rtn, const std::vector<Result> &results);
+    static void calc_results(RTN &rtn, const std::vector<Result> &results, int test_points);
 };
 
 #endif // UTILS_H

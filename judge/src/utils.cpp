@@ -17,7 +17,7 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
         throw std::invalid_argument("测试数据目录不存在");
     }
 
-    for (const auto & entry : fs::directory_iterator(path)) {
+    for (const auto &entry: fs::directory_iterator(path)) {
         if (entry.path().extension() == ext) {
             files.push_back(entry.path());
         }
@@ -28,8 +28,8 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     return files;
 }
 
-void Utils::calc_results(RTN &rtn, const std::vector<Result> &results) {
-    if (rtn.result == RE || rtn.result == IE) {
+void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, int test_points) {
+    if (rtn.result == IE) {
         return;
     }
 
@@ -38,7 +38,6 @@ void Utils::calc_results(RTN &rtn, const std::vector<Result> &results) {
     double pass_rate = 0;
     // * 1 -> 9: AC -> OLE
     int results_cnt[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int total = (int) results.size();
 
     for (auto r: results) {
         results_cnt[r.status]++;
@@ -48,15 +47,17 @@ void Utils::calc_results(RTN &rtn, const std::vector<Result> &results) {
 
     if (results_cnt[AC] == 0) {
         status = WA;
-    } else if (results_cnt[AC] < total) {
+    } else if (results_cnt[AC] < test_points) {
         status = PA;
-        pass_rate = (double) results_cnt[AC] / (double) total;
+        pass_rate = (double) results_cnt[AC] / (double) test_points;
     } else {
         pass_rate = 1;
         status = AC;
     }
 
-    if (results_cnt[OLE] > 0) {
+    if (results_cnt[RE] > 0) {
+        status = RE;
+    } else if (results_cnt[OLE] > 0) {
         status = OLE;
     } else if (results_cnt[MLE] > 0) {
         status = MLE;
@@ -65,7 +66,7 @@ void Utils::calc_results(RTN &rtn, const std::vector<Result> &results) {
     }
 
     rtn.result = status;
-    rtn.total = total;
+    rtn.total = test_points;
     rtn.passed = results_cnt[AC];
     rtn.passRate = pass_rate;
     rtn.time = time;
@@ -93,14 +94,18 @@ __off_t Utils::get_rtrim_offset(int fd) {
     return offset;
 }
 
-bool Utils::compare(int fd1, int fd2) {
+bool Utils::compare(int fd0, int fd1, int fd2, spj_func spj) {
+    bool same = true;
+
+    if (spj != nullptr) {
+        return spj(fd0, fd1, fd2);
+    }
+
     auto len1 = get_rtrim_offset(fd1);
     auto len2 = get_rtrim_offset(fd2);
 
-    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_PRIVATE, fd1, 0);
-    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_PRIVATE, fd2, 0);
-
-    bool same = true;
+    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_SHARED, fd1, 0);
+    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_SHARED, fd2, 0);
 
     if (len1 != len2) {
         same = false;
