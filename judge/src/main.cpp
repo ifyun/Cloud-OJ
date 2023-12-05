@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
            << R"( "passed": )" << rtn.passed << ",\n"
            << R"( "passRate": )" << rtn.passRate << ",\n"
            << R"( "time": )" << rtn.time << ",\n"
-           << R"( "memory": )" << rtn.memory << "\n"
+           << R"( "memory": )" << rtn.memory << ",\n"
            << R"( "error": ")" << rtn.err << "\"\n"
            << "}\n";
     }
