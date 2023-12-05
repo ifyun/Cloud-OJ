@@ -36,8 +36,17 @@
         种状态)，可以稍后查询提交记录，若一直没有结果，请联系管理员。
       </n-alert>
       <n-data-table single-column :columns="judgeColumns" :data="judgeData" />
-      <n-alert :bordered="false" type="info" style="margin-top: 24px">
-        对于内存和时间超限，仅超限的那一组测试点为 0 分。
+      <n-alert
+        :bordered="false"
+        type="info"
+        title="部分状态与错误说明"
+        style="margin-top: 24px">
+        <ul>
+          <li>TLE/MLE 仅超限的那一组测试点为 0 分</li>
+          <li>RE 之后的测试点不会运行，之前的分数保留</li>
+          <li>SIGSEGV 错误：数组越界/空指针/递归栈溢出</li>
+          <li>SIGKILL 错误：已知死循环会导致此错误</li>
+        </ul>
       </n-alert>
       <n-h2>示例</n-h2>
       <span>A + B</span>
