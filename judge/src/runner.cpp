@@ -16,10 +16,14 @@
 Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config) {
     split(this->argv, cmd, "@");
     root_fd = open("/", O_RDONLY);
+
     this->work_dir = work_dir;
     this->data_dir = data_dir;
     this->syscall_rule = new SyscallRule(language);
     this->config = config;
+    this->config.in = new std::ifstream;
+    this->config.out = new std::ifstream;
+    this->config.ans = new std::ifstream;
 
     char spj_path[192];
     sprintf(spj_path, "%s/%s", data_dir, "spj.so");
@@ -37,6 +41,10 @@ Runner::~Runner() {
     if (dl_handler != nullptr) {
         dlclose(dl_handler);
     }
+
+    delete config.in;
+    delete config.out;
+    delete config.ans;
 }
 
 /**
@@ -195,7 +203,7 @@ Result Runner::watch_result(pid_t pid) {
                 res.status = RE;
                 return res;
             } else {
-                res.status = Utils::compare(config.input, config.user_out, config.expect_out, spj) ? AC : WA;
+                res.status = Utils::compare(config, spj) ? AC : WA;
             }
         }
 
@@ -230,11 +238,14 @@ Result Runner::run() {
     } else {
         Result result = watch_result(pid);
 
-        close(config.input);
         close(config.std_in);
         close(config.std_out);
-        close(config.user_out);
-        close(config.expect_out);
+        close(config.in_fd);
+        close(config.out_fd);
+        close(config.ans_fd);
+        config.in->close();
+        config.out->close();
+        config.ans->close();
         // exit sandbox env
         fchdir(root_fd);
         chroot(".");
@@ -279,11 +290,14 @@ RTN Runner::judge() {
         // * N 组数据(N >= 1)
         for (auto i = 0; i < input_files.size(); i++) {
             sprintf(out_path, "%s/%d.out", work_dir, i + 1);
-            config.input = open(input_files[i].c_str(), O_RDONLY, 0644);
+            config.in_fd = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_in = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            config.user_out = open(out_path, O_RDONLY, 0644);
-            config.expect_out = open(output_files[i].c_str(), O_RDONLY, 0644);
+            config.out_fd = open(out_path, O_RDONLY, 0644);
+            config.ans_fd = open(output_files[i].c_str(), O_RDONLY, 0644);
+            config.in->open(input_files[i], std::ios_base::in);
+            config.out->open(out_path, std::ios_base::in);
+            config.ans->open(output_files[i], std::ios_base::in);
 
             Result res = run();
             results.push_back(res);
@@ -295,13 +309,16 @@ RTN Runner::judge() {
             }
         }
     } else if (!output_files.empty()) {
-        // * 没有输入数据，读取第一个 .std_out 文件
+        // * 没有输入数据，读取第一个 .out 文件
         sprintf(out_path, "%s/%s", work_dir, "1.out");
-        config.input = open("/dev/null", O_RDONLY, 0644);
+        config.in_fd = open("/dev/null", O_RDONLY, 0644);
         config.std_in = open("/dev/null", O_RDONLY, 0644);
         config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        config.user_out = open(out_path, O_RDONLY, 0644);
-        config.expect_out = open(output_files[0].c_str(), O_RDONLY, 0644);
+        config.out_fd = open(out_path, O_RDONLY, 0644);
+        config.ans_fd = open(output_files[0].c_str(), O_RDONLY, 0644);
+        config.in->open("/dev/null", std::ios_base::in);
+        config.out->open(out_path, std::ios_base::in);
+        config.ans->open(output_files[0], std::ios_base::in);
 
         Result res = run();
         results.push_back(res);

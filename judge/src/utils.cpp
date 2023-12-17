@@ -94,18 +94,18 @@ __off_t Utils::get_rtrim_offset(int fd) {
     return offset;
 }
 
-bool Utils::compare(int fd0, int fd1, int fd2, spj_func spj) {
+bool Utils::compare(Config config, spj_func spj) {
     bool same = true;
 
     if (spj != nullptr) {
-        return spj(fd0, fd1, fd2);
+        return spj(config.in, config.out, config.ans);
     }
 
-    auto len1 = get_rtrim_offset(fd1);
-    auto len2 = get_rtrim_offset(fd2);
+    auto len1 = get_rtrim_offset(config.out_fd);
+    auto len2 = get_rtrim_offset(config.ans_fd);
 
-    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_SHARED, fd1, 0);
-    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_SHARED, fd2, 0);
+    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_SHARED, config.out_fd, 0);
+    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_SHARED, config.ans_fd, 0);
 
     if (len1 != len2) {
         same = false;

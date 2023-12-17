@@ -1,7 +1,7 @@
 #ifndef RUNNER_H
 #define RUNNER_H 1
 
-#include <string>
+#include <fstream>
 #include "syscall_rule.h"
 
 #define AC 1
@@ -15,7 +15,7 @@
 
 #define ALARM_SECONDS 20
 
-typedef bool (*spj_func)(int, int, int);
+typedef bool (*spj_func)(std::ifstream *, std::ifstream *, std::ifstream *);
 
 /**
  * 运行配置(资源限制和文件路径)
@@ -25,11 +25,14 @@ struct Config {
     long memory{};             // 内存限制(MiB)，用于判断是否超出限制
     long output_size{};        // 输出限制(MiB)
     int cpu = 0;               // CPU 核心，将进程绑定到指定核心减少切换
-    int input{};               // 输入文件 fd
-    int std_in{};              // 输入文件 fd(用于重定向)
-    int std_out{};             // 输出文件 fd(用户输出，用于重定向)
-    int user_out{};            // 输出文件 fd(用户输出，用于对比)
-    int expect_out{};          // 输出文件 fd(正确输出，用于对比)
+    int std_in{};              // 输入文件 fd(用于重定向 stdin)
+    int std_out{};             // 用户输出 fd(用于重定向 stdout)
+    int in_fd{};               // 输入文件 fd
+    int out_fd{};              // 用户输出 fd(用于对比)
+    int ans_fd{};              // 正确输出 fd(用于对比)
+    std::ifstream *in{};
+    std::ifstream *out{};
+    std::ifstream *ans{};
 };
 
 /**

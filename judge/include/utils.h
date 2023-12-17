@@ -24,12 +24,9 @@ public:
 
     /**
     * @brief 比较文件
-    * @param fd0 输入 fd
-    * @param fd1 用户输出 fd
-    * @param fd2 正确输出 fd
     * @return @c true - 相同, @c false - 不同
     */
-    static bool compare(int fd0, int fd1, int fd2, spj_func spj);
+    static bool compare(Config config, spj_func spj);
 
     /**
     * @brief 计算结果
