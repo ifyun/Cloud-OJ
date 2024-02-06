@@ -1,5 +1,5 @@
 import axios, { ApiPath, resolveError } from "@/api"
-import type { Page, Problem, ProblemData, TestData } from "@/api/type"
+import type { Page, Problem, ProblemData } from "@/api/type"
 import { useStore } from "@/store"
 import type { AxiosResponse } from "axios"
 

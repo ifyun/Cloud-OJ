@@ -5,6 +5,7 @@
     :theme-overrides="themeOverrides"
     :locale="zhCN"
     :date-locale="dateZhCN">
+    <n-global-style />
     <router-view v-if="show" v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
@@ -14,11 +15,11 @@
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
+import { useStore } from "@/store"
 import { themeOverrides } from "@/theme"
-import { NConfigProvider, dateZhCN, zhCN } from "naive-ui"
+import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
 import { computed, nextTick, onMounted, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useStore } from "@/store"
 
 const store = useStore()
 const route = useRoute()

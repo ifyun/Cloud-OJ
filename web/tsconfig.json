@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "noImplicitAny": false,
     "useDefineForClassFields": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
