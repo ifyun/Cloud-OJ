@@ -1,5 +1,5 @@
 import axios, { ApiPath, resolveError } from "@/api"
-import type { Page, Problem, TestData } from "@/api/type"
+import type { Page, Problem, ProblemData, TestData } from "@/api/type"
 import { useStore } from "@/store"
 import type { AxiosResponse } from "axios"
 
@@ -164,18 +164,14 @@ const ProblemApi = {
    * 获取测试数据
    * @param problemId 题目 Id
    */
-  getTestData(problemId: number): Promise<Array<TestData>> {
-    return new Promise<Array<TestData>>((resolve, reject) => {
+  getProblemData(problemId: number): Promise<ProblemData> {
+    return new Promise<ProblemData>((resolve, reject) => {
       axios({
         url: `${ApiPath.TEST_DATA}/${problemId}`,
         method: "GET"
       })
         .then((res) => {
-          if (res.status === 200) {
-            resolve(res.data as TestData[])
-          } else {
-            resolve([])
-          }
+          resolve(res.data as ProblemData)
         })
         .catch((error) => {
           reject(resolveError(error))
@@ -222,6 +218,37 @@ const ProblemApi = {
         params: {
           name: fileName
         }
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  saveSPJ(pid: number, source: string): Promise<AxiosResponse> {
+    return new Promise<AxiosResponse>((resolve, reject) => {
+      axios({
+        url: ApiPath.SPJ,
+        method: "POST",
+        data: JSON.stringify({ pid, source })
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  deleteSPJ(pid: number): Promise<AxiosResponse> {
+    return new Promise<AxiosResponse>((resolve, reject) => {
+      axios({
+        url: `${ApiPath.SPJ}/${pid}`,
+        method: "DELETE"
       })
         .then((res) => {
           resolve(res)

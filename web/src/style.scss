@@ -84,3 +84,32 @@ body {
     text-decoration: none;
   }
 }
+
+.cm-s-ttcn {
+  border-left: 0;
+  border-top: 1px solid #f7f7f7;
+  border-right: 1px solid #f7f7f7;
+  border-bottom: 1px solid #f7f7f7;
+
+  .CodeMirror-gutters {
+    border: none;
+  }
+}
+
+.cm-s-material-darker {
+  border-top: 1px solid #161b22;
+  border-right: 1px solid #161b22;
+  border-bottom: 1px solid #161b22;
+
+  .CodeMirror-scroll {
+    background-color: #0d1117;
+  }
+
+  .CodeMirror-gutter {
+    background-color: #161b22;
+  }
+
+  .CodeMirror-linenumber {
+    background-color: #161b22;
+  }
+}

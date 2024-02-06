@@ -1,5 +1,6 @@
 package cloud.oj.core.controller;
 
+import cloud.oj.core.entity.SPJ;
 import cloud.oj.core.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,24 +35,20 @@ public class FileController {
     }
 
     /**
-     * 获取测试数据列表
-     * <p>
-     * 返回 {@link cloud.oj.core.entity.TestData} 数组
-     * </p>
+     * 获取题目数据
      */
     @GetMapping(path = "data/{problemId}")
-    public ResponseEntity<?> getTestData(@PathVariable Integer problemId) {
-        var list = fileService.getTestData(problemId);
-        return !list.isEmpty() ? ResponseEntity.ok(list) : ResponseEntity.noContent().build();
+    public ResponseEntity<?> getProblemData(@PathVariable Integer problemId) {
+        return ResponseEntity.ok(fileService.getProblemData(problemId));
     }
 
     /**
      * 上传测试数据
      */
-    @PostMapping("data")
-    public ResponseEntity<?> uploadTestData(@RequestParam Integer problemId,
+    @PostMapping(path = "data")
+    public ResponseEntity<?> uploadTestData(@RequestParam Integer pid,
                                             @RequestParam("file") MultipartFile[] files) {
-        return fileService.saveTestData(problemId, files);
+        return fileService.saveTestData(pid, files);
     }
 
     /**
@@ -60,5 +57,16 @@ public class FileController {
     @DeleteMapping(path = "data/{problemId}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
         return fileService.deleteTestData(problemId, name);
+    }
+
+    @PostMapping(path = "spj")
+    public ResponseEntity<?> uploadSPJ(@RequestBody SPJ spj) {
+        System.out.println(spj.getSource());
+        return fileService.saveSPJ(spj);
+    }
+
+    @DeleteMapping(path = "spj/{pid}")
+    public ResponseEntity<?> deleteSPJ(@PathVariable Integer pid) {
+        return fileService.removeSPJ(pid);
     }
 }

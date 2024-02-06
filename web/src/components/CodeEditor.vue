@@ -176,21 +176,19 @@ function submit() {
     margin-top: 5px;
     height: calc(100% - 34px);
   }
-}
-</style>
 
-<style lang="scss">
-.editor-wrapper {
-  .CodeMirror {
-    height: 100%;
-    font-size: 14px;
-    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-  }
+  .editor-wrapper {
+    :deep(.CodeMirror) {
+      height: calc(100% - 2px);
+      font-size: 14px;
+      font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+    }
 
-  &.dark {
-    .CodeMirror-overlayscroll-horizontal div,
-    .CodeMirror-overlayscroll-vertical div {
-      background: #333333;
+    &.dark {
+      :deep(.CodeMirror-overlayscroll-horizontal div),
+      :deep(.CodeMirror-overlayscroll-vertical div) {
+        background-color: #333333;
+      }
     }
   }
 }

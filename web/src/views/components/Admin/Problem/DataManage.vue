@@ -2,16 +2,31 @@
   <div class="test-data-div">
     <div style="margin: 4px">
       <n-page-header @back="back">
-        <template #title>{{ title }}</template>
+        <template #title>
+          <n-space>
+            <n-text>
+              {{ title }}
+            </n-text>
+          </n-space>
+        </template>
+        <template #extra>
+          <n-tag v-if="isSPJ" type="info" round>
+            <template #icon>
+              <n-icon :component="VerifiedRound" />
+            </template>
+            Special Judge
+          </n-tag>
+        </template>
         <n-space vertical size="large">
-          <n-alert type="info" :bordered="false">
-            文件中的换行符必须为 LF，不能使用 CRLF
-          </n-alert>
           <n-data-table
+            v-if="problemData != null"
             max-height="350"
             :loading="loading"
             :columns="columns"
-            :data="testData" />
+            :data="problemData.testData" />
+          <n-alert :show-icon="false" :bordered="false">
+            换行符必须使用 LF，不能使用 CRLF
+          </n-alert>
           <n-upload
             multiple
             :action="action"
@@ -24,19 +39,35 @@
             @finish="handleUploadFinish">
             <n-upload-dragger style="width: 100%">
               <div>
-                <n-icon size="48" depth="3">
-                  <archive-icon />
-                </n-icon>
+                <n-icon size="48" depth="3" :component="UnarchiveRound" />
               </div>
               <n-text style="font-size: 16px">
                 点击或拖动文件到该区域上传
               </n-text>
               <n-p depth="3">
-                文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件
+                文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件<br />
+                使用 SPJ 且不需要输出文件？请上传空的 .out 文件
               </n-p>
             </n-upload-dragger>
           </n-upload>
         </n-space>
+        <n-divider>Special Judge ({{ isSPJ ? "已启用" : "未启用" }})</n-divider>
+        <div id="spj-editor">
+          <textarea ref="editor" />
+          <n-button-group size="small" style="margin-top: 12px">
+            <n-button secondary type="primary" @click="saveSPJ">
+              提交编译
+            </n-button>
+            <n-button
+              secondary
+              size="small"
+              type="error"
+              :disabled="!isSPJ"
+              @click="removeSPJ">
+              移除 SPJ
+            </n-button>
+          </n-button-group>
+        </div>
       </n-page-header>
     </div>
   </div>
@@ -45,43 +76,70 @@
 <script setup lang="tsx">
 import { ApiPath } from "@/api"
 import { ProblemApi } from "@/api/request"
-import { ErrorMessage, Problem, TestData } from "@/api/type"
+import { ErrorMessage, ProblemData, TestData } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import {
-  ArchiveRound as ArchiveIcon,
   DeleteForeverRound as DeleteIcon,
-  FileDownloadOutlined as DownloadIcon
+  FileDownloadOutlined as DownloadIcon,
+  UnarchiveRound,
+  VerifiedRound
 } from "@vicons/material"
+import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
+import "codemirror/addon/edit/closebrackets.js"
+import "codemirror/addon/edit/matchbrackets.js"
+import "codemirror/lib/codemirror.css"
+import "codemirror/mode/clike/clike.js"
+import "codemirror/theme/material-darker.css"
+import "codemirror/theme/ttcn.css"
 import {
   DataTableColumns,
   NAlert,
   NButton,
+  NButtonGroup,
   NDataTable,
+  NDivider,
   NIcon,
   NP,
   NPageHeader,
   NPopconfirm,
   NSpace,
+  NTag,
   NText,
   NUpload,
   NUploadDragger,
   UploadFileInfo,
+  useDialog,
   useMessage
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, nextTick, onBeforeMount, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import SPJDeclare from "./spj.cpp?raw"
 
+let cmEditor: Editor | null = null
+
+const editor = ref<HTMLTextAreaElement | null>(null)
 const action = ApiPath.TEST_DATA
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const dialog = useDialog()
 const message = useMessage()
 
 const loading = ref<boolean>(false)
-const problem = ref<Problem | null>(null)
-const testData = ref<Array<TestData>>([])
+const problemData = ref<ProblemData | null>(null)
+
+const cmOptions = ref<EditorConfiguration>({
+  mode: "text/x-c++src",
+  tabSize: 4,
+  smartIndent: true,
+  indentUnit: 4,
+  lineNumbers: true,
+  matchBrackets: true,
+  autoCloseBrackets: true,
+  scrollbarStyle: "overlay"
+})
 
 const columns: DataTableColumns<TestData> = [
   {
@@ -89,7 +147,7 @@ const columns: DataTableColumns<TestData> = [
     key: "#",
     align: "right",
     width: 50,
-    render: (row, rowIndex: number) => <span>{rowIndex + 1}</span>
+    render: (_, rowIndex: number) => <span>{rowIndex + 1}</span>
   },
   {
     title: "文件名",
@@ -100,7 +158,7 @@ const columns: DataTableColumns<TestData> = [
       if (row.fileName.endsWith(".in")) {
         type = "info"
       } else if (row.fileName.endsWith(".out")) {
-        type = "warning"
+        type = "success"
       }
       return (
         <NText strong={true} type={type}>
@@ -158,14 +216,23 @@ const columns: DataTableColumns<TestData> = [
   }
 ]
 
-const title = computed(() => {
-  if (problem.value == null) {
-    return ""
-  } else {
-    return `${problem.value.problemId}. ${problem.value.title}`
+const isSPJ = computed(() => {
+  if (problemData.value == null) {
+    return false
   }
+
+  return problemData.value.spj
 })
 
+const title = computed(() => {
+  if (problemData.value == null) {
+    return ""
+  }
+
+  return `${problemData.value.pid}. ${problemData.value.title}`
+})
+
+// upload token
 const headers = computed(() => {
   return {
     Authorization: `Baerer ${store.user.userInfo!.token}`
@@ -173,51 +240,58 @@ const headers = computed(() => {
 })
 
 const uploadData = computed<any>(() => {
-  if (problem.value == null) {
+  if (problemData.value == null) {
     return {}
   } else {
     return {
-      problemId: problem.value?.problemId
+      pid: problemData.value.pid
     }
   }
 })
 
 const disableUpload = computed<boolean>(() => {
-  return loading.value || problem.value == null
+  return loading.value || problemData.value == null
 })
+
+watch(
+  () => store.app.theme,
+  (val) => {
+    nextTick(() => {
+      val == null
+        ? cmEditor!.setOption("theme", "ttcn")
+        : cmEditor!.setOption("theme", "material-darker")
+    })
+  },
+  { immediate: true }
+)
 
 onBeforeMount(() => {
   setTitle(route.meta.title as string)
+})
 
+onMounted(() => {
   const reg = /^\d+$/
   const id = route.params.id.toString()
+  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions.value)
 
   if (reg.test(id)) {
-    loading.value = true
-    const problemId = Number(id)
-    ProblemApi.getSingle(problemId)
-      .then((p) => {
-        problem.value = p
-        queryData(p.problemId!)
-      })
-      .catch((err: ErrorMessage) => {
-        message.error(err.toString())
-        loading.value = false
-      })
+    queryData(Number(id))
   }
 })
 
 function queryData(id: number) {
-  ProblemApi.getTestData(id)
+  loading.value = true
+  ProblemApi.getProblemData(id)
     .then((data) => {
-      testData.value = data
+      problemData.value = data
+      nextTick(() => {
+        data.spj
+          ? cmEditor!.setValue(data.SPJSource)
+          : cmEditor!.setValue(SPJDeclare)
+      })
     })
-    .catch((err: ErrorMessage) => {
-      message.error(err.toString())
-    })
-    .finally(() => {
-      loading.value = false
-    })
+    .catch((err: ErrorMessage) => message.error(err.toString()))
+    .finally(() => (loading.value = false))
 }
 
 function back() {
@@ -239,30 +313,64 @@ function handleError(options: { event?: ProgressEvent }) {
 
 function handleUploadFinish(options: { file: UploadFileInfo }) {
   message.success(`${options.file.name} 已上传`)
-  queryData(problem.value!.problemId!)
+  reloadData()
 }
 
 function downloadFile(fileName: string) {
-  ProblemApi.downloadData(problem.value!.problemId!, fileName).catch(
-    (err: ErrorMessage) => {
-      message.error(err.toString())
-    }
+  ProblemApi.downloadData(problemData.value!.pid!, fileName).catch(
+    (err: ErrorMessage) => message.error(err.toString())
   )
 }
 
 function deleteFile(fileName: string) {
-  ProblemApi.deleteTestData(problem.value!.problemId!, fileName)
+  ProblemApi.deleteTestData(problemData.value!.pid!, fileName)
     .then(() => {
       message.warning(`${fileName} 已删除`)
-      queryData(problem.value!.problemId!)
+      reloadData()
     })
-    .catch((err: ErrorMessage) => {
-      message.error(err.toString())
+    .catch((err: ErrorMessage) => message.error(err.toString()))
+}
+
+function saveSPJ() {
+  const source = cmEditor!.getValue()
+
+  if (source.trim().length === 0) {
+    return
+  }
+
+  ProblemApi.saveSPJ(problemData.value!.pid!, source)
+    .then(() => {
+      message.success("SPJ 已编译")
+      reloadData()
     })
+    .catch((err) => message.error(err.toString()))
+}
+
+function removeSPJ() {
+  const d = dialog.warning({
+    title: "移除 SPJ",
+    content: "此操作将删除 SPJ 源代码和动态库，继续吗？",
+    positiveText: "确认",
+    negativeText: "不要",
+    onPositiveClick: () => {
+      d.loading = true
+      ProblemApi.deleteSPJ(problemData.value!.pid!)
+        .then(() => message.warning("SPJ 已移除"))
+        .catch((err) => message.error(err.toString()))
+        .finally(() => {
+          d.loading = false
+          reloadData()
+        })
+    }
+  })
+}
+
+function reloadData() {
+  queryData(problemData.value!.pid!)
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .test-data-div {
   height: calc(100% - var(--layout-padding));
   width: calc(100% - var(--layout-padding) * 2);
@@ -270,12 +378,14 @@ function deleteFile(fileName: string) {
   display: flex;
   flex-direction: column;
 }
-</style>
 
-<style lang="scss">
-.test-data-div {
-  .n-upload-trigger {
-    width: 100%;
+#spj-editor {
+  margin-bottom: 24px;
+
+  :deep(.CodeMirror) {
+    height: 100%;
+    font-size: 14px;
+    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
   }
 }
 </style>

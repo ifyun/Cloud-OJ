@@ -10,6 +10,7 @@ const ApiPath = {
   IMAGE: "/api/core/file/img",
   AVATAR: "/api/core/file/img/avatar",
   TEST_DATA: "/api/core/file/data",
+  SPJ: "/api/core/file/spj",
   PROBLEM_IMAGE: "/api/core/file/img/problem",
   PROBLEM_ADMIN: "/api/core/problem/admin",
   PROBLEM: "/api/core/problem",

@@ -3,9 +3,13 @@ package cloud.oj.core.service;
 import cloud.oj.core.config.AppConfig;
 import cloud.oj.core.dao.ProblemDao;
 import cloud.oj.core.dao.UserDao;
-import cloud.oj.core.entity.TestData;
+import cloud.oj.core.entity.ProblemData;
+import cloud.oj.core.entity.SPJ;
 import cloud.oj.core.error.GenericException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,9 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -28,24 +31,46 @@ public class FileService {
 
     private final ProblemDao problemDao;
 
+    private final ProcessBuilder processBuilder = new ProcessBuilder();
+
     public FileService(AppConfig appConfig, UserDao userDao, ProblemDao problemDao) {
         this.fileDir = appConfig.getFileDir();
         this.userDao = userDao;
         this.problemDao = problemDao;
     }
 
-    public List<TestData> getTestData(Integer problemId) {
+    public ProblemData getProblemData(Integer problemId) {
+        var data = new ProblemData();
         var files = new File(fileDir + "data/" + problemId).listFiles();
-        var list = new ArrayList<TestData>();
+        var problem = problemDao.getById(problemId, false);
 
-        if (files != null) {
-            for (var file : files) {
-                list.add(new TestData(file.getName(), file.length()));
+        try {
+            if (files != null) {
+                for (var file : files) {
+                    var ext = FilenameUtils.getExtension(file.getName());
+
+                    if (ext.equals("in") || ext.equals("out")) {
+                        data.getTestData().add(new ProblemData.TestData(file.getName(), file.length()));
+                    }
+
+                    if (file.getName().equals("spj.so")) {
+                        data.setSpj(true);
+                    }
+
+                    if (file.getName().equals("spj.cpp")) {
+                        data.setSPJSource(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+                    }
+                }
             }
+        } catch (IOException e) {
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        list.sort(Comparator.comparing(TestData::getFileName));
-        return list;
+        data.setPid(problemId);
+        data.setTitle(problem.getTitle());
+        data.getTestData().sort(Comparator.comparing(ProblemData.TestData::getFileName));
+
+        return data;
     }
 
     /**
@@ -68,8 +93,7 @@ public class FileService {
         var dir = new File(testDataDir + problemId);
 
         if (!dir.exists() && !dir.mkdirs()) {
-            log.error("无法创建目录 {}", dir.getAbsolutePath());
-            return ResponseEntity.status(500).body("无法创建目录");
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
         }
 
         for (MultipartFile file : files) {
@@ -80,8 +104,7 @@ public class FileService {
                 file.transferTo(dest);
                 log.info("上传文件 {} ", dest.getAbsolutePath());
             } catch (IOException e) {
-                log.error("上传文件 {} 失败: {}", dest.getAbsolutePath(), e.getMessage());
-                return ResponseEntity.status(500).build();
+                throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
 
@@ -105,11 +128,10 @@ public class FileService {
 
         if (file.exists()) {
             if (file.delete()) {
-                log.info("已删除文件 {}", file.getAbsolutePath());
+                log.info("删除文件 {}", file.getAbsolutePath());
                 return ResponseEntity.noContent().build();
             } else {
-                log.error("删除文件 {} 失败", file.getAbsolutePath());
-                return ResponseEntity.status(500).build();
+                throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "删除失败");
             }
         } else {
             log.warn("文件 {} 不存在", file.getAbsolutePath());
@@ -126,8 +148,7 @@ public class FileService {
         var avatar = new File(avatarDir + uid + ".png");
 
         if (!dir.exists() && !dir.mkdirs()) {
-            log.error("无法创建目录 {}", dir.getAbsolutePath());
-            return ResponseEntity.status(500).body("无法创建目录.");
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
         }
 
         try {
@@ -135,8 +156,7 @@ public class FileService {
             userDao.updateAvatar(uid);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
-            log.error("上传头像失败, path: {}, error: {}", avatar.getAbsolutePath(), e.getMessage());
-            return ResponseEntity.status(500).build();
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -150,8 +170,7 @@ public class FileService {
         var dir = new File(fileDir + "image/problem/");
 
         if (!dir.exists() && !dir.mkdirs()) {
-            log.error("无法创建目录 {}", dir.getAbsolutePath());
-            return ResponseEntity.status(500).body("无法创建目录.");
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
         }
 
         var ext = originalName.substring(originalName.lastIndexOf("."));
@@ -163,8 +182,64 @@ public class FileService {
             file.transferTo(image);
             return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
         } catch (IOException e) {
-            log.error("上传题目图片失败, path: {}, error: {}", image.getAbsolutePath(), e.getMessage());
-            return ResponseEntity.status(500).build();
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    /**
+     * 保存 SPJ 代码并编译
+     */
+    public ResponseEntity<?> saveSPJ(SPJ spj) {
+        var pid = spj.getPid();
+        var source = spj.getSource();
+        var dir = new File(fileDir + "data/" + pid);
+
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
+        }
+
+        var file = new File(fileDir + "data/" + pid + "/spj.cpp");
+
+        try {
+            FileUtils.writeStringToFile(file, source, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法写入文件");
+        }
+
+        try {
+            var process = processBuilder.command(
+                    "g++",
+                    "-fPIC",
+                    "-shared",
+                    "-o", dir.getAbsolutePath() + "/spj.so",
+                    file.getAbsolutePath()
+            ).start();
+
+            if (process.waitFor() != 0) {
+                var err = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
+                throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, err);
+            }
+        } catch (Exception e) {
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 移除 SPJ 代码和库文件
+     *
+     * @param pid 题目 Id
+     */
+    public ResponseEntity<?> removeSPJ(Integer pid) {
+        try {
+            FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.so"));
+            FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.cpp"));
+        } catch (IOException e) {
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

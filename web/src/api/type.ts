@@ -74,6 +74,14 @@ export class TestData {
   size = 0
 }
 
+export class ProblemData {
+  pid?: number
+  title: string = ""
+  spj: boolean = false
+  SPJSource: string = ""
+  testData: Array<TestData> = []
+}
+
 /**
  * 题目
  */

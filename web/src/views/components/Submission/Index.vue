@@ -207,33 +207,6 @@ function submit(data: SourceCode) {
 }
 </script>
 
-<style lang="scss">
-.cm-s-ttcn {
-  border-left: 0;
-  border-top: 1px solid #f7f7f7;
-  border-right: 1px solid #f7f7f7;
-  border-bottom: 1px solid #f7f7f7;
-
-  .CodeMirror-gutters {
-    border: none;
-  }
-}
-
-.cm-s-material-darker {
-  .CodeMirror-scroll {
-    background-color: #161b22;
-  }
-
-  .CodeMirror-gutter {
-    background-color: #161b22;
-  }
-
-  .CodeMirror-linenumber {
-    background-color: #161b22;
-  }
-}
-</style>
-
 <style scoped lang="scss">
 .submission {
   width: calc(100% - var(--layout-padding) * 4);
@@ -249,6 +222,7 @@ function submit(data: SourceCode) {
 
     & > * {
       flex: 1;
+      overflow: hidden;
       margin-left: 12px;
 
       &:first-child {

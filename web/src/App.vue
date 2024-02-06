@@ -32,7 +32,10 @@ provide("reload", reload)
 
 function reload() {
   show.value = false
-  nextTick(() => (show.value = true))
+  nextTick(() => {
+    checkToken()
+    show.value = true
+  })
 }
 
 watch(
@@ -57,12 +60,7 @@ router.beforeEach((to, from) => {
 
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    AuthApi.verify().catch((error: ErrorMessage) => {
-      if (error.status === 401) {
-        store.user.clearToken()
-        router.push({ name: "auth", params: { tab: "login" } })
-      }
-    })
+    checkToken()
   }
 })
 
@@ -82,4 +80,13 @@ router.afterEach(() => {
 onMounted(() => {
   console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone)
 })
+
+function checkToken() {
+  AuthApi.verify().catch((error: ErrorMessage) => {
+    if (error.status === 401) {
+      store.user.clearToken()
+      router.push({ name: "auth", params: { tab: "login" } })
+    }
+  })
+}
 </script>
