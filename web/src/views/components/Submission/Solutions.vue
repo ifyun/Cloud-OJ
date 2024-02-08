@@ -1,19 +1,15 @@
 <template>
   <n-space vertical>
     <n-space align="center">
-      <n-button
-        strong
-        secondary
-        size="small"
-        :loading="loading"
-        @click="querySolutions">
+      <n-button text size="small" :loading="loading" @click="querySolutions">
         <template #icon>
           <n-icon :component="HistoryRound" />
         </template>
-        最近 15 次提交 (点击可刷新)
+        最近 15 次提交(点击刷新)
       </n-button>
     </n-space>
     <n-data-table
+      size="small"
       :columns="columns"
       :data="solutions.data"
       :loading="loading" />
@@ -100,10 +96,10 @@ const columns: DataTableColumns<JudgeResult> = [
     align: "left",
     render: (row) => (
       <div style="display: flex; align-items: center">
-        <NIcon color={LanguageColors[row.language!]}>
+        <NIcon size="12" color={LanguageColors[row.language!]}>
           <CircleRound />
         </NIcon>
-        <NText depth="1" style="margin-left: 4px">
+        <NText strong depth="2" style="margin-left: 4px">
           {LanguageNames[row.language!]}
         </NText>
       </div>
@@ -119,7 +115,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "内存占用",
     key: "memory",
     align: "right",
-    render: (row) => <NText>{ramUsage(row.memory!)}</NText>
+    render: (row) => <NText depth="3">{ramUsage(row.memory!)}</NText>
   },
   {
     title: "提交时间",
@@ -131,7 +127,7 @@ const columns: DataTableColumns<JudgeResult> = [
         {{
           trigger: () => <NButton text={true}>{date(row.submitTime!)}</NButton>,
           default: () => (
-            <NText italic={true}>
+            <NText italic={true} depth="2">
               {dayjs(row.submitTime!).format("H:mm:ss")}
             </NText>
           )
@@ -166,7 +162,9 @@ function date(time: number) {
   if (t.isSame(now, "day")) {
     return "今天"
   } else if (t.isSame(now, "year")) {
-    return t.format("M 月 D 日")
+    return t.format("M.D")
+  } else {
+    return t.format("YYYY.M.D")
   }
 }
 </script>

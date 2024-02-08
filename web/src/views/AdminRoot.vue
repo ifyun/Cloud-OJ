@@ -1,89 +1,81 @@
 <template>
-  <n-config-provider abstract :theme-overrides="themeOverrides">
-    <n-notification-provider>
-      <n-message-provider>
-        <n-dialog-provider>
-          <n-layout position="absolute" :has-sider="true">
-            <n-layout-sider
-              class="aside"
-              collapse-mode="width"
-              width="160"
-              bordered
-              :native-scrollbar="false"
-              :collapsed="collapsed">
-              <div>
-                <logo
-                  :collapsed="collapsed"
-                  style="height: var(--header-height)" />
-                <admin-navbar />
-              </div>
-            </n-layout-sider>
-            <n-layout>
-              <n-layout-header class="header" position="absolute" bordered>
-                <div class="admin-nav">
-                  <n-space align="center" size="small">
-                    <n-button
-                      quaternary
-                      style="padding: 0 6px"
-                      @click="collapse">
-                      <template #icon>
-                        <n-icon>
-                          <menu-open-round :class="{ rotate: collapsed }" />
-                        </n-icon>
-                      </template>
-                    </n-button>
-                    <n-button quaternary style="padding: 0 6px" @click="reload">
-                      <template #icon>
-                        <n-icon>
-                          <refresh-round />
-                        </n-icon>
-                      </template>
-                    </n-button>
-                    <n-breadcrumb v-if="breadcrumb != null">
-                      <n-breadcrumb-item v-for="item in breadcrumb" :key="item">
-                        {{ item }}
-                      </n-breadcrumb-item>
-                    </n-breadcrumb>
+  <n-notification-provider>
+    <n-message-provider>
+      <n-dialog-provider>
+        <n-layout position="absolute" :has-sider="true">
+          <n-layout-sider
+            class="aside"
+            collapse-mode="width"
+            width="160"
+            bordered
+            :native-scrollbar="false"
+            :collapsed="collapsed">
+            <div>
+              <logo
+                :collapsed="collapsed"
+                style="height: var(--header-height)" />
+              <admin-navbar />
+            </div>
+          </n-layout-sider>
+          <n-layout>
+            <n-layout-header class="header" position="absolute" bordered>
+              <div class="admin-nav">
+                <n-space align="center" size="small">
+                  <n-button quaternary style="padding: 0 6px" @click="collapse">
+                    <template #icon>
+                      <n-icon>
+                        <menu-open-round :class="{ rotate: collapsed }" />
+                      </n-icon>
+                    </template>
+                  </n-button>
+                  <n-button quaternary style="padding: 0 6px" @click="reload">
+                    <template #icon>
+                      <n-icon>
+                        <refresh-round />
+                      </n-icon>
+                    </template>
+                  </n-button>
+                  <n-breadcrumb v-if="breadcrumb != null">
+                    <n-breadcrumb-item v-for="item in breadcrumb" :key="item">
+                      {{ item }}
+                    </n-breadcrumb-item>
+                  </n-breadcrumb>
+                </n-space>
+                <div style="margin-left: auto">
+                  <n-space size="large" align="center">
+                    <theme-switch />
+                    <user-menu />
                   </n-space>
-                  <div style="margin-left: auto">
-                    <n-space size="large" align="center">
-                      <theme-switch />
-                      <user-menu />
-                    </n-space>
-                  </div>
                 </div>
-              </n-layout-header>
-              <n-layout-content
-                class="main admin"
-                position="absolute"
-                :native-scrollbar="false"
-                content-style="display: flex; flex-direction: column">
-                <router-view v-slot="{ Component }">
-                  <keep-alive :key="$route.path">
-                    <component :is="Component" />
-                  </keep-alive>
-                </router-view>
-              </n-layout-content>
-            </n-layout>
+              </div>
+            </n-layout-header>
+            <n-layout-content
+              class="main admin"
+              position="absolute"
+              :native-scrollbar="false"
+              content-style="display: flex; flex-direction: column">
+              <router-view v-slot="{ Component }">
+                <keep-alive :key="$route.path">
+                  <component :is="Component" />
+                </keep-alive>
+              </router-view>
+            </n-layout-content>
           </n-layout>
-        </n-dialog-provider>
-      </n-message-provider>
-    </n-notification-provider>
-  </n-config-provider>
+        </n-layout>
+      </n-dialog-provider>
+    </n-message-provider>
+  </n-notification-provider>
 </template>
 
 <script setup lang="ts">
 import { Logo } from "@/components"
 import { useStore } from "@/store"
-import { themeOverridesDark } from "@/theme"
 import { AdminNavbar, ThemeSwitch, UserMenu } from "@/views/layout"
 import { MenuOpenRound, RefreshRound } from "@vicons/material"
 import {
-  GlobalThemeOverrides,
   NBreadcrumb,
   NBreadcrumbItem,
   NButton,
-  NConfigProvider,
   NDialogProvider,
   NIcon,
   NLayout,
@@ -97,14 +89,6 @@ import {
 import { computed, inject } from "vue"
 
 const store = useStore()
-
-const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.app.theme != null) {
-    return themeOverridesDark
-  }
-
-  return {}
-})
 
 const breadcrumb = computed(() => {
   return store.app.breadcrumb

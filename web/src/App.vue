@@ -2,13 +2,15 @@
   <n-config-provider
     abstract
     :theme="theme"
-    :theme-overrides="themeOverrides"
+    :theme-overrides="themeBase"
     :locale="zhCN"
     :date-locale="dateZhCN">
-    <n-global-style />
-    <router-view v-if="show" v-slot="{ Component }">
-      <component :is="Component" />
-    </router-view>
+    <n-config-provider abstract :theme-overrides="themeOverrides">
+      <n-global-style />
+      <router-view v-if="show" v-slot="{ Component }">
+        <component :is="Component" />
+      </router-view>
+    </n-config-provider>
   </n-config-provider>
 </template>
 
@@ -16,8 +18,14 @@
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { useStore } from "@/store"
-import { themeOverrides } from "@/theme"
-import { NConfigProvider, NGlobalStyle, dateZhCN, zhCN } from "naive-ui"
+import { themeBase, themeDark } from "@/theme"
+import {
+  GlobalThemeOverrides,
+  NConfigProvider,
+  NGlobalStyle,
+  dateZhCN,
+  zhCN
+} from "naive-ui"
 import { computed, nextTick, onMounted, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
@@ -28,6 +36,14 @@ const router = useRouter()
 const show = ref(true)
 const theme = computed(() => store.app.theme)
 const isLoggedIn = computed(() => store.user.isLoggedIn)
+
+const themeOverrides = computed<GlobalThemeOverrides>(() => {
+  if (store.app.theme != null) {
+    return themeDark
+  }
+
+  return {}
+})
 
 provide("reload", reload)
 

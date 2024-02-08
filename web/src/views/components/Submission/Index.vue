@@ -3,51 +3,60 @@
     <Skeleton v-if="loading" />
     <div v-else class="content">
       <n-tabs type="line">
-        <n-tab-pane name="problem" tab="题目描述" display-directive="show">
-          <n-h2 style="margin-bottom: 6px">
-            {{ `${problem.problemId}.${problem.title}` }}
-          </n-h2>
-          <n-space size="small">
-            <n-tag type="success" size="small" round :bordered="false">
-              <template #icon>
-                <n-icon :component="HelpRound" />
-              </template>
-              {{ problem.score }} 分
-            </n-tag>
-            <n-tag type="error" size="small" round :bordered="false">
-              <template #icon>
-                <n-icon :component="TimerOutlined" />
-              </template>
-              时间限制 {{ problem.timeout }} ms
-            </n-tag>
-            <n-tag type="warning" size="small" round :bordered="false">
-              <template #icon>
-                <n-icon :component="DataSaverOffRound" />
-              </template>
-              内存限制 {{ problem.memoryLimit }} MB
-            </n-tag>
-            <n-tag type="info" size="small" round :bordered="false">
-              <template #icon>
-                <n-icon :component="PrintRound" />
-              </template>
-              输出限制 {{ problem.outputLimit }} MB
-            </n-tag>
-          </n-space>
-          <!-- 题目内容 -->
-          <markdown-view
-            :content="problem.description"
-            :theme="theme"
-            style="margin-top: 12px" />
+        <n-tab-pane
+          name="problem"
+          tab="题目描述"
+          display-directive="show"
+          style="height: calc(100% - 54px)">
+          <n-scrollbar>
+            <n-h3 style="margin-bottom: 6px">
+              {{ `${problem.problemId}.${problem.title}` }}
+            </n-h3>
+            <n-space size="small">
+              <n-tag type="success" size="small" round :bordered="false">
+                <template #icon>
+                  <n-icon :component="HelpRound" />
+                </template>
+                {{ problem.score }} 分
+              </n-tag>
+              <n-tag type="error" size="small" round :bordered="false">
+                <template #icon>
+                  <n-icon :component="TimerOutlined" />
+                </template>
+                时间限制 {{ problem.timeout }} ms
+              </n-tag>
+              <n-tag type="warning" size="small" round :bordered="false">
+                <template #icon>
+                  <n-icon :component="DataSaverOffRound" />
+                </template>
+                内存限制 {{ problem.memoryLimit }} MB
+              </n-tag>
+              <n-tag type="info" size="small" round :bordered="false">
+                <template #icon>
+                  <n-icon :component="PrintRound" />
+                </template>
+                输出限制 {{ problem.outputLimit }} MB
+              </n-tag>
+            </n-space>
+            <!-- 题目内容 -->
+            <markdown-view
+              :content="problem.description"
+              :theme="theme"
+              style="margin-top: 12px" />
+          </n-scrollbar>
         </n-tab-pane>
         <n-tab-pane
           v-if="isLoggedIn"
           name="solutions"
           tab="提交记录"
-          display-directive="show">
-          <n-h2 style="margin-bottom: 6px">
-            {{ `${problem.problemId}.${problem.title}` }}
-          </n-h2>
-          <solution-single :problem-id="pid" />
+          display-directive="show"
+          style="height: calc(100% - 54px)">
+          <n-scrollbar>
+            <n-h3 style="margin-bottom: 6px">
+              {{ `${problem.problemId}.${problem.title}` }}
+            </n-h3>
+            <solution-single :problem-id="pid" />
+          </n-scrollbar>
         </n-tab-pane>
       </n-tabs>
       <!-- 代码编辑器 -->
@@ -86,9 +95,10 @@ import {
 } from "@vicons/material"
 import _ from "lodash"
 import {
-  NH2,
+  NH3,
   NIcon,
   NModal,
+  NScrollbar,
   NSpace,
   NTabPane,
   NTabs,
@@ -209,24 +219,34 @@ function submit(data: SourceCode) {
 
 <style scoped lang="scss">
 .submission {
+  height: calc(
+    100vh - var(--layout-padding) * 4 - var(--header-height) - var(
+        --footer-height
+      )
+  );
   width: calc(100% - var(--layout-padding) * 4);
-  padding-top: var(--layout-padding);
-  padding-left: calc(var(--layout-padding) * 2);
-  padding-right: calc(var(--layout-padding) * 2);
+  padding: calc(var(--layout-padding) * 2);
+  overflow: hidden;
 
   .content {
-    min-height: 800px;
-    min-width: 720px;
+    height: 100%;
     display: flex;
     flex-direction: row;
 
     & > * {
       flex: 1;
-      overflow: hidden;
       margin-left: 12px;
 
       &:first-child {
         margin-left: 0;
+      }
+    }
+
+    :deep(.n-scrollbar) {
+      .n-scrollbar-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
       }
     }
   }

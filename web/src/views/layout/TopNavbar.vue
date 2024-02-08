@@ -49,7 +49,7 @@ const navMenuOptions = [
 
 <style scoped lang="scss">
 .top-nav {
-  height: var(--header-height);
+  height: calc(var(--header-height) - 1px);
   padding: 0 calc(var(--layout-padding) * 2);
   margin: 0 auto;
   display: flex;

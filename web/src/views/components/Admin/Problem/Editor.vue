@@ -1,7 +1,6 @@
 <template>
   <div class="problem-editor">
-    <div
-      style="height: 100%; margin: 4px; display: flex; flex-direction: column">
+    <div style="height: 100%; display: flex; flex-direction: column">
       <n-page-header class="page-header" @back="back">
         <template #title>{{ title }}</template>
         <template #extra>
@@ -94,13 +93,11 @@
       </n-space>
       <!-- 题目内容编辑器 -->
       <div class="editor-area">
-        <div>
-          <markdown-editor
-            v-model="problem.description"
-            :read-only="loading"
-            :theme="theme"
-            :headers="headers" />
-        </div>
+        <markdown-editor
+          v-model="problem.description"
+          :read-only="loading"
+          :theme="theme"
+          :headers="headers" />
         <div>
           <markdown-view
             :content="problem.description"
@@ -346,12 +343,11 @@ function save() {
     display: flex;
     flex-direction: row;
     flex: 1;
-    overflow: hidden;
 
     & > * {
       flex: 1;
       margin-left: 12px;
-      height: 100%;
+      height: auto;
 
       &:first-child {
         margin-left: 0;

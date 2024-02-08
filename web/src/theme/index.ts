@@ -1,6 +1,6 @@
 import type { GlobalThemeOverrides } from "naive-ui"
 
-const themeOverrides: GlobalThemeOverrides = {
+const themeBase: GlobalThemeOverrides = {
   common: {
     primaryColor: "#18A058",
     primaryColorHover: "#36AD6A",
@@ -23,13 +23,16 @@ const themeOverrides: GlobalThemeOverrides = {
     errorColorPressed: "#DD6161",
     errorColorSuppl: "rgba(245, 108, 108, 1)"
   },
+  Layout: {
+    footerColor: "#00000000"
+  },
   Switch: {
     railColorActive: "#18A058",
     loadingColor: "#18A058"
   }
 }
 
-const themeOverridesDark: GlobalThemeOverrides = {
+const themeDark: GlobalThemeOverrides = {
   common: {
     bodyColor: "#0D1117",
     borderColor: "#21262D"
@@ -39,6 +42,7 @@ const themeOverridesDark: GlobalThemeOverrides = {
     headerBorderColor: "#161B22",
     siderColor: "#161B22",
     siderBorderColor: "#0D1117",
+    footerColor: "#00000000",
     color: "#0D1117"
   },
   Divider: {
@@ -120,4 +124,4 @@ const themeOverridesDark: GlobalThemeOverrides = {
   }
 }
 
-export { themeOverrides, themeOverridesDark }
+export { themeBase, themeDark }

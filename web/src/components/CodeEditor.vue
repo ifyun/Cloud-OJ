@@ -174,12 +174,12 @@ function submit() {
 
   .editor-wrapper {
     margin-top: 5px;
-    height: calc(100% - 34px);
+    height: calc(100% - 39px);
   }
 
   .editor-wrapper {
     :deep(.CodeMirror) {
-      height: calc(100% - 2px);
+      height: 100%;
       font-size: 14px;
       font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
     }
@@ -187,7 +187,8 @@ function submit() {
     &.dark {
       :deep(.CodeMirror-overlayscroll-horizontal div),
       :deep(.CodeMirror-overlayscroll-vertical div) {
-        background-color: #333333;
+        width: 5px;
+        background-color: #5c6065;
       }
     }
   }

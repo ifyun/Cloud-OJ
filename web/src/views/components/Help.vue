@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :hljs="highlightJs">
+  <n-config-provider abstract :hljs="highlightJs">
     <div class="wrap help">
       <n-h2>语言支持</n-h2>
       <n-data-table

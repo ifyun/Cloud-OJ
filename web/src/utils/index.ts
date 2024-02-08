@@ -10,7 +10,7 @@ type StateTag = {
 }
 
 function setTitle(title: string) {
-  document.title = `${title} | Cloud OJ`
+  document.title = `${title} - Cloud OJ`
 }
 
 const renderIcon = (icon: any, color: string | undefined = undefined) => {

@@ -19,7 +19,7 @@
             </n-tabs>
           </div>
         </n-layout-content>
-        <n-layout-footer style="margin-top: auto; background: transparent">
+        <n-layout-footer style="margin-top: auto">
           <bottom-info />
         </n-layout-footer>
       </n-layout>
@@ -31,7 +31,7 @@
 import { AuthApi } from "@/api/request"
 import AppLogo from "@/components/Logo.vue"
 import { useStore } from "@/store"
-import { themeOverridesDark } from "@/theme"
+import { themeDark } from "@/theme"
 import BottomInfo from "@/views/layout/BottomInfo.vue"
 import {
   GlobalThemeOverrides,
@@ -55,7 +55,7 @@ const checked = ref<boolean>(false)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
   if (store.app.theme != null) {
-    return themeOverridesDark
+    return themeDark
   }
 
   return {}
