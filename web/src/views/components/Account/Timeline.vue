@@ -4,13 +4,18 @@
     <n-empty v-if="solutions.count === 0" description="没有记录" />
     <n-timeline style="padding: 0 6px">
       <n-timeline-item
-        v-for="item in solutions.data"
-        :key="item.solutionId"
-        :type="ResultTypes[item.result!]"
-        :title="item.resultText!"
-        :content="content(item)"
-        :time="time(item)"
-        line-type="dashed" />
+        v-for="s in solutions.data"
+        :key="s.solutionId"
+        :type="ResultTypes[s.result!]"
+        :title="s.resultText!"
+        :time="time(s)"
+        line-type="dashed">
+        <router-link :to="{ name: 'submission', params: { pid: s.problemId } }">
+          <n-button text>
+            {{ content(s) }}
+          </n-button>
+        </router-link>
+      </n-timeline-item>
     </n-timeline>
   </div>
 </template>
@@ -20,8 +25,9 @@ import { UserApi } from "@/api/request"
 import { JudgeResult, Page } from "@/api/type"
 import { LanguageNames, ResultTypes } from "@/type"
 import dayjs from "dayjs"
-import { NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
+import { NButton, NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
 import { onBeforeMount, ref } from "vue"
+import { RouterLink } from "vue-router"
 
 const timeFmt = "YYYY/MM/DD HH:mm:ss"
 
@@ -33,11 +39,11 @@ onBeforeMount(() => {
   })
 })
 
-function content(item: JudgeResult) {
-  return `[${LanguageNames[item.language!]}] ${item.problemId}.${item.title}`
+function content(s: JudgeResult) {
+  return `[${LanguageNames[s.language!]}] ${s.problemId}.${s.title}`
 }
 
-function time(item: JudgeResult) {
-  return dayjs(item.submitTime!).format(timeFmt)
+function time(s: JudgeResult) {
+  return dayjs(s.submitTime!).format(timeFmt)
 }
 </script>

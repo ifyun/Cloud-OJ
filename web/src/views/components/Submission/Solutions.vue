@@ -1,19 +1,47 @@
 <template>
-  <n-space vertical>
-    <n-space align="center">
+  <n-flex vertical>
+    <n-flex align="center">
       <n-button text size="small" :loading="loading" @click="querySolutions">
         <template #icon>
           <n-icon :component="HistoryRound" />
         </template>
-        最近 15 次提交(点击刷新)
+        最近 15 次提交(点我刷新)
       </n-button>
-    </n-space>
-    <n-data-table
-      size="small"
-      :columns="columns"
-      :data="solutions.data"
-      :loading="loading" />
-  </n-space>
+    </n-flex>
+    <n-timeline style="width: 400px; margin-left: 12px">
+      <n-timeline-item
+        v-for="s in solutions.data"
+        :key="s.solutionId"
+        :type="ResultTypes[s.result!]"
+        :title="s.resultText!"
+        :time="date(s.submitTime!)"
+        line-type="dashed">
+        <n-flex align="center">
+          <!-- Language -->
+          <n-flex align="center" :size="4">
+            <n-icon size="12" :color="LanguageColors[s.language!]">
+              <circle-round />
+            </n-icon>
+            <n-text strong depth="2" style="width: 100px">
+              {{ LanguageNames[s.language!] }}
+            </n-text>
+          </n-flex>
+          <!-- CPU Time -->
+          <n-flex align="center" :size="4">
+            <n-icon depth="2" :component="TimerOutlined" />
+            <n-text depth="2" style="width: 100px">
+              {{ timeUsage(s.time!) }}
+            </n-text>
+          </n-flex>
+          <!-- RAM -->
+          <n-flex align="center" :size="4">
+            <n-icon depth="3" :component="DataSaverOffRound" />
+            <n-text depth="3">{{ ramUsage(s.memory!) }}</n-text>
+          </n-flex>
+        </n-flex>
+      </n-timeline-item>
+    </n-timeline>
+  </n-flex>
 </template>
 
 <script lang="tsx">
@@ -28,25 +56,22 @@ import { ErrorMessage, JudgeResult, Page } from "@/api/type"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
-  CheckCircleFilled,
   CircleRound,
-  ErrorRound,
   HistoryRound,
-  TimelapseRound
+  DataSaverOffRound,
+  TimerOutlined
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
-  DataTableColumns,
   NButton,
-  NDataTable,
+  NFlex,
   NIcon,
-  NPopover,
-  NSpace,
-  NTag,
   NText,
+  NTimeline,
+  NTimelineItem,
   useMessage
 } from "naive-ui"
-import { Component, onBeforeMount, ref } from "vue"
+import { onBeforeMount, ref } from "vue"
 
 const props = defineProps<{ problemId: string }>()
 
@@ -57,85 +82,6 @@ const solutions = ref<Page<JudgeResult>>({
   data: [],
   count: 0
 })
-
-const columns: DataTableColumns<JudgeResult> = [
-  {
-    title: "状态",
-    key: "result",
-    width: 100,
-    align: "center",
-    render: (row) => {
-      let icon: Component
-
-      if (row.state != 0) {
-        icon = TimelapseRound
-      } else if (row.result === 0) {
-        icon = CheckCircleFilled
-      } else {
-        icon = ErrorRound
-      }
-
-      const { type, text } =
-        row.state === 0
-          ? { type: ResultTypes[row.result!], text: row.resultText }
-          : { type: "info", text: row.stateText }
-
-      return (
-        <NTag size="small" bordered={false} type={type as any}>
-          {{
-            icon: () => <NIcon component={icon} />,
-            default: () => <span>{text}</span>
-          }}
-        </NTag>
-      )
-    }
-  },
-  {
-    title: "语言",
-    key: "language",
-    align: "left",
-    render: (row) => (
-      <div style="display: flex; align-items: center">
-        <NIcon size="12" color={LanguageColors[row.language!]}>
-          <CircleRound />
-        </NIcon>
-        <NText strong depth="2" style="margin-left: 4px">
-          {LanguageNames[row.language!]}
-        </NText>
-      </div>
-    )
-  },
-  {
-    title: "CPU 时间",
-    key: "time",
-    align: "right",
-    render: (row) => <NText type="success">{timeUsage(row.time!)}</NText>
-  },
-  {
-    title: "内存占用",
-    key: "memory",
-    align: "right",
-    render: (row) => <NText depth="3">{ramUsage(row.memory!)}</NText>
-  },
-  {
-    title: "提交时间",
-    key: "submitTime",
-    width: "120",
-    align: "right",
-    render: (row) => (
-      <NPopover trigger="click" placement="left">
-        {{
-          trigger: () => <NButton text={true}>{date(row.submitTime!)}</NButton>,
-          default: () => (
-            <NText italic={true} depth="2">
-              {dayjs(row.submitTime!).format("H:mm:ss")}
-            </NText>
-          )
-        }}
-      </NPopover>
-    )
-  }
-]
 
 onBeforeMount(() => {
   querySolutions()
@@ -160,11 +106,11 @@ function date(time: number) {
   const t = dayjs(time)
 
   if (t.isSame(now, "day")) {
-    return "今天"
+    return "今天 " + t.format("HH:mm:ss")
   } else if (t.isSame(now, "year")) {
-    return t.format("M.D")
+    return t.format("M 月 D 日 HH:mm:ss")
   } else {
-    return t.format("YYYY.M.D")
+    return t.format("YYYY 年 M 月 D 日")
   }
 }
 </script>
