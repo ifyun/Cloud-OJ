@@ -3,7 +3,8 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.Solution;
 import cloud.oj.core.service.SolutionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -13,14 +14,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 @RestController
 @RequestMapping("solution")
+@RequiredArgsConstructor
 public class SolutionController {
 
     private final SolutionService solutionService;
-
-    @Autowired
-    public SolutionController(SolutionService solutionService) {
-        this.solutionService = solutionService;
-    }
 
     /**
      * 根据过滤条件获取提交记录

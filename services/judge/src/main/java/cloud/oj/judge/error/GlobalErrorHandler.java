@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalErrorHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> otherErrorHandler(RuntimeException e) {
-        HttpStatus status;
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
         var msg = ExceptionUtils.getRootCause(e).getMessage();
         log.error(msg);
 
         if (e instanceof GenericException) {
             status = ((GenericException) e).getStatus();
-        } else {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         return ResponseEntity.status(status).body(new ErrorMessage(status, msg));

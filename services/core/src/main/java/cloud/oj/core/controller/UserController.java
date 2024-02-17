@@ -3,18 +3,17 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.service.UserService;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * 获取统计信息

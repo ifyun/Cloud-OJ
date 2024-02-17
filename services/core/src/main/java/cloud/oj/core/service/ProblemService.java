@@ -5,7 +5,8 @@ import cloud.oj.core.dao.ProblemDao;
 import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,20 +17,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProblemService {
     private final ProblemDao problemDao;
 
     private final ContestDao contestDao;
 
     private final SolutionDao solutionDao;
-
-    public ProblemService(ProblemDao problemDao, ContestDao contestDao, SolutionDao solutionDao) {
-        this.problemDao = problemDao;
-        this.contestDao = contestDao;
-        this.solutionDao = solutionDao;
-    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<List<?>> getAllEnabled(Integer uid, String keyword, int page, int limit) {

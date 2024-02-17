@@ -37,7 +37,7 @@ public class TokenVerifyFilter implements WebFilter {
     @NonNull
     @SneakyThrows
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
+    public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         var request = exchange.getRequest();
         var path = request.getPath().toString();
 

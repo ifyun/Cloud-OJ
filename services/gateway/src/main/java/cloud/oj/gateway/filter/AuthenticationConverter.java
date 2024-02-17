@@ -1,7 +1,6 @@
 package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.entity.UsernamePasswd;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -17,7 +16,6 @@ import java.util.Collections;
  * 认证转换器
  * <p>将登录 POST 数据转换为 {@link UsernamePasswd}</p>
  */
-@Slf4j
 public class AuthenticationConverter implements ServerAuthenticationConverter {
 
     private final ResolvableType usernamePasswdType = ResolvableType.forClass(UsernamePasswd.class);

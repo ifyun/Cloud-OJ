@@ -2,7 +2,6 @@ package cloud.oj.judge.controller;
 
 import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.service.SubmitService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 提交代码接口
  */
-@Slf4j
 @RestController
 public class SubmitController {
 

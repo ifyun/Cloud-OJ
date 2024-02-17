@@ -2,12 +2,10 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.SPJ;
 import cloud.oj.core.service.FileService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RestController
 @RequestMapping("file")
 public class FileController {

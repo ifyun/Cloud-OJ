@@ -6,7 +6,6 @@ import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.error.GenericException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-@Slf4j
 @Service
 public class UserService {
 

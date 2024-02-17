@@ -3,7 +3,6 @@ package cloud.oj.gateway.filter;
 import cloud.oj.gateway.error.ErrorMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -20,7 +19,6 @@ import reactor.core.publisher.Mono;
  * 登录过滤器
  * 用户登录成功后生成 JWT
  */
-@Slf4j
 public class LoginFilter extends AuthenticationWebFilter {
 
     private static ObjectMapper mapper;

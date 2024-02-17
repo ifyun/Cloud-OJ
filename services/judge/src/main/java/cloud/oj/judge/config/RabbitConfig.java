@@ -18,7 +18,7 @@ public class RabbitConfig {
     public Queue submitQueue() {
         return QueueBuilder.durable(SUBMIT_QUEUE)
                 .overflow(QueueBuilder.Overflow.rejectPublish)
-                .maxLength(5000)
+                .maxLength(5000L)
                 .build();
     }
 

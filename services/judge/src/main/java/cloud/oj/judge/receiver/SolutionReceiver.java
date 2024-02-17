@@ -7,7 +7,6 @@ import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.service.SubmitService;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -20,7 +19,6 @@ import java.util.Map;
 /**
  * 消息接收(提交和判题)
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SolutionReceiver {

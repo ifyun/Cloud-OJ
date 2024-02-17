@@ -1,7 +1,6 @@
 package cloud.oj.judge;
 
 import cloud.oj.judge.config.AppConfig;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * <code>sudo mvn spring-boot:run</code>
  */
-@Slf4j
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableConfigurationProperties(AppConfig.class)
