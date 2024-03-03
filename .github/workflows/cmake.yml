@@ -2,26 +2,24 @@ name: CMake
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["main"]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   WORKING_DIR: judge
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-      - name: Install Boost
-        run: sudo apt-get install -y libboost-iostreams-dev libboost-program-options-dev
+
       - name: Configure CMake
         run: cmake -B cmake-build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Unix Makefiles"
         working-directory: ${{ env.WORKING_DIR }}
+
       - name: Build
         run: cmake --build cmake-build --config ${{env.BUILD_TYPE}}
         working-directory: ${{ env.WORKING_DIR }}

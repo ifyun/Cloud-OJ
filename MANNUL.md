@@ -12,7 +12,7 @@
 
 ### 仅构建指定的镜像
 
-仅构建 `cloudoj-web` 镜像：
+仅构建 `cloud-oj:web` 镜像：
 
 ```bash
 ./build --docker --target=web

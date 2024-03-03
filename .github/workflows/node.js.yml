@@ -2,32 +2,33 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["main"]
 
 env:
   WORKING_DIR: web
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [ 16.x ]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
-      - run: npm ci
+
+      - name: Install Dependencies
+        run: npm ci
         working-directory: ${{ env.WORKING_DIR }}
-      - run: npm run build --if-present
+
+      - name: Vite Build
+        run: npm run build --if-present
         working-directory: ${{ env.WORKING_DIR }}
