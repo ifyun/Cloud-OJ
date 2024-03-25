@@ -15,7 +15,7 @@
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "highlight.js": "^11.9.0",
-    "katex": "^0.16.9",
+    "katex": "^0.16.10",
     "lodash": "^4.17.21",
     "markdown-it": "^14.0.0",
     "markdown-it-container": "^4.0.0",
