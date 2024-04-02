@@ -1,6 +1,6 @@
 package cloud.oj.gateway.service;
 
-import cloud.oj.gateway.dao.UserDao;
+import cloud.oj.gateway.repo.UserRepo;
 import cloud.oj.gateway.entity.Role;
 import cloud.oj.gateway.entity.User;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class UserService implements ReactiveUserDetailsService {
 
-    private final UserDao userDao;
+    private final UserRepo userRepo;
 
     private static final List<Role> ROLE_LIST = new ArrayList<>() {
         {
@@ -27,14 +27,19 @@ public class UserService implements ReactiveUserDetailsService {
         }
     };
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserService(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        var user = userDao.findByUsername(username);
-        if (user != null) {
+        return userRepo.findByUsername(username).flatMap(user -> {
+            if (user == null) {
+                var error = String.format("User(id=%s) not found", username);
+                log.error(error);
+                return Mono.error(new UsernameNotFoundException(error));
+            }
+
             int role = user.getRole();
             List<Role> roles;
 
@@ -47,23 +52,18 @@ public class UserService implements ReactiveUserDetailsService {
 
             user.setRoles(roles);
             return Mono.just(user);
-        } else {
-            var error = String.format("User(id=%s) not found.", username);
-            log.error(error);
-            return Mono.error(new UsernameNotFoundException(error));
-        }
+        });
     }
 
-    public User findById(Integer uid) {
-        return userDao.findById(uid);
+    public Mono<User> findById(Integer uid) {
+        return userRepo.findById(uid);
     }
 
-    public String getSecret(Integer uid) {
-        return userDao.getSecret(uid);
+    public Mono<String> getSecret(Integer uid) {
+        return userRepo.getSecret(uid);
     }
 
-    public String updateSecret(Integer uid, String newSecret) {
-        userDao.updateSecret(uid, newSecret);
-        return newSecret;
+    public Mono<Void> updateSecret(Integer uid, String newSecret) {
+       return userRepo.updateSecret(uid, newSecret);
     }
 }

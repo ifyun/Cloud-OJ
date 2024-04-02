@@ -6,8 +6,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.2.4</version>
+        <relativePath/>
     </parent>
     <groupId>cloud.oj</groupId>
     <artifactId>cloud-oj</artifactId>
@@ -17,7 +17,8 @@
     <description>Cloud OJ Project</description>
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <spring-boot.version>3.2.4</spring-boot.version>
     </properties>
     <modules>
         <module>core</module>
@@ -39,9 +40,20 @@
                 <version>3.0.3</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
                 <version>3.1.2</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mariadb</groupId>
+                <artifactId>r2dbc-mariadb</artifactId>
+                <version>${r2dbc-mariadb.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>

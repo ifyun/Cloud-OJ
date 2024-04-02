@@ -4,7 +4,6 @@ import cloud.oj.gateway.entity.User;
 import cloud.oj.gateway.error.ErrorMessage;
 import cloud.oj.gateway.filter.JwtUtil;
 import cloud.oj.gateway.service.UserService;
-import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -58,10 +57,12 @@ public class AuthController {
         var user = (User) auth.getPrincipal();
         var secret = newUUID();
 
-        user.setSecret(userService.updateSecret(user.getUid(), secret));
-        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
-
-        return Mono.just(ResponseEntity.ok(jwt));
+        return userService.updateSecret(user.getUid(), secret)
+                .then(Mono.defer(() -> {
+                    user.setSecret(secret);
+                    String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
+                    return Mono.just(ResponseEntity.ok(jwt));
+                }));
     }
 
     /**
@@ -69,20 +70,25 @@ public class AuthController {
      * <p>更新用户 secret 使 JWT 失效</p>
      */
     @DeleteMapping(path = "logoff")
-    public Mono<ResponseEntity<?>> logoff(@RequestHeader String Authorization) {
+    public Mono<ResponseEntity<String>> logoff(@RequestHeader String Authorization) {
         var token = Authorization.substring(6);
         var uid = JwtUtil.getUid(token);
-        var secret = userService.getSecret(uid);
 
-        try {
-            JwtUtil.getClaims(token, secret);
-            userService.updateSecret(uid, newUUID());
-            log.info("Logoff: user={}.", uid);
-            return Mono.just(ResponseEntity.ok("用户" + uid + "已退出"));
-        } catch (JwtException | IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return Mono.just(ResponseEntity.badRequest().build());
-        }
+        return userService.getSecret(uid)
+                .flatMap(secret -> {
+                    try {
+                        JwtUtil.getClaims(token, secret);
+                        return Mono.just(secret);
+                    } catch (Exception e) {
+                        log.error(e.getMessage());
+                        return Mono.error(e);
+                    }
+                })
+                .flatMap(secret -> userService.updateSecret(uid, newUUID())
+                        .doOnSuccess((Void) -> log.info("User(id={}) logout", uid))
+                        .thenReturn(ResponseEntity.ok("用户" + uid + "已退出"))
+                )
+                .onErrorReturn(ResponseEntity.badRequest().build());
     }
 
     /**
@@ -95,22 +101,24 @@ public class AuthController {
      */
     @GetMapping(path = "refresh_token")
     public Mono<ResponseEntity<?>> refreshToken(@RequestHeader String Authorization, Authentication auth) {
-        var token = Authorization.substring(6);
-        var uid = JwtUtil.getUid(token);
-        var user = userService.findById(uid);
+        var uid = JwtUtil.getUid(Authorization.substring(6));
         var authorities = auth.getAuthorities();
         var secret = newUUID();
 
-        user.setSecret(userService.updateSecret(uid, secret));
-        StringBuilder authoritiesString = new StringBuilder();
+        return userService.findById(uid)
+                .flatMap(user -> userService.updateSecret(uid, secret).thenReturn(user))
+                .flatMap(user -> {
+                    user.setSecret(secret);
+                    var authoritiesString = new StringBuilder();
 
-        for (var authority : authorities) {
-            authoritiesString.append(authority.getAuthority()).append(",");
-        }
+                    for (var authority : authorities) {
+                        authoritiesString.append(authority.getAuthority()).append(",");
+                    }
 
-        String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
+                    String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
 
-        return Mono.just(ResponseEntity.ok(jwt));
+                    return Mono.just(ResponseEntity.ok(jwt));
+                });
     }
 
     /**

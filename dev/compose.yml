@@ -9,7 +9,7 @@ services:
     ports:
       - "8500:8500"
   mariadb:
-    image: mariadb:10.11.2
+    image: mariadb:11.0.5
     ports:
       - "3306:3306"
     environment:
