@@ -5,21 +5,15 @@ spring:
     active: dev
   application:
     name: core
-  servlet:
-    multipart:
-      max-file-size: 128MB
-      max-request-size: 128MB
-  main:
-    allow-circular-references: true
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?allowMultiQueries=true&serverTimezone=UTC
+  r2dbc:
+    url: r2dbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
-    hikari:
-      minimum-idle: ${DB_POOL_SIZE:5}
-      maximum-pool-size: ${DB_POOL_SIZE:5}
+    pool:
+      min-idle: ${DB_POOL_SIZE:10}
+      max-size: ${DB_POOL_SIZE:10}
+  main:
+    allow-circular-references: true
   jackson:
     default-property-inclusion: non_null
   cloud:
@@ -36,7 +30,3 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: on
-  mapper-locations: classpath:mybatis/mapper/*.xml

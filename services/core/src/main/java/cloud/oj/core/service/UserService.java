@@ -1,131 +1,142 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.DatabaseConfig;
-import cloud.oj.core.dao.RankingDao;
-import cloud.oj.core.dao.SolutionDao;
-import cloud.oj.core.dao.UserDao;
+import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.User;
+import cloud.oj.core.entity.UserStatistic;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.repo.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    private final UserDao userDao;
+    private final CommonRepo commonRepo;
 
-    private final RankingDao rankingDao;
+    private final UserRepo userRepo;
 
-    private final SolutionDao solutionDao;
+    private final ScoreboardRepo scoreboardRepo;
 
-    private final DatabaseConfig databaseConfig;
+    private final SolutionRepo solutionRepo;
+
+    private final UserStatisticRepo userStatisticRepo;
 
     private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-
-    public UserService(UserDao userDao, RankingDao rankingDao,
-                       SolutionDao solutionDao, DatabaseConfig databaseConfig) {
-        this.userDao = userDao;
-        this.rankingDao = rankingDao;
-        this.solutionDao = solutionDao;
-        this.databaseConfig = databaseConfig;
-    }
 
     private String newUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public List<List<?>> getUsersByFilter(Integer page, Integer limit, Integer filter, String filterValue) {
-        return userDao.getByFilter((page - 1) * limit, limit, filter, filterValue);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<PageData<User>> getUsersByFilter(Integer filter, String filterValue, Integer page, Integer limit) {
+        return userRepo.selectByFilter(filter, filterValue, page, limit)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
     }
 
-    public Optional<User> getUserInfo(Integer uid) {
-        return Optional.ofNullable(userDao.getById(uid));
+    public Mono<User> getUserInfo(Integer uid) {
+        return userRepo.selectById(uid);
     }
 
-    public HttpStatus addUser(User user) {
-        if (userDao.exists(user.getUsername()) != null) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "用户名重复");
-        }
+    public Mono<HttpStatus> addUser(User user) {
+        return userRepo.exists(user.getUsername())
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "用户名重复"));
+                    }
 
-        user.setRole(1);
-        user.setPassword(bcrypt.encode(user.getPassword()));
-        user.setSecret(newUUID());
-        if (userDao.add(user) == 1) {
-            return HttpStatus.CREATED;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
-        }
+                    user.setRole(1);
+                    user.setPassword(bcrypt.encode(user.getPassword()));
+                    user.setSecret(newUUID());
+
+                    return Mono.just(user);
+                })
+                .then(userRepo.insert(user))
+                .flatMap(rows -> {
+                    if (rows == 1) {
+                        return Mono.just(HttpStatus.CREATED);
+                    } else {
+                        return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确"));
+                    }
+                });
     }
 
     /**
      * 更新用户信息(管理员)
      */
-    public HttpStatus updateUser(User user) {
+    public Mono<HttpStatus> updateUser(User user) {
         if (user.getPassword() != null) {
             user.setPassword(bcrypt.encode(user.getPassword()));
         }
 
         if (user.getUid() == 1 && user.getRole() != 0) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
+            return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限"));
         }
 
-        if (userDao.update(user) == 1) {
-            return HttpStatus.OK;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("用户(%s)更新失败", user.getUid()));
-        }
+        return userRepo.update(user)
+                .flatMap(rows -> {
+                    if (rows > 0) {
+                        return Mono.just(HttpStatus.OK);
+                    }
+
+                    return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"));
+                });
     }
 
     /**
      * 更新用户信息(个人)
      */
-    public HttpStatus updateProfile(Integer uid, User user) {
+    public Mono<HttpStatus> updateProfile(Integer uid, User user) {
         user.setUid(uid);
         user.setRole(null);
-
         return updateUser(user);
     }
 
+    /**
+     * 逻辑删除用户及其相关信息
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus deleteUser(Integer uid) {
+    public Mono<HttpStatus> deleteUser(Integer uid) {
         if (uid.equals(1)) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员");
+            return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员"));
         }
 
-        if (userDao.delete(uid) == 1 && rankingDao.deleteByUser(uid) == 1) {
-            solutionDao.deleteByUser(uid);
-            return HttpStatus.NO_CONTENT;
-        } else {
-            throw new GenericException(HttpStatus.GONE, String.format("用户(%s)不存在", uid));
-        }
+        return userRepo.delete(uid)
+                .then(scoreboardRepo.deleteByUser(uid))
+                .then(solutionRepo.deleteByUser(uid))
+                .thenReturn(HttpStatus.NO_CONTENT);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HashMap<String, Object> getOverview(Integer uid, Integer year, String tz) {
+    public Mono<UserStatistic> getOverview(Integer uid, Integer year, String tz) {
+        String timezone = "+8:00";
+
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
-            var offset = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
-            databaseConfig.setTimezone(offset);
-        } else {
-            databaseConfig.setTimezone("+8:00");
+            timezone = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
         }
 
-        var preference = userDao.getLanguagePreference(uid);
-        var activities = userDao.getActivities(uid, year);
-        var statistics = userDao.getResultStatistics(uid);
+        var userStatistic = new UserStatistic();
 
-        var overview = new HashMap<String, Object>();
-
-        overview.put("preference", preference);
-        overview.put("statistics", statistics);
-        overview.put("activities", activities);
-
-        return overview;
+        return commonRepo.setTimezone(timezone)
+                .then(userStatisticRepo.selectLanguages(uid).collectList())
+                .doOnNext(userStatistic::setPreference)
+                .then(userStatisticRepo.selectActivities(uid, year).collectList())
+                .doOnNext(userStatistic::setActivities)
+                .then(userStatisticRepo.selectResults(uid))
+                .flatMap(result -> {
+                    userStatistic.setResult(result);
+                    return Mono.just(userStatistic);
+                });
     }
 }

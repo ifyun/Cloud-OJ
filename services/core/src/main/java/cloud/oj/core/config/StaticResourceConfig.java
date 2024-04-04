@@ -1,15 +1,14 @@
 package cloud.oj.core.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.reactive.config.ResourceHandlerRegistry;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
  * 静态文件服务配置
  */
 @Configuration
-public class StaticResourceConfig implements WebMvcConfigurer {
+public class StaticResourceConfig implements WebFluxConfigurer {
 
     private final String fileDir;
 
@@ -18,7 +17,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/file/data/download/**")
                 .addResourceLocations("file:" + fileDir + "data/");
         registry.addResourceHandler("/file/img/**")

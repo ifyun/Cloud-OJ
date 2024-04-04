@@ -1,12 +1,12 @@
 package cloud.oj.core.controller;
 
-import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("user")
@@ -30,18 +30,19 @@ public class UserController {
      * 根据过滤条件获取用户
      *
      * @param filter      1: by username, 2: by nickname
-     * @param filterValue username/nickname
-     * @return 用户列表
+     * @param filterValue Value of filter
+     * @return 用户分页数据
      */
     @GetMapping(path = "admin")
-    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "1") Integer page,
-                                      @RequestParam(defaultValue = "15") Integer limit,
-                                      Integer filter,
-                                      String filterValue) {
-        var users = PagedList.resolve(userService.getUsersByFilter(page, limit, filter, filterValue));
-        return users.getCount() > 0 ?
-                ResponseEntity.ok(users)
-                : ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<?>> getUsers(Integer filter,
+                                            String filterValue,
+                                            @RequestParam(defaultValue = "1") Integer page,
+                                            @RequestParam(defaultValue = "15") Integer limit) {
+        return userService.getUsersByFilter(filter, filterValue, page, limit)
+                .flatMap(data -> data.getTotal() > 0 ?
+                        Mono.just(ResponseEntity.ok(data))
+                        : Mono.just(ResponseEntity.noContent().build())
+                );
     }
 
     /**
@@ -50,41 +51,45 @@ public class UserController {
      * @return {@link User}
      */
     @GetMapping(path = "profile")
-    public ResponseEntity<?> getUserInfo(Integer uid) {
+    public Mono<ResponseEntity<User>> getUserInfo(Integer uid) {
         return userService.getUserInfo(uid)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     /**
      * 添加/注册用户
      */
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody User user) {
-        return ResponseEntity.status(userService.addUser(user)).build();
+    public Mono<ResponseEntity<?>> addUser(@RequestBody User user) {
+        return userService.addUser(user)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 更新用户(管理员)
      */
     @PutMapping(path = "admin")
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
-        return ResponseEntity.status(userService.updateUser(user)).build();
+    public Mono<ResponseEntity<?>> updateUser(@RequestBody User user) {
+        return userService.updateUser(user)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 更新用户(个人)
      */
     @PutMapping(path = "profile")
-    public ResponseEntity<?> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
-        return ResponseEntity.status(userService.updateProfile(uid, user)).build();
+    public Mono<ResponseEntity<?>> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
+        return userService.updateProfile(uid, user)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 删除用户(管理员)
      */
     @DeleteMapping(path = "admin/{uid}")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer uid) {
-        return ResponseEntity.status(userService.deleteUser(uid)).build();
+    public Mono<ResponseEntity<?>> deleteUser(@PathVariable Integer uid) {
+        return userService.deleteUser(uid)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 }

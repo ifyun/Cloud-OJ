@@ -1,12 +1,10 @@
 package cloud.oj.core.dao;
 
 import cloud.oj.core.entity.User;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
 import java.util.List;
 
-@Mapper
 public interface UserDao {
 
     List<List<?>> getByFilter(Integer start, Integer limit, Integer filter, String filterValue);
