@@ -1,12 +1,14 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.Contest;
-import cloud.oj.core.entity.PagedList;
+import cloud.oj.core.entity.PageData;
+import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ContestService;
 import cloud.oj.core.service.SystemSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -20,35 +22,30 @@ public class ContestController {
     private final SystemSettings systemSettings;
 
     /**
-     * 获取竞赛
-     *
-     * @return 竞赛列表
+     * 获取竞赛的详细信息
      */
-    @GetMapping
-    public ResponseEntity<?> getContests(@RequestParam(defaultValue = "1") Integer page,
-                                         @RequestParam(defaultValue = "15") Integer limit) {
-        PagedList contests;
-        if (systemSettings.getSettings().isShowAllContest()) {
-            contests = PagedList.resolve(contestService.getAllContest(page, limit));
-        } else {
-            contests = PagedList.resolve(contestService.getStartedContest(page, limit));
-        }
-
-        return contests.getCount() > 0 ?
-                ResponseEntity.ok(contests)
-                : ResponseEntity.noContent().build();
+    @GetMapping(path = "detail")
+    public Mono<ResponseEntity<Contest>> getContest(Integer contestId) {
+        return contestService.getContest(contestId)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     /**
-     * 获取竞赛的详细信息
-     *
-     * @return {@link cloud.oj.core.entity.Problem}
+     * 获取竞赛
      */
-    @GetMapping(path = "detail")
-    public ResponseEntity<?> getContest(Integer contestId) {
-        return contestService.getContest(contestId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping
+    public Mono<ResponseEntity<PageData<Contest>>> getContests(@RequestParam(defaultValue = "1") Integer page,
+                                                               @RequestParam(defaultValue = "15") Integer size) {
+        return systemSettings.getSettings()
+                .flatMap(settings -> settings.isShowAllContest() ?
+                        contestService.getAllContest(page, size) :
+                        contestService.getStartedContest(page, size)
+                )
+                .flatMap(data -> data.getTotal() > 0 ?
+                        Mono.just(ResponseEntity.ok(data)) :
+                        Mono.just(ResponseEntity.noContent().build())
+                );
     }
 
     /**
@@ -57,129 +54,125 @@ public class ContestController {
      * @return 竞赛列表
      */
     @GetMapping(path = "admin")
-    public ResponseEntity<?> allContests(@RequestParam(defaultValue = "1") Integer page,
-                                         @RequestParam(defaultValue = "15") Integer limit) {
-        var contests = PagedList.resolve(contestService.getAllContestAdmin(page, limit));
-        return contests.getCount() > 0 ?
-                ResponseEntity.ok(contests)
-                : ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<PageData<Contest>>> allContests(@RequestParam(defaultValue = "1") Integer page,
+                                                               @RequestParam(defaultValue = "15") Integer size) {
+        return contestService.getAllContestAdmin(page, size)
+                .flatMap(data -> data.getTotal() > 0 ?
+                        Mono.just(ResponseEntity.ok(data)) :
+                        Mono.just(ResponseEntity.noContent().build())
+                );
     }
 
     /**
      * 从已开始的竞赛中获取题目
-     *
-     * @return 题目列表
      */
     @GetMapping(path = "problem")
-    public ResponseEntity<?> getProblemsFromStartedContest(@RequestHeader Integer uid, Integer contestId) {
-        var problems = contestService.getProblemsFromContest(uid, contestId, false);
-        return problems.isEmpty() ?
-                ResponseEntity.noContent().build()
-                : ResponseEntity.ok(problems);
+    public Mono<ResponseEntity<List<Problem>>> getProblemsOfStarted(@RequestHeader Integer uid, Integer cid) {
+        return contestService.getProblemsOfContest(uid, cid, false)
+                .flatMap(problems -> problems.isEmpty() ?
+                        Mono.just(ResponseEntity.noContent().build()) :
+                        Mono.just(ResponseEntity.ok(problems))
+                );
+    }
+
+    @GetMapping(path = "admin/problem")
+    public Mono<ResponseEntity<List<Problem>>> getProblems(Integer contestId) {
+        return contestService.getProblemsOfContest(null, contestId, true)
+                .flatMap(problems -> problems.isEmpty() ?
+                        Mono.just(ResponseEntity.noContent().build()) :
+                        Mono.just(ResponseEntity.ok(problems))
+                );
     }
 
     /**
      * 从已开始的竞赛中获取题目的详细信息
-     *
-     * @return {@link cloud.oj.core.entity.Problem}
      */
-    @GetMapping(path = "problem/{contestId}/{problemId}")
-    public ResponseEntity<?> getProblemInContest(@RequestHeader Integer uid, @PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return contestService.getProblemInContest(uid, contestId, problemId)
+    @GetMapping(path = "problem/{cid}/{pid}")
+    public ResponseEntity<?> getProblemInContest(@RequestHeader Integer uid,
+                                                 @PathVariable Integer cid,
+                                                 @PathVariable Integer pid) {
+        return contestService.getProblem(uid, cid, pid)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * 从竞赛中获取题目
-     *
-     * @return 返回题目列表
-     */
-    @GetMapping(path = "admin/problem")
-    public ResponseEntity<?> getProblemsFromContest(Integer contestId) {
-        var problems = contestService.getProblemsFromContest(null, contestId, true);
-        return problems.isEmpty() ?
-                ResponseEntity.noContent().build()
-                : ResponseEntity.ok(problems);
-    }
-
-    @PutMapping(path = "admin/problem_order/{contestId}")
-    public ResponseEntity<?> changeOrder(@PathVariable Integer contestId, @RequestBody List<Integer> problems) {
-        contestService.changeOrder(contestId, problems);
-        return ResponseEntity.ok().build();
+    @PutMapping(path = "admin/problem/order/{cid}")
+    public Mono<ResponseEntity<?>> changeOrders(@PathVariable Integer cid, @RequestBody List<Integer> problems) {
+        return contestService.changeOrders(cid, problems)
+                .thenReturn(ResponseEntity.ok().build());
     }
 
     /**
-     * 获取不在竞赛中的题目
-     *
-     * @return 题目列表
+     * 获取可用题目
      */
-    @GetMapping("admin/available_problem/{contestId}")
-    public ResponseEntity<?> getProblemsNotInContest(@PathVariable Integer contestId,
-                                                     @RequestParam(defaultValue = "1") Integer page,
-                                                     @RequestParam(defaultValue = "15") Integer limit) {
-        var problems = PagedList.resolve(contestService.getProblemsNotInContest(contestId, page, limit));
-        return problems.getCount() > 0 ?
-                ResponseEntity.ok(problems)
-                : ResponseEntity.noContent().build();
+    @GetMapping("admin/problem_idle/{cid}")
+    public Mono<ResponseEntity<PageData<Problem>>> getIdleProblems(@PathVariable Integer cid,
+                                                                   @RequestParam(defaultValue = "1") Integer page,
+                                                                   @RequestParam(defaultValue = "15") Integer limit) {
+        return contestService.getIdleProblems(cid, page, limit)
+                .flatMap(data -> data.getTotal() > 0 ?
+                        Mono.just(ResponseEntity.ok(data)) :
+                        Mono.just(ResponseEntity.noContent().build())
+                );
     }
 
     /**
      * 创建竞赛
      */
     @PostMapping(path = "admin")
-    public ResponseEntity<?> create(@RequestBody Contest contest) {
-        return ResponseEntity.status(contestService.create(contest)).build();
+    public Mono<ResponseEntity<?>> create(@RequestBody Contest contest) {
+        return contestService.create(contest)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 更新竞赛
      */
     @PutMapping(path = "admin")
-    public ResponseEntity<?> update(@RequestBody Contest contest) {
-        return ResponseEntity.status(contestService.updateContest(contest)).build();
+    public Mono<ResponseEntity<?>> update(@RequestBody Contest contest) {
+        return contestService.updateContest(contest)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 重新生成邀请码
      *
-     * @return 新的邀请码
      */
-    @PutMapping(path = "admin/gen_key/{contestId}")
-    public ResponseEntity<String> newInviteKey(@PathVariable Integer contestId) {
-        return ResponseEntity.ok(contestService.newInviteKey(contestId));
+    @PutMapping(path = "admin/key/{cid}")
+    public Mono<String> newInviteKey(@PathVariable Integer cid) {
+        return contestService.newInviteKey(cid);
     }
-
 
     /**
      * 删除竞赛
      */
-    @DeleteMapping(path = "admin/{contestId}")
-    public ResponseEntity<?> delete(@PathVariable Integer contestId) {
-        return ResponseEntity.status(contestService.deleteContest(contestId)).build();
+    @DeleteMapping(path = "admin/{cid}")
+    public Mono<ResponseEntity<?>> delete(@PathVariable Integer cid) {
+        return contestService.deleteContest(cid)
+                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
     }
 
     /**
      * 向竞赛添加题目
      */
-    @PostMapping(path = "admin/problem/{contestId}/{problemId}")
-    public ResponseEntity<?> addProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return ResponseEntity.status(contestService.addProblemToContest(contestId, problemId)).build();
+    @PostMapping(path = "admin/problem/{cid}/{pid}")
+    public ResponseEntity<?> addProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+        return ResponseEntity.status(contestService.addProblemToContest(cid, pid)).build();
     }
 
     /**
      * 从竞赛移除题目
      */
-    @DeleteMapping(path = "admin/problem/{contestId}/{problemId}")
-    public ResponseEntity<?> removeProblem(@PathVariable Integer contestId, @PathVariable Integer problemId) {
-        return ResponseEntity.status(contestService.removeProblem(contestId, problemId)).build();
+    @DeleteMapping(path = "admin/problem/{cid}/{pid}")
+    public ResponseEntity<?> removeProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+        return ResponseEntity.status(contestService.removeProblem(cid, pid)).build();
     }
 
     /**
-     * 邀请用户到竞赛
+     * 加入竞赛
      */
-    @PostMapping("/invitation/{contestId}")
-    public ResponseEntity<?> inviteUser(@RequestHeader Integer uid, @PathVariable Integer contestId, String key) {
-        return contestService.inviteUserWithKey(contestId, uid, key);
+    @PostMapping("/invitation/{cid}")
+    public Mono<ResponseEntity<?>> inviteUser(@RequestHeader Integer uid, @PathVariable Integer cid, String key) {
+        return contestService.inviteUserWithKey(cid, uid, key);
     }
 }

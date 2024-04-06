@@ -13,36 +13,40 @@ public class UserRepo {
     private final DatabaseClient client;
 
     public Mono<User> findById(Integer uid) {
-        return client.sql("select uid," +
-                        "         username," +
-                        "         nickname," +
-                        "         password," +
-                        "         secret," +
-                        "         email," +
-                        "         section," +
-                        "         has_avatar," +
-                        "         role" +
-                        "  from user" +
-                        "  where uid = :uid" +
-                        "    and deleted = false"
+        return client.sql("""
+                        select uid,
+                               username,
+                               nickname,
+                               password,
+                               secret,
+                               email,
+                               section,
+                               has_avatar,
+                               role
+                        from user
+                        where uid = :uid
+                          and deleted = false
+                        """
                 ).bind("uid", uid)
                 .mapProperties(User.class)
                 .first();
     }
 
     public Mono<User> findByUsername(String username) {
-        return client.sql("select uid," +
-                        "         username," +
-                        "         nickname," +
-                        "         password," +
-                        "         secret," +
-                        "         email," +
-                        "         section," +
-                        "         has_avatar," +
-                        "         role" +
-                        "  from user\n" +
-                        "  where username = :username" +
-                        "    and deleted = false"
+        return client.sql("""
+                        select uid,
+                               username,
+                               nickname,
+                               password,
+                               secret,
+                               email,
+                               section,
+                               has_avatar,
+                               role
+                        from user
+                        where username = :username
+                          and deleted = false
+                        """
                 ).bind("username", username)
                 .mapProperties(User.class)
                 .first();

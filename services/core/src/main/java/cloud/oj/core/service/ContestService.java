@@ -1,12 +1,15 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.ContestDao;
-import cloud.oj.core.dao.InviteeDao;
 import cloud.oj.core.dao.ProblemDao;
 import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.repo.CommonRepo;
+import cloud.oj.core.repo.ContestRepo;
+import cloud.oj.core.repo.InviteeRepo;
+import cloud.oj.core.repo.SolutionRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -15,137 +18,171 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class ContestService {
 
-    private final InviteeDao inviteeDao;
+    private final CommonRepo commonRepo;
 
-    private final ContestDao contestDao;
+    private final InviteeRepo inviteeRepo;
+
+    private final ContestRepo contestRepo;
 
     private final ProblemDao problemDao;
 
-    private final SolutionDao solutionDao;
+    private final SolutionRepo solutionRepo;
 
     /**
      * 为竞赛生成新邀请码
      */
-    public String newInviteKey(Integer contestId) {
+    public Mono<String> newInviteKey(Integer cid) {
         var key = RandomStringUtils.randomNumeric(6);
-        contestDao.newInviteKey(contestId, key);
-        return key;
+        return contestRepo.newInviteKey(cid, key)
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(key) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "竞赛不存在"))
+                );
     }
 
     /**
-     * 根据用户输入的邀请码将用户加入竞赛
+     * 将用户加入竞赛
      */
-    public ResponseEntity<?> inviteUserWithKey(Integer contestId, Integer uid, String key) {
-        if (!key.equals(contestDao.getInviteKey(contestId))) {
-            throw new GenericException(HttpStatus.NOT_ACCEPTABLE, "Invalid Invite Key");
-        }
-
-        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
-            inviteeDao.inviteUser(contestId, uid);
-        }
-
-        return ResponseEntity.ok().build();
+    public Mono<ResponseEntity<?>> inviteUserWithKey(Integer cid, Integer uid, String key) {
+        return contestRepo.selectInviteKey(cid)
+                .flatMap(realKey -> key.equals(realKey) ?
+                        Mono.empty() :
+                        Mono.error(new GenericException(HttpStatus.NOT_ACCEPTABLE, "邀请码错误"))
+                )
+                .then(inviteeRepo.isInvited(cid, uid))
+                .flatMap(isInvited -> Boolean.FALSE.equals(isInvited) ?
+                        inviteeRepo.invite(cid, uid) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "已加入竞赛"))
+                )
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(ResponseEntity.ok().build())
+                        : Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "无法加入"))
+                );
     }
 
-    public List<List<?>> getAllContest(int page, int limit) {
-        return contestDao.getAll(false, (page - 1) * limit, limit);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<PageData<Contest>> getAllContest(Integer page, Integer size) {
+        return contestRepo.selectAll(page, size, false)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
     }
 
-    public List<List<?>> getAllContestAdmin(int page, int limit) {
-        return contestDao.getAll(true, (page - 1) * limit, limit);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<PageData<Contest>> getAllContestAdmin(Integer page, Integer size) {
+        return contestRepo.selectAll(page, size, true)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
     }
 
-    public Optional<Contest> getContest(Integer contestId) {
-        return Optional.ofNullable(contestDao.getContestById(contestId));
+    public Mono<Contest> getContest(Integer cid) {
+        return contestRepo.selectById(cid);
     }
 
-    public List<List<?>> getStartedContest(int page, int limit) {
-        return contestDao.getStarted((page - 1) * limit, limit);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<PageData<Contest>> getStartedContest(Integer page, Integer size) {
+        return contestRepo.selectAllStarted(page, size)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
     }
 
-    public HttpStatus create(Contest contest) {
+    public Mono<HttpStatus> create(Contest contest) {
         contest.setInviteKey(RandomStringUtils.randomNumeric(6));
-
-        if (contestDao.createContest(contest) == 1) {
-            return HttpStatus.CREATED;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确");
-        }
+        return contestRepo.insert(contest)
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(HttpStatus.CREATED) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "创建失败"))
+                );
     }
 
-    public HttpStatus updateContest(Contest contest) {
-        if (contestDao.updateContest(contest) == 1) {
-            return HttpStatus.OK;
-        } else {
-            var msg = String.format("竞赛(%d)更新失败", contest.getContestId());
-            throw new GenericException(HttpStatus.BAD_REQUEST, msg);
-        }
+    public Mono<HttpStatus> updateContest(Contest contest) {
+        return contestRepo.update(contest)
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(HttpStatus.OK) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"))
+                );
     }
 
     /**
      * 逻辑删除竞赛
-     * <p>已开始未结束的竞赛不允许删除</p>
      *
-     * @param contestId 竞赛 Id
+     * @param cid 竞赛 Id
      * @return HTTP 状态码 {@link HttpStatus}
      */
-    public HttpStatus deleteContest(Integer contestId) {
-        var contest = contestDao.getState(contestId);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<HttpStatus> deleteContest(Integer cid) {
+        return contestRepo.selectById(cid)
+                .flatMap(contest -> {
+                    if (contest.isStarted() && !contest.isEnded()) {
+                        // 已开始未结束的竞赛不允许删除
+                        return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "竞赛已开始，不准删除"));
+                    }
 
-        if (contest.isStarted() && !contest.isEnded()) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "竞赛已开始，不准删除");
-        }
-
-        if (contestDao.deleteContest(contestId) < 1) {
-            throw new GenericException(HttpStatus.GONE, String.format("竞赛(%d)不存在", contestId));
-        }
-
-        return HttpStatus.NO_CONTENT;
+                    return contestRepo.delete(cid);
+                })
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(HttpStatus.NO_CONTENT) :
+                        Mono.error(new GenericException(HttpStatus.GONE, "竞赛不存在"))
+                );
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void changeOrder(Integer contestId, List<Integer> problems) {
-        AtomicInteger order = new AtomicInteger();
+    public Mono<Void> changeOrders(Integer cid, List<Integer> problems) {
+        var order = new AtomicInteger();
         // 按前端传回的顺序设置 order
-        problems.forEach(p -> {
-            contestDao.setProblemOrder(contestId, p, order.get());
-            order.addAndGet(1);
-        });
-    }
+        var queries = problems.stream()
+                .map(pid -> contestRepo.updateOrder(cid, pid, order.getAndAdd(1)))
+                .toList();
 
-    public List<List<?>> getProblemsNotInContest(Integer contestId, int page, int limit) {
-        return contestDao.getProblemsNotInContest(contestId, (page - 1) * limit, limit);
+        return Flux.fromIterable(queries)
+                .flatMapSequential(Function.identity(), 1)
+                .then();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<Problem> getProblemsFromContest(Integer uid, Integer contestId, boolean admin) {
+    public Mono<PageData<Problem>> getIdleProblems(Integer cid, Integer page, Integer size) {
+        return contestRepo.selectIdleProblems(cid, page, size)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<List<Problem>> getProblemsOfContest(Integer uid, Integer cid, boolean admin) {
         if (admin) {
             // 管理员查询
-            return contestDao.getProblems(contestId);
+            return contestRepo.selectProblems(cid, false)
+                    .collectList();
         }
 
-        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
-            // 用户没有被邀请，返回 402
-            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "请使用邀请码加入竞赛");
-        }
+        // 用户查询，同时返回每题结果
+        return inviteeRepo.isInvited(cid, uid)
+                .flatMapMany(isInvited -> {
+                    if (Boolean.FALSE.equals(isInvited)) {
+                        return Flux.error(new GenericException(HttpStatus.PAYMENT_REQUIRED, "请使用邀请码加入竞赛"));
+                    }
 
-        var problems = contestDao.getProblemsInStarted(contestId);
-        // 查询每一题的判题结果
-        problems.forEach((p) -> p.setResult(solutionDao.getResultOfContest(uid, contestId, p.getProblemId())));
-
-        return problems;
+                    return contestRepo.selectProblems(cid, true);
+                })
+                .flatMap(p -> Mono.just(p).zipWith(solutionRepo.selectResultOfContest(uid, cid, p.getProblemId())))
+                .flatMap(t -> Mono.just(t.getT1().setResultAndReturn(t.getT2())))
+                .collectList();
     }
 
-    public Optional<Problem> getProblemInContest(@RequestHeader Integer uid, Integer contestId, Integer problemId) {
+    public Optional<Problem> getProblem(@RequestHeader Integer uid, Integer contestId, Integer problemId) {
         if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
             // 用户未被邀请
             throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "未加入竞赛");

@@ -1,28 +1,30 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.SettingsDao;
 import cloud.oj.core.entity.Settings;
+import cloud.oj.core.repo.SettingsRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
+@RequiredArgsConstructor
 public class SystemSettings {
 
-    private final SettingsDao settingsDao;
+    private final SettingsRepo settingsRepo;
 
-    public SystemSettings(SettingsDao settingsDao) {
-        this.settingsDao = settingsDao;
+    public Mono<Settings> getSettings() {
+        return settingsRepo.select();
     }
 
-    public HttpStatus setSettings(Settings settings) {
-        if (settingsDao.update(settings) > 0) {
-            return HttpStatus.OK;
-        } else {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-    }
+    public Mono<HttpStatus> setSettings(Settings settings) {
+        return settingsRepo.update(settings)
+                .flatMap(rows ->{
+                    if (rows > 0) {
+                        return Mono.just(HttpStatus.OK);
+                    }
 
-    public Settings getSettings() {
-        return settingsDao.get();
+                    return Mono.just(HttpStatus.INTERNAL_SERVER_ERROR);
+                });
     }
 }
