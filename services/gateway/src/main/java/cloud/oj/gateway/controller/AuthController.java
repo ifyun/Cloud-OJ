@@ -107,7 +107,7 @@ public class AuthController {
 
         return userService.findById(uid)
                 .flatMap(user -> userService.updateSecret(uid, secret).thenReturn(user))
-                .flatMap(user -> {
+                .map(user -> {
                     user.setSecret(secret);
                     var authoritiesString = new StringBuilder();
 
@@ -117,7 +117,7 @@ public class AuthController {
 
                     String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);
 
-                    return Mono.just(ResponseEntity.ok(jwt));
+                    return ResponseEntity.ok(jwt);
                 });
     }
 

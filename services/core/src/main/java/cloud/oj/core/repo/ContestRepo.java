@@ -86,11 +86,39 @@ public class ContestRepo {
                 .first();
     }
 
+    /**
+     * 查询竞赛题目
+     */
+    public Mono<Problem> selectProblem(Integer cid, Integer pid) {
+        return client.sql("""
+                        select problem_id,
+                               title,
+                               description,
+                               timeout,
+                               memory_limit,
+                               output_limit,
+                               score,
+                               category,
+                               languages
+                        from contest_problem
+                        where contest_id = :cid
+                          and problem_id = :pid
+                          and start_at <= now()
+                        """)
+                .bind("cid", cid)
+                .bind("pid", pid)
+                .mapProperties(Problem.class)
+                .first();
+    }
+
     public Mono<Contest> selectById(Integer cid) {
         return client.sql("""
-                        select *,
+                        select contest_id,
+                               contest_name,
                                if(start_at <= unix_timestamp(now()), true, false) as started,
-                               if(end_at <= unix_timestamp(now()), true, false)   as ended
+                               if(end_at <= unix_timestamp(now()), true, false)   as ended,
+                               languages,
+                               create_at
                         from contest
                         where contest_id = :cid
                           and deleted = false
@@ -129,7 +157,6 @@ public class ContestRepo {
 
     public Flux<Contest> selectAll(Integer page, Integer size, Boolean isAdmin) {
         return client.sql("""
-                                
                         select sql_calc_found_rows c.contest_id                                  as contest_id,
                                                    contest_name,
                                                    if(:admin, invite_key, null)                  as invite_key,

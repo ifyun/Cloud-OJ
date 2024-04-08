@@ -42,9 +42,9 @@ public class ContestController {
                         contestService.getAllContest(page, size) :
                         contestService.getStartedContest(page, size)
                 )
-                .flatMap(data -> data.getTotal() > 0 ?
-                        Mono.just(ResponseEntity.ok(data)) :
-                        Mono.just(ResponseEntity.noContent().build())
+                .map(data -> data.getTotal() > 0 ?
+                        ResponseEntity.ok(data) :
+                        ResponseEntity.noContent().build()
                 );
     }
 
@@ -57,9 +57,9 @@ public class ContestController {
     public Mono<ResponseEntity<PageData<Contest>>> allContests(@RequestParam(defaultValue = "1") Integer page,
                                                                @RequestParam(defaultValue = "15") Integer size) {
         return contestService.getAllContestAdmin(page, size)
-                .flatMap(data -> data.getTotal() > 0 ?
-                        Mono.just(ResponseEntity.ok(data)) :
-                        Mono.just(ResponseEntity.noContent().build())
+                .map(data -> data.getTotal() > 0 ?
+                        ResponseEntity.ok(data) :
+                        ResponseEntity.noContent().build()
                 );
     }
 
@@ -69,18 +69,17 @@ public class ContestController {
     @GetMapping(path = "problem")
     public Mono<ResponseEntity<List<Problem>>> getProblemsOfStarted(@RequestHeader Integer uid, Integer cid) {
         return contestService.getProblemsOfContest(uid, cid, false)
-                .flatMap(problems -> problems.isEmpty() ?
-                        Mono.just(ResponseEntity.noContent().build()) :
-                        Mono.just(ResponseEntity.ok(problems))
+                .map(problems -> problems.isEmpty() ?
+                        ResponseEntity.noContent().build() :
+                        ResponseEntity.ok(problems)
                 );
     }
 
     @GetMapping(path = "admin/problem")
     public Mono<ResponseEntity<List<Problem>>> getProblems(Integer contestId) {
         return contestService.getProblemsOfContest(null, contestId, true)
-                .flatMap(problems -> problems.isEmpty() ?
-                        Mono.just(ResponseEntity.noContent().build()) :
-                        Mono.just(ResponseEntity.ok(problems))
+                .map(problems -> problems.isEmpty() ? ResponseEntity.noContent().build() :
+                        ResponseEntity.ok(problems)
                 );
     }
 
@@ -88,12 +87,12 @@ public class ContestController {
      * 从已开始的竞赛中获取题目的详细信息
      */
     @GetMapping(path = "problem/{cid}/{pid}")
-    public ResponseEntity<?> getProblemInContest(@RequestHeader Integer uid,
-                                                 @PathVariable Integer cid,
-                                                 @PathVariable Integer pid) {
+    public Mono<ResponseEntity<Problem>> getProblemInContest(@RequestHeader Integer uid,
+                                                             @PathVariable Integer cid,
+                                                             @PathVariable Integer pid) {
         return contestService.getProblem(uid, cid, pid)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     @PutMapping(path = "admin/problem/order/{cid}")
@@ -110,9 +109,9 @@ public class ContestController {
                                                                    @RequestParam(defaultValue = "1") Integer page,
                                                                    @RequestParam(defaultValue = "15") Integer limit) {
         return contestService.getIdleProblems(cid, page, limit)
-                .flatMap(data -> data.getTotal() > 0 ?
-                        Mono.just(ResponseEntity.ok(data)) :
-                        Mono.just(ResponseEntity.noContent().build())
+                .map(data -> data.getTotal() > 0 ?
+                        ResponseEntity.ok(data) :
+                        ResponseEntity.noContent().build()
                 );
     }
 
@@ -122,7 +121,7 @@ public class ContestController {
     @PostMapping(path = "admin")
     public Mono<ResponseEntity<?>> create(@RequestBody Contest contest) {
         return contestService.create(contest)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
@@ -131,12 +130,11 @@ public class ContestController {
     @PutMapping(path = "admin")
     public Mono<ResponseEntity<?>> update(@RequestBody Contest contest) {
         return contestService.updateContest(contest)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
      * 重新生成邀请码
-     *
      */
     @PutMapping(path = "admin/key/{cid}")
     public Mono<String> newInviteKey(@PathVariable Integer cid) {
@@ -149,23 +147,25 @@ public class ContestController {
     @DeleteMapping(path = "admin/{cid}")
     public Mono<ResponseEntity<?>> delete(@PathVariable Integer cid) {
         return contestService.deleteContest(cid)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
      * 向竞赛添加题目
      */
     @PostMapping(path = "admin/problem/{cid}/{pid}")
-    public ResponseEntity<?> addProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
-        return ResponseEntity.status(contestService.addProblemToContest(cid, pid)).build();
+    public Mono<ResponseEntity<?>> addProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+        return contestService.addProblemToContest(cid, pid)
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
      * 从竞赛移除题目
      */
     @DeleteMapping(path = "admin/problem/{cid}/{pid}")
-    public ResponseEntity<?> removeProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
-        return ResponseEntity.status(contestService.removeProblem(cid, pid)).build();
+    public Mono<ResponseEntity<?>> removeProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+        return contestService.removeProblem(cid, pid)
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**

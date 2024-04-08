@@ -1,11 +1,9 @@
 package cloud.oj.core.dao;
 
 import cloud.oj.core.entity.Problem;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
 public interface ProblemDao {
 
     List<List<?>> getAll(int start, int limit, String keyword);

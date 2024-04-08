@@ -1,15 +1,10 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.dao.SolutionDao;
 import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.CommonRepo;
-import cloud.oj.core.repo.ContestRepo;
-import cloud.oj.core.repo.InviteeRepo;
-import cloud.oj.core.repo.SolutionRepo;
+import cloud.oj.core.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -21,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -35,7 +30,7 @@ public class ContestService {
 
     private final ContestRepo contestRepo;
 
-    private final ProblemDao problemDao;
+    private final ProblemRepo problemRepo;
 
     private final SolutionRepo solutionRepo;
 
@@ -76,7 +71,7 @@ public class ContestService {
         return contestRepo.selectAll(page, size, false)
                 .collectList()
                 .zipWith(commonRepo.selectFoundRows())
-                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -84,7 +79,7 @@ public class ContestService {
         return contestRepo.selectAll(page, size, true)
                 .collectList()
                 .zipWith(commonRepo.selectFoundRows())
-                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
     public Mono<Contest> getContest(Integer cid) {
@@ -96,7 +91,7 @@ public class ContestService {
         return contestRepo.selectAllStarted(page, size)
                 .collectList()
                 .zipWith(commonRepo.selectFoundRows())
-                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
     public Mono<HttpStatus> create(Contest contest) {
@@ -157,7 +152,7 @@ public class ContestService {
         return contestRepo.selectIdleProblems(cid, page, size)
                 .collectList()
                 .zipWith(commonRepo.selectFoundRows())
-                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -178,36 +173,38 @@ public class ContestService {
                     return contestRepo.selectProblems(cid, true);
                 })
                 .flatMap(p -> Mono.just(p).zipWith(solutionRepo.selectResultOfContest(uid, cid, p.getProblemId())))
-                .flatMap(t -> Mono.just(t.getT1().setResultAndReturn(t.getT2())))
+                .map(t -> t.getT1().setResultAndReturn(t.getT2()))
                 .collectList();
     }
 
-    public Optional<Problem> getProblem(@RequestHeader Integer uid, Integer contestId, Integer problemId) {
-        if (Boolean.FALSE.equals(inviteeDao.isInvited(contestId, uid))) {
-            // 用户未被邀请
-            throw new GenericException(HttpStatus.PAYMENT_REQUIRED, "未加入竞赛");
-        }
+    public Mono<Problem> getProblem(@RequestHeader Integer uid, Integer cid, Integer pid) {
+        return inviteeRepo.isInvited(cid, uid)
+                .flatMap(isInvited -> {
+                    if (Boolean.FALSE.equals(isInvited)) {
+                        return Mono.error(new GenericException(HttpStatus.PAYMENT_REQUIRED, "未加入竞赛"));
+                    }
 
-        return Optional.ofNullable(problemDao.getByIdFromContest(contestId, problemId));
+                    return contestRepo.selectProblem(cid, pid);
+                });
     }
 
-    public HttpStatus addProblemToContest(Integer contestId, Integer problemId) {
-        if (contestDao.countProblems(contestId) == 13) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不能超过 13 题");
-        }
-
-        if (contestDao.addProblem(contestId, problemId) == 1) {
-            return HttpStatus.CREATED;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "无法添加题目");
-        }
+    public Mono<HttpStatus> addProblemToContest(Integer cid, Integer pid) {
+        return contestRepo.countProblems(cid)
+                .flatMap(count -> count == 13 ?
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不能超过 13 题")) :
+                        contestRepo.addProblem(cid, pid)
+                                .map(rows -> rows > 0 ?
+                                        HttpStatus.CREATED :
+                                        HttpStatus.BAD_REQUEST
+                                )
+                );
     }
 
-    public HttpStatus removeProblem(Integer contestId, Integer problemId) {
-        if (contestDao.removeProblem(contestId, problemId) == 1) {
-            return HttpStatus.NO_CONTENT;
-        } else {
-            throw new GenericException(HttpStatus.GONE, String.format("题目(%d)不存在", problemId));
-        }
+    public Mono<HttpStatus> removeProblem(Integer cid, Integer pid) {
+        return contestRepo.removeProblem(cid, pid)
+                .map(rows -> rows > 0 ?
+                        HttpStatus.NO_CONTENT :
+                        HttpStatus.GONE
+                );
     }
 }

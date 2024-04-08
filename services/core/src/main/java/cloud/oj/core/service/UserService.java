@@ -42,7 +42,7 @@ public class UserService {
         return userRepo.selectByFilter(filter, filterValue, page, limit)
                 .collectList()
                 .zipWith(commonRepo.selectFoundRows())
-                .flatMap(t -> Mono.just(new PageData<>(t.getT1(), t.getT2())));
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
     public Mono<User> getUserInfo(Integer uid) {
@@ -63,35 +63,29 @@ public class UserService {
                     return Mono.just(user);
                 })
                 .then(userRepo.insert(user))
-                .flatMap(rows -> {
-                    if (rows == 1) {
-                        return Mono.just(HttpStatus.CREATED);
-                    } else {
-                        return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确"));
-                    }
-                });
+                .flatMap(rows -> rows == 1 ?
+                        Mono.just(HttpStatus.CREATED) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确"))
+                );
     }
 
     /**
      * 更新用户信息(管理员)
      */
     public Mono<HttpStatus> updateUser(User user) {
-        if (user.getPassword() != null) {
-            user.setPassword(bcrypt.encode(user.getPassword()));
-        }
-
         if (user.getUid() == 1 && user.getRole() != 0) {
             return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限"));
         }
 
-        return userRepo.update(user)
-                .flatMap(rows -> {
-                    if (rows > 0) {
-                        return Mono.just(HttpStatus.OK);
-                    }
+        if (user.getPassword() != null) {
+            user.setPassword(bcrypt.encode(user.getPassword()));
+        }
 
-                    return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"));
-                });
+        return userRepo.update(user)
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(HttpStatus.OK) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"))
+                );
     }
 
     /**
@@ -108,14 +102,12 @@ public class UserService {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Mono<HttpStatus> deleteUser(Integer uid) {
-        if (uid.equals(1)) {
-            return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员"));
-        }
-
-        return userRepo.delete(uid)
-                .then(scoreboardRepo.deleteByUser(uid))
-                .then(solutionRepo.deleteByUser(uid))
-                .thenReturn(HttpStatus.NO_CONTENT);
+        return uid.equals(1) ?
+                Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员")) :
+                userRepo.delete(uid)
+                        .then(scoreboardRepo.deleteByUid(uid))
+                        .then(solutionRepo.deleteByUid(uid))
+                        .thenReturn(HttpStatus.NO_CONTENT);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -134,9 +126,9 @@ public class UserService {
                 .then(userStatisticRepo.selectActivities(uid, year).collectList())
                 .doOnNext(userStatistic::setActivities)
                 .then(userStatisticRepo.selectResults(uid))
-                .flatMap(result -> {
+                .map(result -> {
                     userStatistic.setResult(result);
-                    return Mono.just(userStatistic);
+                    return userStatistic;
                 });
     }
 }

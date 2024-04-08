@@ -47,8 +47,6 @@ public class UserController {
 
     /**
      * 获取用户的个人信息
-     *
-     * @return {@link User}
      */
     @GetMapping(path = "profile")
     public Mono<ResponseEntity<User>> getUserInfo(Integer uid) {
@@ -63,7 +61,7 @@ public class UserController {
     @PostMapping
     public Mono<ResponseEntity<?>> addUser(@RequestBody User user) {
         return userService.addUser(user)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
@@ -72,7 +70,7 @@ public class UserController {
     @PutMapping(path = "admin")
     public Mono<ResponseEntity<?>> updateUser(@RequestBody User user) {
         return userService.updateUser(user)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
@@ -81,7 +79,7 @@ public class UserController {
     @PutMapping(path = "profile")
     public Mono<ResponseEntity<?>> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
         return userService.updateProfile(uid, user)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 
     /**
@@ -90,6 +88,6 @@ public class UserController {
     @DeleteMapping(path = "admin/{uid}")
     public Mono<ResponseEntity<?>> deleteUser(@PathVariable Integer uid) {
         return userService.deleteUser(uid)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+                .map(status -> ResponseEntity.status(status).build());
     }
 }

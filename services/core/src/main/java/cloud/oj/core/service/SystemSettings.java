@@ -19,12 +19,9 @@ public class SystemSettings {
 
     public Mono<HttpStatus> setSettings(Settings settings) {
         return settingsRepo.update(settings)
-                .flatMap(rows ->{
-                    if (rows > 0) {
-                        return Mono.just(HttpStatus.OK);
-                    }
-
-                    return Mono.just(HttpStatus.INTERNAL_SERVER_ERROR);
-                });
+                .map(rows -> rows > 0 ?
+                        HttpStatus.OK :
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
     }
 }
