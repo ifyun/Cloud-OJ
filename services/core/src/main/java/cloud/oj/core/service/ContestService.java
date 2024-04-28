@@ -4,7 +4,10 @@ import cloud.oj.core.entity.Contest;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.*;
+import cloud.oj.core.repo.CommonRepo;
+import cloud.oj.core.repo.ContestRepo;
+import cloud.oj.core.repo.InviteeRepo;
+import cloud.oj.core.repo.SolutionRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -29,8 +32,6 @@ public class ContestService {
     private final InviteeRepo inviteeRepo;
 
     private final ContestRepo contestRepo;
-
-    private final ProblemRepo problemRepo;
 
     private final SolutionRepo solutionRepo;
 

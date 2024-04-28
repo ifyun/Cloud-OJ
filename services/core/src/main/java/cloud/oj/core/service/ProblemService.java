@@ -1,67 +1,105 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.ContestDao;
-import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.dao.SolutionDao;
+import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.repo.CommonRepo;
+import cloud.oj.core.repo.ContestRepo;
+import cloud.oj.core.repo.ProblemRepo;
+import cloud.oj.core.repo.SolutionRepo;
 import lombok.RequiredArgsConstructor;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
-    private final ProblemDao problemDao;
 
-    private final ContestDao contestDao;
+    private final CommonRepo commonRepo;
 
-    private final SolutionDao solutionDao;
+    private final ProblemRepo problemRepo;
 
+    private final ContestRepo contestRepo;
+
+    private final SolutionRepo solutionRepo;
+
+    /**
+     * 分页查询所有开放的题目
+     *
+     * @param uid     用户 Id，用于查询判题结果
+     * @param keyword 关键字，用于搜索题目
+     * @param page    页数
+     * @param size    每页数量
+     * @return {@link PageData} of {@link Problem}
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<List<?>> getAllEnabled(Integer uid, String keyword, int page, int limit) {
+    public Mono<PageData<Problem>> getAllEnabled(Integer uid, String keyword, int page, int size) {
         if (keyword == null || keyword.isEmpty()) {
             keyword = null;
         }
 
-        var data = problemDao.getAllEnabled((page - 1) * limit, limit, keyword);
-
-        if (uid != null) {
-            data.get(0).forEach((e) -> {
-                var p = (Problem) e;
-                p.setResult(solutionDao.getResult(uid, p.getProblemId()));
-            });
-        }
-
-        return data;
+        return problemRepo.selectAllEnabled(page, size, keyword)
+                .flatMap(p -> Mono.just(p).zipWith(solutionRepo.selectResult(uid, p.getProblemId())))
+                .map(t -> t.getT1().setResultAndReturn(t.getT2()))
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
-    public List<List<?>> getAll(String keyword, int page, int limit) {
+    /**
+     * 分页查询所有题目(Admin)
+     *
+     * @param keyword 关键字，用于搜索题目
+     * @param page    页数
+     * @param size    每页数量
+     * @return {@link PageData} of {@link Problem}
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<PageData<Problem>> getAll(String keyword, int page, int size) {
         if (keyword == null || keyword.isEmpty()) {
             keyword = null;
         }
 
-        return problemDao.getAll((page - 1) * limit, limit, keyword);
+        return problemRepo.selectAll(page, size, keyword)
+                .collectList()
+                .zipWith(commonRepo.selectFoundRows())
+                .map(t -> new PageData<>(t.getT1(), t.getT2()));
     }
 
-    public Optional<Problem> getSingle(int problemId) {
-        return Optional.ofNullable(problemDao.getById(problemId, false));
+    /**
+     * 查询单个题目，包括未开放的题目
+     *
+     * @param pid 题目 Id
+     * @return {@link Problem}
+     */
+    public Mono<Problem> getSingle(int pid) {
+        return problemRepo.selectById(pid, false);
     }
 
-    public Optional<Problem> getSingleEnabled(int problemId) {
-        return Optional.ofNullable(problemDao.getById(problemId, true));
+    /**
+     * 查询单个题目，仅限已开放
+     *
+     * @param pid 题目 Id
+     * @return {@link Problem}
+     */
+    public Mono<Problem> getSingleEnabled(int pid) {
+        return problemRepo.selectById(pid, true);
     }
 
+    /**
+     * 更新题目
+     *
+     * @param problem {@link Problem}
+     * @return {@link HttpStatus}
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus update(Problem problem) {
+    public Mono<HttpStatus> update(Problem problem) {
         var categories = problem.getCategory().split(",");
         // 对标签排序
         if (categories.length > 1) {
@@ -69,35 +107,53 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        if (problemDao.update(problem) == 1) {
-            // 更新 solution 中的标题
-            solutionDao.updateTitle(problem.getTitle(), problem.getProblemId());
-            return HttpStatus.OK;
-        } else {
-            var msg = String.format("题目(%d)更新失败", problem.getProblemId());
-            throw new GenericException(HttpStatus.BAD_REQUEST, msg);
-        }
+        return problemRepo.update(problem)
+                .flatMap(rows -> rows > 0 ?
+                        solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"))
+                )
+                .map(rows -> rows > 0 ?
+                        HttpStatus.OK :
+                        HttpStatus.BAD_REQUEST
+                );
     }
 
+    /**
+     * 设置题目开放/关闭，若题目处于进行中的竞赛则禁止操作
+     *
+     * @param pid    题目 Id
+     * @param enable 是否开放
+     * @return {@link HttpStatus}
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus setEnable(int problemId, boolean enable) {
+    public Mono<HttpStatus> setEnable(int pid, boolean enable) {
         if (enable) {
-            var contestId = problemDao.isInContest(problemId);
-            var contest = contestDao.getContestById(contestId);
-
-            if (contest != null && !contest.isEnded()) {
-                throw new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目");
-            }
+            return problemRepo.isInContest(pid)
+                    .flatMap(contestRepo::selectById)
+                    .flatMap(contest -> contest.isEnded() ?
+                            problemRepo.updateEnable(pid, true) :
+                            Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目"))
+                    )
+                    .map(rows -> rows > 0 ?
+                            HttpStatus.OK :
+                            HttpStatus.BAD_REQUEST
+                    );
         }
 
-        if (problemDao.setEnable(problemId, enable) == 1) {
-            return HttpStatus.OK;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, String.format("题目(%d)开放/关闭失败", problemId));
-        }
+        return problemRepo.updateEnable(pid, false)
+                .map(rows -> rows > 0 ?
+                        HttpStatus.OK :
+                        HttpStatus.BAD_REQUEST
+                );
     }
 
-    public HttpStatus create(Problem problem) {
+    /**
+     * 创建题目
+     *
+     * @param problem {@link Problem}
+     * @return {@link HttpStatus}
+     */
+    public Mono<HttpStatus> create(Problem problem) {
         var categories = problem.getCategory().split(",");
         // 对标签排序
         if (categories.length > 1) {
@@ -105,26 +161,31 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        if (problemDao.add(problem) == 1) {
-            return HttpStatus.CREATED;
-        } else {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "无法创建题目");
-        }
+        return problemRepo.insert(problem)
+                .flatMap(rows -> rows > 0 ?
+                        Mono.just(HttpStatus.CREATED) :
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "无法创建题目"))
+                );
     }
 
-    public HttpStatus delete(Integer problemId) {
-        if (problemDao.isInContest(problemId) != null) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除竞赛中的题目");
-        }
-
-        if (problemDao.isEnable(problemId)) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除已开放的题目");
-        }
-
-        if (problemDao.delete(problemId) == 1) {
-            return HttpStatus.NO_CONTENT;
-        } else {
-            throw new GenericException(HttpStatus.GONE, String.format("题目(%d)删除失败", problemId));
-        }
+    /**
+     * 逻辑删除题目
+     *
+     * @param pid 题目 Id
+     * @return {@link HttpStatus}
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Mono<HttpStatus> delete(Integer pid) {
+        return problemRepo.isInContest(pid)
+                .flatMap(cid -> Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除竞赛中的题目")))
+                .then(problemRepo.isEnable(pid))
+                .flatMap(enable -> enable ?
+                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除已开放的题目")) :
+                        problemRepo.delete(pid)
+                )
+                .map(rows -> rows > 0 ?
+                        HttpStatus.NO_CONTENT :
+                        HttpStatus.GONE
+                );
     }
 }
