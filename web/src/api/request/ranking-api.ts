@@ -2,14 +2,14 @@ import axios, { ApiPath, resolveError } from "@/api"
 import type { Page, Ranking, RankingContest } from "@/api/type"
 
 const RankingApi = {
-  get(page: number, limit: number): Promise<Page<Ranking>> {
+  get(page: number, size: number): Promise<Page<Ranking>> {
     return new Promise<Page<Ranking>>((resolve, reject) => {
       axios({
         url: ApiPath.RANKING,
         method: "GET",
         params: {
           page,
-          limit
+          size
         }
       })
         .then((res) => {

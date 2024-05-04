@@ -35,9 +35,9 @@ public class FileController {
     /**
      * 获取题目数据
      */
-    @GetMapping(path = "data/{problemId}")
-    public ResponseEntity<?> getProblemData(@PathVariable Integer problemId) {
-        return ResponseEntity.ok(fileService.getProblemData(problemId));
+    @GetMapping(path = "data/{pid}")
+    public ResponseEntity<?> getProblemData(@PathVariable Integer pid) {
+        return ResponseEntity.ok(fileService.getProblemData(pid));
     }
 
     /**
@@ -52,9 +52,9 @@ public class FileController {
     /**
      * 删除测试数据
      */
-    @DeleteMapping(path = "data/{problemId}")
-    public ResponseEntity<?> deleteTestData(@PathVariable Integer problemId, String name) {
-        return ResponseEntity.status(fileService.deleteTestData(problemId, name)).build();
+    @DeleteMapping(path = "data/{pid}")
+    public ResponseEntity<?> deleteTestData(@PathVariable Integer pid, String name) {
+        return ResponseEntity.status(fileService.deleteTestData(pid, name)).build();
     }
 
     /**

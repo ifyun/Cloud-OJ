@@ -1,14 +1,14 @@
 package cloud.oj.core.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.config.ResourceHandlerRegistry;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 静态文件服务配置
  */
 @Configuration
-public class StaticResourceConfig implements WebFluxConfigurer {
+public class StaticResourceConfig implements WebMvcConfigurer {
 
     private final String fileDir;
 

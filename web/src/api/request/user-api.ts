@@ -5,13 +5,10 @@ import { AxiosResponse } from "axios"
 const UserApi = {
   /**
    * 获取所有用户
-   * @param page 页数
-   * @param limit 每页数量
-   * @param params 搜索参数
    */
   getByFilter(
     page: number,
-    limit: number,
+    size: number,
     filter: number | null = null,
     filterValue: string | null = null
   ): Promise<Page<User>> {
@@ -21,7 +18,7 @@ const UserApi = {
         method: "GET",
         params: {
           page,
-          limit,
+          size,
           filter,
           filterValue
         }
@@ -98,7 +95,7 @@ const UserApi = {
 
   getSolutions(
     page: number,
-    limit: number,
+    size: number,
     filter: number | null = null,
     filterValue: string | null = null
   ) {
@@ -108,7 +105,7 @@ const UserApi = {
         method: "GET",
         params: {
           page,
-          limit,
+          size,
           filter,
           filterValue
         }

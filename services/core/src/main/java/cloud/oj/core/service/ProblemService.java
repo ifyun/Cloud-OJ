@@ -149,7 +149,7 @@ public class ProblemService {
                     });
         }
 
-        return problemRepo.updateEnable(pid, false) == 0 ?
+        return problemRepo.updateEnable(pid, enable) == 0 ?
                 HttpStatus.BAD_REQUEST :
                 HttpStatus.OK;
     }

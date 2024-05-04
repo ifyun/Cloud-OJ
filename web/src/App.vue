@@ -20,13 +20,13 @@ import { ErrorMessage } from "@/api/type"
 import { useStore } from "@/store"
 import { themeBase, themeDark } from "@/theme"
 import {
+  dateZhCN,
   GlobalThemeOverrides,
   NConfigProvider,
   NGlobalStyle,
-  dateZhCN,
   zhCN
 } from "naive-ui"
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue"
+import { computed, nextTick, onMounted, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -54,17 +54,6 @@ function reload() {
     show.value = true
   })
 }
-
-watch(
-  theme,
-  (val) => {
-    document.documentElement.setAttribute(
-      "data-color-scheme",
-      val == null ? "light" : "dark"
-    )
-  },
-  { immediate: true }
-)
 
 router.beforeEach((to, from) => {
   if (to.name !== "error") {

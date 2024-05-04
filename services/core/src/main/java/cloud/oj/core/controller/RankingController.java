@@ -27,9 +27,9 @@ public class RankingController {
     /**
      * 获取竞赛排行榜
      */
-    @GetMapping(path = "contest/{contestId}")
-    public ResponseEntity<?> getContestRanking(@PathVariable Integer contestId) {
-        var scoreboard = rankingService.getContestRanking(contestId);
+    @GetMapping(path = "contest/{cid}")
+    public ResponseEntity<?> getContestRanking(@PathVariable Integer cid) {
+        var scoreboard = rankingService.getContestRanking(cid);
         return ResponseEntity.ok(scoreboard);
     }
 

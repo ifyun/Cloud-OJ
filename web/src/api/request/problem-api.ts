@@ -9,14 +9,10 @@ import type { AxiosResponse } from "axios"
 const ProblemApi = {
   /**
    * 获取开放的题目
-   *
-   * @param page 页序号
-   * @param limit 数量
-   * @param keyword 指定关键字用于搜索
    */
   getAllOpened(
     page: number,
-    limit: number,
+    size: number,
     keyword: string | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
@@ -25,7 +21,7 @@ const ProblemApi = {
         method: "GET",
         params: {
           page,
-          limit,
+          size,
           keyword
         }
       })
@@ -44,7 +40,7 @@ const ProblemApi = {
 
   getAll(
     page: number,
-    limit: number,
+    size: number,
     keyword: string | null = null
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
@@ -53,7 +49,7 @@ const ProblemApi = {
         method: "GET",
         params: {
           page,
-          limit,
+          size,
           keyword
         }
       })
@@ -72,11 +68,8 @@ const ProblemApi = {
 
   /**
    * 获取单个题目
-   *
-   * @param problemId 题目 Id
-   * @param userInfo 指定此参数时请求 admin 接口
    */
-  getSingle(problemId: number): Promise<Problem> {
+  getSingle(pid: number): Promise<Problem> {
     const userInfo = useStore().user.userInfo
     const path =
       userInfo == null || userInfo.role === 1
@@ -85,7 +78,7 @@ const ProblemApi = {
 
     return new Promise<Problem>((resolve, reject) => {
       axios({
-        url: `${path}/${problemId}`,
+        url: `${path}/${pid}`,
         method: "GET"
       })
         .then((res) => {
@@ -98,14 +91,12 @@ const ProblemApi = {
   },
 
   /**
-   * 切换开放/关闭
-   * @param problemId 题目 Id
-   * @param enable 是否开放
+   * 设在题目开放/关闭
    */
-  changeState(problemId: number, enable: boolean): Promise<AxiosResponse> {
+  changeState(pid: number, enable: boolean): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
-        url: `${ApiPath.PROBLEM_ADMIN}/${problemId}`,
+        url: `${ApiPath.PROBLEM_ADMIN}/${pid}`,
         method: "PUT",
         params: {
           enable
@@ -122,15 +113,13 @@ const ProblemApi = {
 
   /**
    * 保存题目
-   * @param p {@link Problem}
-   * @param create true -> 创建新题目
    */
-  save(p: Problem, create = false): Promise<AxiosResponse> {
+  save(problem: Problem, create = false): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
         url: ApiPath.PROBLEM_ADMIN,
         method: create ? "POST" : "PUT",
-        data: JSON.stringify(p)
+        data: JSON.stringify(problem)
       })
         .then((res) => {
           resolve(res)
@@ -143,12 +132,11 @@ const ProblemApi = {
 
   /**
    * 删除题目
-   * @param problemId 题目 Id
    */
-  delete(problemId: number): Promise<AxiosResponse> {
+  delete(pid: number): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
-        url: `${ApiPath.PROBLEM_ADMIN}/${problemId}`,
+        url: `${ApiPath.PROBLEM_ADMIN}/${pid}`,
         method: "DELETE"
       })
         .then((res) => {
@@ -162,12 +150,11 @@ const ProblemApi = {
 
   /**
    * 获取测试数据
-   * @param problemId 题目 Id
    */
-  getProblemData(problemId: number): Promise<ProblemData> {
+  getProblemData(pid: number): Promise<ProblemData> {
     return new Promise<ProblemData>((resolve, reject) => {
       axios({
-        url: `${ApiPath.TEST_DATA}/${problemId}`,
+        url: `${ApiPath.TEST_DATA}/${pid}`,
         method: "GET"
       })
         .then((res) => {
@@ -182,8 +169,8 @@ const ProblemApi = {
   /**
    * 下载测试数据
    */
-  downloadData(problemId: number, fileName: string): Promise<void> {
-    const url = `${ApiPath.TEST_DATA}/download/${problemId}/${fileName}`
+  downloadData(pid: number, fileName: string): Promise<void> {
+    const url = `${ApiPath.TEST_DATA}/download/${pid}/${fileName}`
 
     return new Promise((_, reject) => {
       axios({
@@ -207,13 +194,11 @@ const ProblemApi = {
 
   /**
    * 删除测试数据
-   * @param problemId 题目 Id
-   * @param fileName 文件名
    */
-  deleteTestData(problemId: number, fileName: string): Promise<AxiosResponse> {
+  deleteTestData(pid: number, fileName: string): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: `${ApiPath.TEST_DATA}/${problemId}`,
+        url: `${ApiPath.TEST_DATA}/${pid}`,
         method: "DELETE",
         params: {
           name: fileName

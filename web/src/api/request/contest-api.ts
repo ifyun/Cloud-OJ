@@ -31,7 +31,7 @@ const ContestApi = {
   newInviteKey(cid: number): Promise<string> {
     return new Promise((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_GEN_KEY}/${cid}`,
+        url: `${ApiPath.CONTEST_KEY}/${cid}`,
         method: "PUT"
       })
         .then((res) => {
@@ -46,7 +46,7 @@ const ContestApi = {
   /**
    * 获取所有竞赛
    */
-  getAll(page: number, limit: number): Promise<Page<Contest>> {
+  getAll(page: number, size: number): Promise<Page<Contest>> {
     const userInfo = useStore().user.userInfo
     const path =
       userInfo == null || userInfo.role === 1
@@ -59,7 +59,7 @@ const ContestApi = {
         method: "GET",
         params: {
           page,
-          limit
+          size
         }
       })
         .then((res) => {
@@ -74,13 +74,13 @@ const ContestApi = {
   /**
    * 获取已开始竞赛/作业中的题目
    */
-  getProblemsFromStarted(contestId: number): Promise<Array<Problem>> {
+  getProblemsFromStarted(cid: number): Promise<Array<Problem>> {
     return new Promise<Array<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_PROBLEM}`,
         method: "GET",
         params: {
-          contestId
+          cid
         }
       })
         .then((res) => {
@@ -95,13 +95,13 @@ const ContestApi = {
   /**
    * 获取竞赛中的所有题目
    */
-  getProblems(contestId: number): Promise<Array<Problem>> {
+  getProblems(cid: number): Promise<Array<Problem>> {
     return new Promise<Array<Problem>>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST_ADMIN}/problem`,
         method: "GET",
         params: {
-          contestId
+          cid
         }
       })
         .then((res) => {
@@ -117,17 +117,17 @@ const ContestApi = {
    * 获取不在指定竞赛中的所有题目
    */
   getProblemsNotInContest(
-    contestId: number,
+    cid: number,
     page: number,
-    limit: number
+    size: number
   ): Promise<Page<Problem>> {
     return new Promise<Page<Problem>>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_ADMIN}/available_problem/${contestId}`,
+        url: `${ApiPath.CONTEST_ADMIN}/problem_idle/${cid}`,
         method: "GET",
         params: {
           page,
-          limit
+          size
         }
       })
         .then((res) => {
@@ -140,15 +140,12 @@ const ContestApi = {
   },
 
   /**
-   * @param contestId 改变竞赛题目顺序
+   * 改变竞赛题目顺序
    */
-  changeOrder(
-    contestId: number,
-    problems: Array<number>
-  ): Promise<AxiosResponse> {
+  changeOrder(cid: number, problems: Array<number>): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_PROBLEM_ORDER}/${contestId}`,
+        url: `${ApiPath.CONTEST_PROBLEM_ORDER}/${cid}`,
         method: "PUT",
         data: JSON.stringify(problems)
       })
@@ -160,10 +157,10 @@ const ContestApi = {
   /**
    * 获取竞赛中的指定题目
    */
-  getProblem(contestId: number, problemId: number): Promise<Problem> {
+  getProblem(cid: number, pid: number): Promise<Problem> {
     return new Promise<Problem>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_PROBLEM}/${contestId}/${problemId}`,
+        url: `${ApiPath.CONTEST_PROBLEM}/${cid}/${pid}`,
         method: "GET"
       })
         .then((res) => {
@@ -177,15 +174,14 @@ const ContestApi = {
 
   /**
    * 获取竞赛详细信息
-   * @param contestId 竞赛 Id
    */
-  getById(contestId: number): Promise<Contest> {
+  getById(cid: number): Promise<Contest> {
     return new Promise<Contest>((resolve, reject) => {
       axios({
         url: `${ApiPath.CONTEST}/detail`,
         method: "GET",
         params: {
-          contestId
+          cid
         }
       })
         .then((res) => {
@@ -199,8 +195,6 @@ const ContestApi = {
 
   /**
    * 保存/创建竞赛
-   * @param contest {@link Contest}
-   * @param create true -> 创建
    */
   save(contest: Contest, create = false): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
@@ -220,13 +214,11 @@ const ContestApi = {
 
   /**
    * 向竞赛添加题目
-   * @param contestId 竞赛 Id
-   * @param problemId 题目Id
    */
-  addProblem(contestId: number, problemId: number): Promise<AxiosResponse> {
+  addProblem(cid: number, pid: number): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
+        url: `${ApiPath.CONTEST_ADMIN}/problem/${cid}/${pid}`,
         method: "POST"
       })
         .then((res) => {
@@ -240,13 +232,11 @@ const ContestApi = {
 
   /**
    * 从竞赛中删除题目
-   * @param contestId 题目 Id
-   * @param problemId 竞赛 Id
    */
-  removeProblem(contestId: number, problemId: number) {
+  removeProblem(cid: number, pid: number) {
     return new Promise((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem/${contestId}/${problemId}`,
+        url: `${ApiPath.CONTEST_ADMIN}/problem/${cid}/${pid}`,
         method: "DELETE"
       })
         .then((res) => {
@@ -260,12 +250,11 @@ const ContestApi = {
 
   /**
    * 删除竞赛
-   * @param contestId 竞赛 Id
    */
-  delete(contestId: number): Promise<AxiosResponse> {
+  delete(cid: number): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_ADMIN}/${contestId}`,
+        url: `${ApiPath.CONTEST_ADMIN}/${cid}`,
         method: "DELETE"
       })
         .then((res) => {

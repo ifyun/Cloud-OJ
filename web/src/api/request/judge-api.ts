@@ -5,7 +5,6 @@ import { useStore } from "@/store"
 const JudgeApi = {
   /**
    * 提交代码
-   * @param data {@link SubmitData}
    */
   submit(data: SubmitData): Promise<number> {
     return new Promise<number>((resolve, reject) => {
