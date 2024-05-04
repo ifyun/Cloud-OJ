@@ -5,7 +5,6 @@ import cloud.oj.core.service.SystemSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("settings")
@@ -26,8 +25,7 @@ public class SettingsController {
      * 更新系统设置
      */
     @PutMapping(consumes = "application/json")
-    public Mono<ResponseEntity<?>> updateSettings(@RequestBody Settings settings) {
-        return systemSettings.setSettings(settings)
-                .flatMap(status -> Mono.just(ResponseEntity.status(status).build()));
+    public ResponseEntity<?> updateSettings(@RequestBody Settings settings) {
+        return ResponseEntity.status(systemSettings.setSettings(settings)).build();
     }
 }

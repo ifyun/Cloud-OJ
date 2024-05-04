@@ -2,18 +2,19 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Problem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class ProblemRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
-    public Mono<Problem> selectById(Integer pid, Boolean onlyEnable) {
+    public Optional<Problem> selectById(Integer pid, Boolean onlyEnable) {
         return client.sql("""
                         select problem_id,
                                title,
@@ -28,13 +29,13 @@ public class ProblemRepo {
                           and problem_id = :pid
                           and deleted = false
                         """)
-                .bind("onlyEnable", onlyEnable)
-                .bind("pid", pid)
-                .mapProperties(Problem.class)
-                .first();
+                .param("onlyEnable", onlyEnable)
+                .param("pid", pid)
+                .query(Problem.class)
+                .optional();
     }
 
-    public Flux<Problem> selectAll(Integer page, Integer size, String keyword) {
+    public List<Problem> selectAll(Integer page, Integer size, String keyword) {
         return client.sql("""
                         select sql_calc_found_rows problem_id,
                                                    title,
@@ -49,14 +50,14 @@ public class ProblemRepo {
                                  true)
                         limit :start, :count
                         """)
-                .bind("start", (page - 1) * size)
-                .bind("count", size)
-                .bind("keyword", keyword)
-                .mapProperties(Problem.class)
-                .all();
+                .param("start", (page - 1) * size)
+                .param("count", size)
+                .param("keyword", keyword)
+                .query(Problem.class)
+                .list();
     }
 
-    public Flux<Problem> selectAllEnabled(Integer page, Integer size, String keyword) {
+    public List<Problem> selectAllEnabled(Integer page, Integer size, String keyword) {
         return client.sql("""
                         select sql_calc_found_rows problem_id,
                                                    title,
@@ -72,11 +73,11 @@ public class ProblemRepo {
                                  true)
                         limit :start, :count
                         """)
-                .bind("start", (page - 1) * size)
-                .bind("count", size)
-                .bind("keyword", keyword)
-                .mapProperties(Problem.class)
-                .all();
+                .param("start", (page - 1) * size)
+                .param("count", size)
+                .param("keyword", keyword)
+                .query(Problem.class)
+                .list();
     }
 
     /**
@@ -85,15 +86,15 @@ public class ProblemRepo {
      * @param pid 题目 Id
      * @return 竞赛 Id
      */
-    public Mono<Integer> isInContest(Integer pid) {
+    public Optional<Integer> isInContest(Integer pid) {
         return client.sql("""
                         select contest_id
                         from `contest-problem`
                         where problem_id = :pid
                         """)
-                .bind("pid", pid)
-                .mapValue(Integer.class)
-                .first();
+                .param("pid", pid)
+                .query(Integer.class)
+                .optional();
     }
 
     /**
@@ -102,30 +103,29 @@ public class ProblemRepo {
      * @param pid 题目 Id
      * @return <code>true</code>：开放，<code>false</code>：禁用
      */
-    public Mono<Boolean> isEnable(Integer pid) {
+    public Optional<Boolean> isEnable(Integer pid) {
         return client.sql("""
-                        select 1
+                        select enable
                         from problem
-                        where problem_id = :pid and enable = true
+                        where problem_id = :pid
                         """)
-                .bind("pid", pid)
-                .mapValue(Boolean.class)
-                .first();
+                .param("pid", pid)
+                .query(Boolean.class)
+                .optional();
     }
 
-    public Mono<Long> updateEnable(Integer pid, Boolean enable) {
+    public Integer updateEnable(Integer pid, Boolean enable) {
         return client.sql("""
                         update problem
                         set enable = :enable
                         where problem_id = :pid
                         """)
-                .bind("pid", pid)
-                .bind("enable", enable)
-                .fetch()
-                .rowsUpdated();
+                .param("pid", pid)
+                .param("enable", enable)
+                .update();
     }
 
-    public Mono<Long> insert(Problem problem) {
+    public Integer insert(Problem problem) {
         return client.sql("""
                         insert into problem(title,
                                             description,
@@ -142,12 +142,11 @@ public class ProblemRepo {
                                            :memoryLimit,
                                            :outputLimit)
                         """)
-                .bindProperties(problem)
-                .fetch()
-                .rowsUpdated();
+                .paramSource(problem)
+                .update();
     }
 
-    public Mono<Long> update(Problem problem) {
+    public Integer update(Problem problem) {
         return client.sql("""
                         update problem
                         set title        = :title,
@@ -159,19 +158,17 @@ public class ProblemRepo {
                             category     = :category
                         where problem_id = :problemId
                         """)
-                .bindProperties(problem)
-                .fetch()
-                .rowsUpdated();
+                .paramSource(problem)
+                .update();
     }
 
-    public Mono<Long> delete(Integer pid) {
+    public Integer delete(Integer pid) {
         return client.sql("""
                         update problem
                         set deleted = true
                         where problem_id = :pid
                         """)
-                .bind("pid", pid)
-                .fetch()
-                .rowsUpdated();
+                .param("pid", pid)
+                .update();
     }
 }

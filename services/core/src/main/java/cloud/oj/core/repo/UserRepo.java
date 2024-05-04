@@ -2,28 +2,29 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
     /**
      * 判断用户名是否存在
      */
-    public Mono<Boolean> exists(String username) {
-        return client.sql("select 1 from user where username = :username")
-                .bind("username", username)
-                .mapValue(Boolean.class)
-                .first();
+    public Boolean exists(String username) {
+        return client.sql("select exists(select 1 from user where username = :username)")
+                .param("username", username)
+                .query(Boolean.class)
+                .single();
     }
 
-    public Mono<User> selectById(Integer uid) {
+    public Optional<User> selectById(Integer uid) {
         return client.sql("""
                         select uid,
                                username,
@@ -36,9 +37,9 @@ public class UserRepo {
                         where uid = :uid
                           and deleted = false
                         """)
-                .bind("uid", uid)
-                .mapProperties(User.class)
-                .first();
+                .param("uid", uid)
+                .query(User.class)
+                .optional();
     }
 
     /**
@@ -47,7 +48,7 @@ public class UserRepo {
      * @param filter 1: by username, 2: by nickname
      * @param value  Value of filter
      */
-    public Flux<User> selectByFilter(Integer filter, String value, Integer page, Integer size) {
+    public List<User> selectByFilter(Integer filter, String value, Integer page, Integer size) {
         return client.sql("""
                         select sql_calc_found_rows uid,
                                                    username,
@@ -65,25 +66,24 @@ public class UserRepo {
                         order by role, create_at
                         limit :start, :count
                         """)
-                .bind("filter", filter)
-                .bind("value", value)
-                .bind("start", (page - 1) * size)
-                .bind("count", size)
-                .mapProperties(User.class)
-                .all();
+                .param("filter", filter)
+                .param("value", value)
+                .param("start", (page - 1) * size)
+                .param("count", size)
+                .query(User.class)
+                .list();
     }
 
-    public Mono<Long> insert(User user) {
+    public Integer insert(User user) {
         return client.sql("""
                         insert into `user`(username, nickname, password, secret, email, section, role)
                         values (:username, :nickname, :password, :secret, :email, :section, :role)
                         """)
-                .bindProperties(user)
-                .fetch()
-                .rowsUpdated();
+                .paramSource(user)
+                .update();
     }
 
-    public Mono<Long> update(User user) {
+    public Integer update(User user) {
         return client.sql("""
                         update `user`
                         set nickname = :nickname,
@@ -93,22 +93,19 @@ public class UserRepo {
                             star = if(:star is not null, :star, star)
                         where uid = :uid
                         """)
-                .bindProperties(user)
-                .fetch()
-                .rowsUpdated();
+                .paramSource(user)
+                .update();
     }
 
-    public Mono<Long> updateAvatar(Integer uid) {
+    public Integer updateAvatar(Integer uid) {
         return client.sql("update user set has_avatar = true where uid = :uid")
-                .bind("uid", uid)
-                .fetch()
-                .rowsUpdated();
+                .param("uid", uid)
+                .update();
     }
 
-    public Mono<Long> delete(Integer uid) {
+    public Integer delete(Integer uid) {
         return client.sql("update `user` set deleted = true where uid = :uid")
-                .bind("uid", uid)
-                .fetch()
-                .rowsUpdated();
+                .param("uid", uid)
+                .update();
     }
 }

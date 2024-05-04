@@ -2,23 +2,22 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Settings;
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
 public class SettingsRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
-    public Mono<Settings> select() {
+    public Settings select() {
         return client.sql("select * from settings where id = 0 for update")
-                .mapProperties(Settings.class)
-                .first();
+                .query(Settings.class)
+                .single();
     }
 
-    public Mono<Long> update(Settings settings) {
+    public Integer update(Settings settings) {
         return client.sql("""
                         update settings
                         set always_show_ranking = #{alwaysShowRanking},
@@ -27,8 +26,7 @@ public class SettingsRepo {
                             auto_del_solutions  = #{autoDelSolutions}
                         where id = 0
                         """)
-                .bindProperties(settings)
-                .fetch()
-                .rowsUpdated();
+                .paramSource(settings)
+                .update();
     }
 }

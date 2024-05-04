@@ -37,9 +37,4 @@ public class Problem {
         this.result = result;
         this.resultText = R[result];
     }
-
-    public Problem setResultAndReturn(Integer result) {
-        setResult(result);
-        return this;
-    }
 }

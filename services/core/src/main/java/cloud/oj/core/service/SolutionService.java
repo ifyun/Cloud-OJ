@@ -2,20 +2,24 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
+import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.SolutionRepo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.Duration;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -23,6 +27,8 @@ import java.time.Duration;
 public class SolutionService {
 
     private static final int MAX_COUNT = 180;
+
+    private final PlatformTransactionManager transactionManager;
 
     private final CommonRepo commonRepo;
 
@@ -32,55 +38,96 @@ public class SolutionService {
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * 根据 uid 和过滤条件查询提交
+     *
+     * <p>隔离级别：读未提交</p>
+     *
+     * @param uid         用户 Id
+     * @param page        页数
+     * @param size        每页数量
+     * @param filter      过滤条件，1 -> pid，2 -> title
+     * @param filterValue 过滤值
+     * @return {@link PageData} of {@link Solution}
+     */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public Mono<PageData<Solution>> getSolutionsByUidAndFilter(Integer uid, Integer page, Integer size, Integer filter, String filterValue) {
-        return solutionRepo.selectAllByUid(uid, page, size, filter, filterValue)
-                .collectList()
-                .zipWith(commonRepo.selectFoundRows())
-                .map(t -> new PageData<>(t.getT1(), t.getT2()));
+    public PageData<Solution> getSolutionsByUidAndFilter(Integer uid, Integer page, Integer size,
+                                                         Integer filter, String filterValue) {
+        var data = solutionRepo.selectAllByUid(uid, page, size, filter, filterValue);
+        var total = commonRepo.selectFoundRows();
+        return new PageData<>(data, total);
     }
 
     /**
-     * 根据 id 获取提交
+     * 根据 uid 和提交时间查询提交
+     *
      * <p>隔离级别：读未提交</p>
+     * <p>开启了新的线程，不可使用声明式事务</p>
      *
      * @return {@link ServerSentEvent}
      */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public Flux<ServerSentEvent<String>> getSolutionByUidAndTime(Integer uid, Long time) {
-        return Flux.interval(Duration.ofMillis(500))
-                .takeUntil(count -> count == MAX_COUNT)
-                .flatMap(count -> systemSettings.getSettings()
-                        .flatMap(settings -> solutionRepo.selectByUidAndTime(uid, time, settings.isShowPassedPoints()))
-                        .map(solution -> {
-                            try {
-                                var event = solution.getState() == 0 ? "complete" : "message";
-                                return ServerSentEvent.<String>builder()
-                                        .id(count.toString())
-                                        .event(event)
-                                        .data(objectMapper.writeValueAsString(solution))
-                                        .build();
-                            } catch (JsonProcessingException e) {
-                                log.error(e.getMessage());
-                                return ServerSentEvent.<String>builder()
-                                        .id(count.toString())
-                                        .event("error")
-                                        .data(e.getMessage())
-                                        .build();
-                            }
-                        })
-                );
+    public SseEmitter getSolutionByUidAndTime(Integer uid, Long time) {
+        var emitter = new SseEmitter(0L);
+        var executor = Executors.newSingleThreadExecutor();
+        var settings = systemSettings.getSettings();
+
+        executor.execute(() -> {
+            var count = 0;
+            var def = new DefaultTransactionDefinition();
+
+            def.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
+            var status = transactionManager.getTransaction(def);
+
+            try {
+
+                while (true) {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    var result = solutionRepo.selectByUidAndTime(uid, time, settings.isShowPassedPoints());
+
+                    if (result.isEmpty()) {
+                        continue;
+                    }
+
+                    var event = SseEmitter.event()
+                            .data(objectMapper.writeValueAsString(result))
+                            .name("message");
+
+                    emitter.send(event);
+                    count += 1;
+
+                    if (result.get().getState() == 0) {
+                        emitter.complete();
+                        break;
+                    }
+
+                    if (count == MAX_COUNT) {
+                        log.info("轮询超时");
+                        emitter.complete();
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+
+            transactionManager.commit(status);
+        });
+
+        return emitter;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<Solution> getSolutionByUser(Integer uid, Integer sid) {
-        return systemSettings.getSettings()
-                .flatMap(settings -> solutionRepo.selectByUidAndSid(uid, sid, settings.isShowPassedPoints()))
-                .zipWith(solutionRepo.selectSourceCode(sid))
-                .map(t -> {
-                    var s = t.getT1();
-                    s.setSourceCode(t.getT2());
-                    return s;
-                });
+    public Solution getSolutionByUser(Integer uid, Integer sid) {
+        var settings = systemSettings.getSettings();
+        var solution = solutionRepo.selectByUidAndSid(uid, sid, settings.isShowPassedPoints());
+        var source = solutionRepo.selectSourceCode(sid);
+
+        solution.ifPresent(s -> source.ifPresent(s::setSourceCode));
+
+        if (solution.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "找不到提交记录");
+        }
+
+        return solution.get();
     }
 }

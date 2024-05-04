@@ -11,11 +11,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,61 +38,79 @@ public class UserService {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    /**
+     * 根据过滤条件分页查询用户
+     *
+     * @param filter      过滤条件，1 -> username，2 -> nickname
+     * @param filterValue 过滤值
+     * @param page        页数
+     * @param limit       每页数量
+     * @return {@link PageData} of {@link User}
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<PageData<User>> getUsersByFilter(Integer filter, String filterValue, Integer page, Integer limit) {
-        return userRepo.selectByFilter(filter, filterValue, page, limit)
-                .collectList()
-                .zipWith(commonRepo.selectFoundRows())
-                .map(t -> new PageData<>(t.getT1(), t.getT2()));
+    public PageData<User> getUsersByFilter(Integer filter, String filterValue, Integer page, Integer limit) {
+        var data = userRepo.selectByFilter(filter, filterValue, page, limit);
+        var total = (commonRepo.selectFoundRows());
+        return new PageData<>(data, total);
     }
 
-    public Mono<User> getUserInfo(Integer uid) {
-        return userRepo.selectById(uid);
+    /**
+     * 查询用户个人信息
+     *
+     * @param uid 用户 Id
+     * @return {@link User}
+     */
+    public User getUserInfo(Integer uid) {
+        var user = userRepo.selectById(uid);
+
+        if (user.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "找不到用户");
+        }
+
+        return user.get();
     }
 
-    public Mono<HttpStatus> addUser(User user) {
-        return userRepo.exists(user.getUsername())
-                .flatMap(exists -> {
-                    if (!exists) {
-                        return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "用户名重复"));
-                    }
+    /**
+     * 创建用户
+     *
+     * @param user {@link User}
+     * @return {@link HttpStatus}
+     */
+    public HttpStatus addUser(User user) {
+        if (userRepo.exists(user.getUsername())) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "用户名重复");
+        }
 
-                    user.setRole(1);
-                    user.setPassword(bcrypt.encode(user.getPassword()));
-                    user.setSecret(newUUID());
+        user.setRole(1);
+        user.setPassword(bcrypt.encode(user.getPassword()));
+        user.setSecret(newUUID());
 
-                    return Mono.just(user);
-                })
-                .then(userRepo.insert(user))
-                .flatMap(rows -> rows == 1 ?
-                        Mono.just(HttpStatus.CREATED) :
-                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "请求数据可能不正确"))
-                );
+        return userRepo.insert(user) == 0 ?
+                HttpStatus.BAD_REQUEST :
+                HttpStatus.CREATED;
     }
 
     /**
      * 更新用户信息(管理员)
      */
-    public Mono<HttpStatus> updateUser(User user) {
+    public HttpStatus updateUser(User user) {
         if (user.getUid() == 1 && user.getRole() != 0) {
-            return Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限"));
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
         }
 
         if (user.getPassword() != null) {
             user.setPassword(bcrypt.encode(user.getPassword()));
         }
 
-        return userRepo.update(user)
-                .flatMap(rows -> rows > 0 ?
-                        Mono.just(HttpStatus.OK) :
-                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"))
-                );
+        return userRepo.update(user) == 0 ?
+                HttpStatus.BAD_REQUEST :
+                HttpStatus.OK;
     }
 
     /**
      * 更新用户信息(个人)
      */
-    public Mono<HttpStatus> updateProfile(Integer uid, User user) {
+    public HttpStatus updateProfile(Integer uid, User user) {
         user.setUid(uid);
         user.setRole(null);
         return updateUser(user);
@@ -101,34 +120,34 @@ public class UserService {
      * 逻辑删除用户及其相关信息
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<HttpStatus> deleteUser(Integer uid) {
-        return uid.equals(1) ?
-                Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员")) :
-                userRepo.delete(uid)
-                        .then(scoreboardRepo.deleteByUid(uid))
-                        .then(solutionRepo.deleteByUid(uid))
-                        .thenReturn(HttpStatus.NO_CONTENT);
+    public HttpStatus deleteUser(Integer uid) {
+        if (uid.equals(1)) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员");
+        }
+
+        if (userRepo.delete(uid) > 0 && scoreboardRepo.deleteByUid(uid) > 0 && solutionRepo.deleteByUid(uid) > 0) {
+            return HttpStatus.NO_CONTENT;
+        }
+
+        throw new GenericException(HttpStatus.BAD_REQUEST, "删除失败");
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<UserStatistic> getOverview(Integer uid, Integer year, String tz) {
+    public UserStatistic getOverview(Integer uid, Integer year, String tz) {
         String timezone = "+8:00";
 
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
             timezone = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
         }
 
+        commonRepo.setTimezone(timezone);
+
         var userStatistic = new UserStatistic();
 
-        return commonRepo.setTimezone(timezone)
-                .then(userStatisticRepo.selectLanguages(uid).collectList())
-                .doOnNext(userStatistic::setPreference)
-                .then(userStatisticRepo.selectActivities(uid, year).collectList())
-                .doOnNext(userStatistic::setActivities)
-                .then(userStatisticRepo.selectResults(uid))
-                .map(result -> {
-                    userStatistic.setResult(result);
-                    return userStatistic;
-                });
+        userStatistic.setPreference(userStatisticRepo.selectLanguages(uid));
+        userStatistic.setActivities(userStatisticRepo.selectActivities(uid, year));
+        userStatistic.setResult(userStatisticRepo.selectResults(uid));
+
+        return userStatistic;
     }
 }

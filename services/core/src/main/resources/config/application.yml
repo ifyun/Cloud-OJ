@@ -5,13 +5,15 @@ spring:
     active: dev
   application:
     name: core
-  r2dbc:
-    url: r2dbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
-    pool:
-      min-idle: ${DB_POOL_SIZE:10}
-      max-size: ${DB_POOL_SIZE:10}
+    hikari:
+      minimum-idle: ${DB_POOL_SIZE:6}
+      maximum-pool-size: ${DB_POOL_SIZE:6}
   main:
     allow-circular-references: true
   jackson:

@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
@@ -39,17 +38,17 @@ public class ProblemService {
      * @return {@link PageData} of {@link Problem}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<PageData<Problem>> getAllEnabled(Integer uid, String keyword, int page, int size) {
+    public PageData<Problem> getAllEnabled(Integer uid, String keyword, int page, int size) {
         if (keyword == null || keyword.isEmpty()) {
             keyword = null;
         }
 
-        return problemRepo.selectAllEnabled(page, size, keyword)
-                .flatMap(p -> Mono.just(p).zipWith(solutionRepo.selectResult(uid, p.getProblemId())))
-                .map(t -> t.getT1().setResultAndReturn(t.getT2()))
-                .collectList()
-                .zipWith(commonRepo.selectFoundRows())
-                .map(t -> new PageData<>(t.getT1(), t.getT2()));
+        var data = problemRepo.selectAllEnabled(page, size, keyword);
+        var total = commonRepo.selectFoundRows();
+
+        data.forEach(p -> solutionRepo.selectResult(uid, p.getProblemId()).ifPresent(p::setResult));
+
+        return new PageData<>(data, total);
     }
 
     /**
@@ -61,15 +60,15 @@ public class ProblemService {
      * @return {@link PageData} of {@link Problem}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<PageData<Problem>> getAll(String keyword, int page, int size) {
+    public PageData<Problem> getAll(String keyword, int page, int size) {
         if (keyword == null || keyword.isEmpty()) {
             keyword = null;
         }
 
-        return problemRepo.selectAll(page, size, keyword)
-                .collectList()
-                .zipWith(commonRepo.selectFoundRows())
-                .map(t -> new PageData<>(t.getT1(), t.getT2()));
+        var data = problemRepo.selectAll(page, size, keyword);
+        var total = commonRepo.selectFoundRows();
+
+        return new PageData<>(data, total);
     }
 
     /**
@@ -78,8 +77,14 @@ public class ProblemService {
      * @param pid 题目 Id
      * @return {@link Problem}
      */
-    public Mono<Problem> getSingle(int pid) {
-        return problemRepo.selectById(pid, false);
+    public Problem getSingle(int pid) {
+        var problem = problemRepo.selectById(pid, false);
+
+        if (problem.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "找不到题目");
+        }
+
+        return problem.get();
     }
 
     /**
@@ -88,8 +93,14 @@ public class ProblemService {
      * @param pid 题目 Id
      * @return {@link Problem}
      */
-    public Mono<Problem> getSingleEnabled(int pid) {
-        return problemRepo.selectById(pid, true);
+    public Problem getSingleEnabled(int pid) {
+        var problem = problemRepo.selectById(pid, true);
+
+        if (problem.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "找不到题目");
+        }
+
+        return problem.get();
     }
 
     /**
@@ -99,23 +110,24 @@ public class ProblemService {
      * @return {@link HttpStatus}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<HttpStatus> update(Problem problem) {
+    public HttpStatus update(Problem problem) {
         var categories = problem.getCategory().split(",");
+
         // 对标签排序
         if (categories.length > 1) {
             Arrays.sort(categories);
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        return problemRepo.update(problem)
-                .flatMap(rows -> rows > 0 ?
-                        solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) :
-                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "更新失败"))
-                )
-                .map(rows -> rows > 0 ?
-                        HttpStatus.OK :
-                        HttpStatus.BAD_REQUEST
-                );
+        if (problemRepo.update(problem) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
+        }
+
+        if (solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
+        }
+
+        return HttpStatus.OK;
     }
 
     /**
@@ -126,25 +138,20 @@ public class ProblemService {
      * @return {@link HttpStatus}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<HttpStatus> setEnable(int pid, boolean enable) {
+    public HttpStatus setEnable(int pid, boolean enable) {
         if (enable) {
-            return problemRepo.isInContest(pid)
+            problemRepo.isInContest(pid)
                     .flatMap(contestRepo::selectById)
-                    .flatMap(contest -> contest.isEnded() ?
-                            problemRepo.updateEnable(pid, true) :
-                            Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目"))
-                    )
-                    .map(rows -> rows > 0 ?
-                            HttpStatus.OK :
-                            HttpStatus.BAD_REQUEST
-                    );
+                    .ifPresent(contest -> {
+                        if (!contest.isEnded()) {
+                            throw new GenericException(HttpStatus.BAD_REQUEST, "不准开放未结束竞赛中的题目");
+                        }
+                    });
         }
 
-        return problemRepo.updateEnable(pid, false)
-                .map(rows -> rows > 0 ?
-                        HttpStatus.OK :
-                        HttpStatus.BAD_REQUEST
-                );
+        return problemRepo.updateEnable(pid, false) == 0 ?
+                HttpStatus.BAD_REQUEST :
+                HttpStatus.OK;
     }
 
     /**
@@ -153,7 +160,7 @@ public class ProblemService {
      * @param problem {@link Problem}
      * @return {@link HttpStatus}
      */
-    public Mono<HttpStatus> create(Problem problem) {
+    public HttpStatus create(Problem problem) {
         var categories = problem.getCategory().split(",");
         // 对标签排序
         if (categories.length > 1) {
@@ -161,11 +168,9 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        return problemRepo.insert(problem)
-                .flatMap(rows -> rows > 0 ?
-                        Mono.just(HttpStatus.CREATED) :
-                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "无法创建题目"))
-                );
+        return problemRepo.insert(problem) == 0 ?
+                HttpStatus.BAD_REQUEST :
+                HttpStatus.CREATED;
     }
 
     /**
@@ -175,17 +180,17 @@ public class ProblemService {
      * @return {@link HttpStatus}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Mono<HttpStatus> delete(Integer pid) {
-        return problemRepo.isInContest(pid)
-                .flatMap(cid -> Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除竞赛中的题目")))
-                .then(problemRepo.isEnable(pid))
-                .flatMap(enable -> enable ?
-                        Mono.error(new GenericException(HttpStatus.BAD_REQUEST, "不准删除已开放的题目")) :
-                        problemRepo.delete(pid)
-                )
-                .map(rows -> rows > 0 ?
-                        HttpStatus.NO_CONTENT :
-                        HttpStatus.GONE
-                );
+    public HttpStatus delete(Integer pid) {
+        if (problemRepo.isEnable(pid).isEmpty()) {
+            throw new GenericException(HttpStatus.GONE, "题目不存在");
+        }
+
+        if (problemRepo.isInContest(pid).isPresent()) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除竞赛中的题目");
+        }
+
+        return problemRepo.delete(pid) == 0 ?
+                HttpStatus.GONE :
+                HttpStatus.NO_CONTENT;
     }
 }

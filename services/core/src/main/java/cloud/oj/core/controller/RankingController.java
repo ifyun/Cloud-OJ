@@ -1,6 +1,5 @@
 package cloud.oj.core.controller;
 
-import cloud.oj.core.entity.PagedList;
 import cloud.oj.core.service.RankingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +19,9 @@ public class RankingController {
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getRankingList(@RequestParam(defaultValue = "1") Integer page,
-                                            @RequestParam(defaultValue = "15") Integer limit) {
-        var rankings = PagedList.resolve(rankingService.getRanking(page, limit));
-        return rankings.getCount() > 0 ?
-                ResponseEntity.ok(rankings)
-                : ResponseEntity.noContent().build();
+                                            @RequestParam(defaultValue = "15") Integer size) {
+        var data = rankingService.getRanking(page, size);
+        return data.getTotal() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
@@ -37,7 +34,7 @@ public class RankingController {
     }
 
     /**
-     * 获取竞赛排行榜(管理员用)
+     * 获取竞赛排行榜(管理员)
      */
     @GetMapping(path = "admin/contest/{contestId}")
     public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId) {

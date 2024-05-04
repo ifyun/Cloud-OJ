@@ -2,31 +2,32 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Solution;
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class SolutionRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
-    public Mono<Integer> selectResult(Integer uid, Integer pid) {
+    public Optional<Integer> selectResult(Integer uid, Integer pid) {
         return client.sql("""
                         select min(result - 1)
                         from solution
                         where uid = :uid
                           and problem_id = :pid
                         """)
-                .bind("uid", uid)
-                .bind("pid", pid)
-                .mapValue(Integer.class)
-                .first();
+                .param("uid", uid)
+                .param("pid", pid)
+                .query(Integer.class)
+                .optional();
     }
 
-    public Mono<Integer> selectResultOfContest(Integer uid, Integer cid, Integer pid) {
+    public Optional<Integer> selectResultOfContest(Integer uid, Integer cid, Integer pid) {
         return client.sql("""
                         select min(result - 1)
                         from solution
@@ -34,11 +35,11 @@ public class SolutionRepo {
                           and contest_id = :cid
                           and problem_id = :pid
                         """)
-                .bind("uid", uid)
-                .bind("cid", cid)
-                .bind("pid", pid)
-                .mapValue(Integer.class)
-                .first();
+                .param("uid", uid)
+                .param("cid", cid)
+                .param("pid", pid)
+                .query(Integer.class)
+                .optional();
     }
 
     /**
@@ -49,7 +50,7 @@ public class SolutionRepo {
      * @param showPassed 是否查询通过的测试点
      * @return {@link Solution}
      */
-    public Mono<Solution> selectByUidAndTime(Integer uid, Long time, Boolean showPassed) {
+    public Optional<Solution> selectByUidAndTime(Integer uid, Long time, Boolean showPassed) {
         return client.sql("""
                         select state - 1                                      as state,
                                result - 1                                     as result,
@@ -64,11 +65,11 @@ public class SolutionRepo {
                         where uid = :uid
                           and submit_time = :time
                         """)
-                .bind("uid", uid)
-                .bind("time", time)
-                .bind("showPassed", showPassed)
-                .mapProperties(Solution.class)
-                .first();
+                .param("uid", uid)
+                .param("time", time)
+                .param("showPassed", showPassed)
+                .query(Solution.class)
+                .optional();
     }
 
     /**
@@ -79,7 +80,7 @@ public class SolutionRepo {
      * @param showPassed 是否查询通过的测试点
      * @return {@link Solution}
      */
-    public Mono<Solution> selectByUidAndSid(Integer uid, Integer sid, Boolean showPassed) {
+    public Optional<Solution> selectByUidAndSid(Integer uid, Integer sid, Boolean showPassed) {
         return client.sql("""
                         select problem_id,
                                title,
@@ -99,26 +100,25 @@ public class SolutionRepo {
                           and uid = :uid
                           and deleted = 0
                         """)
-                .bind("uid", uid)
-                .bind("sid", sid)
-                .bind("showPassed", showPassed)
-                .mapProperties(Solution.class)
-                .first();
-
+                .param("uid", uid)
+                .param("sid", sid)
+                .param("showPassed", showPassed)
+                .query(Solution.class)
+                .optional();
     }
 
-    public Mono<String> selectSourceCode(Integer sid) {
+    public Optional<String> selectSourceCode(Integer sid) {
         return client.sql("""
                         select code
                         from source_code
                         where solution_id = :sid
                         """)
-                .bind("sid", sid)
-                .mapValue(String.class)
-                .first();
+                .param("sid", sid)
+                .query(String.class)
+                .optional();
     }
 
-    public Flux<Solution> selectAllByUid(Integer uid, Integer page, Integer size, Integer filter, String value) {
+    public List<Solution> selectAllByUid(Integer uid, Integer page, Integer size, Integer filter, String value) {
         return client.sql("""
                         select sql_calc_found_rows solution_id,
                                                    problem_id,
@@ -139,27 +139,25 @@ public class SolutionRepo {
                         order by submit_time desc
                         limit :start, :count
                         """)
-                .bind("uid", uid)
-                .bind("start", (page - 1) * size)
-                .bind("count", size)
-                .bind("filter", filter)
-                .bind("value", value)
-                .mapValue(Solution.class)
-                .all();
+                .param("uid", uid)
+                .param("start", (page - 1) * size)
+                .param("count", size)
+                .param("filter", filter)
+                .param("value", value)
+                .query(Solution.class)
+                .list();
     }
 
-    public Mono<Long> updateTitle(Integer pid, String title) {
+    public Integer updateTitle(Integer pid, String title) {
         return client.sql("update solution set title = :title where problem_id = :pid")
-                .bind("pid", pid)
-                .bind("title", title)
-                .fetch()
-                .rowsUpdated();
+                .param("pid", pid)
+                .param("title", title)
+                .update();
     }
 
-    public Mono<Long> deleteByUid(Integer uid) {
+    public Integer deleteByUid(Integer uid) {
         return client.sql("update solution set deleted = true where uid = :uid")
-                .bind("uid", uid)
-                .fetch()
-                .rowsUpdated();
+                .param("uid", uid)
+                .update();
     }
 }

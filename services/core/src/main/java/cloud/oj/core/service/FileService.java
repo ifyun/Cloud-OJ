@@ -1,18 +1,18 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.config.AppConfig;
-import cloud.oj.core.dao.ProblemDao;
-import cloud.oj.core.dao.UserDao;
 import cloud.oj.core.entity.ProblemData;
 import cloud.oj.core.entity.SPJ;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.repo.ProblemRepo;
+import cloud.oj.core.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -27,22 +27,26 @@ public class FileService {
 
     private final String fileDir;
 
-    private final UserDao userDao;
+    private final UserRepo userRepo;
 
-    private final ProblemDao problemDao;
+    private final ProblemRepo problemRepo;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
 
-    public FileService(AppConfig appConfig, UserDao userDao, ProblemDao problemDao) {
+    public FileService(AppConfig appConfig, UserRepo userRepo, ProblemRepo problemRepo) {
         this.fileDir = appConfig.getFileDir();
-        this.userDao = userDao;
-        this.problemDao = problemDao;
+        this.userRepo = userRepo;
+        this.problemRepo = problemRepo;
     }
 
     public ProblemData getProblemData(Integer problemId) {
         var data = new ProblemData();
         var files = new File(fileDir + "data/" + problemId).listFiles();
-        var problem = problemDao.getById(problemId, false);
+        var problem = problemRepo.selectById(problemId, false);
+
+        if (problem.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "题目不存在");
+        }
 
         try {
             if (files != null) {
@@ -67,7 +71,7 @@ public class FileService {
         }
 
         data.setPid(problemId);
-        data.setTitle(problem.getTitle());
+        data.setTitle(problem.get().getTitle());
         data.getTestData().sort(Comparator.comparing(ProblemData.TestData::getFileName));
 
         return data;
@@ -76,21 +80,27 @@ public class FileService {
     /**
      * 保存测试数据
      *
-     * @param problemId 题目 Id
-     * @param files     文件
+     * @param pid   题目 Id
+     * @param files 文件
      */
-    public ResponseEntity<?> saveTestData(Integer problemId, MultipartFile[] files) {
+    public HttpStatus saveTestData(Integer pid, MultipartFile[] files) {
         if (files.length == 0) {
-            return ResponseEntity.badRequest().body("未选择文件");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "没有文件");
         }
 
         // ! 开放的题目不允许上传测试数据
-        if (problemDao.isEnable(problemId)) {
+        var enable = problemRepo.isEnable(pid);
+
+        if (enable.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "题目不存在");
+        }
+
+        if (enable.get()) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准上传测试数据");
         }
 
         var testDataDir = fileDir + "data/";
-        var dir = new File(testDataDir + problemId);
+        var dir = new File(testDataDir + pid);
 
         if (!dir.exists() && !dir.mkdirs()) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
@@ -108,41 +118,48 @@ public class FileService {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return HttpStatus.CREATED;
     }
 
     /**
      * 删除测试数据
      *
-     * @param problemId 题目 Id
-     * @param name      文件名
+     * @param pid  题目 Id
+     * @param name 文件名
      */
-    public ResponseEntity<?> deleteTestData(Integer problemId, String name) {
+    public HttpStatus deleteTestData(Integer pid, String name) {
         // ! 开放的题目不允许删除测试数据
-        if (problemDao.isEnable(problemId)) {
+        var enable = problemRepo.isEnable(pid);
+
+        if (enable.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "题目不存在");
+        }
+
+        if (enable.get()) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准删除测试数据");
         }
 
         var testDataDir = fileDir + "data/";
-        var file = new File(testDataDir + problemId + "/" + name);
+        var file = new File(testDataDir + pid + "/" + name);
 
         if (file.exists()) {
             if (file.delete()) {
                 log.info("删除文件 {}", file.getAbsolutePath());
-                return ResponseEntity.noContent().build();
+                return HttpStatus.NO_CONTENT;
             } else {
                 throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "删除失败");
             }
         } else {
             log.warn("文件 {} 不存在", file.getAbsolutePath());
-            return ResponseEntity.status(HttpStatus.GONE).build();
+            return HttpStatus.GONE;
         }
     }
 
     /**
      * 保存头像图片
      */
-    public ResponseEntity<?> saveAvatar(Integer uid, MultipartFile file) {
+    @Transactional
+    public HttpStatus saveAvatar(Integer uid, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
         var dir = new File(avatarDir);
         var avatar = new File(avatarDir + uid + ".png");
@@ -152,19 +169,30 @@ public class FileService {
         }
 
         try {
+            if (userRepo.updateAvatar(uid) == 0) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, "更新头像失败");
+            }
+
             file.transferTo(avatar);
-            userDao.updateAvatar(uid);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IOException e) {
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            log.error(e.getMessage());
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "更新头像失败");
         }
+
+        return HttpStatus.CREATED;
     }
 
-    public ResponseEntity<?> saveProblemImage(MultipartFile file) {
+    /**
+     * 保存题目图片
+     *
+     * @param file 文件
+     * @return 文件名
+     */
+    public String saveProblemImage(MultipartFile file) {
         var originalName = file.getOriginalFilename();
 
         if (originalName == null) {
-            return ResponseEntity.badRequest().build();
+            throw new GenericException(HttpStatus.BAD_REQUEST, "文件为空");
         }
 
         var dir = new File(fileDir + "image/problem/");
@@ -180,7 +208,7 @@ public class FileService {
 
         try {
             file.transferTo(image);
-            return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
+            return fileName;
         } catch (IOException e) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -188,8 +216,10 @@ public class FileService {
 
     /**
      * 保存 SPJ 代码并编译
+     *
+     * @param spj {@link SPJ}
      */
-    public ResponseEntity<?> saveSPJ(SPJ spj) {
+    public HttpStatus saveSPJ(SPJ spj) {
         var pid = spj.getPid();
         var source = spj.getSource();
         var dir = new File(fileDir + "data/" + pid);
@@ -224,7 +254,7 @@ public class FileService {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        return ResponseEntity.ok().build();
+        return HttpStatus.OK;
     }
 
     /**
@@ -232,7 +262,7 @@ public class FileService {
      *
      * @param pid 题目 Id
      */
-    public ResponseEntity<?> removeSPJ(Integer pid) {
+    public HttpStatus removeSPJ(Integer pid) {
         try {
             FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.so"));
             FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.cpp"));
@@ -240,6 +270,6 @@ public class FileService {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        return ResponseEntity.noContent().build();
+        return HttpStatus.NO_CONTENT;
     }
 }

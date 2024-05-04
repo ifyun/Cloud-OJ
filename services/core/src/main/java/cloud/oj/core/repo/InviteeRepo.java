@@ -1,17 +1,16 @@
 package cloud.oj.core.repo;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
 public class InviteeRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
-    public Mono<Boolean> isInvited(Integer cid, Integer uid) {
+    public Boolean isInvited(Integer cid, Integer uid) {
         return client.sql("""
                         select exists(
                             select 1
@@ -20,20 +19,19 @@ public class InviteeRepo {
                               and uid = :uid
                         )
                         """)
-                .bind("cid", cid)
-                .bind("uid", uid)
-                .mapValue(Boolean.class)
-                .first();
+                .param("cid", cid)
+                .param("uid", uid)
+                .query(Boolean.class)
+                .single();
     }
 
-    public Mono<Long> invite(Integer cid, Integer uid) {
+    public Integer invite(Integer cid, Integer uid) {
         return client.sql("""
                         insert into invitee(contest_id, uid)
                         values (:cid, :uid)
                         """)
-                .bind("cid", cid)
-                .bind("uid", uid)
-                .fetch()
-                .rowsUpdated();
+                .param("cid", cid)
+                .param("uid", uid)
+                .update();
     }
 }

@@ -1,59 +1,59 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.dao.ContestDao;
-import cloud.oj.core.dao.RankingDao;
-import cloud.oj.core.entity.ProblemOrder;
-import cloud.oj.core.entity.RankingContest;
-import cloud.oj.core.entity.ScoreDetail;
+import cloud.oj.core.entity.*;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.repo.CommonRepo;
+import cloud.oj.core.repo.ContestRepo;
+import cloud.oj.core.repo.ScoreboardRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.TreeSet;
 
 /**
  * 排名相关业务
  */
 @Service
+@RequiredArgsConstructor
 public class RankingService {
 
-    private final RankingDao rankingDao;
+    private final CommonRepo commonRepo;
 
-    private final ContestDao contestDao;
+    private final ScoreboardRepo scoreboardRepo;
+
+    private final ContestRepo contestRepo;
 
     private final SystemSettings systemSettings;
 
-    public RankingService(RankingDao rankingDao, ContestDao contestDao, SystemSettings systemSettings) {
-        this.rankingDao = rankingDao;
-        this.contestDao = contestDao;
-        this.systemSettings = systemSettings;
-    }
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public PageData<Ranking> getRanking(int page, int size) {
+        var data =  scoreboardRepo.selectAll(page, size);
+        var total = commonRepo.selectFoundRows();
 
-    public List<List<?>> getRanking(int page, int limit) {
-        return rankingDao.get((page - 1) * limit, limit);
+        return new PageData<>(data, total);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public RankingContest getContestRanking(Integer cid) {
-        if (systemSettings.getSettings().isAlwaysShowRanking() && !contestDao.getState(cid).isEnded()) {
-            throw new GenericException(HttpStatus.FORBIDDEN, "结束后才可查看");
-        }
+        var contest = contestRepo.selectById(cid);
 
-        var contest = contestDao.getContestById(cid);
-
-        if (contest == null) {
+        if (contest.isEmpty()) {
             throw new GenericException(HttpStatus.NOT_FOUND, "竞赛不存在");
         }
 
-        var data = new RankingContest(contest.withoutKey());    // 排名顶层包装
-        var problemOrders = contestDao.getProblemOrders(cid);   // 题目 id 和 order
-        var ranking = rankingDao.getForContest(cid);            // 排名
+        if (!systemSettings.getSettings().isAlwaysShowRanking() && !contest.get().isEnded()) {
+            throw new GenericException(HttpStatus.FORBIDDEN, "结束后才可查看");
+        }
+
+        var data = new RankingContest(contest.get().withoutKey());      // 排名顶层包装
+        var problemOrders = contestRepo.selectOrders(cid);              // 题目 id 和 order
+        var ranking = scoreboardRepo.selectByCid(cid);                  // 排名
 
         ranking.forEach((r) -> {
-            var detailList = rankingDao.getDetail(r.getUid(), cid);
+            var detailList = scoreboardRepo.selectScores(r.getUid(), cid);
             // 取 order 字段到 detailList
             detailList.forEach(d -> {
                 var order = problemOrders.stream().filter(p -> d.getProblemId().equals(p.getProblemId()))
@@ -68,8 +68,10 @@ public class RankingService {
             problemOrders.forEach((p) -> detailSet.add(new ScoreDetail(p.getProblemId(), p.getOrder())));
             r.setDetails(detailSet);
         });
+
         // 取 problemId，按 order 字段排序
         var idList = problemOrders.stream().sorted().map(ProblemOrder::getProblemId).toList();
+
         data.setProblemIds(idList);
         data.setRanking(ranking);
 
