@@ -2,105 +2,153 @@ package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.error.ErrorMessage;
 import cloud.oj.gateway.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * JWT Token 验证过滤器
  */
 @Slf4j
-public class TokenVerifyFilter implements WebFilter {
+@Component
+@RequiredArgsConstructor
+public class TokenVerifyFilter extends GenericFilterBean {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    /**
+     * HttpServletRequest 包装，用于修改 Headers
+     */
+    private static class MutableRequest extends HttpServletRequestWrapper {
+
+        private final Map<String, String> headers;
+
+        public MutableRequest(HttpServletRequest request) {
+            super(request);
+            headers = new HashMap<>();
+        }
+
+        public void putHeader(String name, String value) {
+            headers.put(name, value);
+        }
+
+        @Override
+        public String getHeader(String name) {
+            var value = headers.get(name);
+
+            if (value != null) {
+                return value;
+            }
+
+            return super.getHeader(name);
+        }
+
+        @Override
+        public Enumeration<String> getHeaderNames() {
+            var set = new HashSet<String>();
+
+            var e = super.getHeaderNames();
+
+            while (e.hasMoreElements()) {
+                set.add(e.nextElement());
+            }
+
+            set.addAll(headers.keySet());
+
+            return Collections.enumeration(set);
+        }
+    }
 
     /**
      * 验证 JWT
-     * <p>先后在 Header 和 Query 中查找 JWT，若为空则跳过验证</p>
+     *
+     * <p>先后在 Headers 和 Query 中查找 JWT，若为空则跳过验证</p>
      */
-    @NonNull
     @Override
-    public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
-        var request = exchange.getRequest();
-        var path = request.getPath().toString();
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        var httpRequest = new MutableRequest((HttpServletRequest) request);
+        var httpResponse = (HttpServletResponse) response;
 
-        // 登录登出直接跳过
+        var path = httpRequest.getServletPath();
+
+        // 登录/登出跳过验证
         if (path.equals("/logoff") || path.equals("/login")) {
-            return chain.filter(exchange);
+            chain.doFilter(request, response);
+            return;
         }
 
-        var token = request.getHeaders().getFirst("Authorization");
+        // 获取 Bearer Token
+        var token = httpRequest.getHeader("Authorization");
 
         if (token != null) {
-            token = token.substring(6);
+            // Authorization，去掉 'Bearer ' 前缀
+            token = token.substring(7);
         } else {
-            token = request.getQueryParams().getFirst("token");
+            // Headers 不带 Token，在 URL 中查找
+            token = httpRequest.getParameter("token");
         }
 
         if (token == null) {
-            return chain.filter(exchange);
+            // 没有 Token，跳过验证
+            chain.doFilter(request, response);
+            return;
         }
 
-        var finalToken = token;
-        var uid = JwtUtil.getUid(token);
+        try {
+            var uid = JwtUtil.getUid(token);
 
-        if (uid == null) {
-            return Mono.error(new JwtException("Token 错误"));
+            if (uid == null) {
+                throw new JwtException("Token 错误");
+            }
+
+            var secret = userService.getSecret(uid);
+
+            if (secret.isEmpty()) {
+                throw new ServletException("用户不存在");
+            }
+
+            var claims = JwtUtil.getClaims(token, secret.get());
+            var authorities = AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
+            var auth = new UsernamePasswordAuthenticationToken(uid, null, authorities);
+
+            // 为带 token 的请求加上 uid 请求头
+            httpRequest.putHeader("uid", uid.toString());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // 由 Spring 继续处理
+            chain.doFilter(httpRequest, httpResponse);
+        } catch (Exception e) {
+            var error = e.getMessage();
+
+            if (e instanceof JwtException) {
+                error = "无效的 Token";
+            }
+
+            var status = HttpStatus.UNAUTHORIZED;
+            var errorMessage = new ErrorMessage(status, error);
+
+            httpResponse.setStatus(status.value());
+            httpResponse.setHeader("Content-Type", "application/json");
+            httpResponse.getOutputStream().write(objectMapper.writeValueAsBytes(errorMessage));
         }
-
-        return userService.getSecret(uid)
-                .flatMap(secret -> {
-                    var claims = JwtUtil.getClaims(finalToken, secret);
-                    var authorities = AuthorityUtils
-                            .commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
-                    var auth = new UsernamePasswordAuthenticationToken(uid, null, authorities);
-                    // 为带 token 的请求加上 uid 请求头
-                    return chain.filter(
-                            exchange.mutate().request(
-                                    request.mutate().header("uid", uid.toString()).build()
-                            ).build()
-                    ).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
-                })
-                .onErrorResume(throwable -> {
-                    var error = throwable.getMessage();
-                    log.error("Verify token failed: {}", error);
-
-                    if (throwable instanceof StringIndexOutOfBoundsException) {
-                        error = "Token 错误";
-                    } else if (error.contains("expired")) {
-                        error = "Token 已过期";
-                    } else if (error.contains("signature")) {
-                        error = "签名不匹配";
-                    }
-
-                    var response = exchange.getResponse();
-                    var status = HttpStatus.UNAUTHORIZED;
-                    var errorMessage = new ErrorMessage(status, error);
-
-                    try {
-                        var dataBuffer = response.bufferFactory().wrap(objectMapper.writeValueAsBytes(errorMessage));
-                        response.setStatusCode(status);
-                        response.getHeaders().add("Content-Type", "application/json");
-                        return response.writeWith(Flux.just(dataBuffer));
-                    } catch (JsonProcessingException e) {
-                        return Mono.error(e);
-                    }
-                });
     }
 }

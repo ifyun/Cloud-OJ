@@ -1,22 +1,22 @@
 package cloud.oj.gateway.service;
 
-import cloud.oj.gateway.repo.UserRepo;
 import cloud.oj.gateway.entity.Role;
 import cloud.oj.gateway.entity.User;
+import cloud.oj.gateway.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserService implements ReactiveUserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final UserRepo userRepo;
 
@@ -32,38 +32,39 @@ public class UserService implements ReactiveUserDetailsService {
     }
 
     @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        return userRepo.findByUsername(username).flatMap(user -> {
-            if (user == null) {
-                var error = String.format("User(id=%s) not found", username);
-                log.error(error);
-                return Mono.error(new UsernameNotFoundException(error));
-            }
+    public UserDetails loadUserByUsername(String username) {
+        var user = userRepo.findByUsername(username);
 
-            int role = user.getRole();
-            List<Role> roles;
+        if (user.isEmpty()) {
+            var error = String.format("User(id=%s) not found", username);
+            log.error(error);
+            throw new UsernameNotFoundException(error);
+        }
 
-            if (role == 0) {
-                // Admin
-                roles = ROLE_LIST;
-            } else {
-                roles = Arrays.asList(ROLE_LIST.get(1), ROLE_LIST.get(role));
-            }
+        int role = user.get().getRole();
+        List<Role> roles;
 
-            user.setRoles(roles);
-            return Mono.just(user);
-        });
+        if (role == 0) {
+            // ADMIN ROLE
+            roles = ROLE_LIST;
+        } else {
+            roles = Arrays.asList(ROLE_LIST.get(1), ROLE_LIST.get(role));
+        }
+
+        user.get().setRoles(roles);
+
+        return user.get();
     }
 
-    public Mono<User> findById(Integer uid) {
+    public Optional<User> findById(Integer uid) {
         return userRepo.findById(uid);
     }
 
-    public Mono<String> getSecret(Integer uid) {
+    public Optional<String> getSecret(Integer uid) {
         return userRepo.getSecret(uid);
     }
 
-    public Mono<Void> updateSecret(Integer uid, String newSecret) {
-       return userRepo.updateSecret(uid, newSecret);
+    public void updateSecret(Integer uid, String newSecret) {
+        userRepo.updateSecret(uid, newSecret);
     }
 }

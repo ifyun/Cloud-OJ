@@ -5,13 +5,15 @@ spring:
     active: dev
   application:
     name: gateway
-  r2dbc:
-    url: r2dbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
-    pool:
-      min-idle: ${DB_POOL_SIZE:10}
-      max-size: ${DB_POOL_SIZE:10}
+    hikari:
+      minimum-idle: ${DB_POOL_SIZE:6}
+      maximum-pool-size: ${DB_POOL_SIZE:6}
   jackson:
     default-property-inclusion: non_null
   cache:
@@ -29,30 +31,28 @@ spring:
         instance-id: ${spring.application.name}-${server.port}-${random.int}
         health-check-critical-timeout: 5m
     gateway:
-      routes:
-        - id: core
-          uri: lb://core
-          filters:
-            - StripPrefix=2
-          predicates:
-            - Path=/api/core/**
-        - id: judge
-          uri: lb://judge
-          filters:
-            - StripPrefix=2
-          predicates:
-            - Path=/api/judge/**
-        - id: auth
-          uri: lb://gateway
-          filters:
-            - StripPrefix=2
-          predicates:
-            - Path=/api/auth/**
-      discovery:
-        locator:
-          enabled: true
-      observability:
-        enabled: false
+      mvc:
+        routes:
+          - id: core
+            uri: lb://core
+            filters:
+              - StripPrefix=2
+            predicates:
+              - Path=/api/core/**
+          - id: judge
+            uri: lb://judge
+            filters:
+              - StripPrefix=2
+            predicates:
+              - Path=/api/judge/**
+          - id: auth
+            uri: lb://gateway
+            filters:
+              - StripPrefix=2
+            predicates:
+              - Path=/api/auth/**
+    discovery:
+      enabled: true
 management:
   endpoint:
     health:

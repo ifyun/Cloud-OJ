@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Date;
 
@@ -19,17 +18,16 @@ public class JwtUtil {
     private final static ObjectMapper mapper = new ObjectMapper();
 
     private static SecretKey stringToSecretKey(String secret) {
-        return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public static String createJwt(User user, Object authorities, Integer validTime) {
         var now = System.currentTimeMillis();
         var expire = now + validTime * 3600000L;
 
-        return Jwts.builder()
-                .setIssuer("Cloud OJ")
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(expire))
+        return Jwts.builder().issuer("Cloud OJ")
+                .issuedAt(new Date(now))
+                .expiration(new Date(expire))
                 .claim("uid", user.getUid())
                 .claim("username", user.getUsername())
                 .claim("nickname", user.getNickname())
@@ -49,11 +47,11 @@ public class JwtUtil {
      */
     public static Claims getClaims(String jwt, String secret)
             throws JwtException, IllegalArgumentException {
-        return Jwts.parserBuilder()
-                .setSigningKey(stringToSecretKey(secret))
+        return Jwts.parser()
+                .verifyWith(stringToSecretKey(secret))
                 .build()
-                .parseClaimsJws(jwt)
-                .getBody();
+                .parseSignedClaims(jwt)
+                .getPayload();
     }
 
     /**

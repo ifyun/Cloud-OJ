@@ -2,17 +2,18 @@ package cloud.oj.gateway.repo;
 
 import cloud.oj.gateway.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepo {
 
-    private final DatabaseClient client;
+    private final JdbcClient client;
 
-    public Mono<User> findById(Integer uid) {
+    public Optional<User> findById(Integer uid) {
         return client.sql("""
                         select uid,
                                username,
@@ -27,12 +28,12 @@ public class UserRepo {
                         where uid = :uid
                           and deleted = false
                         """
-                ).bind("uid", uid)
-                .mapProperties(User.class)
-                .first();
+                ).param("uid", uid)
+                .query(User.class)
+                .optional();
     }
 
-    public Mono<User> findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return client.sql("""
                         select uid,
                                username,
@@ -47,22 +48,22 @@ public class UserRepo {
                         where username = :username
                           and deleted = false
                         """
-                ).bind("username", username)
-                .mapProperties(User.class)
-                .first();
+                ).param("username", username)
+                .query(User.class)
+                .optional();
     }
 
-    public Mono<String> getSecret(Integer uid) {
+    public Optional<String> getSecret(Integer uid) {
         return client.sql("select secret from user where uid = :uid")
-                .bind("uid", uid)
-                .mapValue(String.class)
-                .first();
+                .param("uid", uid)
+                .query(String.class)
+                .optional();
     }
 
-    public Mono<Void> updateSecret(Integer uid, String secret) {
-        return client.sql("update user set secret = :secret where uid = :uid")
-                .bind("secret", secret)
-                .bind("uid", uid)
-                .then();
+    public void updateSecret(Integer uid, String secret) {
+        client.sql("update user set secret = :secret where uid = :uid")
+                .param("secret", secret)
+                .param("uid", uid)
+                .update();
     }
 }
