@@ -3,7 +3,7 @@
     <source-code-view
       v-if="showSource"
       v-model:show="showSource"
-      :data="solution!" />
+      :data="solution" />
     <n-space v-else vertical>
       <n-input-group style="width: 520px">
         <n-select
@@ -11,9 +11,9 @@
           :options="filterOptions"
           style="width: 180px"
           @update:value="filterChange" />
-        <n-input v-model:value="filterValue" :disabled="filter == 0" />
+        <n-input v-model:value="filterValue" :disabled="filter === 0" />
         <n-button
-          :disabled="filter == 0"
+          :disabled="filter === 0"
           type="primary"
           secondary
           @click="search">
@@ -34,7 +34,7 @@
         v-model:page="pagination.page"
         simple
         :page-size="pagination.pageSize"
-        :item-count="solutions.count"
+        :item-count="solutions.total"
         @update:page="pageChange">
         <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
       </n-pagination>
@@ -95,10 +95,10 @@ const pagination = ref({
 
 const solutions = ref<Page<JudgeResult>>({
   data: [],
-  count: 0
+  total: 0
 })
 
-const solution = ref<JudgeResult | null>(null)
+const solution = ref<JudgeResult>(new JudgeResult())
 const filter = ref<number>(0)
 const filterValue = ref<string>("")
 const filterOptions = [

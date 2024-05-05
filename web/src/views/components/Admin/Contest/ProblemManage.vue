@@ -9,7 +9,7 @@
         v-model:page="pagination.page"
         simple
         :page-size="pagination.pageSize"
-        :item-count="problems.count"
+        :item-count="problems.total"
         @update:page="queryProblems">
         <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
       </n-pagination>
@@ -62,7 +62,7 @@ const dialog = useDialog()
 const orderChanged = ref<boolean>(false)
 const problems = ref<Page<Problem>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 const contestProblems = ref<Array<Problem>>([])

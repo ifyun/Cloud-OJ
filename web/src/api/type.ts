@@ -150,7 +150,7 @@ export class RankingContest {
  */
 export type Page<T> = {
   data: T[]
-  count: number
+  total: number
 }
 
 export type SubmitData = {

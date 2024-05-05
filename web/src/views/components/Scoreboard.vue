@@ -11,7 +11,7 @@
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
-          :item-count="rankings.count"
+          :item-count="rankings.total"
           @update:page="pageChange" />
       </n-space>
     </div>
@@ -49,11 +49,11 @@ const pagination = ref({
 const loading = ref<boolean>(true)
 const rankings = ref<Page<Ranking>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 const noContent = computed<boolean>(
-  () => !loading.value && rankings.value.count === 0
+  () => !loading.value && rankings.value.total === 0
 )
 
 const rankingColumns: DataTableColumns<Ranking> = [

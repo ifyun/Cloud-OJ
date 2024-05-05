@@ -29,7 +29,7 @@ const ProblemApi = {
           if (res.status === 200) {
             resolve(res.data as Page<Problem>)
           } else {
-            resolve({ data: [], count: 0 })
+            resolve({ data: [], total: 0 })
           }
         })
         .catch((error) => {
@@ -57,7 +57,7 @@ const ProblemApi = {
           if (res.status === 200) {
             resolve(res.data as Page<Problem>)
           } else {
-            resolve({ data: [], count: 0 })
+            resolve({ data: [], total: 0 })
           }
         })
         .catch((error) => {

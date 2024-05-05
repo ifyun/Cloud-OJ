@@ -13,8 +13,8 @@
             clearable
             show-count
             maxlength="15"
-            :disabled="filter == 0" />
-          <n-button type="primary" :disabled="filter == 0" @click="search">
+            :disabled="filter === 0" />
+          <n-button type="primary" :disabled="filter === 0" @click="search">
             <template #icon>
               <n-icon>
                 <search-icon />
@@ -31,7 +31,7 @@
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
-          :item-count="users.count"
+          :item-count="users.total"
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
@@ -102,7 +102,7 @@ const loading = ref<boolean>(true)
 const showOperations = ref<boolean>(false)
 const users = ref<Page<User>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 const pagination = ref({

@@ -56,7 +56,7 @@
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
-          :item-count="problems.count"
+          :item-count="problems.total"
           @update:page="pageChange">
           <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
         </n-pagination>
@@ -81,11 +81,11 @@ import { ErrorResult } from "@/components"
 import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
 import {
-  PostAddRound as AddIcon,
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
   FolderZipRound as FolderIcon,
   ManageSearchRound,
+  PostAddRound as AddIcon,
   SearchRound
 } from "@vicons/material"
 import {
@@ -124,7 +124,7 @@ const pagination = ref({
 
 const problems = ref<Page<Problem>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 const point = ref({
@@ -237,7 +237,7 @@ const problemColumns: DataTableColumns<Problem> = [
       <NSwitch
         value={row.enable}
         round={false}
-        onUpdateValue={(value) => toggleIsEnable(row, value)}>
+        onUpdateValue={(value: boolean) => toggleIsEnable(row, value)}>
         {{ checked: () => "开放", unchecked: () => "禁用" }}
       </NSwitch>
     )
@@ -332,7 +332,7 @@ function deleteProblem() {
         style="margin-top: 24px">
         <NInput
           placeholder={selectedTitle}
-          onUpdateValue={(value) => (confirmDelete = value)}
+          onUpdateValue={(value: string) => (confirmDelete = value)}
         />
       </NFormItem>
     ),

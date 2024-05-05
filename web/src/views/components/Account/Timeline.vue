@@ -1,7 +1,7 @@
 <template>
   <div>
     <n-h3 strong style="margin-bottom: 16px">最近记录</n-h3>
-    <n-empty v-if="solutions.count === 0" description="没有记录" />
+    <n-empty v-if="solutions.total === 0" description="没有记录" />
     <n-timeline style="padding: 0 6px">
       <n-timeline-item
         v-for="s in solutions.data"

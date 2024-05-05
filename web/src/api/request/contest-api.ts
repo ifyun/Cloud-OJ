@@ -63,7 +63,7 @@ const ContestApi = {
         }
       })
         .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], count: 0 })
+          resolve(res.status === 200 ? res.data : { data: [], total: 0 })
         })
         .catch((error) => {
           reject(resolveError(error))
@@ -131,7 +131,7 @@ const ContestApi = {
         }
       })
         .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], count: 0 })
+          resolve(res.status === 200 ? res.data : { data: [], total: 0 })
         })
         .catch((error) => {
           reject(resolveError(error))

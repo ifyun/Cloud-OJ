@@ -8,8 +8,6 @@ import type { AxiosResponse } from "axios"
 const AuthApi = {
   /**
    * 登录
-   *
-   * @param user {@link User}
    */
   login(user: UsernamePassword): Promise<string> {
     return new Promise<string>((resolve, reject) => {

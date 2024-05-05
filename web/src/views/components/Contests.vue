@@ -10,7 +10,7 @@
         <n-pagination
           v-model:page="pagination.page"
           :page-size="pagination.pageSize"
-          :item-count="contests.count"
+          :item-count="contests.total"
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
@@ -61,11 +61,11 @@ const loading = ref<boolean>(true)
 const selectedContest = ref<Contest | null>(null)
 const contests = ref<Page<Contest>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 const noContent = computed<boolean>(
-  () => !loading.value && contests.value.count === 0
+  () => !loading.value && contests.value.total === 0
 )
 
 const contestColumns: DataTableColumns<Contest> = [
@@ -198,7 +198,7 @@ function calcTimeRange(c: Contest): string {
   const s = dayjs.unix(c.startAt!)
   const e = dayjs.unix(c.endAt!)
 
-  let str = ""
+  let str: string
 
   if (s.isSame(now, "day")) {
     str = s.format("今天 H:mm ~ ")
