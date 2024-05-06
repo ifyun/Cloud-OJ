@@ -3,10 +3,10 @@ package cloud.oj.judge.component;
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.constant.Language;
 import cloud.oj.judge.constant.State;
-import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Compile;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
+import cloud.oj.judge.repo.SolutionRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -35,7 +35,7 @@ public class Compiler {
 
     private final AppConfig appConfig;
 
-    private final SolutionDao solutionDao;
+    private final SolutionRepo solutionRepo;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
 
@@ -53,7 +53,7 @@ public class Compiler {
         var language = solution.getLanguage();
         var sourceCode = solution.getSourceCode();
         // 更新为正在编译状态
-        solutionDao.updateState(solutionId, State.COMPILING);
+        solutionRepo.updateState(solutionId, State.COMPILING);
 
         try {
             Language.check(language);

@@ -8,12 +8,12 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?allowMultiQueries=true&serverTimezone=UTC
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/cloud_oj?serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
     hikari:
-      minimum-idle: ${DB_POOL_SIZE:5}
-      maximum-pool-size: ${DB_POOL_SIZE:5}
+      minimum-idle: ${DB_POOL_SIZE:6}
+      maximum-pool-size: ${DB_POOL_SIZE:6}
   rabbitmq:
     host: ${RABBIT_URL:localhost}
     port: ${RABBIT_PORT:5672}
@@ -39,7 +39,3 @@ management:
   endpoint:
     health:
       show-details: always
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: on
-  mapper-locations: classpath:mybatis/mapper/*.xml

@@ -8,9 +8,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * <h3>使用 ROOT 权限运行</h3>
+ * <h2>使用 ROOT 权限运行</h2>
  *
- * <code>sudo mvn spring-boot:run</code>
+ * <b><code>sudo mvn spring-boot:run</code></b>
  */
 @EnableDiscoveryClient
 @SpringBootApplication

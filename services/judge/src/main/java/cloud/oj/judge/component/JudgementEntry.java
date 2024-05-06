@@ -1,8 +1,8 @@
 package cloud.oj.judge.component;
 
-import cloud.oj.judge.dao.SettingsDao;
-import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Solution;
+import cloud.oj.judge.repo.SettingsRepo;
+import cloud.oj.judge.repo.SolutionRepo;
 import cloud.oj.judge.utils.FileCleaner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +17,9 @@ import static cloud.oj.judge.entity.Result.IE;
 @RequiredArgsConstructor
 public class JudgementEntry {
 
-    private final SettingsDao settingsDao;
+    private final SettingsRepo settingsRepo;
 
-    private final SolutionDao solutionDao;
+    private final SolutionRepo solutionRepo;
 
     private final Judgement judgement;
 
@@ -37,9 +37,9 @@ public class JudgementEntry {
             log.error(msg);
             // 判题发生异常，将结果设置为内部错误
             solution.endWithError(IE, msg);
-            solutionDao.updateWithResult(solution);
+            solutionRepo.updateResult(solution);
         } finally {
-            if (settingsDao.isAutoDelSolutions()) {
+            if (settingsRepo.autoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());
             }
         }

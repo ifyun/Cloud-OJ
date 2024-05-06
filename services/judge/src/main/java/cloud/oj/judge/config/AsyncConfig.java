@@ -34,6 +34,7 @@ public class AsyncConfig {
                 try {
                     executor.getQueue().put(r);
                 } catch (InterruptedException e) {
+                    log.error(e.getMessage());
                     throw new RejectedExecutionException("Task " + r + " rejected");
                 }
             }
@@ -43,8 +44,8 @@ public class AsyncConfig {
     @Bean
     public Executor judgeExecutor() {
         var threads = appConfig.getCpus().size();
-
         var executor = new ThreadPoolTaskExecutor();
+
         executor.setThreadNamePrefix(THREAD_PREFIX);
         executor.setCorePoolSize(threads);
         executor.setMaxPoolSize(threads);
@@ -52,6 +53,7 @@ public class AsyncConfig {
         executor.setQueueCapacity(0);
         executor.setRejectedExecutionHandler(new BlockPolicy());
         executor.initialize();
+
         return executor;
     }
 

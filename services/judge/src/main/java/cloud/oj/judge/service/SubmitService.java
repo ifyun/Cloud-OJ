@@ -1,16 +1,15 @@
 package cloud.oj.judge.service;
 
 import cloud.oj.judge.config.RabbitConfig;
-import cloud.oj.judge.dao.*;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.error.GenericException;
+import cloud.oj.judge.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SubmitService {
 
-    private final ProblemDao problemDao;
+    private final ProblemRepo problemRepo;
 
-    private final ContestDao contestDao;
+    private final ContestRepo contestRepo;
 
-    private final InviteeDao inviteeDao;
+    private final InviteeRepo inviteeRepo;
 
-    private final SolutionDao solutionDao;
+    private final SolutionRepo solutionRepo;
 
-    private final SourceDao sourceDao;
+    private final SourceRepo sourceRepo;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -38,48 +37,52 @@ public class SubmitService {
      *
      * @param data    {@link SubmitData}
      * @param isAdmin 是否为管理员
-     * @return {@link ResponseEntity}
+     * @return {@link Long} 提交时间(unix timestamp)
      */
-    public ResponseEntity<?> submitCode(SubmitData data, boolean isAdmin) {
+    public Long submitCode(SubmitData data, boolean isAdmin) {
         data.setSubmitTime(System.currentTimeMillis());
-        var contestId = data.getContestId();
+        var cid = data.getContestId();
 
         if (data.getSourceCode().trim().isEmpty()) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "代码为空，不准提交");
         }
 
-        if (contestId != null) {
+        if (cid != null) {
             // 竞赛提交
-            var contest = contestDao.getContest(contestId);
+            var contest = contestRepo.selectById(cid);
 
-            if (Boolean.FALSE.equals(inviteeDao.checkInvitee(contestId, data.getUid()))) {
-                throw new GenericException(HttpStatus.FORBIDDEN, "非邀请用户");
+            if (contest.isEmpty()) {
+                throw new GenericException(HttpStatus.NOT_FOUND, "竞赛不存在");
             }
 
-            if (!contest.isStarted()) {
+            if (Boolean.FALSE.equals(inviteeRepo.checkInvitee(cid, data.getUid()))) {
+                throw new GenericException(HttpStatus.FORBIDDEN, "未加入竞赛");
+            }
+
+            if (!contest.get().isStarted()) {
                 throw new GenericException(HttpStatus.FORBIDDEN, "未开始，不准提交");
             }
 
-            if (contest.isEnded()) {
+            if (contest.get().isEnded()) {
                 throw new GenericException(HttpStatus.FORBIDDEN, "已结束，不准提交");
             }
 
             // 检查语言
             var lang = 1 << data.getLanguage();
-            var languages = contest.getLanguages();
+            var languages = contest.get().getLanguages();
 
             if ((languages & lang) != lang) {
                 throw new GenericException(HttpStatus.BAD_REQUEST, "不准使用该语言");
             }
         } else {
             // 非竞赛提交
-            if (!isAdmin && !problemDao.isEnable(data.getProblemId())) {
+            if (!isAdmin && !problemRepo.isEnable(data.getProblemId())) {
                 throw new GenericException(HttpStatus.FORBIDDEN, "未开放，不准提交");
             }
         }
 
         rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
-        return ResponseEntity.accepted().body(data.getSubmitTime());
+        return data.getSubmitTime();
     }
 
     /**
@@ -96,10 +99,9 @@ public class SubmitService {
                 submitData.getSubmitTime(),
                 submitData.getSourceCode()
         );
-
-        solutionDao.create(solution);
         // solutionId 由数据库生成
-        sourceDao.create(solution.getSolutionId(), submitData.getSourceCode());
+        solutionRepo.insert(solution);
+        sourceRepo.insert(solution.getSolutionId(), submitData.getSourceCode());
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }

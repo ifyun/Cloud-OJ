@@ -26,7 +26,8 @@ public class SubmitController {
     @PostMapping("submit")
     public ResponseEntity<?> submit(@RequestHeader Integer uid, @RequestBody SubmitData data) {
         data.setUid(uid);
-        return submitService.submitCode(data, false);
+        var time = submitService.submitCode(data, false);
+        return ResponseEntity.accepted().body(time);
     }
 
     /**
@@ -35,6 +36,7 @@ public class SubmitController {
     @PostMapping("admin/submit")
     public ResponseEntity<?> adminSubmit(@RequestHeader Integer uid, @RequestBody SubmitData data) {
         data.setUid(uid);
-        return submitService.submitCode(data, true);
+        var time = submitService.submitCode(data, true);
+        return ResponseEntity.accepted().body(time);
     }
 }

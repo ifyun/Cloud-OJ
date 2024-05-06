@@ -2,13 +2,13 @@ package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
 import cloud.oj.judge.constant.State;
-import cloud.oj.judge.dao.ProblemDao;
-import cloud.oj.judge.dao.RankingDao;
-import cloud.oj.judge.dao.SolutionDao;
 import cloud.oj.judge.entity.Problem;
 import cloud.oj.judge.entity.Result;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.error.UnsupportedLanguageError;
+import cloud.oj.judge.repo.ProblemRepo;
+import cloud.oj.judge.repo.ScoreboardRepo;
+import cloud.oj.judge.repo.SolutionRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +31,11 @@ public class Judgement {
 
     private final AppConfig appConfig;
 
-    private final ProblemDao problemDao;
+    private final ProblemRepo problemRepo;
 
-    private final SolutionDao solutionDao;
+    private final SolutionRepo solutionRepo;
 
-    private final RankingDao rankingDao;
+    private final ScoreboardRepo scoreboardRepo;
 
     private final Compiler compiler;
 
@@ -47,6 +47,7 @@ public class Judgement {
 
     /**
      * 判题入口
+     *
      * <p>隔离级别：读提交</p>
      *
      * @param solution {@link Solution}
@@ -57,35 +58,36 @@ public class Judgement {
 
         if (compile.getState() == 0) {
             // 编译成功
-            var problem = problemDao.getById(solution.getProblemId());
+            var problem = problemRepo.selectById(solution.getProblemId());
             // 更新为正在运行状态
-            solutionDao.updateState(solution.getSolutionId(), State.RUNNING);
+            solutionRepo.updateState(solution.getSolutionId(), State.RUNNING);
             // 运行
             var result = execute(solution, problem);
             saveResult(solution, result, problem);
         } else {
             // 编译失败
             solution.endWithError(CE, compile.getInfo());
-            solutionDao.updateWithResult(solution);
+            solutionRepo.updateResult(solution);
         }
     }
 
     /**
      * 保存判题结果
+     *
      * <p>计算分数并更新排名</p>
      *
      * @param result {@link Result}
      */
     private void saveResult(Solution solution, Result result, Problem problem) {
-        // 内部错误
+        // 内部错误，结束
         if (result.getResult().equals(IE)) {
             solution.endWithError(result.getResult(), result.getError());
-            solutionDao.updateWithResult(solution);
+            solutionRepo.updateResult(solution);
             return;
         }
 
         var err = result.getError();
-        // 运行时错误
+        // 运行时错误，仍然统计分数
         if (err != null && err.isEmpty()) {
             solution.setErrorInfo(result.getError());
         }
@@ -101,7 +103,7 @@ public class Judgement {
         }
 
         // 查询历史提交中的最高分
-        var maxScore = solutionDao.getMaxScoreOfUser(uid, problemId, contestId);
+        var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
 
         solution.setTotal(result.getTotal());
         solution.setPassed(result.getPassed());
@@ -112,22 +114,22 @@ public class Judgement {
         solution.setResult(result.getResult());
         solution.setState(State.JUDGED);
 
-        solutionDao.updateWithResult(solution);
+        solutionRepo.updateResult(solution);
 
         // 更新排名
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
         if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
             if (contestId == null) {
-                rankingDao.update(uid, solution.getSubmitTime());
+                scoreboardRepo.update(uid, solution.getSubmitTime());
             } else {
-                rankingDao.updateForContest(contestId, uid, solution.getSubmitTime());
+                scoreboardRepo.updateOfContest(contestId, uid, solution.getSubmitTime());
             }
         } else {
             // 仅更新提交次数
             if (contestId == null) {
-                rankingDao.incCommitted(uid, solution.getSubmitTime());
+                scoreboardRepo.incSubmitted(uid, solution.getSubmitTime());
             } else {
-                rankingDao.incCommittedForContest(uid, contestId, solution.getSubmitTime());
+                scoreboardRepo.incSubmittedOfContest(uid, contestId, solution.getSubmitTime());
             }
         }
     }
@@ -169,7 +171,7 @@ public class Judgement {
             if (process.exitValue() != 0) {
                 // 非零退出
                 log.error(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
-                result = withError(IE, "JUDGE NON-ZERO EXIT");
+                result = withError(IE, "JUDGE 非零退出");
             } else {
                 result = objectMapper.readValue(process.getInputStream(), Result.class);
             }
@@ -177,10 +179,10 @@ public class Judgement {
             result = withError(IE, e.getMessage());
         } catch (InterruptedException e) {
             log.error(e.getMessage());
-            result = withError(IE, "JUDGE THREAD ERROR");
+            result = withError(IE, "JUDGE 线程错误");
         } catch (IOException e) {
             log.error(e.getMessage());
-            result = withError(IE, "JUDGE THREAD IO ERROR");
+            result = withError(IE, "JUDGE 线程 IO 错误");
         } finally {
             if (process != null) {
                 process.destroy();
