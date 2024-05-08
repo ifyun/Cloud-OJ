@@ -1,7 +1,7 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.User;
-import cloud.oj.core.entity.UserStatistic;
+import cloud.oj.core.entity.UserStatistics;
 import cloud.oj.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class UserController {
      * @param tz 时区
      */
     @GetMapping(path = "overview")
-    public ResponseEntity<UserStatistic> getOverview(Integer uid, Integer year, String tz) {
+    public ResponseEntity<UserStatistics> getOverview(Integer uid, Integer year, String tz) {
         return ResponseEntity.ok(userService.getOverview(uid, year, tz));
     }
 

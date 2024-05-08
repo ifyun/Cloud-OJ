@@ -10,7 +10,7 @@
 import { useStore } from "@/store"
 import { DarkModeRound, LightModeRound } from "@vicons/material"
 import { NIcon, NSwitch } from "naive-ui"
-import { computed, CSSProperties, RendererNode } from "vue"
+import { computed, type CSSProperties, type RendererNode } from "vue"
 
 let icon: RendererNode | null = null
 

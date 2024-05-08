@@ -7,8 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class UserStatistic {
-    private Result result;
+public class UserStatistics {
+    private Results results;
     private List<Language> preference;
     private List<Activity> activities;
 }

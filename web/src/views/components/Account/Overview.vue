@@ -2,7 +2,7 @@
   <n-space vertical>
     <div id="chart-1">
       <languages :languages="overview.preference" style="flex: 0.5" />
-      <results-panel :data="overview.statistics" style="flex: 0.5" />
+      <results-panel :data="overview.results" style="flex: 0.5" />
     </div>
     <n-divider />
     <heatmap :data="overview.activities" :year="year.toString()" />

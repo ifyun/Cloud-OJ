@@ -65,12 +65,12 @@
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage } from "@/api/type"
-import { LanguageOption, LanguageOptions } from "@/type"
+import { type LanguageOption, LanguageOptions } from "@/type"
 import { LanguageUtil, setTitle } from "@/utils"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import dayjs from "dayjs"
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NDatePicker,
   NForm,

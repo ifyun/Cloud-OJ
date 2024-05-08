@@ -47,14 +47,14 @@ export default {
 
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
-import { ErrorMessage, Page, Problem } from "@/api/type"
+import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { EmptyData } from "@/components"
 import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NIcon,
@@ -64,7 +64,7 @@ import {
   NSpace,
   NTag
 } from "naive-ui"
-import { Component, computed, nextTick, onBeforeMount, ref } from "vue"
+import { type Component, computed, nextTick, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()

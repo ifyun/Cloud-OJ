@@ -5,17 +5,17 @@
 </template>
 
 <script setup lang="ts">
-import { Activity } from "@/api/type"
+import { type Activity } from "@/api/type"
 import { useStore } from "@/store"
-import { HeatmapChart, HeatmapSeriesOption } from "echarts/charts"
+import { HeatmapChart, type HeatmapSeriesOption } from "echarts/charts"
 import {
   CalendarComponent,
-  CalendarComponentOption,
+  type CalendarComponentOption,
   VisualMapComponent,
-  VisualMapComponentOption
+  type VisualMapComponentOption
 } from "echarts/components"
 import * as echarts from "echarts/core"
-import { EChartsType } from "echarts/core"
+import { type EChartsType } from "echarts/core"
 import { SVGRenderer } from "echarts/renderers"
 import { computed, nextTick, onMounted, watch } from "vue"
 

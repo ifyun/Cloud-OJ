@@ -58,7 +58,7 @@ import {
   ErrorRound
 } from "@vicons/material"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NFormItem,
@@ -70,7 +70,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { Component, computed, onBeforeMount, ref } from "vue"
+import { type Component, computed, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const store = useStore()

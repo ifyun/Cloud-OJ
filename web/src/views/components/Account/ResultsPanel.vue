@@ -8,19 +8,19 @@
 </template>
 
 <script setup lang="ts">
-import { Statistics } from "@/api/type"
+import { type Results } from "@/api/type"
 import { useStore } from "@/store"
-import { PieChart, PieSeriesOption } from "echarts/charts"
+import { PieChart, type PieSeriesOption } from "echarts/charts"
 import {
   LegendComponent,
-  LegendComponentOption,
+  type LegendComponentOption,
   TitleComponent,
-  TitleComponentOption,
+  type TitleComponentOption,
   TooltipComponent,
-  TooltipComponentOption
+  type TooltipComponentOption
 } from "echarts/components"
 import * as echarts from "echarts/core"
-import { EChartsType } from "echarts/core"
+import { type EChartsType } from "echarts/core"
 import { SVGRenderer } from "echarts/renderers"
 import { NH3 } from "naive-ui"
 import { computed, nextTick, onMounted, watch } from "vue"
@@ -79,7 +79,7 @@ const keys = ["AC", "WA", "TLE", "MLE", "RE", "CE"]
 const store = useStore()
 
 const props = defineProps<{
-  data: Statistics
+  data: Results
 }>()
 
 const chartTheme = computed(() => {
@@ -112,7 +112,7 @@ watch(chartTheme, (val) => {
 
 watch(
   () => props.data,
-  (val: Statistics) => {
+  (val: Results) => {
     nextTick(() => {
       ;(option.series as PieSeriesOption).data = []
 
@@ -123,7 +123,7 @@ watch(
         keys.forEach((key) => {
           ;(option.series as PieSeriesOption).data?.push({
             name: key,
-            value: (val as any)[key]
+            value: val[key]
           })
         })
       }

@@ -92,7 +92,7 @@ import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NCard,
   NForm,

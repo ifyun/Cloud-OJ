@@ -20,13 +20,13 @@
 
 <script setup lang="tsx">
 import { RankingApi } from "@/api/request"
-import { ErrorMessage, Page, Ranking } from "@/api/type"
+import { ErrorMessage, type Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { StarsRound } from "@vicons/material"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NIcon,

@@ -21,7 +21,7 @@ import { useStore } from "@/store"
 import { themeBase, themeDark } from "@/theme"
 import {
   dateZhCN,
-  GlobalThemeOverrides,
+  type GlobalThemeOverrides,
   NConfigProvider,
   NGlobalStyle,
   zhCN

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { Language } from "@/api/type"
+import { type Language } from "@/api/type"
 import { LanguageColors, LanguageNames } from "@/type"
 import { CircleRound } from "@vicons/material"
 import { NEmpty, NH3, NIcon, NText } from "naive-ui"

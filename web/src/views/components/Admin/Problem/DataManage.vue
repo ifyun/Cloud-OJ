@@ -85,7 +85,7 @@ import {
   UnarchiveRound,
   VerifiedRound
 } from "@vicons/material"
-import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
+import CodeMirror, { type Editor, type EditorConfiguration } from "codemirror"
 import "codemirror/addon/edit/closebrackets.js"
 import "codemirror/addon/edit/matchbrackets.js"
 import "codemirror/lib/codemirror.css"
@@ -93,7 +93,7 @@ import "codemirror/mode/clike/clike.js"
 import "codemirror/theme/material-darker.css"
 import "codemirror/theme/ttcn.css"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NAlert,
   NButton,
   NButtonGroup,
@@ -108,7 +108,7 @@ import {
   NText,
   NUpload,
   NUploadDragger,
-  UploadFileInfo,
+  type UploadFileInfo,
   useDialog,
   useMessage
 } from "naive-ui"

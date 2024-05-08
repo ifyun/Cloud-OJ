@@ -42,7 +42,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setHeader("Content-Type", "application/json");
-            response.getOutputStream().write(mapper.writeValueAsBytes(error));
+            response.getWriter().write(mapper.writeValueAsString(error));
+            response.getWriter().flush();
         }
     }
 
@@ -62,7 +63,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new UsernameNotFoundException("Bad authentication data");
         }
 
-        return this.getAuthenticationManager().authenticate(authConverter.convert(request));
+        return this.getAuthenticationManager().authenticate(auth);
     }
 
     @Override

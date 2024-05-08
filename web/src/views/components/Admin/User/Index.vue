@@ -52,7 +52,7 @@
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, Page, User } from "@/api/type"
+import { ErrorMessage, type Page, User } from "@/api/type"
 import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
@@ -68,7 +68,7 @@ import {
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NDropdown,
@@ -82,7 +82,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()

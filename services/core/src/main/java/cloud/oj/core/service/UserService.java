@@ -2,7 +2,7 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.User;
-import cloud.oj.core.entity.UserStatistic;
+import cloud.oj.core.entity.UserStatistics;
 import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.*;
 import lombok.RequiredArgsConstructor;
@@ -133,7 +133,7 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserStatistic getOverview(Integer uid, Integer year, String tz) {
+    public UserStatistics getOverview(Integer uid, Integer year, String tz) {
         String timezone = "+8:00";
 
         if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
@@ -142,11 +142,11 @@ public class UserService {
 
         commonRepo.setTimezone(timezone);
 
-        var userStatistic = new UserStatistic();
+        var userStatistic = new UserStatistics();
 
         userStatistic.setPreference(userStatisticRepo.selectLanguages(uid));
         userStatistic.setActivities(userStatisticRepo.selectActivities(uid, year));
-        userStatistic.setResult(userStatisticRepo.selectResults(uid));
+        userStatistic.setResults(userStatisticRepo.selectResults(uid));
 
         return userStatistic;
     }

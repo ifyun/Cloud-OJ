@@ -50,7 +50,7 @@ export default {
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
 import { SourceCodeView } from "@/components"
 import { useStore } from "@/store"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
@@ -64,7 +64,7 @@ import {
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NIcon,
@@ -78,7 +78,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { Component, nextTick, onBeforeMount, ref } from "vue"
+import { type Component, nextTick, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()

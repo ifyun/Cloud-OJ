@@ -2,7 +2,7 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Activity;
 import cloud.oj.core.entity.Language;
-import cloud.oj.core.entity.Result;
+import cloud.oj.core.entity.Results;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -47,7 +47,7 @@ public class UserStatisticRepo {
                 .list();
     }
 
-    public Result selectResults(Integer uid) {
+    public Results selectResults(Integer uid) {
         return client.sql("""
                         select count(result = 'AC' or null)  as AC,
                                count(result = 'WA' or null)  as WA,
@@ -62,7 +62,7 @@ public class UserStatisticRepo {
                           and result <> 'JUDGE_ERROR'
                         """)
                 .param("uid", uid)
-                .query(Result.class)
+                .query(Results.class)
                 .single();
     }
 }

@@ -39,7 +39,7 @@ import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { Lock as PasswordIcon, User as UserIcon } from "@vicons/fa"
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NForm,
   NFormItem,

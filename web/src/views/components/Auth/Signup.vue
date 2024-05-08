@@ -94,12 +94,12 @@ import { setTitle } from "@/utils"
 import {
   Building,
   Envelope as MailIcon,
+  IdCard as UsernameIcon,
   Lock as PasswordIcon,
-  User as UserIcon,
-  IdCard as UsernameIcon
+  User as UserIcon
 } from "@vicons/fa"
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NForm,
   NFormItem,

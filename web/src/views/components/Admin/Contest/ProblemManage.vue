@@ -32,14 +32,14 @@
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { ErrorMessage, Page, Problem } from "@/api/type"
+import { ErrorMessage, type Page, Problem } from "@/api/type"
 import {
   ArrowDownwardRound,
   ArrowUpwardRound,
   SaveRound
 } from "@vicons/material"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NButtonGroup,
   NDataTable,

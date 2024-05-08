@@ -88,7 +88,7 @@ import { RankingApi } from "@/api/request"
 import { ErrorMessage, RankingContest } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { StateTag, setTitle, stateTag } from "@/utils"
+import { setTitle, type StateTag, stateTag } from "@/utils"
 import { StarsRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {

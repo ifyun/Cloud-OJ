@@ -76,7 +76,7 @@
 
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
-import { ErrorMessage, Page, Problem } from "@/api/type"
+import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { ErrorResult } from "@/components"
 import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
@@ -89,7 +89,7 @@ import {
   SearchRound
 } from "@vicons/material"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NButtonGroup,
   NDataTable,
@@ -105,7 +105,7 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()

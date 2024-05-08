@@ -76,6 +76,15 @@ public class TokenVerifyFilter extends GenericFilterBean {
 
             return Collections.enumeration(set);
         }
+
+        @Override
+        public Enumeration<String> getHeaders(String name) {
+            if (headers.containsKey(name)) {
+                return Collections.enumeration(Collections.singletonList(headers.get(name)));
+            }
+
+            return super.getHeaders(name);
+        }
     }
 
     /**
@@ -148,7 +157,8 @@ public class TokenVerifyFilter extends GenericFilterBean {
 
             httpResponse.setStatus(status.value());
             httpResponse.setHeader("Content-Type", "application/json");
-            httpResponse.getOutputStream().write(objectMapper.writeValueAsBytes(errorMessage));
+            httpResponse.getWriter().write(objectMapper.writeValueAsString(errorMessage));
+            httpResponse.getWriter().flush();
         }
     }
 }

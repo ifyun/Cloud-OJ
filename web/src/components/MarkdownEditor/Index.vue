@@ -12,7 +12,7 @@
 <script setup lang="tsx">
 import { ApiPath } from "@/api"
 import { ArchiveRound as ArchiveIcon } from "@vicons/material"
-import CodeMirror, { Editor, EditorConfiguration } from "codemirror"
+import CodeMirror, { type Editor, type EditorConfiguration } from "codemirror"
 import "codemirror/addon/scroll/simplescrollbars"
 import "codemirror/addon/scroll/simplescrollbars.css"
 import "codemirror/lib/codemirror.css"
@@ -26,8 +26,8 @@ import {
   NText,
   NUpload,
   NUploadDragger,
-  UploadFileInfo,
-  UploadInst,
+  type UploadFileInfo,
+  type UploadInst,
   useDialog
 } from "naive-ui"
 import { nextTick, onMounted, ref, watch } from "vue"

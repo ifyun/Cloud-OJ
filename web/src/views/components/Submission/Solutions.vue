@@ -52,7 +52,7 @@ export default {
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, JudgeResult, Page } from "@/api/type"
+import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -80,7 +80,7 @@ const message = useMessage()
 const loading = ref<boolean>(true)
 const solutions = ref<Page<JudgeResult>>({
   data: [],
-  count: 0
+  total: 0
 })
 
 onBeforeMount(() => {

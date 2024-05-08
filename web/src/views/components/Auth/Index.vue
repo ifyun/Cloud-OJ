@@ -34,7 +34,7 @@ import { useStore } from "@/store"
 import { themeDark } from "@/theme"
 import BottomInfo from "@/views/layout/BottomInfo.vue"
 import {
-  GlobalThemeOverrides,
+  type GlobalThemeOverrides,
   NConfigProvider,
   NLayout,
   NLayoutContent,

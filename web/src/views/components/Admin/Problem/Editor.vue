@@ -133,7 +133,7 @@ import {
   SaveOutlined as SaveIcon
 } from "@vicons/material"
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NDrawer,
   NDrawerContent,

@@ -1,6 +1,6 @@
 import axios, { ApiPath, resolveError } from "@/api"
 import { Settings } from "@/api/type"
-import { AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
 
 const SettingsApi = {
   get(): Promise<Settings> {

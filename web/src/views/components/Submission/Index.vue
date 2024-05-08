@@ -82,10 +82,10 @@
 
 <script setup lang="ts">
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
-import { ErrorMessage, Problem, SubmitData } from "@/api/type"
+import { ErrorMessage, Problem, type SubmitData } from "@/api/type"
 import { CodeEditor, MarkdownView } from "@/components"
 import { useStore } from "@/store"
-import { SourceCode } from "@/type"
+import { type SourceCode } from "@/type"
 import { setTitle } from "@/utils"
 import {
   DataSaverOffRound,

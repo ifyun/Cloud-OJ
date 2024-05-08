@@ -191,13 +191,8 @@ export type Language = {
   language: number
 }
 
-export type Statistics = {
-  AC: number
-  WA: number
-  CE: number
-  RE: number
-  MLE: number
-  TLE: number
+export type Results = {
+  [key: string]: number
   total: number
 }
 
@@ -208,7 +203,7 @@ export type Activity = {
 
 export class Overview {
   preference: Array<Language> = []
-  statistics: Statistics = {
+  results: Results = {
     AC: 0,
     WA: 0,
     CE: 0,

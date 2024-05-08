@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@/api/type"
-import { GlobalTheme, darkTheme } from "naive-ui"
+import { darkTheme, type GlobalTheme } from "naive-ui"
 import { defineStore } from "pinia"
 
 const THEME = "theme"

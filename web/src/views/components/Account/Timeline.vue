@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { UserApi } from "@/api/request"
-import { JudgeResult, Page } from "@/api/type"
+import { JudgeResult, type Page } from "@/api/type"
 import { LanguageNames, ResultTypes } from "@/type"
 import dayjs from "dayjs"
 import { NButton, NEmpty, NH3, NTimeline, NTimelineItem } from "naive-ui"
@@ -31,7 +31,7 @@ import { RouterLink } from "vue-router"
 
 const timeFmt = "YYYY/MM/DD HH:mm:ss"
 
-const solutions = ref<Page<JudgeResult>>({ data: [], count: 0 })
+const solutions = ref<Page<JudgeResult>>({ data: [], total: 0 })
 
 onBeforeMount(() => {
   UserApi.getSolutions(1, 5).then((data) => {

@@ -42,7 +42,7 @@
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, Page } from "@/api/type"
+import { Contest, ErrorMessage, type Page } from "@/api/type"
 import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
@@ -55,7 +55,7 @@ import {
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NDropdown,
@@ -71,7 +71,7 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()

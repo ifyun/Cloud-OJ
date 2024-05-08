@@ -27,14 +27,14 @@ export default {
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, Page } from "@/api/type"
+import { Contest, ErrorMessage, type Page } from "@/api/type"
 import { EmptyData } from "@/components"
 import { useStore } from "@/store"
 import { LanguageNames } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import dayjs from "dayjs"
 import {
-  DataTableColumns,
+  type DataTableColumns,
   NButton,
   NDataTable,
   NDropdown,
