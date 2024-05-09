@@ -1,114 +1,112 @@
 <template>
   <div class="problem-editor">
-    <div style="height: 100%; display: flex; flex-direction: column">
-      <n-page-header class="page-header" @back="back">
-        <template #title>{{ title }}</template>
-        <template #extra>
-          <n-space size="small">
-            <n-button type="primary" size="small" @click="handleSave">
-              <template #icon>
-                <save-icon />
-              </template>
-              保存
-            </n-button>
-            <n-button type="info" size="small" ghost @click="toggleHelp">
-              <template #icon>
-                <help-icon />
-              </template>
-              帮助
-            </n-button>
-          </n-space>
-        </template>
-      </n-page-header>
-      <!-- 表单 -->
-      <n-space class="editor-from" vertical size="small">
-        <n-spin :show="loading">
-          <n-form
-            ref="problemForm"
-            :model="problem"
-            label-placement="left"
-            :rules="rules">
-            <n-grid :cols="2" :x-gap="12">
-              <n-form-item-grid-item label="题目名称" path="title" :span="1">
-                <n-input
-                  v-model:value="problem.title"
-                  maxlength="16"
-                  show-count
-                  clearable />
-              </n-form-item-grid-item>
-            </n-grid>
-            <n-grid :cols="4" :x-gap="12">
-              <n-form-item-grid-item label="题目分数" path="score" :span="1">
-                <n-input-number
-                  v-model:value="problem.score"
-                  :min="0"
-                  :max="100"
-                  :show-button="false"
-                  placeholder="0 ~ 100">
-                  <template #suffix>分</template>
-                </n-input-number>
-              </n-form-item-grid-item>
-              <n-form-item-grid-item label="时间限制" path="timeout" :span="1">
-                <n-input-number
-                  v-model:value="problem.timeout"
-                  :show-button="false"
-                  :min="100"
-                  :max="10000"
-                  placeholder="100 ~ 10000">
-                  <template #suffix>毫秒</template>
-                </n-input-number>
-              </n-form-item-grid-item>
-              <n-form-item-grid-item
-                label="内存限制"
-                path="memoryLimit"
-                :span="1">
-                <n-input-number
-                  v-model:value="problem.memoryLimit"
-                  :show-button="false"
-                  :min="16"
-                  :max="256"
-                  placeholder="16 ~ 256">
-                  <template #suffix>MB</template>
-                </n-input-number>
-              </n-form-item-grid-item>
-              <n-form-item-grid-item
-                label="输出限制"
-                path="outputLimit"
-                :span="1">
-                <n-input-number
-                  v-model:value="problem.outputLimit"
-                  :show-button="false"
-                  :min="1"
-                  :max="128"
-                  placeholder="1 ~ 128">
-                  <template #suffix>MB</template>
-                </n-input-number>
-              </n-form-item-grid-item>
-            </n-grid>
-            <n-form-item label="分类/标签" path="tags">
-              <n-dynamic-tags v-model:value="problem.tags" type="primary" />
-            </n-form-item>
-          </n-form>
-        </n-spin>
-      </n-space>
-      <!-- 题目内容编辑器 -->
-      <div class="editor-area">
-        <markdown-editor
-          v-model="problem.description"
-          :read-only="loading"
+    <n-page-header class="page-header" @back="back">
+      <template #title>{{ title }}</template>
+      <template #extra>
+        <n-space size="small">
+          <n-button type="primary" size="small" @click="handleSave">
+            <template #icon>
+              <save-icon />
+            </template>
+            保存
+          </n-button>
+          <n-button type="info" size="small" ghost @click="toggleHelp">
+            <template #icon>
+              <help-icon />
+            </template>
+            帮助
+          </n-button>
+        </n-space>
+      </template>
+    </n-page-header>
+    <!-- 表单 -->
+    <n-space class="editor-from" vertical size="small">
+      <n-spin :show="loading">
+        <n-form
+          ref="problemForm"
+          :model="problem"
+          label-placement="left"
+          :rules="rules">
+          <n-grid :cols="2" :x-gap="12">
+            <n-form-item-grid-item label="题目名称" path="title" :span="1">
+              <n-input
+                v-model:value="problem.title"
+                maxlength="16"
+                show-count
+                clearable />
+            </n-form-item-grid-item>
+          </n-grid>
+          <n-grid :cols="4" :x-gap="12">
+            <n-form-item-grid-item label="题目分数" path="score" :span="1">
+              <n-input-number
+                v-model:value="problem.score"
+                :min="0"
+                :max="100"
+                :show-button="false"
+                placeholder="0 ~ 100">
+                <template #suffix>分</template>
+              </n-input-number>
+            </n-form-item-grid-item>
+            <n-form-item-grid-item label="时间限制" path="timeout" :span="1">
+              <n-input-number
+                v-model:value="problem.timeout"
+                :show-button="false"
+                :min="100"
+                :max="10000"
+                placeholder="100 ~ 10000">
+                <template #suffix>毫秒</template>
+              </n-input-number>
+            </n-form-item-grid-item>
+            <n-form-item-grid-item
+              label="内存限制"
+              path="memoryLimit"
+              :span="1">
+              <n-input-number
+                v-model:value="problem.memoryLimit"
+                :show-button="false"
+                :min="16"
+                :max="256"
+                placeholder="16 ~ 256">
+                <template #suffix>MB</template>
+              </n-input-number>
+            </n-form-item-grid-item>
+            <n-form-item-grid-item
+              label="输出限制"
+              path="outputLimit"
+              :span="1">
+              <n-input-number
+                v-model:value="problem.outputLimit"
+                :show-button="false"
+                :min="1"
+                :max="128"
+                placeholder="1 ~ 128">
+                <template #suffix>MB</template>
+              </n-input-number>
+            </n-form-item-grid-item>
+          </n-grid>
+          <n-form-item label="分类/标签" path="tags">
+            <n-dynamic-tags v-model:value="problem.tags" type="primary" />
+          </n-form-item>
+        </n-form>
+      </n-spin>
+    </n-space>
+    <!-- 题目内容编辑器 -->
+    <div class="editor-area">
+      <markdown-editor
+        v-model="problem.description"
+        :read-only="loading"
+        :theme="theme"
+        :headers="headers" />
+      <div>
+        <markdown-view
+          :content="problem.description"
           :theme="theme"
-          :headers="headers" />
-        <div>
-          <markdown-view
-            :content="problem.description"
-            :theme="theme"
-            style="
-              margin-top: 30px;
-              padding: 0 8px 0 8px;
-              overflow: auto;
-              max-height: calc(100% - 30px);
-            " />
-        </div>
+          style="
+            margin-top: 30px;
+            padding: 0 8px 0 8px;
+            overflow: auto;
+            max-height: calc(100% - 30px);
+          " />
       </div>
     </div>
   </div>
@@ -327,11 +325,10 @@ function save() {
 
 <style scoped lang="scss">
 .problem-editor {
-  min-height: 850px;
-  height: calc(100% - var(--layout-padding));
   width: calc(100% - var(--layout-padding) * 2);
   padding: var(--layout-padding);
   display: flex;
+  flex: 1;
   flex-direction: column;
 
   .page-header {
@@ -339,7 +336,6 @@ function save() {
   }
 
   .editor-area {
-    margin-top: -12px;
     display: flex;
     flex-direction: row;
     flex: 1;
