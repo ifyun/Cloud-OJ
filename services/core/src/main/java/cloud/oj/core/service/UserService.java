@@ -1,5 +1,6 @@
 package cloud.oj.core.service;
 
+import cloud.oj.core.entity.AcCount;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.User;
 import cloud.oj.core.entity.UserStatistics;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -145,9 +147,30 @@ public class UserService {
         var userStatistic = new UserStatistics();
 
         userStatistic.setPreference(userStatisticRepo.selectLanguages(uid));
-        userStatistic.setActivities(userStatisticRepo.selectActivities(uid, year));
         userStatistic.setResults(userStatisticRepo.selectResults(uid));
 
+        var acCounts = userStatisticRepo.selectActivities(uid, year);
+        // date -> count
+        var activities = new HashMap<String, Integer>();
+        AcCount last = null;
+        // 原始数据按 (problem_id, date) 分组，处理重复的数据
+        for (var t : acCounts) {
+            if (last != null) {
+                // 日期重复，题目不同，合并 count
+                if (last.getDate().equals(t.getDate())) {
+                    t.setCount(t.getCount() + last.getCount());
+                } else if (last.getPid().equals(t.getPid())) {
+                    // 题目 Id 重复，保留日期较小的
+                    last = t;
+                    continue;
+                }
+            }
+
+            activities.put(t.getDate(), t.getCount());
+            last = t;
+        }
+
+        userStatistic.setActivities(activities);
         return userStatistic;
     }
 }

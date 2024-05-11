@@ -1,14 +1,13 @@
 package cloud.oj.core.repo;
 
+import cloud.oj.core.entity.AcCount;
 import cloud.oj.core.entity.Language;
 import cloud.oj.core.entity.Results;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,26 +28,23 @@ public class UserStatisticRepo {
                 .list();
     }
 
-    public Map<String, Integer> selectActivities(Integer uid, Integer year) {
+    public List<AcCount> selectActivities(Integer uid, Integer year) {
         return client.sql("""
-                        select DATE_FORMAT(from_unixtime(submit_time / 1000), '%Y-%m-%d') as date,
+                        select problem_id                                                 as pid,
+                               DATE_FORMAT(from_unixtime(submit_time / 1000), '%Y-%m-%d') as date,
                                count(distinct problem_id, language)                       as count
                         from solution
                         where contest_id is null
                           and uid = :uid
                           and year(from_unixtime(submit_time / 1000)) = :year
                           and result = 'AC'
-                        group by date;
+                        group by problem_id, date
+                        order by date
                         """)
                 .param("uid", uid)
                 .param("year", year)
-                .query(rs -> {
-                    var map = new HashMap<String, Integer>();
-                    while (rs.next()) {
-                        map.put(rs.getString("date"), rs.getInt("count"));
-                    }
-                    return map;
-                });
+                .query(AcCount.class)
+                .list();
     }
 
     public Results selectResults(Integer uid) {
