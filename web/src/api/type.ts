@@ -212,7 +212,8 @@ export class Overview {
     TLE: 0,
     total: 0
   }
-  activities: Array<Activity> = []
+  // eg: "YYYY-MM-DD": 10
+  activities: { [date: string]: number } = {}
 }
 
 export class Settings {

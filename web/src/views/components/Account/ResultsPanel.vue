@@ -1,147 +1,68 @@
 <template>
   <div>
     <n-h3 strong>结果统计</n-h3>
-    <div
-      id="pie"
-      style="margin-top: -36px; width: 100%; height: 210px; z-index: 10" />
+    <div style="display: flex">
+      <div style="display: flex; flex-direction: column">
+        <div
+          v-for="(color, index) in colors"
+          :key="index"
+          style="display: flex; align-items: center; margin-right: auto">
+          <div
+            :style="{
+              backgroundColor: color,
+              borderRadius: '4px',
+              width: '14px',
+              height: '14px',
+              marginRight: '4px'
+            }" />
+          <n-text style="font-size: small">
+            {{ names[index] }}
+          </n-text>
+        </div>
+      </div>
+      <n-progress
+        style="width: 150px; margin-left: 100px"
+        type="multiple-circle"
+        :stroke-width="4"
+        :circle-gap="0.5"
+        :color="colors"
+        :percentage="percentage">
+        <n-text style="font-size: small; text-align: center">
+          {{ (data["AC"] * 100) / data.total }}%<br />正确率
+        </n-text>
+      </n-progress>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { type Results } from "@/api/type"
-import { useStore } from "@/store"
-import { PieChart, type PieSeriesOption } from "echarts/charts"
-import {
-  LegendComponent,
-  type LegendComponentOption,
-  TitleComponent,
-  type TitleComponentOption,
-  TooltipComponent,
-  type TooltipComponentOption
-} from "echarts/components"
-import * as echarts from "echarts/core"
-import { type EChartsType } from "echarts/core"
-import { SVGRenderer } from "echarts/renderers"
-import { NH3 } from "naive-ui"
-import { computed, nextTick, onMounted, watch } from "vue"
+import { NH3, NProgress, NText } from "naive-ui"
+import { computed } from "vue"
 
-type ECOption = echarts.ComposeOption<
-  | PieSeriesOption
-  | LegendComponentOption
-  | TooltipComponentOption
-  | TitleComponentOption
->
-
-echarts.use([
-  SVGRenderer,
-  PieChart,
-  LegendComponent,
-  TooltipComponent,
-  TitleComponent
-])
-
-/* 饼图实例 */
-let pieChart: EChartsType | null = null
-
-const chartColor = [
-  "#18A058",
-  "#F56C6C",
-  "#EBB563",
-  "#409EFF",
-  "#777770",
-  "#DDDDD0"
+const colors = [
+  "#18A058", // AC
+  "#F56C6C", // WA
+  "#EBB563", // TLE
+  "#409EFF", // MLE
+  "#777770", // RE
+  "#DDDDD0" // CE
 ]
 
-const light = {
-  color: chartColor
-}
-
-/* 饼图暗色主题 */
-const dark = {
-  color: chartColor,
-  title: {
-    textStyle: {
-      color: "#FFFFFFE6"
-    }
-  },
-  legend: {
-    textStyle: {
-      color: "white"
-    }
-  },
-  label: {
-    color: "white"
-  }
-}
-
 const keys = ["AC", "WA", "TLE", "MLE", "RE", "CE"]
-
-const store = useStore()
+const names = ["正确", "错误", "超时", "超内存", "运行错误", "编译错误"]
 
 const props = defineProps<{
   data: Results
 }>()
 
-const chartTheme = computed(() => {
-  return store.app.theme == null ? light : dark
-})
+const percentage = computed(() => {
+  const arr: Array<number> = []
 
-const option: ECOption = {
-  legend: {
-    left: "right",
-    top: 32,
-    orient: "vertical",
-    data: keys
-  },
-  tooltip: {
-    trigger: "item"
-  },
-  series: {
-    type: "pie",
-    center: ["50%", "50%"],
-    radius: ["40%", "60%"],
-    data: []
-  }
-}
-
-watch(chartTheme, (val) => {
-  echarts.dispose(pieChart!)
-  pieChart = echarts.init(document.getElementById("pie")!, val)
-  pieChart.setOption(option)
-})
-
-watch(
-  () => props.data,
-  (val: Results) => {
-    nextTick(() => {
-      ;(option.series as PieSeriesOption).data = []
-
-      if (val.total === 0) {
-        ;(option.legend as LegendComponentOption).data = []
-      } else {
-        ;(option.legend as LegendComponentOption).data = keys
-        keys.forEach((key) => {
-          ;(option.series as PieSeriesOption).data?.push({
-            name: key,
-            value: val[key]
-          })
-        })
-      }
-
-      pieChart?.setOption(option)
-    })
-  }
-)
-
-onMounted(() => {
   keys.forEach((key) => {
-    ;(option.series as PieSeriesOption).data?.push({
-      name: key,
-      value: (props.data as any)[key]
-    })
+    arr.push(((props.data[key] ?? 0) / props.data.total) * 100)
   })
 
-  pieChart = echarts.init(document.getElementById("pie")!, chartTheme.value)
-  pieChart.setOption(option)
+  return arr
 })
 </script>

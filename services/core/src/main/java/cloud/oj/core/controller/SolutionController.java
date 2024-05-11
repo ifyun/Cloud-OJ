@@ -24,10 +24,10 @@ public class SolutionController {
     @GetMapping
     public ResponseEntity<PageData<Solution>> getAll(@RequestHeader Integer uid,
                                                      @RequestParam(defaultValue = "1") int page,
-                                                     @RequestParam(defaultValue = "15") int limit,
+                                                     @RequestParam(defaultValue = "15") int size,
                                                      Integer filter,
                                                      String filterValue) {
-        var data = solutionService.getSolutionsByUidAndFilter(uid, page, limit, filter, filterValue);
+        var data = solutionService.getSolutionsByUidAndFilter(uid, page, size, filter, filterValue);
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();

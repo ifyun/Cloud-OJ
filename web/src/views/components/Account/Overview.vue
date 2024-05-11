@@ -5,7 +5,7 @@
       <results-panel :data="overview.results" style="flex: 0.5" />
     </div>
     <n-divider />
-    <heatmap :data="overview.activities" :year="year.toString()" />
+    <active-chart :data="overview.activities" />
     <n-divider v-if="showTimeline" />
     <timeline v-if="showTimeline" />
   </n-space>
@@ -17,10 +17,10 @@ import { ErrorMessage, Overview } from "@/api/type"
 import dayjs from "dayjs"
 import { NDivider, NSpace, useMessage } from "naive-ui"
 import { onBeforeMount, ref } from "vue"
-import Heatmap from "./Heatmap.vue"
 import Languages from "./Languages.vue"
 import ResultsPanel from "./ResultsPanel.vue"
 import Timeline from "./Timeline.vue"
+import ActiveChart from "@/components/ActiveChart.vue"
 
 const props = defineProps<{ uid: number; showTimeline: boolean }>()
 
@@ -44,8 +44,8 @@ onBeforeMount(() => {
 #chart-1 {
   display: flex;
 
-  * {
-    margin-left: 24px;
+  > * {
+    margin-left: 32px;
 
     &:first-child {
       margin-left: 0;
