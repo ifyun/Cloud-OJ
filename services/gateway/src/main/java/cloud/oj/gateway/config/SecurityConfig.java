@@ -2,21 +2,15 @@ package cloud.oj.gateway.config;
 
 import cloud.oj.gateway.filter.LoginFilter;
 import cloud.oj.gateway.filter.TokenVerifyFilter;
-import cloud.oj.gateway.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,25 +23,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserService userService;
-
-    private final ObjectMapper mapper;
+    private final LoginFilter loginFilter;
 
     private final TokenVerifyFilter tokenVerifyFilter;
 
     private static class Role {
         private static final String USER = "USER";
         private static final String ADMIN = "ADMIN";
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        var authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userService);
-        authProvider.setPasswordEncoder(new BCryptPasswordEncoder());
-
-        return new ProviderManager(authProvider);
     }
 
     @Bean
@@ -80,7 +62,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .permitAll()
                 )
-                .addFilter(new LoginFilter(authenticationManager(), mapper))
+                .addFilter(loginFilter)
                 .addFilterAfter(tokenVerifyFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

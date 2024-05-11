@@ -1,57 +1,42 @@
 package cloud.oj.gateway.filter;
 
-import cloud.oj.gateway.error.ErrorMessage;
+import cloud.oj.gateway.error.GenericException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 /**
  * 登录过滤器
- * 用户登录成功后生成 JWT
+ *
+ * <p>用户登录成功后生成 JWT</p>
  */
 @Slf4j
+@Component
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-
-    private static ObjectMapper mapper;
 
     private final AuthConverter authConverter;
 
-    /**
-     * 登录失败处理器
-     */
-    static class FailureHandler implements AuthenticationFailureHandler {
-        @Override
-        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                            AuthenticationException exception) throws IOException {
-            log.error(exception.getMessage());
-            var status = HttpStatus.UNAUTHORIZED;
-            var error = new ErrorMessage(status, "用户名或密码错误");
+    private final HandlerExceptionResolver resolver;
 
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setHeader("Content-Type", "application/json");
-            response.getWriter().write(mapper.writeValueAsString(error));
-            response.getWriter().flush();
-        }
-    }
-
-    public LoginFilter(AuthenticationManager auth, ObjectMapper mapper) {
+    public LoginFilter(AuthenticationManager authManager, ObjectMapper mapper,
+                       @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+        setAuthenticationManager(authManager);
         authConverter = new AuthConverter(mapper);
-        LoginFilter.mapper = mapper;
-        setAuthenticationManager(auth);
-        setAuthenticationFailureHandler(new FailureHandler());
     }
 
     @Override
@@ -60,7 +45,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         var auth = authConverter.convert(request);
 
         if (auth == null) {
-            throw new UsernameNotFoundException("Bad authentication data");
+            var e = new GenericException(HttpStatus.BAD_REQUEST, "错误的认证数据");
+            resolver.resolveException(request, response, null, e);
         }
 
         return this.getAuthenticationManager().authenticate(auth);
@@ -71,5 +57,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication auth) throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(auth);
         chain.doFilter(request, response);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) {
+        var e = new GenericException(HttpStatus.UNAUTHORIZED, "用户名或密码错误");
+        resolver.resolveException(request, response, null, e);
     }
 }

@@ -14,8 +14,6 @@ spring:
     hikari:
       minimum-idle: ${DB_POOL_SIZE:6}
       maximum-pool-size: ${DB_POOL_SIZE:6}
-  main:
-    allow-circular-references: true
   jackson:
     default-property-inclusion: non_null
   cloud:
