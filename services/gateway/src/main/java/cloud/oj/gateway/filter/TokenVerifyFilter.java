@@ -39,7 +39,7 @@ public class TokenVerifyFilter extends GenericFilterBean {
     /**
      * 验证 JWT
      *
-     * <p>先后在 Headers 和 Query 中查找 JWT，若为空则跳过验证</p>
+     * <p>先后在请求头和 Query 中查找 JWT，若为空则跳过验证</p>
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
@@ -71,6 +71,7 @@ public class TokenVerifyFilter extends GenericFilterBean {
                 chain.doFilter(request, response);
                 return;
             }
+
             var uid = JwtUtil.getUid(token);
 
             if (uid == null) {

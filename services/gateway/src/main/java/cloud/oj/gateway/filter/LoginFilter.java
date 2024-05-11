@@ -6,7 +6,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +22,8 @@ import java.io.IOException;
  * 登录过滤器
  *
  * <p>用户登录成功后生成 JWT</p>
+ * <p><b>基类已在 Spring 的 Filter 中注册，可直接作为 Bean 注入</b></p>
  */
-@Slf4j
 @Component
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -47,6 +46,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         if (auth == null) {
             var e = new GenericException(HttpStatus.BAD_REQUEST, "错误的认证数据");
             resolver.resolveException(request, response, null, e);
+            return null;
         }
 
         return this.getAuthenticationManager().authenticate(auth);
