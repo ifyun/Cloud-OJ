@@ -216,6 +216,12 @@ export class Overview {
   activities: { [date: string]: number } = {}
 }
 
+export class QueueInfo {
+  name: string = ""
+  messageCount: number = 0
+  consumerCount: number = 0
+}
+
 export class Settings {
   alwaysShowRanking?: boolean
   showAllContest?: boolean

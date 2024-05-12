@@ -1,6 +1,7 @@
 package cloud.oj.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,8 +44,11 @@ public class Solution {
         this.stateText = S[state];
     }
 
-    public void setResult(Integer result) {
+    public void setResult(@Nullable Integer result) {
         this.result = result;
-        this.resultText = R[result];
+
+        if (result != null) {
+            this.resultText = R[result];
+        }
     }
 }

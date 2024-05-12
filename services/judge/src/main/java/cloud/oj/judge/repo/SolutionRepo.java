@@ -56,7 +56,7 @@ public class SolutionRepo {
                        :state,
                        :submitTime
                 from problem
-                where problem_id = :pid
+                where problem_id = :problemId
                 """;
         client.sql(sql).paramSource(solution).update(keyHolder);
         solution.setSolutionId(Objects.requireNonNull(keyHolder.getKey()).intValue());
@@ -92,7 +92,7 @@ public class SolutionRepo {
                     time       = :time,
                     memory     = :memory,
                     error_info = :errorInfo
-                where solution_id = :sid
+                where solution_id = :solutionId
                 """;
         client.sql(sql)
                 .paramSource(solution)

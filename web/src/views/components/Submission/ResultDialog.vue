@@ -52,7 +52,7 @@ import { ErrorMessage, JudgeResult } from "@/api/type"
 import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
-import { NTable, NResult, NSpace, NText } from "naive-ui"
+import { NResult, NSpace, NTable, NText } from "naive-ui"
 import { computed, onMounted, onUnmounted, ref } from "vue"
 
 interface Result {
@@ -127,9 +127,10 @@ function fetchResult() {
     }
   }
 
-  sse.onerror = () => {
-    error.value = new ErrorMessage(500, "无法获取结果")
-    error.value.message = "请查询提交记录"
+  sse.onerror = (event) => {
+    const data = (event as MessageEvent).data
+    error.value = new ErrorMessage(500, data ?? "无法获取结果")
+    error.value.message = "你已提交成功，可稍后查询提交记录"
     sse.close()
   }
 }

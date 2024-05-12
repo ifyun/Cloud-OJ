@@ -67,12 +67,7 @@ public class AppConfig {
             var max = cpuList.stream().max(Comparator.comparing(Integer::intValue));
             var min = cpuList.stream().min(Comparator.comparing(Integer::intValue));
 
-            if (max.isEmpty() || max.get() >= availableCpus) {
-                log.error("Bad value: judge-cpus");
-                SpringApplication.exit(applicationContext, () -> -1);
-            }
-
-            if (min.isEmpty() || min.get() < 0) {
+            if (max.isEmpty() || max.get() >= availableCpus || min.get() < 0) {
                 log.error("Bad value: judge-cpus");
                 SpringApplication.exit(applicationContext, () -> -1);
             }

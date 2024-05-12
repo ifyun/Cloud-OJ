@@ -1,57 +1,44 @@
 package cloud.oj.judge.controller;
 
 import cloud.oj.judge.config.RabbitConfig;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.QueueInformation;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("admin")
+@RequiredArgsConstructor
 public class QueueInfoController {
 
     private final RabbitTemplate rabbitTemplate;
-
-    public QueueInfoController(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class QueueInfo {
-        private int submit = 0;
-        private int judge = 0;
-    }
 
     /**
      * 获取消息队列信息
      */
     @GetMapping("queue_info")
-    public ResponseEntity<?> getQueueInfo() {
-        var queueInfo = new QueueInfo(
-                getMessageCount(RabbitConfig.SUBMIT_QUEUE),
-                getMessageCount(RabbitConfig.JUDGE_QUEUE)
-        );
+    public ResponseEntity<?> queueInfo() {
+        var q1 = getQueueInfo(RabbitConfig.SUBMIT_QUEUE);
+        var q2 = getQueueInfo(RabbitConfig.JUDGE_QUEUE);
 
-        return ResponseEntity.ok(queueInfo);
+        return ResponseEntity.ok(Arrays.asList(q1, q2));
     }
 
     /**
-     * 获取队列中消息的数量
+     * 获取队列信息
      *
      * @param queueName 队列名称
-     * @return 消息数量
+     * @return {@link QueueInformation} 队列信息
      */
-    private int getMessageCount(String queueName) {
-        var declareOk =
-                rabbitTemplate.execute(channel -> channel.queueDeclarePassive(queueName));
-        return declareOk == null ? 0 : declareOk.getMessageCount();
+    private QueueInformation getQueueInfo(String queueName) {
+        var declareOk = rabbitTemplate.execute(channel -> channel.queueDeclarePassive(queueName));
+        return declareOk == null ?
+                null :
+                new QueueInformation(declareOk.getQueue(), declareOk.getMessageCount(), declareOk.getConsumerCount());
     }
 }

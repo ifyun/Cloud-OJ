@@ -10,6 +10,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 import static cloud.oj.judge.entity.Result.IE;
 
 @Slf4j
@@ -25,11 +27,16 @@ public class JudgementEntry {
 
     private final FileCleaner fileCleaner;
 
+    @FunctionalInterface
+    public interface JudgeComplete {
+        void run() throws IOException;
+    }
+
     /**
      * 判题入口
      */
     @Async("judgeExecutor")
-    public void judge(Solution solution) {
+    public void judge(Solution solution, JudgeComplete onComplete) throws IOException {
         try {
             judgement.judge(solution);
         } catch (Exception e) {
@@ -39,6 +46,8 @@ public class JudgementEntry {
             solution.endWithError(IE, msg);
             solutionRepo.updateResult(solution);
         } finally {
+            onComplete.run();
+            log.info("Judge Complete: sid={}, pid={}", solution.getSolutionId(), solution.getProblemId());
             if (settingsRepo.autoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getSolutionId());
             }

@@ -1,5 +1,6 @@
 import axios, { ApiPath, resolveError } from "@/api"
 import type { SubmitData } from "@/api/type"
+import { QueueInfo } from "@/api/type"
 import { useStore } from "@/store"
 
 const JudgeApi = {
@@ -18,6 +19,24 @@ const JudgeApi = {
       })
         .then((res) => {
           resolve(res.data as number)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  /**
+   * 获取队列信息
+   */
+  getQueuesInfo(): Promise<Array<QueueInfo>> {
+    return new Promise<Array<QueueInfo>>((resolve, reject) => {
+      axios({
+        url: ApiPath.QUEUE_INFO,
+        method: "GET"
+      })
+        .then((res) => {
+          resolve(res.data as QueueInfo[])
         })
         .catch((error) => {
           reject(resolveError(error))

@@ -79,29 +79,33 @@ public class SolutionService {
             var status = transactionManager.getTransaction(def);
 
             try {
-
                 while (true) {
                     TimeUnit.MILLISECONDS.sleep(500);
                     var result = solutionRepo.selectByUidAndTime(uid, time, settings.isShowPassedPoints());
 
                     if (result.isEmpty()) {
+                        count += 1;
                         continue;
                     }
 
                     var event = SseEmitter.event()
-                            .data(objectMapper.writeValueAsString(result))
-                            .name("message");
+                            .name("message")
+                            .data(objectMapper.writeValueAsString(result.get()));
 
                     emitter.send(event);
                     count += 1;
 
                     if (result.get().getState() == 0) {
+                        // 题解已判，结束 Event
                         emitter.complete();
                         break;
                     }
 
                     if (count == MAX_COUNT) {
-                        log.info("轮询超时");
+                        var error = SseEmitter.event()
+                                .name("error")
+                                .data("轮询超时");
+                        emitter.send(error);
                         emitter.complete();
                         break;
                     }
