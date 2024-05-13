@@ -28,7 +28,7 @@
         :color="colors"
         :percentage="percentage">
         <n-text style="font-size: small; text-align: center">
-          {{ (data["AC"] * 100) / data.total }}%<br />正确率
+          {{ acRate }}%<br />正确率
         </n-text>
       </n-progress>
     </div>
@@ -60,9 +60,18 @@ const percentage = computed(() => {
   const arr: Array<number> = []
 
   keys.forEach((key) => {
-    arr.push(((props.data[key] ?? 0) / props.data.total) * 100)
+    const p = (props.data[key] ?? 0) / props.data.total
+    arr.push(isNaN(p) ? 0 : p * 100)
   })
 
   return arr
+})
+
+const acRate = computed(() => {
+  if (props.data.total === 0) {
+    return 0
+  }
+
+  return Math.round((props.data["AC"] / props.data.total) * 100)
 })
 </script>

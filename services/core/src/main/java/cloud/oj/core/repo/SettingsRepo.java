@@ -20,10 +20,10 @@ public class SettingsRepo {
     public Integer update(Settings settings) {
         return client.sql("""
                         update settings
-                        set always_show_ranking = #{alwaysShowRanking},
-                            show_all_contest    = #{showAllContest},
-                            show_passed_points  = #{showPassedPoints},
-                            auto_del_solutions  = #{autoDelSolutions}
+                        set always_show_ranking = :alwaysShowRanking,
+                            show_all_contest    = :showAllContest,
+                            show_passed_points  = :showPassedPoints,
+                            auto_del_solutions  = :autoDelSolutions
                         where id = 0
                         """)
                 .paramSource(settings)

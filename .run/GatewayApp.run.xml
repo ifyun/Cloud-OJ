@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GatewayApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="gateway" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="cloud.oj.gateway.GatewayApp" />
+    <option name="VM_PARAMETERS" value="-Xmx64m" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
