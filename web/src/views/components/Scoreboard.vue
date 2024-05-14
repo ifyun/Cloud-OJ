@@ -1,6 +1,6 @@
 <template>
   <div class="wrap">
-    <empty-data v-if="noContent" style="margin-top: 48px" />
+    <empty-data v-if="noContent" />
     <div v-else>
       <n-space vertical>
         <n-data-table

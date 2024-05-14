@@ -8,7 +8,7 @@
         v-model:value="language"
         :options="languageOptions"
         :render-label="renderLabel" />
-      <n-button type="primary" :loading="loading" @click="submit">
+      <n-button type="primary" secondary :loading="loading" @click="submit">
         <template #icon>
           <n-icon>
             <send-round />

@@ -147,7 +147,7 @@ import {
   NSpin,
   useMessage
 } from "naive-ui"
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, inject, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import MarkdownHelp from "./help.md?raw"
 
@@ -215,7 +215,7 @@ const rules: FormRules = {
   }
 }
 
-const theme = computed(() => (store.app.theme != null ? "dark" : "light"))
+const theme = inject("themeStr") as "light" | "dark"
 
 const headers = computed(() => {
   return {

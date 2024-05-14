@@ -35,6 +35,7 @@ const router = useRouter()
 
 const show = ref(true)
 const theme = computed(() => store.app.theme)
+const themeStr = computed(() => (store.app.theme === null ? "light" : "dark"))
 const isLoggedIn = computed(() => store.user.isLoggedIn)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
@@ -46,7 +47,9 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
 })
 
 provide("reload", reload)
+provide("themeStr", themeStr)
 
+// 刷新当前路由
 function reload() {
   show.value = false
   nextTick(() => {
@@ -59,9 +62,9 @@ router.beforeEach((to, from) => {
   if (to.name !== "error") {
     // 进入正常页面，清空错误信息
     store.app.setError(null)
-  } else if (store.app.error == null) {
+  } else if (store.app.error === null) {
     // 意外进入错误页面却没有错误信息，返回上一页
-    router.replace({ name: from.name! })
+    router.replace({ path: from.fullPath })
   }
 
   if (isLoggedIn.value) {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-    <mirrors>
-        <mirror>
-            <id>CN</id>
-            <name>Ali-Maven</name>
-            <url>https://maven.aliyun.com/repository/central</url>
-            <mirrorOf>central</mirrorOf>
-        </mirror>
-    </mirrors>
+  <mirrors>
+    <mirror>
+      <id>CN</id>
+      <name>Ali-Maven</name>
+      <url>https://maven.aliyun.com/repository/central</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
 </settings>

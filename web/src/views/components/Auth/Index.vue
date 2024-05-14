@@ -44,7 +44,7 @@ import {
   NTabPane,
   NTabs
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, inject, onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 import Login from "./Login.vue"
 import Signup from "./Signup.vue"
@@ -52,9 +52,10 @@ import Signup from "./Signup.vue"
 const store = useStore()
 const router = useRouter()
 const checked = ref<boolean>(false)
+const theme = inject("themeStr")
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.app.theme != null) {
+  if (theme === "dark") {
     return themeDark
   }
 

@@ -124,8 +124,8 @@ const signupRules: FormRules = {
     validator(_, value: string): Error | boolean {
       if (!value) {
         return new Error("请输入用户名")
-      } else if (value.length < 6) {
-        return new Error("至少 6 个字符!")
+      } else if (value.length < 5) {
+        return new Error("至少 5 个字符!")
       }
 
       return true

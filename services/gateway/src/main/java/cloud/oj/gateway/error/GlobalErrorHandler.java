@@ -25,10 +25,12 @@ public class GlobalErrorHandler {
             throws IOException {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
         var msg = ExceptionUtils.getRootCause(e).getMessage();
+        log.error(msg);
 
         if (e instanceof HttpServerErrorException) {
             // eg: 503 Service Unavailable
             status = (HttpStatus) ((HttpServerErrorException) e).getStatusCode();
+            msg = ((HttpServerErrorException) e).getStatusText();
         } else if (e instanceof GenericException) {
             status = ((GenericException) e).getStatus();
         }

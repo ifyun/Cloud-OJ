@@ -1,6 +1,6 @@
 <template>
   <div class="wrap" style="max-width: 100%">
-    <empty-data v-if="noContent" style="margin-top: 48px" />
+    <empty-data v-if="noContent" />
     <div v-else>
       <n-space vertical>
         <n-space v-if="contestState != null" justify="space-between">

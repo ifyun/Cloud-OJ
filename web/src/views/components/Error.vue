@@ -1,5 +1,5 @@
 <template>
-  <error-result v-if="error != null" :error="error" style="margin-top: 48px" />
+  <error-result v-if="error !== null" :error="error" />
 </template>
 
 <script lang="ts">
@@ -14,6 +14,5 @@ import { useStore } from "@/store"
 import { computed } from "vue"
 
 const store = useStore()
-
 const error = computed(() => store.app.error)
 </script>

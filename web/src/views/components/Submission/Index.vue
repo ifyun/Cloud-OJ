@@ -105,7 +105,7 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, inject, onBeforeMount, ref } from "vue"
 import ResultDialog from "./ResultDialog.vue"
 import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
@@ -124,7 +124,7 @@ const problem = ref<Problem>(new Problem())
 const code = ref<string>("")
 const submitTime = ref<number>(0)
 
-const theme = computed(() => (store.app.theme != null ? "dark" : "light"))
+const theme = inject("themeStr") as "light" | "dark"
 const isLoggedIn = computed(() => store.user.isLoggedIn)
 
 let problemId: number | null = null

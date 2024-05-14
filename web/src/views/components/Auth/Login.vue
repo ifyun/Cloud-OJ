@@ -21,11 +21,15 @@
     </n-form-item>
     <n-form-item label-placement="left">
       <n-button
-        style="width: 100%"
+        style="margin-left: auto"
         type="primary"
+        icon-placement="right"
         :loading="loading"
         :disabled="loading"
         @click="login">
+        <template #icon>
+          <n-icon :component="LoginIcon" />
+        </template>
         登 录
       </n-button>
     </n-form-item>
@@ -38,6 +42,7 @@ import { ErrorMessage, UsernamePassword } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { Lock as PasswordIcon, User as UserIcon } from "@vicons/fa"
+import { LogInRound as LoginIcon } from "@vicons/material"
 import {
   type FormRules,
   NButton,

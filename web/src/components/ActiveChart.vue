@@ -48,10 +48,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue"
-import dayjs from "dayjs"
+import { inject, nextTick, ref, watch } from "vue"
 import { NPopover, NText } from "naive-ui"
-import { useStore } from "@/store"
+import dayjs from "dayjs"
 
 type Info = {
   year: number
@@ -65,8 +64,6 @@ type Data = {
   [date: string]: number
 }
 
-const store = useStore()
-
 const props = withDefaults(defineProps<{ data: Data }>(), {
   data: () => {
     return {}
@@ -75,9 +72,7 @@ const props = withDefaults(defineProps<{ data: Data }>(), {
 
 const months = ref<Array<string | null>>(new Array<string>(52))
 const infoList = ref<Array<Info>>([])
-const theme = computed(() => {
-  return store.app.theme == null ? "light" : "dark"
-})
+const theme = inject("themeStr")
 
 watch(
   () => props.data,
