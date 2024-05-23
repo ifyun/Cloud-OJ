@@ -21,8 +21,8 @@ public class ContestController {
      * 获取竞赛的详细信息
      */
     @GetMapping(path = "detail")
-    public ResponseEntity<Contest> getContest(Integer contestId) {
-        return ResponseEntity.ok(contestService.getContest(contestId));
+    public ResponseEntity<Contest> getContest(Integer cid) {
+        return ResponseEntity.ok(contestService.getContest(cid));
     }
 
     /**
@@ -61,8 +61,8 @@ public class ContestController {
     }
 
     @GetMapping(path = "admin/problem")
-    public ResponseEntity<List<Problem>> getProblems(Integer contestId) {
-        var data = contestService.getProblemsOfContest(null, contestId, true);
+    public ResponseEntity<List<Problem>> getProblems(Integer cid) {
+        var data = contestService.getProblemsOfContest(null, cid, true);
         return data.isEmpty() ?
                 ResponseEntity.noContent().build() :
                 ResponseEntity.ok(data);

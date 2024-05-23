@@ -114,6 +114,8 @@ public class ContestRepo {
         return client.sql("""
                         select contest_id,
                                contest_name,
+                               start_at,
+                               end_at,
                                if(start_at <= unix_timestamp(now()), true, false) as started,
                                if(end_at <= unix_timestamp(now()), true, false)   as ended,
                                languages,

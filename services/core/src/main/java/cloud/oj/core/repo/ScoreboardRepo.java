@@ -71,8 +71,8 @@ public class ScoreboardRepo {
                                      truncate(score, 2)                                                  as score,
                                      row_number() over (partition by problem_id order by pass_rate desc) as rn
                               from solution
-                              where contest_id = #{cid}
-                                and uid = #{uid}
+                              where contest_id = :cid
+                                and uid = :uid
                                 and state = 1) t
                         where rn = 1
                         order by problem_id
