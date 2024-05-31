@@ -59,7 +59,7 @@ public class SolutionRepo {
                 where problem_id = :problemId
                 """;
         client.sql(sql).paramSource(solution).update(keyHolder);
-        solution.setSolutionId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        solution.setId(Objects.requireNonNull(keyHolder.getKey()).toString());
     }
 
     /**
@@ -68,7 +68,7 @@ public class SolutionRepo {
      * @param sid   题解 Id
      * @param state 状态
      */
-    public void updateState(Integer sid, Integer state) {
+    public void updateState(String sid, Integer state) {
         client.sql("update solution set state = :state where solution_id = :sid")
                 .param("sid", sid)
                 .param("state", state)

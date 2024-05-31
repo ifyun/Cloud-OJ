@@ -49,7 +49,7 @@ public class JudgementEntry {
             onComplete.run();
             log.info("Judge Complete: sid={}, pid={}", solution.getSolutionId(), solution.getProblemId());
             if (settingsRepo.autoDelSolutions()) {
-                fileCleaner.deleteTempFile(solution.getSolutionId());
+                fileCleaner.deleteTempFile(solution.getId());
             }
         }
     }

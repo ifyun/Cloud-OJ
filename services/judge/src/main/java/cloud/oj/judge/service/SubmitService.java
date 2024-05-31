@@ -101,7 +101,7 @@ public class SubmitService {
         );
         // solutionId 由数据库生成
         solutionRepo.insert(solution);
-        sourceRepo.insert(solution.getSolutionId(), submitData.getSourceCode());
+        sourceRepo.insert(solution.getId(), submitData.getSourceCode());
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
     }

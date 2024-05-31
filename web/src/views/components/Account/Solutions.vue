@@ -246,7 +246,7 @@ function querySolutions() {
     })
 }
 
-function querySolution(sid: number) {
+function querySolution(sid: string) {
   UserApi.getSolution(sid)
     .then((data) => {
       solution.value = data

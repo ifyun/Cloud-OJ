@@ -1,9 +1,12 @@
 package cloud.oj.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -19,7 +22,7 @@ public class Solution {
             "运行错误", "内部错误", "输出超限"
     };
 
-    private Integer solutionId;
+    private BigInteger solutionId;
     private Integer problemId;
     private String title;
     private Integer uid;
@@ -38,6 +41,11 @@ public class Solution {
     private Long submitTime;
     private String errorInfo;
     private String sourceCode;
+
+    @JsonGetter("solutionId")
+    public String getId() {
+        return solutionId == null ? null : solutionId.toString();
+    }
 
     public void setState(Integer state) {
         this.state = state;

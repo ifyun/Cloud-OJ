@@ -24,7 +24,7 @@ public class FileCleaner {
     }
 
     @Async
-    public void deleteTempFile(Integer solutionId) {
+    public void deleteTempFile(String solutionId) {
         try {
             FileUtils.deleteDirectory(new File(appConfig.getCodeDir() + solutionId));
         } catch (IOException e) {

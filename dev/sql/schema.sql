@@ -79,7 +79,7 @@ create index idx_time on user (create_at);
 # 提交
 create table solution
 (
-    solution_id int primary key auto_increment                                 not null,
+    solution_id bigint unsigned primary key auto_increment                     not null,
     uid         int                                                            not null,
     problem_id  int                                                            not null,
     contest_id  int                                                            null,
@@ -106,8 +106,8 @@ create index idx_time on solution (submit_time desc);
 # 代码
 create table source_code
 (
-    solution_id int primary key not null,
-    code        text            not null
+    solution_id bigint unsigned primary key not null,
+    code        text                        not null
 );
 
 # 排名

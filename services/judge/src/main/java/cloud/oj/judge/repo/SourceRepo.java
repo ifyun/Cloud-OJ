@@ -16,7 +16,7 @@ public class SourceRepo {
      * @param sid    题解 Id
      * @param source 源代码
      */
-    public void insert(Integer sid, String source) {
+    public void insert(String sid, String source) {
         client.sql("insert into source_code(solution_id, code) values(:sid, :source)")
                 .param("sid", sid)
                 .param("source", source)

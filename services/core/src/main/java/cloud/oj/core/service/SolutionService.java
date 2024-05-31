@@ -121,7 +121,7 @@ public class SolutionService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Solution getSolutionByUser(Integer uid, Integer sid) {
+    public Solution getSolutionByUser(Integer uid, String sid) {
         var settings = systemSettings.getSettings();
         var solution = solutionRepo.selectByUidAndSid(uid, sid, settings.isShowPassedPoints());
         var source = solutionRepo.selectSourceCode(sid);

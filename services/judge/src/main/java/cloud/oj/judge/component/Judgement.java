@@ -60,7 +60,7 @@ public class Judgement {
             // 编译成功
             var problem = problemRepo.selectById(solution.getProblemId());
             // 更新为正在运行状态
-            solutionRepo.updateState(solution.getSolutionId(), State.RUNNING);
+            solutionRepo.updateState(solution.getId(), State.RUNNING);
             // 运行
             var result = execute(solution, problem);
             saveResult(solution, result, problem);
@@ -88,7 +88,7 @@ public class Judgement {
 
         var err = result.getError();
         // 运行时错误，仍然统计分数
-        if (err != null && err.isEmpty()) {
+        if (err != null && !err.isEmpty()) {
             solution.setErrorInfo(result.getError());
         }
 

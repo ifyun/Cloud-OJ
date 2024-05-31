@@ -89,6 +89,7 @@ static void py(int *r) {
     r[SYS_geteuid] = 1;
     r[SYS_getegid] = 1;
     r[SYS_arch_prctl] = 1;
+    r[SYS_gettid] = 1;
     r[SYS_futex] = 1;
     r[SYS_getdents64] = 1;
     r[SYS_set_tid_address] = 1;

@@ -163,7 +163,7 @@ export type SubmitData = {
 }
 
 export class JudgeResult {
-  solutionId?: number
+  solutionId?: string
   uid?: number
   problemId?: number
   language?: number

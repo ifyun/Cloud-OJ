@@ -4,14 +4,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static cloud.oj.judge.constant.State.WAITING;
+import java.math.BigInteger;
+
 import static cloud.oj.judge.constant.State.JUDGED;
+import static cloud.oj.judge.constant.State.WAITING;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Solution {
-    private Integer solutionId;
+    private BigInteger solutionId;
     private Integer uid;
     private Integer problemId;
     private Integer contestId;
@@ -44,5 +46,13 @@ public class Solution {
         this.result = result;
         state = JUDGED;
         errorInfo = info;
+    }
+
+    public String getId() {
+        return solutionId.toString();
+    }
+
+    public void setId(String id) {
+        solutionId = new BigInteger(id);
     }
 }

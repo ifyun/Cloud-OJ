@@ -42,7 +42,7 @@ public class SolutionController {
     }
 
     @GetMapping("{sid}")
-    public ResponseEntity<Solution> getBySolutionByUser(@RequestHeader Integer uid, @PathVariable Integer sid) {
+    public ResponseEntity<Solution> getBySolutionByUser(@RequestHeader Integer uid, @PathVariable String sid) {
         return ResponseEntity.ok(solutionService.getSolutionByUser(uid, sid));
     }
 }

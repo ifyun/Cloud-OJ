@@ -80,9 +80,10 @@ public class SolutionRepo {
      * @param showPassed 是否查询通过的测试点
      * @return {@link Solution}
      */
-    public Optional<Solution> selectByUidAndSid(Integer uid, Integer sid, Boolean showPassed) {
+    public Optional<Solution> selectByUidAndSid(Integer uid, String sid, Boolean showPassed) {
         return client.sql("""
-                        select problem_id,
+                        select solution_id,
+                               problem_id,
                                title,
                                language,
                                state - 1                                      as state,
@@ -107,7 +108,7 @@ public class SolutionRepo {
                 .optional();
     }
 
-    public Optional<String> selectSourceCode(Integer sid) {
+    public Optional<String> selectSourceCode(String sid) {
         return client.sql("""
                         select code
                         from source_code

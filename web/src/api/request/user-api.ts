@@ -123,7 +123,7 @@ const UserApi = {
     })
   },
 
-  getSolution(sid: number): Promise<JudgeResult> {
+  getSolution(sid: string): Promise<JudgeResult> {
     return new Promise((resolve, reject) => {
       axios({
         url: `${ApiPath.SOLUTION}/${sid}`,
