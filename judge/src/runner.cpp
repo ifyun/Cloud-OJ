@@ -101,11 +101,11 @@ inline void Runner::run_cmd() {
 /**
  * @brief 等待结果
  */
-Result Runner::watch_result(pid_t pid) {
+void Runner::watch_result(pid_t pid, Result *res) {
     int syscall_number = 0;
     int status;
     struct rusage ru{};
-    struct Result res{.mem = 0};
+    res->mem = 0;
 
     while (wait4(pid, &status, 0, &ru) > 0) {
         int stop_sig;
@@ -120,14 +120,14 @@ Result Runner::watch_result(pid_t pid) {
         }
 
         // * Code + Data + Stack
-        res.mem = ru.ru_minflt * getpagesize() / 1024;
+        res->mem = ru.ru_minflt * getpagesize() / 1024;
         // ? 检查内存占用
-        if (res.mem > config.memory) {
+        if (res->mem > config.memory) {
             kill(pid, SIGUSR1);
         }
 
-        res.time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
-                   + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
+        res->time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
+                    + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
         if (WIFSTOPPED(status)
             && (stop_sig = WSTOPSIG(status)) != SIGTRAP
@@ -139,24 +139,24 @@ Result Runner::watch_result(pid_t pid) {
             // ! 没有 return 会进入死循环
             switch (stop_sig) {
                 case SIGUSR1:
-                    res.status = MLE;
-                    return res;
+                    res->status = MLE;
+                    return;
                 case SIGALRM:
-                    sprintf(res.err, "SIGALRM(CPU: %.2fms)", (int) res.time / 1000.0);
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double) res->time / 1000.0);
+                    res->status = RE;
+                    return;
                 case SIGSEGV:
-                    sprintf(res.err, "段错误(SIGSEGV)");
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "段错误(SIGSEGV)");
+                    res->status = RE;
+                    return;
                 case SIGSYS:
-                    sprintf(res.err, "非法调用(SYSCALL: %d)", syscall_number);
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "非法调用(SYSCALL: %d)", syscall_number);
+                    res->status = RE;
+                    return;
                 default:
-                    sprintf(res.err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
+                    res->status = RE;
+                    return;
             }
         }
 
@@ -165,30 +165,30 @@ Result Runner::watch_result(pid_t pid) {
             int sig = WTERMSIG(status);
             switch (sig) {
                 case SIGUSR1:
-                    res.status = MLE;
+                    res->status = MLE;
                     break;
                 case SIGXCPU:
-                    res.status = TLE;
+                    res->status = TLE;
                     break;
                 case SIGXFSZ:
-                    res.status = OLE;
+                    res->status = OLE;
                     break;
                 case SIGKILL:
-                    sprintf(res.err, "程序终止(SIGKILL)");
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "程序终止(SIGKILL)");
+                    res->status = RE;
+                    return;
                 case SIGSEGV:
-                    sprintf(res.err, "段错误(SIGSEGV)");
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "段错误(SIGSEGV)");
+                    res->status = RE;
+                    return;
                 case SIGSYS:
-                    sprintf(res.err, "非法调用(SYSCALL: %d)", syscall_number);
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "非法调用(SYSCALL: %d)", syscall_number);
+                    res->status = RE;
+                    return;
                 default:
-                    sprintf(res.err, "程序终止(%d: %s)", sig, strsignal(sig));
-                    res.status = RE;
-                    return res;
+                    sprintf(res->err, "程序终止(%d: %s)", sig, strsignal(sig));
+                    res->status = RE;
+                    return;
             }
         }
 
@@ -196,47 +196,41 @@ Result Runner::watch_result(pid_t pid) {
             // ? 子进程退出
             auto exit_code = WEXITSTATUS(status);
 
-            if (res.time > config.timeout) {
-                res.status = TLE;
+            if (res->time > config.timeout) {
+                res->status = TLE;
             } else if (exit_code != 0) {
-                sprintf(res.err, "非零退出(%d)", exit_code);
-                res.status = RE;
-                return res;
+                sprintf(res->err, "非零退出(%d)", exit_code);
+                res->status = RE;
+                return;
             } else {
-                res.status = Utils::compare(config, spj) ? AC : WA;
+                res->status = Utils::compare(config, spj) ? AC : WA;
             }
         }
 
         ptrace(PTRACE_SYSCALL, pid, 0, 0);
     }
-
-    return res;
 }
 
-Result Runner::run() {
+void Runner::run(Result *res) {
     if (chdir(work_dir) != 0) {
-        Result res = {.status=IE};
-        sprintf(res.err, "chdir: %s", strerror(errno));
-        fprintf(stderr, "%s", res.err);
-        return res;
+        res->status = IE;
+        sprintf(res->err, "chdir: %s", strerror(errno));
+        fprintf(stderr, "%s", res->err);
     }
 
     chroot(work_dir);
     pid_t pid = vfork();
 
     if (pid < 0) {
-        Result res = {.status=IE};
-
-        sprintf(res.err, "fork: %s", strerror(errno));
-        fprintf(stderr, "%s", res.err);
-
-        return res;
+        res->status = IE;
+        sprintf(res->err, "fork: %s", strerror(errno));
+        fprintf(stderr, "%s", res->err);
     } else if (pid == 0) {
         // child process
         prctl(PR_SET_PDEATHSIG, SIGKILL);
         run_cmd();
     } else {
-        Result result = watch_result(pid);
+        watch_result(pid, res);
 
         close(config.std_in);
         close(config.std_out);
@@ -249,8 +243,6 @@ Result Runner::run() {
         // exit sandbox env
         fchdir(root_fd);
         chroot(".");
-
-        return result;
     }
 }
 
@@ -299,7 +291,8 @@ RTN Runner::judge() {
             config.out->open(out_path, std::ios_base::in);
             config.ans->open(output_files[i], std::ios_base::in);
 
-            Result res = run();
+            Result res{};
+            run(&res);
             results.push_back(res);
 
             if (res.status == RE || res.status == IE) {
@@ -320,7 +313,8 @@ RTN Runner::judge() {
         config.out->open(out_path, std::ios_base::in);
         config.ans->open(output_files[0], std::ios_base::in);
 
-        Result res = run();
+        Result res{};
+        run(&res);
         results.push_back(res);
 
         if (res.status == RE || res.status == IE) {

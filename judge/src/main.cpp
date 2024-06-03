@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include "runner.h"
 #include "common.h"
 
@@ -49,9 +50,13 @@ int main(int argc, char *argv[]) {
            << R"( "passed": )" << rtn.passed << ",\n"
            << R"( "passRate": )" << rtn.passRate << ",\n"
            << R"( "time": )" << rtn.time << ",\n"
-           << R"( "memory": )" << rtn.memory << ",\n"
-           << R"( "error": ")" << rtn.err << "\"\n"
-           << "}\n";
+           << R"( "memory": )" << rtn.memory << ",\n";
+
+        if (strlen(rtn.err) > 0) {
+            ss << R"( "error": ")" << rtn.err << "\"\n";
+        }
+
+        ss << "}\n";
     }
 
     std::cout << ss.str();

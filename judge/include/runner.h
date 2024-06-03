@@ -15,6 +15,7 @@
 
 #define ALARM_SECONDS 20
 
+// Special Judge Define
 typedef bool (*spj_func)(std::ifstream *, std::ifstream *, std::ifstream *);
 
 /**
@@ -73,9 +74,9 @@ private:
 
     void run_cmd();
 
-    Result watch_result(pid_t pid);
+    void watch_result(pid_t pid, Result *res);
 
-    Result run();
+    void run(Result *res);
 
 public:
     Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config);

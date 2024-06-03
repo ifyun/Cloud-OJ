@@ -98,6 +98,7 @@ bool Utils::compare(Config config, spj_func spj) {
     bool same = true;
 
     if (spj != nullptr) {
+        // Special Judge
         return spj(config.in, config.out, config.ans);
     }
 

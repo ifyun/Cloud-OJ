@@ -4,10 +4,10 @@ Online Judge 判题程序。
 
 ## Build
 
-1. 准备 Linux 环境并安装 cmake、make、gcc、g++，Ubuntu 可以使用以下命令
+1. 准备 Linux 环境并安装 cmake、make、gcc、g++，Debian 系可以使用以下命令:
 
    ```bash
-   sudo apt-get install cmake build-essential
+   sudo apt install cmake build-essential
    ```
 
 2. 运行 `./build` 生成可执行文件和动态库
@@ -15,12 +15,12 @@ Online Judge 判题程序。
 ## Install
 
 ```bash
-sudo ./build install
+./build install
 ```
 
 - 可执行文件将被复制到 `/usr/local/bin` 目录
 
-## judge 用法
+## 用法
 
 ```bash
 judge <options>
@@ -29,25 +29,25 @@ judge <options>
 - `--cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
 - `--lang`: 语言，用于加载系统调用规则
 - `--time`: CPU 时间限制，单位：毫秒
-- `--ram`: 内存限制，此项用于判断是否超限，单位：MB
-- `--output`: 输出限制，单位：MB
+- `--ram`: 内存限制，此项用于判断是否超限，单位：MiB
+- `--output`: 输出限制，单位：MiB
 - `--workdir`: 工作目录，用户程序所在目录
 - `--data`: 测试数据目录，包含 `*.in`、 `*.out` 文件
 - `--cpu`: 用哪个 CPU 核心
 
 `--lang` 取值：
 
-| Number | Language   |
-|--------|------------|
-| 0      | C          |
-| 1      | C++        |
-| 2      | Java       |
-| 3      | Python     |
-| 4      | Bash       |
-| 5      | C#         |
-| 6      | JavaScript |
-| 7      | Kotlin     |
-| 8      | Go         |
+| Value | Language   |
+|-------|------------|
+| 0     | C          |
+| 1     | C++        |
+| 2     | Java       |
+| 3     | Python     |
+| 4     | Bash       |
+| 5     | C#         |
+| 6     | JavaScript |
+| 7     | Kotlin     |
+| 8     | Go         |
 
 ### 示例
 
@@ -78,7 +78,7 @@ judge -c java@-Xmx256m@Solution \
 - 用户的输出保存在工作目录的 `*.out`
 - 判题结果输出到 `stdout`
 
-`result.json` 示例:
+示例:
 
 ```json
 {
@@ -87,7 +87,7 @@ judge -c java@-Xmx256m@Solution \
   "total": 1,
   "passed": 1,
   "passRate": 1,
-  "time": 1,
+  "time": 980,
   "memory": 560
 }
 ```
