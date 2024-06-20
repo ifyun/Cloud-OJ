@@ -19,7 +19,7 @@
             class="li-month"
             :style="
               month != null
-                ? { gridColumn: `${index} / span 3` }
+                ? { gridColumn: `${index + 1} / span 3` }
                 : { display: 'none' }
             ">
             {{ month }}
@@ -85,27 +85,21 @@ function createChartData(data: Data) {
   months.value = new Array<string>(52)
   infoList.value = []
 
-  const d = new Date()
-  const day = d.getDay()
-  const date = d.getDate()
-
-  const today = {
-    year: d.getFullYear(),
-    month: d.getMonth(),
-    date: d.getDate()
-  }
+  let d = new Date()
+  const today = new Date()
+  const day = today.getDay()
+  let prevMonth: number = -1
 
   for (let i = 0; i < 364; i++) {
-    d.setFullYear(today.year)
-    d.setMonth(today.month)
-    d.setDate(today.date)
-    d.setDate(date - (363 - (7 - day)) + i)
+    // jump to days ago
+    const days = 363 - (7 - day) - i
+    d = new Date(today.getTime() - days * 24 * 3600 * 1000)
 
-    if (
-      d.getFullYear() === today.year &&
-      d.getMonth() === today.month &&
-      d.getDate() > today.date
-    ) {
+    if (prevMonth == -1) {
+      prevMonth = d.getMonth()
+    }
+
+    if (days === -1) {
       break
     }
 
@@ -122,11 +116,12 @@ function createChartData(data: Data) {
 
     infoList.value.push(info)
 
-    if (d.getDate() === 1) {
+    if (d.getDay() == 1 && d.getMonth() !== prevMonth) {
       // current day is monday
       const month = d.getMonth() + 1
       const weekOfMonth = Math.floor((i + 1) / 7)
       months.value[weekOfMonth] = month + "月"
+      prevMonth = d.getMonth()
     }
   }
 }

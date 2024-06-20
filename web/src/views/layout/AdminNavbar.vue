@@ -9,6 +9,7 @@
 
 <script setup lang="tsx">
 import {
+  DashboardRound,
   LocalLibraryRound,
   PeopleAltRound,
   SchoolRound,
@@ -23,9 +24,16 @@ const routeName = computed(() => route.name?.toString())
 
 const menuOptions = [
   {
-    label: () => (
-      <RouterLink to={{ name: "problem_admin" }}>题目管理</RouterLink>
-    ),
+    label: () => <RouterLink to={{ name: "admin_overview" }}>概览</RouterLink>,
+    key: "admin_overview",
+    icon: () => (
+      <NIcon>
+        <DashboardRound />
+      </NIcon>
+    )
+  },
+  {
+    label: () => <RouterLink to={{ name: "problem_admin" }}>题目</RouterLink>,
     key: "problem_admin",
     icon: () => (
       <NIcon>
@@ -34,9 +42,7 @@ const menuOptions = [
     )
   },
   {
-    label: () => (
-      <RouterLink to={{ name: "contest_admin" }}>竞赛管理</RouterLink>
-    ),
+    label: () => <RouterLink to={{ name: "contest_admin" }}>竞赛</RouterLink>,
     key: "contest_admin",
     icon: () => (
       <NIcon>
@@ -45,7 +51,7 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "user_admin" }}>用户管理</RouterLink>,
+    label: () => <RouterLink to={{ name: "user_admin" }}>用户</RouterLink>,
     key: "user_admin",
     icon: () => (
       <NIcon>
@@ -54,7 +60,7 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "settings" }}>系统设置</RouterLink>,
+    label: () => <RouterLink to={{ name: "settings" }}>设置</RouterLink>,
     key: "settings",
     icon: () => (
       <NIcon>

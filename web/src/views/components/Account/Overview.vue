@@ -20,7 +20,7 @@ import { onBeforeMount, ref } from "vue"
 import Languages from "./Languages.vue"
 import ResultsPanel from "./ResultsPanel.vue"
 import Timeline from "./Timeline.vue"
-import ActiveChart from "@/components/ActiveChart.vue"
+import ActiveChart from "./ActiveChart.vue"
 
 const props = defineProps<{ uid: number; showTimeline: boolean }>()
 

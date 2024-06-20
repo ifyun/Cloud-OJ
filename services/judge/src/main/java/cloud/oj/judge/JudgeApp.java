@@ -8,14 +8,15 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * <h2>使用 ROOT 权限运行</h2>
- *
- * <b><code>sudo mvn spring-boot:run</code></b>
+ * 使用 ROOT 权限运行
+ * <p>
+ *   <code>sudo mvn spring-boot:run</code>
+ * </p>
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-@EnableConfigurationProperties(AppConfig.class)
 @EnableTransactionManagement
+@EnableConfigurationProperties(AppConfig.class)
 public class JudgeApp {
 
     public static void main(String[] args) {

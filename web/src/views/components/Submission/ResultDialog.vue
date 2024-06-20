@@ -53,7 +53,7 @@ import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import { NResult, NSpace, NTable, NText } from "naive-ui"
-import { computed, onMounted, onUnmounted, ref } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 
 interface Result {
   status: any
@@ -104,7 +104,7 @@ onMounted(() => {
   fetchResult()
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   sse.close()
 })
 

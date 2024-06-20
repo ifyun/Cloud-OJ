@@ -18,6 +18,8 @@ const NotFound = () => import("@/views/components/NotFound.vue")
 const ErrorPage = () => import("@/views/components/Error.vue")
 
 const Admin = () => import("@/views/AdminRoot.vue")
+const AdminOverview = () =>
+  import("@/views/components/Admin/Overview/Index.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () =>
   import("@/views/components/Admin/Problem/Editor.vue")
@@ -121,9 +123,17 @@ const router = createRouter({
     {
       path: "/admin",
       name: "admin",
-      redirect: "/admin/problem/index",
+      redirect: "/admin/overview",
       component: Admin,
       children: [
+        {
+          path: "overview",
+          name: "admin_overview",
+          meta: {
+            title: "概览"
+          },
+          component: AdminOverview
+        },
         {
           path: "problem",
           redirect: "/admin/problem/index",
@@ -133,7 +143,7 @@ const router = createRouter({
               path: "index",
               name: "problem_admin",
               meta: {
-                title: "题目管理"
+                title: "题目"
               },
               component: ProblemAdmin
             },
@@ -163,7 +173,7 @@ const router = createRouter({
               path: "index",
               name: "contest_admin",
               meta: {
-                title: "竞赛管理"
+                title: "竞赛"
               },
               component: ContestAdmin
             },
@@ -185,7 +195,7 @@ const router = createRouter({
               path: "index",
               name: "user_admin",
               meta: {
-                title: "用户管理"
+                title: "用户"
               },
               component: UserAdmin
             }
@@ -195,7 +205,7 @@ const router = createRouter({
           path: "settings",
           name: "settings",
           meta: {
-            title: "系统设置"
+            title: "设置"
           },
           component: SystemSettings
         }

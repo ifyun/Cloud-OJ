@@ -216,10 +216,18 @@ export class Overview {
   activities: { [date: string]: number } = {}
 }
 
-export class QueueInfo {
-  name: string = ""
-  messageCount: number = 0
-  consumerCount: number = 0
+type QueueInfo = {
+  consumers: number
+  messages: number
+  messages_ready: number
+  messages_unacknowledged: number
+  messages_details: {
+    samples: Array<{ sample: number; timestamp: number }>
+  }
+}
+
+export type QueuesInfo = {
+  [name: string]: QueueInfo
 }
 
 export class Settings {

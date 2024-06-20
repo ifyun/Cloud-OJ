@@ -73,9 +73,7 @@ const menuOptions = [
   {
     key: "admin",
     show: userInfo.value?.role === 0,
-    label: () => (
-      <RouterLink to={{ name: "problem_admin" }}>系统管理</RouterLink>
-    ),
+    label: () => <RouterLink to={{ name: "admin" }}>系统管理</RouterLink>,
     icon: renderIcon(DashboardRound)
   },
   {
