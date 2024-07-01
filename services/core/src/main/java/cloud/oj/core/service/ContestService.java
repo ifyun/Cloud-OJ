@@ -48,7 +48,8 @@ public class ContestService {
     /**
      * 将用户加入竞赛
      */
-    public HttpStatus inviteUserWithKey(Integer cid, Integer uid, String key) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void inviteUserWithKey(Integer cid, Integer uid, String key) {
         var inviteKey = contestRepo.selectInviteKey(cid);
 
         if (inviteKey.isEmpty()) {
@@ -59,13 +60,9 @@ public class ContestService {
             throw new GenericException(HttpStatus.NOT_ACCEPTABLE, "邀请码错误");
         }
 
-        if (Boolean.FALSE.equals(inviteeRepo.isInvited(cid, uid))) {
-            return inviteeRepo.invite(cid, uid) > 0 ?
-                    HttpStatus.OK :
-                    HttpStatus.BAD_REQUEST;
+        if (Boolean.FALSE.equals(inviteeRepo.isInvited(cid, uid)) && inviteeRepo.invite(cid, uid) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "加入竞赛失败");
         }
-
-        return HttpStatus.OK;
     }
 
     public Contest getContest(Integer cid) {
@@ -107,7 +104,7 @@ public class ContestService {
      * @param size 每页数量
      * @return {@link PageData} of {@link Contest}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public PageData<Contest> getAllContestAdmin(Integer page, Integer size) {
         var data = contestRepo.selectAll(page, size, true);
         var total = commonRepo.selectFoundRows();
@@ -119,40 +116,33 @@ public class ContestService {
      * 创建竞赛
      *
      * @param contest 竞赛
-     * @return {@link HttpStatus}
      */
-    public HttpStatus create(Contest contest) {
+    public void create(Contest contest) {
         contest.setInviteKey(RandomStringUtils.randomNumeric(6));
 
         if (contestRepo.insert(contest) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "创建失败");
         }
-
-        return HttpStatus.CREATED;
     }
 
     /**
      * 修改竞赛
      *
      * @param contest 竞赛
-     * @return {@link HttpStatus}
      */
-    public HttpStatus updateContest(Contest contest) {
+    public void updateContest(Contest contest) {
         if (contestRepo.update(contest) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
         }
-
-        return HttpStatus.OK;
     }
 
     /**
      * 逻辑删除竞赛
      *
      * @param cid 竞赛 Id
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus deleteContest(Integer cid) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void deleteContest(Integer cid) {
         var contest = contestRepo.selectById(cid);
 
         if (contest.isEmpty()) {
@@ -167,8 +157,6 @@ public class ContestService {
         if (contestRepo.delete(cid) == 0) {
             throw new GenericException(HttpStatus.GONE, "竞赛不存在");
         }
-
-        return HttpStatus.NO_CONTENT;
     }
 
     /**
@@ -176,20 +164,16 @@ public class ContestService {
      *
      * @param cid      竞赛 Id
      * @param problems {@link List} of 题目 Id
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus changeOrders(Integer cid, List<Integer> problems) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void changeOrders(Integer cid, List<Integer> problems) {
         var order = new AtomicInteger(0);
-
         // 按前端传回的顺序设置 order
         problems.forEach(pid -> {
             if (contestRepo.updateOrder(cid, pid, order.getAndAdd(1)) == 0) {
                 throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "更新失败");
             }
         });
-
-        return HttpStatus.OK;
     }
 
     /**
@@ -216,7 +200,7 @@ public class ContestService {
      * @param admin 是否为管理员
      * @return {@link List} of {@link Problem}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public List<Problem> getProblemsOfContest(Integer uid, Integer cid, boolean admin) {
         if (admin) {
             // 管理员查询
@@ -266,10 +250,9 @@ public class ContestService {
      *
      * @param cid 竞赛 Id
      * @param pid 题目 Id
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus addProblemToContest(Integer cid, Integer pid) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void addProblemToContest(Integer cid, Integer pid) {
         if (contestRepo.countProblems(cid) == 13) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "不能超过 13 题");
         }
@@ -277,8 +260,6 @@ public class ContestService {
         if (contestRepo.addProblem(cid, pid) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "无法添加题目");
         }
-
-        return HttpStatus.CREATED;
     }
 
     /**
@@ -286,13 +267,10 @@ public class ContestService {
      *
      * @param cid 竞赛 Id
      * @param pid 题目 Id
-     * @return {@link HttpStatus}
      */
-    public HttpStatus removeProblem(Integer cid, Integer pid) {
+    public void removeProblem(Integer cid, Integer pid) {
         if (contestRepo.removeProblem(cid, pid) == 0) {
             throw new GenericException(HttpStatus.GONE, "题目不存在");
         }
-
-        return HttpStatus.NO_CONTENT;
     }
 }

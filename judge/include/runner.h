@@ -2,6 +2,7 @@
 #define RUNNER_H 1
 
 #include <fstream>
+#include <vector>
 #include "syscall_rule.h"
 
 #define AC 1
@@ -54,15 +55,16 @@ struct RTN {
     int total;
     int passed;
     double passRate;
-    long long time;     // μs
-    long long memory;   // KiB
-    char err[128];      // 错误信息
+    long long time;                         // μs
+    long long memory;                       // KiB
+    char err[128];                          // 错误信息
+    std::vector<std::string> detail;        // 存储通过的测试点文件名
 };
 
 class Runner {
 private:
     int root_fd;                // 根目录 fd
-    char *argv[16]{};
+    char *argv[16]{};           // exec 参数
     char *work_dir;             // 工作目录(用户程序所在目录)
     char *data_dir;             // 测试数据目录
     Config config;

@@ -1,5 +1,7 @@
 package cloud.oj.core.service;
 
+import cloud.oj.core.config.AppConfig;
+import cloud.oj.core.entity.DataConf;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
@@ -14,11 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
+
+    private final AppConfig appConfig;
 
     private final CommonRepo commonRepo;
 
@@ -107,27 +113,20 @@ public class ProblemService {
      * 更新题目
      *
      * @param problem {@link Problem}
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus update(Problem problem) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void update(Problem problem) {
         var categories = problem.getCategory().split(",");
-
         // 对标签排序
         if (categories.length > 1) {
             Arrays.sort(categories);
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        if (problemRepo.update(problem) == 0) {
+        if (problemRepo.update(problem) == 0 ||
+                solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
         }
-
-        if (solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) == 0) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
-        }
-
-        return HttpStatus.OK;
     }
 
     /**
@@ -135,10 +134,9 @@ public class ProblemService {
      *
      * @param pid    题目 Id
      * @param enable 是否开放
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus setEnable(int pid, boolean enable) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void setEnable(int pid, boolean enable) {
         if (enable) {
             problemRepo.isInContest(pid)
                     .flatMap(contestRepo::selectById)
@@ -149,18 +147,17 @@ public class ProblemService {
                     });
         }
 
-        return problemRepo.updateEnable(pid, enable) == 0 ?
-                HttpStatus.BAD_REQUEST :
-                HttpStatus.OK;
+        if (problemRepo.updateEnable(pid, enable) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+        }
     }
 
     /**
      * 创建题目
      *
      * @param problem {@link Problem}
-     * @return {@link HttpStatus}
      */
-    public HttpStatus create(Problem problem) {
+    public void create(Problem problem) {
         var categories = problem.getCategory().split(",");
         // 对标签排序
         if (categories.length > 1) {
@@ -168,18 +165,62 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        return problemRepo.insert(problem) == 0 ?
-                HttpStatus.BAD_REQUEST :
-                HttpStatus.CREATED;
+        if (problemRepo.insert(problem) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+        }
+    }
+
+    /**
+     * 更新测试数据配置
+     *
+     * @param conf {@link DataConf}
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void saveDataConf(DataConf conf) {
+        // ! 开放的题目不准修改数据配置
+        var enable = problemRepo.isEnable(conf.getProblemId());
+
+        if (enable.isEmpty()) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "题目不存在");
+        }
+
+        if (enable.get()) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准修改测试点分数");
+        }
+
+        // ! 检查测试点是否均设置了分数
+        var pid = conf.getProblemId();
+        var files = new File(appConfig.getFileDir() + "data/" + pid).listFiles();
+
+        for (File file : Objects.requireNonNull(files)) {
+            var name = file.getName();
+            if (name.endsWith(".out")) {
+                var score = conf.getConf().get(name);
+                if (score == null || score == 0) {
+                    throw new GenericException(HttpStatus.BAD_REQUEST, "分数配置不完整");
+                }
+            }
+        }
+
+        conf.getConf()
+                .values()
+                .stream()
+                .reduce(Integer::sum)
+                .ifPresent(value -> {
+                    // 设置题目分数为测试点分数之和
+                    if (problemRepo.updateDataConf(conf) == 0 ||
+                            problemRepo.updateScore(pid, value) == 0) {
+                        throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+                    }
+                });
     }
 
     /**
      * 逻辑删除题目
      *
      * @param pid 题目 Id
-     * @return {@link HttpStatus}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public HttpStatus delete(Integer pid) {
         if (problemRepo.isEnable(pid).isEmpty()) {
             throw new GenericException(HttpStatus.GONE, "题目不存在");

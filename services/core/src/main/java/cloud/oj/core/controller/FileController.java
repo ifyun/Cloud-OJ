@@ -20,7 +20,8 @@ public class FileController {
      */
     @PostMapping(path = "img/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestHeader Integer uid, @RequestParam MultipartFile file) {
-        return ResponseEntity.status(fileService.saveAvatar(uid, file)).build();
+        fileService.saveAvatar(uid, file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -46,7 +47,8 @@ public class FileController {
     @PostMapping(path = "data")
     public ResponseEntity<?> uploadTestData(@RequestParam Integer pid,
                                             @RequestParam("file") MultipartFile[] files) {
-        return ResponseEntity.status(fileService.saveTestData(pid, files)).build();
+        fileService.saveTestData(pid, files);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -54,7 +56,8 @@ public class FileController {
      */
     @DeleteMapping(path = "data/{pid}")
     public ResponseEntity<?> deleteTestData(@PathVariable Integer pid, String name) {
-        return ResponseEntity.status(fileService.deleteTestData(pid, name)).build();
+        fileService.deleteTestData(pid, name);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -62,7 +65,8 @@ public class FileController {
      */
     @PostMapping(path = "spj")
     public ResponseEntity<?> uploadSPJ(@RequestBody SPJ spj) {
-        return ResponseEntity.status(fileService.saveSPJ(spj)).build();
+        fileService.saveSPJ(spj);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -70,6 +74,7 @@ public class FileController {
      */
     @DeleteMapping(path = "spj/{pid}")
     public ResponseEntity<?> deleteSPJ(@PathVariable Integer pid) {
-        return ResponseEntity.status(fileService.removeSPJ(pid)).build();
+        fileService.removeSPJ(pid);
+        return ResponseEntity.noContent().build();
     }
 }

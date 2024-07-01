@@ -1,9 +1,11 @@
 package cloud.oj.core.controller;
 
+import cloud.oj.core.entity.DataConf;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ProblemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +50,7 @@ public class ProblemController {
      * 获取单个题目(仅开放)
      */
     @GetMapping(path = "{pid}")
-    public ResponseEntity<Problem> getEnable(@PathVariable Integer pid) {
+    public ResponseEntity<Problem> getEnabled(@PathVariable Integer pid) {
         return ResponseEntity.ok(problemService.getSingleEnabled(pid));
     }
 
@@ -65,7 +67,8 @@ public class ProblemController {
      */
     @PutMapping(path = "admin")
     public ResponseEntity<?> update(@RequestBody Problem problem) {
-        return ResponseEntity.status(problemService.update(problem)).build();
+        problemService.update(problem);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -73,7 +76,8 @@ public class ProblemController {
      */
     @PutMapping(path = "admin/{pid}")
     public ResponseEntity<?> setEnable(@PathVariable Integer pid, Boolean enable) {
-        return ResponseEntity.status(problemService.setEnable(pid, enable)).build();
+        problemService.setEnable(pid, enable);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -81,7 +85,17 @@ public class ProblemController {
      */
     @PostMapping(path = "admin", consumes = "application/json")
     public ResponseEntity<?> add(@RequestBody Problem problem) {
-        return ResponseEntity.status(problemService.create(problem)).build();
+        problemService.create(problem);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * 更新测试数据配置
+     */
+    @PostMapping(path = "admin/data_conf", consumes = "application/json")
+    public ResponseEntity<?> saveDataConf(@RequestBody DataConf conf) {
+        problemService.saveDataConf(conf);
+        return ResponseEntity.ok().build();
     }
 
     /**

@@ -34,6 +34,10 @@
 ./build --docker --target=judge --proxy=192.168.1.100:10809
 ```
 
+## 使用在线镜像
+
+如果你不想自己构建镜像，可以使用 `ghcr.io/ifyun/cloud-oj:tag`。
+
 ## 运行
 
 若没有 `~/cloud-oj` 目录，请复制 `docker` 目录：

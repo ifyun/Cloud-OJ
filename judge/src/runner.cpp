@@ -327,7 +327,7 @@ RTN Runner::judge() {
     }
 
     exit:
-    Utils::calc_results(rtn, results, (int) output_files.size());
+    Utils::calc_results(rtn, results, output_files);
     end_env(work_dir);
     return rtn;
 }

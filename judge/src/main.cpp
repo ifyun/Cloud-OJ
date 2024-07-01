@@ -52,6 +52,24 @@ int main(int argc, char *argv[]) {
            << R"( "time": )" << rtn.time << ",\n"
            << R"( "memory": )" << rtn.memory << ",\n";
 
+        if (!rtn.detail.empty()) {
+            ss << R"( "detail": )" << "[ ";
+            auto iter = rtn.detail.begin();
+
+            while (iter != rtn.detail.end()) {
+                auto index = iter->find_last_of('/');
+                auto name = iter->substr(index + 1, iter->length() - index - 1);
+                ss << "\"" << name << "\"";
+                iter++;
+
+                if (iter != rtn.detail.end()) {
+                    ss << ", ";
+                }
+            }
+
+            ss << " ]\n";
+        }
+
         if (strlen(rtn.err) > 0) {
             ss << R"( "error": ")" << rtn.err << "\"\n";
         }

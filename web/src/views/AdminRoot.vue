@@ -17,10 +17,10 @@
               <admin-navbar />
             </div>
           </n-layout-sider>
-          <n-layout>
+          <n-layout style="min-width: 700px">
             <n-layout-header class="header" position="absolute" bordered>
               <div class="admin-nav">
-                <n-space align="center" size="small">
+                <n-flex align="center" size="small">
                   <n-button quaternary style="padding: 0 6px" @click="collapse">
                     <template #icon>
                       <n-icon>
@@ -40,12 +40,12 @@
                       {{ item }}
                     </n-breadcrumb-item>
                   </n-breadcrumb>
-                </n-space>
+                </n-flex>
                 <div style="margin-left: auto">
-                  <n-space size="large" align="center">
+                  <n-flex size="large" align="center">
                     <theme-switch />
                     <user-menu />
-                  </n-space>
+                  </n-flex>
                 </div>
               </div>
             </n-layout-header>
@@ -77,14 +77,14 @@ import {
   NBreadcrumbItem,
   NButton,
   NDialogProvider,
+  NFlex,
   NIcon,
   NLayout,
   NLayoutContent,
   NLayoutHeader,
   NLayoutSider,
   NMessageProvider,
-  NNotificationProvider,
-  NSpace
+  NNotificationProvider
 } from "naive-ui"
 import { computed, inject } from "vue"
 

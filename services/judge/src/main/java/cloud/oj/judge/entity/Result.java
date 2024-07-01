@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * 对应判题程序返回结果
  */
@@ -24,6 +26,7 @@ public class Result {
     private Long time;
     private Long memory;
     private String error;
+    private List<String> detail;
 
     public static Result withError(Integer result, String error) {
         var instance = new Result();

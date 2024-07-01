@@ -26,6 +26,7 @@ public class SettingsController {
      */
     @PutMapping(consumes = "application/json")
     public ResponseEntity<?> updateSettings(@RequestBody Settings settings) {
-        return ResponseEntity.status(systemSettings.setSettings(settings)).build();
+        systemSettings.setSettings(settings);
+        return ResponseEntity.ok().build();
     }
 }

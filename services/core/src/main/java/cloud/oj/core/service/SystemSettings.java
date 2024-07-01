@@ -1,6 +1,7 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.entity.Settings;
+import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.SettingsRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,9 @@ public class SystemSettings {
         return settingsRepo.select();
     }
 
-    public HttpStatus setSettings(Settings settings) {
-        return settingsRepo.update(settings) > 0 ?
-                HttpStatus.OK :
-                HttpStatus.INTERNAL_SERVER_ERROR;
+    public void setSettings(Settings settings) {
+        if (settingsRepo.update(settings) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+        }
     }
 }

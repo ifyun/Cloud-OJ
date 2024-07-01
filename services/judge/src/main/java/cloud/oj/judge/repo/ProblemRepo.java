@@ -1,13 +1,21 @@
 package cloud.oj.judge.repo;
 
 import cloud.oj.judge.entity.Problem;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class ProblemRepo {
+
+    private final ObjectMapper mapper;
 
     private final JdbcClient client;
 
@@ -29,6 +37,32 @@ public class ProblemRepo {
                 .param("pid", pid)
                 .query(Problem.class)
                 .single();
+    }
+
+    /**
+     * 查询指定题目的测试数据配置
+     *
+     * @param pid 题目 Id
+     * @return {@link Map}
+     */
+    public Optional<Map<String, Integer>> selectDataConf(Integer pid) {
+        return client.sql("""
+                        select * from data_conf where problem_id = :pid
+                        """)
+                .param("pid", pid)
+                .query((rs, rowNum) -> {
+                    Map<String, Integer> conf;
+
+                    try {
+                        conf = mapper.readValue(rs.getString("conf"), new TypeReference<>() {
+                        });
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return conf;
+                })
+                .optional();
     }
 
     /**

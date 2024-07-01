@@ -1,2 +1,2 @@
-FROM mariadb:10.11.2
+FROM mariadb:lts
 COPY schema.sql /docker-entrypoint-initdb.d/schema.sql

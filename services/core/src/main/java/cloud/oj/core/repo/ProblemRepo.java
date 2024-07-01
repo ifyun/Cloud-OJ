@@ -1,16 +1,24 @@
 package cloud.oj.core.repo;
 
+import cloud.oj.core.entity.DataConf;
 import cloud.oj.core.entity.Problem;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class ProblemRepo {
+
+    private final ObjectMapper mapper;
 
     private final JdbcClient client;
 
@@ -81,6 +89,67 @@ public class ProblemRepo {
     }
 
     /**
+     * 查询指定题目的测试数据配置
+     *
+     * @param pid 题目 Id
+     * @return {@link Map}
+     */
+    public Optional<Map<String, Integer>> selectDataConf(Integer pid) {
+        return client.sql("""
+                        select * from data_conf where problem_id = :pid
+                        """)
+                .param("pid", pid)
+                .query((rs, rowNum) -> {
+                    Map<String, Integer> conf;
+
+                    try {
+                        conf = mapper.readValue(rs.getString("conf"), new TypeReference<>() {
+                        });
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return conf;
+                })
+                .optional();
+    }
+
+    /**
+     * 保存测试数据配置
+     *
+     * @param conf {@link DataConf}
+     */
+    @SneakyThrows
+    public Integer updateDataConf(DataConf conf) {
+        var pid = conf.getProblemId();
+        var json = mapper.writeValueAsString(conf.getConf());
+        return client.sql("""
+                        replace into data_conf(problem_id, conf) values (:pid, :conf)
+                        """)
+                .param("pid", pid)
+                .param("conf", json)
+                .update();
+    }
+
+    /**
+     * 从测试数据配置移除条目
+     *
+     * @param pid      题目 Id
+     * @param fileName 文件名
+     */
+    public void removeFromDataConf(Integer pid, String fileName) {
+        var sql = """
+                select JSON_REMOVE(conf, CONCAT('$.', :name))
+                from data_conf
+                where problem_id = :pid
+                """;
+        client.sql(sql)
+                .param("pid", pid)
+                .param("name", fileName)
+                .query();
+    }
+
+    /**
      * 检查题目是否在竞赛中
      *
      * @param pid 题目 Id
@@ -125,6 +194,17 @@ public class ProblemRepo {
                 .update();
     }
 
+    public Integer updateScore(Integer pid, Integer score) {
+        return client.sql("""
+                        update problem
+                        set score = :score
+                        where problem_id = :pid
+                        """)
+                .param("pid", pid)
+                .param("score", score)
+                .update();
+    }
+
     public Integer insert(Problem problem) {
         return client.sql("""
                         insert into problem(title,
@@ -151,7 +231,6 @@ public class ProblemRepo {
                         update problem
                         set title        = :title,
                             description  = :description,
-                            score        = :score,
                             timeout      = :timeout,
                             memory_limit = :memoryLimit,
                             output_limit = :outputLimit,

@@ -31,7 +31,7 @@ public:
     /**
     * @brief 计算结果
     */
-    static void calc_results(RTN &rtn, const std::vector<Result> &results, int test_points);
+    static void calc_results(RTN &rtn, const std::vector<Result> &results, std::vector<std::string> &test_points);
 };
 
 #endif // UTILS_H

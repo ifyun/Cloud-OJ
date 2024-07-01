@@ -1,7 +1,6 @@
 package cloud.oj.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,10 +20,15 @@ public class ProblemData {
 
     @Getter
     @Setter
-    @AllArgsConstructor
     @NoArgsConstructor
     public static class TestData {
         private String fileName;
         private long size;
+        private Integer score;
+
+        public TestData(String fileName, long size) {
+            this.fileName = fileName;
+            this.size = size;
+        }
     }
 }

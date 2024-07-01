@@ -84,11 +84,12 @@ judge -c java@-Xmx256m@Solution \
 {
   "result": 1,
   "desc": "AC",
-  "total": 1,
-  "passed": 1,
+  "total": 2,
+  "passed": 2,
   "passRate": 1,
   "time": 980,
-  "memory": 560
+  "memory": 560, 
+  "detail": [ "00-foo.out", "01-bar.out" ]
 }
 ```
 
@@ -96,6 +97,7 @@ judge -c java@-Xmx256m@Solution \
 - `memory`: 内存占用，单位：KiB
 - `total`: 测试点数量
 - `passed`: 通过测试点数量
+- `detail`: 通过的测试点文件名
 
 > `time` 和 `memory` 为所有测试点中的最大值。
 

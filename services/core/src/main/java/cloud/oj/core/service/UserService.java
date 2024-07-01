@@ -76,9 +76,8 @@ public class UserService {
      * 创建用户
      *
      * @param user {@link User}
-     * @return {@link HttpStatus}
      */
-    public HttpStatus addUser(User user) {
+    public void addUser(User user) {
         if (userRepo.exists(user.getUsername())) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "用户名重复");
         }
@@ -87,15 +86,16 @@ public class UserService {
         user.setPassword(bcrypt.encode(user.getPassword()));
         user.setSecret(newUUID());
 
-        return userRepo.insert(user) == 0 ?
-                HttpStatus.BAD_REQUEST :
-                HttpStatus.CREATED;
+        if (userRepo.insert(user) == 0) {
+           throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+        }
     }
 
     /**
      * 更新用户信息(管理员)
      */
-    public HttpStatus updateUser(User user) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUser(User user) {
         if (user.getUid() == 1 && user.getRole() != 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
         }
@@ -104,34 +104,33 @@ public class UserService {
             user.setPassword(bcrypt.encode(user.getPassword()));
         }
 
-        return userRepo.update(user) == 0 ?
-                HttpStatus.BAD_REQUEST :
-                HttpStatus.OK;
+        if (userRepo.update(user) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+        }
     }
 
     /**
      * 更新用户信息(个人)
      */
-    public HttpStatus updateProfile(Integer uid, User user) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateProfile(Integer uid, User user) {
         user.setUid(uid);
         user.setRole(null);
-        return updateUser(user);
+        updateUser(user);
     }
 
     /**
      * 逻辑删除用户及其相关信息
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public HttpStatus deleteUser(Integer uid) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void deleteUser(Integer uid) {
         if (uid.equals(1)) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "不准删除初始管理员");
         }
 
-        if (userRepo.delete(uid) > 0 && scoreboardRepo.deleteByUid(uid) > 0 && solutionRepo.deleteByUid(uid) > 0) {
-            return HttpStatus.NO_CONTENT;
+        if (userRepo.delete(uid) == 0 || scoreboardRepo.deleteByUid(uid) == 0 || solutionRepo.deleteByUid(uid) == 0) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "删除失败");
         }
-
-        throw new GenericException(HttpStatus.BAD_REQUEST, "删除失败");
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

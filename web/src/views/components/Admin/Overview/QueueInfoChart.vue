@@ -46,7 +46,9 @@ const option: EChartsOption = {
     splitNumber: 1,
     splitLine: {
       show: false
-    }
+    },
+    min: 0,
+    max: 1
   },
   series: {
     type: "line",
@@ -74,8 +76,11 @@ watch(themeStr!, (val) => {
 
 watch(
   () => props.data,
-  () => {
+  (val) => {
     nextTick(() => {
+      if (val.length > 0) {
+        ;(option.yAxis as any).max = null
+      }
       ;(option.series as any).data = resolveData()
       chart?.setOption(option)
     })

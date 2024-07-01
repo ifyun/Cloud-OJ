@@ -131,6 +131,31 @@ const ProblemApi = {
   },
 
   /**
+   * 保存测试数据配置
+   */
+  saveDataConf(
+    pid: number,
+    data: { [key: string]: number }
+  ): Promise<AxiosResponse> {
+    return new Promise<AxiosResponse>((resolve, reject) => {
+      axios({
+        url: `${ApiPath.PROBLEM_ADMIN}/data_conf`,
+        method: "POST",
+        data: JSON.stringify({
+          problemId: pid,
+          conf: data
+        })
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((error) => {
+          reject(resolveError(error))
+        })
+    })
+  },
+
+  /**
    * 删除题目
    */
   delete(pid: number): Promise<AxiosResponse> {

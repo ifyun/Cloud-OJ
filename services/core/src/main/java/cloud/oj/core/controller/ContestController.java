@@ -5,6 +5,7 @@ import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ContestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +81,8 @@ public class ContestController {
 
     @PutMapping(path = "admin/problem/order/{cid}")
     public ResponseEntity<?> changeOrders(@PathVariable Integer cid, @RequestBody List<Integer> problems) {
-        return ResponseEntity.status(contestService.changeOrders(cid, problems)).build();
+        contestService.changeOrders(cid, problems);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -101,7 +103,8 @@ public class ContestController {
      */
     @PostMapping(path = "admin")
     public ResponseEntity<?> create(@RequestBody Contest contest) {
-        return ResponseEntity.status(contestService.create(contest)).build();
+        contestService.create(contest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -109,7 +112,8 @@ public class ContestController {
      */
     @PutMapping(path = "admin")
     public ResponseEntity<?> update(@RequestBody Contest contest) {
-        return ResponseEntity.status(contestService.updateContest(contest)).build();
+        contestService.updateContest(contest);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -125,7 +129,8 @@ public class ContestController {
      */
     @DeleteMapping(path = "admin/{cid}")
     public ResponseEntity<?> delete(@PathVariable Integer cid) {
-        return ResponseEntity.status(contestService.deleteContest(cid)).build();
+        contestService.deleteContest(cid);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -133,7 +138,8 @@ public class ContestController {
      */
     @PostMapping(path = "admin/problem/{cid}/{pid}")
     public ResponseEntity<?> addProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
-        return ResponseEntity.status(contestService.addProblemToContest(cid, pid)).build();
+        contestService.addProblemToContest(cid, pid);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -141,7 +147,8 @@ public class ContestController {
      */
     @DeleteMapping(path = "admin/problem/{cid}/{pid}")
     public ResponseEntity<?> removeProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
-        return ResponseEntity.status(contestService.removeProblem(cid, pid)).build();
+        contestService.removeProblem(cid, pid);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -149,6 +156,7 @@ public class ContestController {
      */
     @PostMapping("/invitation/{cid}")
     public ResponseEntity<?> inviteUser(@RequestHeader Integer uid, @PathVariable Integer cid, String key) {
-        return ResponseEntity.status(contestService.inviteUserWithKey(cid, uid, key)).build();
+        contestService.inviteUserWithKey(cid, uid, key);
+        return ResponseEntity.ok().build();
     }
 }

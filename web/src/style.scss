@@ -40,10 +40,6 @@ html {
   .main {
     &.admin {
       top: var(--header-height);
-
-      .n-scrollbar-content {
-        height: calc(100% - var(--layout-padding));
-      }
     }
 
     .wrap {
@@ -112,4 +108,8 @@ html {
   .CodeMirror-linenumber {
     background-color: #161b22;
   }
+}
+
+.layout-max-height {
+  height: calc(100% - var(--layout-padding));
 }

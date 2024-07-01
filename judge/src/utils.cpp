@@ -28,28 +28,31 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     return files;
 }
 
-void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, int test_points) {
+void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, std::vector<std::string> &test_points) {
+    /// results.size() <= test_points.size()
     if (rtn.result == IE) {
         return;
     }
 
     int status;
+    int total = (int) test_points.size();
     long time = 0, memory = 0;
     double pass_rate = 0;
-    // * 1 -> 9: AC -> OLE
+    // * 1 -> 9: AC ... OLE
     int results_cnt[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-    for (auto r: results) {
-        results_cnt[r.status]++;
-        if (r.time > time) time = r.time;
-        if (r.mem > memory) memory = r.mem;
+    for (auto i = 0; i < results.size(); i++) {
+        results_cnt[results[i].status]++;
+        if (results[i].status == AC) { rtn.detail.push_back(test_points[i]); }
+        if (results[i].time > time) { time = results[i].time; }
+        if (results[i].mem > memory) { memory = results[i].mem; }
     }
 
     if (results_cnt[AC] == 0) {
         status = WA;
-    } else if (results_cnt[AC] < test_points) {
+    } else if (results_cnt[AC] < total) {
         status = PA;
-        pass_rate = (double) results_cnt[AC] / (double) test_points;
+        pass_rate = (double) results_cnt[AC] / (double) total;
     } else {
         pass_rate = 1;
         status = AC;
@@ -66,7 +69,7 @@ void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, int test_
     }
 
     rtn.result = status;
-    rtn.total = test_points;
+    rtn.total = total;
     rtn.passed = results_cnt[AC];
     rtn.passRate = pass_rate;
     rtn.time = time;

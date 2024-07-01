@@ -3,11 +3,9 @@
     <div style="margin: 4px">
       <n-page-header @back="back">
         <template #title>
-          <n-space>
-            <n-text>
-              {{ title }}
-            </n-text>
-          </n-space>
+          <n-text>
+            {{ title }}
+          </n-text>
         </template>
         <template #extra>
           <n-tag v-if="isSPJ" type="info" round>
@@ -17,16 +15,25 @@
             Special Judge
           </n-tag>
         </template>
-        <n-space vertical size="large">
+        <n-flex vertical size="large">
           <n-data-table
             v-if="problemData != null"
             max-height="350"
             :loading="loading"
             :columns="columns"
             :data="problemData.testData" />
-          <n-alert :show-icon="false" :bordered="false">
-            换行符必须使用 LF，不能使用 CRLF
-          </n-alert>
+          <n-flex align="center" justify="end">
+            <n-button
+              size="small"
+              type="success"
+              :loading="loading"
+              @click="saveScoreConf">
+              <template #icon>
+                <n-icon :component="SaveRound" />
+              </template>
+              保存分数配置
+            </n-button>
+          </n-flex>
           <n-upload
             multiple
             :action="action"
@@ -50,8 +57,13 @@
               </n-p>
             </n-upload-dragger>
           </n-upload>
-        </n-space>
-        <n-divider>Special Judge ({{ isSPJ ? "已启用" : "未启用" }})</n-divider>
+          <n-alert type="warning" :bordered="false">
+            换行符必须使用 LF，不能使用 CRLF
+          </n-alert>
+        </n-flex>
+        <n-divider title-placement="left">
+          Special Judge ({{ isSPJ ? "已启用" : "未启用" }})
+        </n-divider>
         <div id="spj-editor">
           <textarea ref="editor" />
           <n-button-group size="small" style="margin-top: 12px">
@@ -82,6 +94,7 @@ import { setTitle } from "@/utils"
 import {
   DeleteForeverRound as DeleteIcon,
   FileDownloadOutlined as DownloadIcon,
+  SaveRound,
   UnarchiveRound,
   VerifiedRound
 } from "@vicons/material"
@@ -99,11 +112,12 @@ import {
   NButtonGroup,
   NDataTable,
   NDivider,
+  NFlex,
   NIcon,
+  NInputNumber,
   NP,
   NPageHeader,
   NPopconfirm,
-  NSpace,
   NTag,
   NText,
   NUpload,
@@ -174,12 +188,36 @@ const columns: DataTableColumns<TestData> = [
     render: (row) => <NText>{row.size} 字节</NText>
   },
   {
+    title: "测试点分数",
+    key: "score",
+    align: "right",
+    width: 200,
+    render: (row) => {
+      if (row.fileName.endsWith(".out")) {
+        return (
+          <NFlex justify="end">
+            <NInputNumber
+              value={row.score}
+              onUpdateValue={(val) => {
+                row.score = val === null ? 1 : val
+              }}
+              min="1"
+              precision={0}
+              buttonPlacement="both"
+              style="width: 120px"
+            />
+          </NFlex>
+        )
+      }
+    }
+  },
+  {
     title: "",
     key: "operation",
-    align: "center",
-    width: 240,
+    align: "right",
+    width: 180,
     render: (row) => (
-      <NSpace size="small" justify="center">
+      <NFlex size="small" justify="end">
         <NButton
           size="small"
           type="primary"
@@ -211,7 +249,7 @@ const columns: DataTableColumns<TestData> = [
             default: () => <span>确定要删除吗？</span>
           }}
         </NPopconfirm>
-      </NSpace>
+      </NFlex>
     )
   }
 ]
@@ -367,6 +405,25 @@ function removeSPJ() {
 
 function reloadData() {
   queryData(problemData.value!.pid!)
+}
+
+function saveScoreConf() {
+  loading.value = true
+  const conf: { [key: string]: number } = {}
+  problemData.value!.testData.forEach((value) => {
+    if (value.fileName.endsWith(".out")) {
+      conf[value.fileName] = value.score
+    }
+  })
+
+  ProblemApi.saveDataConf(problemData.value!.pid!, conf)
+    .then(() => {
+      message.success("分数配置已保存")
+    })
+    .catch((err: ErrorMessage) => {
+      message.error(err.toString())
+    })
+    .finally(() => [(loading.value = false)])
 }
 </script>
 

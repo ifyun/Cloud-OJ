@@ -1,13 +1,13 @@
 create database cloud_oj character set utf8mb4;
-use cloud_oj;
 set character set utf8mb4;
+use cloud_oj;
 
 # 题目
 create table problem
 (
     problem_id   int auto_increment primary key      not null,
     title        char(64)                            not null,
-    description  text                                not null,
+    description  text                                not null comment '题目描述',
     timeout      bigint     default 100              null comment 'CPU 时间限制(ms)',
     memory_limit int        default 16               not null comment '内存限制(MiB)',
     output_limit int        default 16               not null comment '输出限制(MiB)',
@@ -15,7 +15,7 @@ create table problem
     enable       tinyint(1) default 0                null comment '是否开放',
     category     char(128)                           null comment '分类, 逗号分隔',
     create_at    bigint     default unix_timestamp() not null comment '秒级',
-    deleted      tinyint    default 0                not null
+    deleted      tinyint(1) default 0                not null
 );
 
 create index idx_title on problem (title);
@@ -23,12 +23,19 @@ create index idx_time on problem (create_at);
 create index idx_enable on problem (enable);
 create index idx_category on problem (category);
 
+# 测试数据配置
+create table data_conf
+(
+    problem_id int primary key not null,
+    conf       json            null comment '每个测试点的分数配置'
+);
+
 # 竞赛
 create table contest
 (
     contest_id   int auto_increment primary key      not null,
     contest_name char(64)                            not null,
-    invite_key   char(8)                             not null,
+    invite_key   char(8)                             not null comment '邀请码',
     start_at     bigint                              not null comment '开始时间，10 位 UNIX',
     end_at       bigint                              not null comment '结束时间，10 位 UNIX',
     languages    int        default 0                not null comment '允许的语言',
@@ -36,25 +43,28 @@ create table contest
     deleted      tinyint(1) default 0                not null
 );
 
+# 竞赛 <-> 题目
 create table `contest-problem`
 (
     contest_id int not null,
     problem_id int null,
     `order`    int not null default 0,
     primary key (contest_id, problem_id)
-) engine = Aria;
+);
 
 create index idx_cid on `contest-problem` (contest_id);
 create index idx_pid on `contest-problem` (problem_id);
 create index idx_order on `contest-problem` (`order`);
 
+# 竞赛 <-> 用户
 create table invitee
 (
     contest_id int not null,
     uid        int not null,
     primary key (contest_id, uid)
-) engine = Aria;
+);
 
+# 用户
 create table user
 (
     uid        int auto_increment primary key      not null,
@@ -89,11 +99,11 @@ create table solution
     result      enum ('AC', 'TLE', 'MLE', 'PA', 'WA', 'CE', 'RE', 'IE', 'OLE') null,
     total       int        default 0                                           not null comment '总测试点数量',
     passed      int        default 0                                           not null comment '通过测试点数量',
-    pass_rate   double     default 0                                           not null,
-    score       double     default 0                                           not null,
+    pass_rate   double     default 0                                           not null comment '通过率',
+    score       double     default 0                                           not null comment '得分',
     time        bigint     default 0                                           not null comment 'CPU 时间(μs)',
     memory      bigint     default 0                                           not null comment '内存占用(KiB)',
-    error_info  text                                                           null,
+    error_info  text                                                           null comment '错误信息(RE,IE)',
     submit_time bigint                                                         not null comment '毫秒级',
     deleted     tinyint(1) default 0                                           not null
 );
@@ -114,9 +124,9 @@ create table source_code
 create table scoreboard
 (
     uid         int primary key      not null,
-    committed   int        default 0 not null,
-    passed      int        default 0 not null,
-    score       double     default 0 not null,
+    committed   int        default 0 not null comment '提交次数',
+    passed      int        default 0 not null comment 'AC题目数量',
+    score       double     default 0 not null comment '总分',
     update_time bigint               not null comment '毫秒级',
     deleted     tinyint(1) default 0 not null
 );
@@ -145,7 +155,7 @@ create table settings
     show_all_contest    tinyint(1) default 0 not null,
     show_passed_points  tinyint(1) default 0 not null,
     auto_del_solutions  tinyint(1) default 0 not null
-) engine = Aria;
+);
 
 create view contest_problem as
 select `c`.`contest_id`   AS `contest_id`,

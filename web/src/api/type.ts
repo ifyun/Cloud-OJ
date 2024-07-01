@@ -70,8 +70,9 @@ export class ErrorMessage {
 }
 
 export class TestData {
-  fileName = ""
-  size = 0
+  fileName: string = ""
+  size: number = 0
+  score: number = 0
 }
 
 export class ProblemData {
@@ -194,11 +195,6 @@ export type Language = {
 export type Results = {
   [key: string]: number
   total: number
-}
-
-export type Activity = {
-  date: string
-  count: number
 }
 
 export class Overview {

@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static cloud.oj.judge.constant.Language.*;
 import static cloud.oj.judge.entity.Result.*;
@@ -48,12 +50,11 @@ public class Judgement {
     /**
      * 判题入口
      *
-     * <p>隔离级别：读提交</p>
-     *
      * @param solution {@link Solution}
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class)
     public void judge(Solution solution) {
+        var dataConf = problemRepo.selectDataConf(solution.getProblemId());
         var compile = compiler.compile(solution);
 
         if (compile.getState() == 0) {
@@ -63,7 +64,8 @@ public class Judgement {
             solutionRepo.updateState(solution.getId(), State.RUNNING);
             // 运行
             var result = execute(solution, problem);
-            saveResult(solution, result, problem);
+            // 保存结果
+            saveResult(solution, result, problem, dataConf);
         } else {
             // 编译失败
             solution.endWithError(CE, compile.getInfo());
@@ -72,13 +74,12 @@ public class Judgement {
     }
 
     /**
-     * 保存判题结果
-     *
-     * <p>计算分数并更新排名</p>
+     * 保存判题结果，计算分数并更新排名
      *
      * @param result {@link Result}
      */
-    private void saveResult(Solution solution, Result result, Problem problem) {
+    private void saveResult(Solution solution, Result result, Problem problem,
+                            Optional<Map<String, Integer>> dataConf) {
         // 内部错误，结束
         if (result.getResult().equals(IE)) {
             solution.endWithError(result.getResult(), result.getError());
@@ -104,11 +105,23 @@ public class Judgement {
 
         // 查询历史提交中的最高分
         var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
+        var score = 0.0;
+
+        if (dataConf.isPresent()) {
+            // 根据通过的测试点计算分数
+            var data = dataConf.get();
+            for (var fileName : result.getDetail()) {
+                score += data.get(fileName);
+            }
+        } else {
+            // 兼容没有指定测试数据分数的旧题目
+            score = passRate * problem.getScore();
+        }
 
         solution.setTotal(result.getTotal());
         solution.setPassed(result.getPassed());
         solution.setPassRate(passRate);
-        solution.setScore(passRate * problem.getScore());
+        solution.setScore(score);
         solution.setTime(result.getTime());
         solution.setMemory(result.getMemory());
         solution.setResult(result.getResult());

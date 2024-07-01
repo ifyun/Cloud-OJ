@@ -4,6 +4,7 @@ import cloud.oj.core.entity.User;
 import cloud.oj.core.entity.UserStatistics;
 import cloud.oj.core.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +52,8 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<?> addUser(@RequestBody User user) {
-        return ResponseEntity.status(userService.addUser(user)).build();
+        userService.addUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -59,7 +61,8 @@ public class UserController {
      */
     @PutMapping(path = "admin")
     public ResponseEntity<?> updateUser(@RequestBody User user) {
-        return ResponseEntity.status(userService.updateUser(user)).build();
+        userService.updateUser(user);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -67,7 +70,8 @@ public class UserController {
      */
     @PutMapping(path = "profile")
     public ResponseEntity<?> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
-        return ResponseEntity.status(userService.updateProfile(uid, user)).build();
+        userService.updateProfile(uid, user);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -75,6 +79,7 @@ public class UserController {
      */
     @DeleteMapping(path = "admin/{uid}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer uid) {
-        return ResponseEntity.status(userService.deleteUser(uid)).build();
+        userService.deleteUser(uid);
+        return ResponseEntity.noContent().build();
     }
 }

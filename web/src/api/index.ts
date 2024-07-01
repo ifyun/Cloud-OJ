@@ -27,7 +27,7 @@ const ApiPath = {
   RANKING: "/api/core/ranking",
   SOLUTION: "/api/core/solution",
   SUBMIT: "/api/judge/submit",
-  ADMIN_SUBMIT: "/api/judge/submit",
+  ADMIN_SUBMIT: "/api/judge/admin/submit",
   QUEUE_INFO: "/api/judge/admin/queue_info",
   PROFILE: "/api/core/user/profile",
   OVERVIEW: "/api/core/user/overview",

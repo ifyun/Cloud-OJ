@@ -9,7 +9,7 @@ services:
     ports:
       - "8500:8500"
   mariadb:
-    image: mariadb:11.0.5
+    image: mariadb:lts
     ports:
       - "3306:3306"
     environment:
@@ -19,7 +19,7 @@ services:
       - "mariadb:/var/lib/mysql"
       - "./sql:/docker-entrypoint-initdb.d"
   rabbitmq:
-    image: rabbitmq:3.11-management-alpine
+    image: rabbitmq:3.13-management-alpine
     ports:
       - "5672:5672"
       - "15672:15672"

@@ -37,16 +37,6 @@
             </n-form-item-grid-item>
           </n-grid>
           <n-grid :cols="4" :x-gap="12">
-            <n-form-item-grid-item label="题目分数" path="score" :span="1">
-              <n-input-number
-                v-model:value="problem.score"
-                :min="0"
-                :max="100"
-                :show-button="false"
-                placeholder="0 ~ 100">
-                <template #suffix>分</template>
-              </n-input-number>
-            </n-form-item-grid-item>
             <n-form-item-grid-item label="时间限制" path="timeout" :span="1">
               <n-input-number
                 v-model:value="problem.timeout"
@@ -83,6 +73,19 @@
                 <template #suffix>MB</template>
               </n-input-number>
             </n-form-item-grid-item>
+            <n-form-item-grid-item label="题目分数" path="score" :span="1">
+              <n-tooltip>
+                <template #trigger>
+                  <n-input-number
+                    :value="problem.score"
+                    :show-button="false"
+                    disabled>
+                    <template #suffix>分</template>
+                  </n-input-number>
+                </template>
+                分数在测试数据页面设置
+              </n-tooltip>
+            </n-form-item-grid-item>
           </n-grid>
           <n-form-item label="分类/标签" path="tags">
             <n-dynamic-tags v-model:value="problem.tags" type="primary" />
@@ -115,7 +118,12 @@
       title="Markdown 帮助"
       closable
       body-content-style="padding: 0">
-      <markdown-view :content="helpDoc" :theme="theme" style="padding: 20px" />
+      <n-scrollbar>
+        <markdown-view
+          :content="helpDoc"
+          :theme="theme"
+          style="padding: 20px" />
+      </n-scrollbar>
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -143,11 +151,13 @@ import {
   NInput,
   NInputNumber,
   NPageHeader,
+  NScrollbar,
   NSpace,
   NSpin,
+  NTooltip,
   useMessage
 } from "naive-ui"
-import { computed, inject, onMounted, ref, watch } from "vue"
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import MarkdownHelp from "./help.md?raw"
 
@@ -172,16 +182,6 @@ const rules: FormRules = {
   },
   type: {
     required: true
-  },
-  score: {
-    required: true,
-    trigger: ["blur", "input"],
-    validator(_, value: number): Error | boolean {
-      if (value < 0 || value > 100) {
-        return new Error("请输入分数")
-      }
-      return true
-    }
   },
   timeout: {
     required: true,
@@ -252,6 +252,9 @@ watch(
 
 onMounted(() => {
   setTitle(route.meta.title as string)
+  document
+    .querySelector(".admin .n-scrollbar-content")
+    ?.classList.add("layout-max-height")
   const reg = /^\d+$/
   const id = route.params.id.toString()
 
@@ -261,6 +264,13 @@ onMounted(() => {
     loading.value = true
     queryProblem(Number(id))
   }
+})
+
+onBeforeUnmount(() => {
+  // 移除最大高度样式，避免其他页面不显示滚动条
+  document
+    .querySelector(".admin .n-scrollbar-content")
+    ?.classList.remove("layout-max-height")
 })
 
 function back() {

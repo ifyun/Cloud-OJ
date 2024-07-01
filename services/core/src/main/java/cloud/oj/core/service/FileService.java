@@ -39,10 +39,16 @@ public class FileService {
         this.problemRepo = problemRepo;
     }
 
-    public ProblemData getProblemData(Integer problemId) {
+    /**
+     * 获取题目的测试数据
+     *
+     * @return {@link ProblemData}
+     */
+    public ProblemData getProblemData(Integer pid) {
         var data = new ProblemData();
-        var files = new File(fileDir + "data/" + problemId).listFiles();
-        var problem = problemRepo.selectById(problemId, false);
+        var files = new File(fileDir + "data/" + pid).listFiles();
+        var problem = problemRepo.selectById(pid, false);
+        var dataConf = problemRepo.selectDataConf(pid);
 
         if (problem.isEmpty()) {
             throw new GenericException(HttpStatus.NOT_FOUND, "题目不存在");
@@ -53,12 +59,21 @@ public class FileService {
                 for (var file : files) {
                     var ext = FilenameUtils.getExtension(file.getName());
 
-                    if (ext.equals("in") || ext.equals("out")) {
+                    if (ext.equals("in")) {
                         data.getTestData().add(new ProblemData.TestData(file.getName(), file.length()));
+                        continue;
+                    }
+
+                    if (ext.equals("out")) {
+                        var testData = new ProblemData.TestData(file.getName(), file.length());
+                        dataConf.ifPresent(conf -> testData.setScore(conf.get(file.getName())));
+                        data.getTestData().add(testData);
+                        continue;
                     }
 
                     if (file.getName().equals("spj.so")) {
                         data.setSpj(true);
+                        continue;
                     }
 
                     if (file.getName().equals("spj.cpp")) {
@@ -70,7 +85,7 @@ public class FileService {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        data.setPid(problemId);
+        data.setPid(pid);
         data.setTitle(problem.get().getTitle());
         data.getTestData().sort(Comparator.comparing(ProblemData.TestData::getFileName));
 
@@ -83,7 +98,7 @@ public class FileService {
      * @param pid   题目 Id
      * @param files 文件
      */
-    public HttpStatus saveTestData(Integer pid, MultipartFile[] files) {
+    public void saveTestData(Integer pid, MultipartFile[] files) {
         if (files.length == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "没有文件");
         }
@@ -117,8 +132,6 @@ public class FileService {
                 throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
-
-        return HttpStatus.CREATED;
     }
 
     /**
@@ -127,7 +140,8 @@ public class FileService {
      * @param pid  题目 Id
      * @param name 文件名
      */
-    public HttpStatus deleteTestData(Integer pid, String name) {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteTestData(Integer pid, String name) {
         // ! 开放的题目不允许删除测试数据
         var enable = problemRepo.isEnable(pid);
 
@@ -139,27 +153,29 @@ public class FileService {
             throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准删除测试数据");
         }
 
+        // ! 同步修改测试数据配置
+        problemRepo.removeFromDataConf(pid, name);
+
         var testDataDir = fileDir + "data/";
         var file = new File(testDataDir + pid + "/" + name);
 
         if (file.exists()) {
             if (file.delete()) {
                 log.info("删除文件 {}", file.getAbsolutePath());
-                return HttpStatus.NO_CONTENT;
             } else {
                 throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "删除失败");
             }
         } else {
             log.warn("文件 {} 不存在", file.getAbsolutePath());
-            return HttpStatus.GONE;
+            throw new GenericException(HttpStatus.GONE, "文件不存在");
         }
     }
 
     /**
      * 保存头像图片
      */
-    @Transactional
-    public HttpStatus saveAvatar(Integer uid, MultipartFile file) {
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAvatar(Integer uid, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
         var dir = new File(avatarDir);
         var avatar = new File(avatarDir + uid + ".png");
@@ -178,8 +194,6 @@ public class FileService {
             log.error(e.getMessage());
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "更新头像失败");
         }
-
-        return HttpStatus.CREATED;
     }
 
     /**
@@ -219,7 +233,7 @@ public class FileService {
      *
      * @param spj {@link SPJ}
      */
-    public HttpStatus saveSPJ(SPJ spj) {
+    public void saveSPJ(SPJ spj) {
         var pid = spj.getPid();
         var source = spj.getSource();
         var dir = new File(fileDir + "data/" + pid);
@@ -253,8 +267,6 @@ public class FileService {
         } catch (Exception e) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        return HttpStatus.OK;
     }
 
     /**
@@ -262,14 +274,12 @@ public class FileService {
      *
      * @param pid 题目 Id
      */
-    public HttpStatus removeSPJ(Integer pid) {
+    public void removeSPJ(Integer pid) {
         try {
             FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.so"));
             FileUtils.delete(new File(fileDir + "data/" + pid + "/spj.cpp"));
         } catch (IOException e) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        return HttpStatus.NO_CONTENT;
     }
 }
