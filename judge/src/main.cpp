@@ -45,8 +45,13 @@ int main(int argc, char *argv[]) {
     } else {
         ss << "{\n"
            << R"( "result": )" << rtn.result << ",\n"
-           << R"( "desc": ")" << RESULT_STR[rtn.result] << "\",\n"
-           << R"( "total": )" << rtn.total << ",\n"
+           << R"( "desc": ")" << RESULT_STR[rtn.result] << "\",\n";
+
+        if (strlen(rtn.err) > 0) {
+            ss << R"( "error": ")" << rtn.err << "\",\n";
+        }
+
+        ss << R"( "total": )" << rtn.total << ",\n"
            << R"( "passed": )" << rtn.passed << ",\n"
            << R"( "passRate": )" << rtn.passRate << ",\n"
            << R"( "time": )" << rtn.time << ",\n"
@@ -68,10 +73,8 @@ int main(int argc, char *argv[]) {
             }
 
             ss << " ]\n";
-        }
-
-        if (strlen(rtn.err) > 0) {
-            ss << R"( "error": ")" << rtn.err << "\"\n";
+        } else {
+            ss << R"( "detail": [])" << "\n";
         }
 
         ss << "}\n";

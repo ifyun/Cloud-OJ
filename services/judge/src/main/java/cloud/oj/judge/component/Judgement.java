@@ -107,7 +107,7 @@ public class Judgement {
         var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
         var score = 0.0;
 
-        if (dataConf.isPresent()) {
+        if (dataConf.isPresent() && result.getDetail() != null && !result.getDetail().isEmpty()) {
             // 根据通过的测试点计算分数
             var data = dataConf.get();
             for (var fileName : result.getDetail()) {
