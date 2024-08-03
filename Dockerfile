@@ -37,18 +37,18 @@ COPY --from=build-env /build/services/core/target/*.jar /app/core.jar
 WORKDIR /app
 EXPOSE 8180
 ENV JVM_OPTS="-Xmx200m"
-CMD ["java", "${JVM_OPTS}", "-Dspring.profiles.active=prod", "-jar", "core.jar"]
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core.jar
 # GATEWAY
 FROM openjdk AS gateway
 COPY --from=build-env /build/services/gateway/target/*.jar /app/gateway.jar
 WORKDIR /app
 EXPOSE 8080
 ENV JVM_OPTS="-Xmx200m"
-CMD ["java", "${JVM_OPTS}", "-Dspring.profiles.active=prod", "-jar", "gateway.jar"]
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
 # JUDGE
 FROM openjdk AS judge
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gcc g++ mono-devel nodejs \
+    && apt-get install -y --no-install-recommends curl gcc g++ python3 mono-devel nodejs \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 ARG PROXY=""
@@ -75,4 +75,4 @@ COPY --from=build-env \
 WORKDIR /app
 EXPOSE 8380
 ENV JVM_OPTS="-Xmx200m"
-CMD ["java", "${JVM_OPTS}", "-Dspring.profiles.active=prod", "-jar", "judge.jar"]
+CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar judge.jar

@@ -161,7 +161,10 @@ public class Judgement {
 
             var bin = "judge";
             var lang = "--lang=" + solution.getLanguage();
-            var time = "--time=" + problem.getTimeout();
+            var time = "--time=" + switch (solution.getLanguage()) {
+                case JAVA, JAVA_SCRIPT -> problem.getTimeout() * 2;
+                default -> problem.getTimeout();
+            };
             var ram = "--ram=" + problem.getMemoryLimit();
             var output = "--output=" + problem.getOutputLimit();
             var cpu = "--cpu=" + cpuMap.get(Thread.currentThread().getName());
