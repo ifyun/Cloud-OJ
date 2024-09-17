@@ -101,7 +101,6 @@ export class Problem {
   timeout?: number
   memoryLimit?: number
   outputLimit?: number
-  order: number = 0
 }
 
 export class Contest {
@@ -231,4 +230,13 @@ export class Settings {
   showAllContest?: boolean
   showPassedPoints?: boolean
   autoDelSolutions?: boolean
+}
+
+export class Log {
+  instanceId: string = ""
+  level: string = ""
+  thread: string = ""
+  className: string = ""
+  message: string = ""
+  time: number = 0
 }

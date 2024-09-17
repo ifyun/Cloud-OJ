@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/core/ranking/admin/**").hasRole(Role.ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/core/settings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/core/settings/**").hasRole(Role.ADMIN)
+                        .requestMatchers("/api/core/log").hasRole(Role.ADMIN)
                         .requestMatchers("/api/core/file/data/**").hasRole(Role.ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/core/file/img/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/core/file/img/**").hasRole(Role.ADMIN)

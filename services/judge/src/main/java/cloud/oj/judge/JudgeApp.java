@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *   <code>sudo mvn spring-boot:run</code>
  * </p>
  */
-@EnableDiscoveryClient
 @SpringBootApplication
+@EnableDiscoveryClient
 @EnableTransactionManagement
 @EnableConfigurationProperties(AppConfig.class)
 public class JudgeApp {

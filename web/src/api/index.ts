@@ -31,7 +31,8 @@ const ApiPath = {
   QUEUE_INFO: "/api/judge/admin/queue_info",
   PROFILE: "/api/core/user/profile",
   OVERVIEW: "/api/core/user/overview",
-  SETTINGS: "/api/core/settings"
+  SETTINGS: "/api/core/settings",
+  LOG: "/api/core/log"
 }
 
 function resolveError(error: any): ErrorMessage {

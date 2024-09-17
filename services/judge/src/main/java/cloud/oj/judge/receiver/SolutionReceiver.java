@@ -49,7 +49,7 @@ public class SolutionReceiver {
             channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
         } catch (Exception e) {
             // submit 失败，重新入队
-            log.error(e.getMessage());
+            log.error("提交失败(已重新入队): {}", e.getMessage());
             channel.basicNack((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false, true);
         }
     }

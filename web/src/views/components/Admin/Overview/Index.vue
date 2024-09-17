@@ -1,13 +1,17 @@
 <template>
   <div class="admin-wrap">
-    <queues-info-view :data="queuesInfo" />
+    <n-flex vertical>
+      <queues-info-view :data="queuesInfo" />
+      <service-log />
+    </n-flex>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue"
 import QueuesInfoView from "./QueuesInfoView.vue"
-import { useMessage } from "naive-ui"
+import ServiceLog from "./ServiceLog.vue"
+import { NFlex, useMessage } from "naive-ui"
 import { useStore } from "@/store"
 import { type QueuesInfo } from "@/api/type"
 import { QueuesInfoPoller } from "@/api/request"

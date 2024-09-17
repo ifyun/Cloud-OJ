@@ -24,11 +24,11 @@ public class FileCleaner {
     }
 
     @Async
-    public void deleteTempFile(String solutionId) {
+    public void deleteTempFile(String sid) {
         try {
-            FileUtils.deleteDirectory(new File(appConfig.getCodeDir() + solutionId));
+            FileUtils.deleteDirectory(new File(appConfig.getCodeDir() + sid));
         } catch (IOException e) {
-            log.warn("删除失败: solutionId={}", solutionId);
+            log.error("删除临时文件失败(sid={}): {}", sid, e.getMessage());
         }
     }
 }

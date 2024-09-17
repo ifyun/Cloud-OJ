@@ -65,7 +65,7 @@ public class Compiler {
 
             return compileSource(solutionId, language);
         } catch (UnsupportedLanguageError e) {
-            log.warn("编译错误: {}", e.getMessage());
+            log.warn("编译错误(sid={}): {}", solution.getSolutionId(), e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -100,9 +100,10 @@ public class Compiler {
                 throw new InterruptedException("编译超时");
             }
         } catch (IOException e) {
-            log.error("编译错误({}): {}", solutionId, e.getMessage());
+            log.error("编译 IO 错误(sid={}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         } catch (InterruptedException | CompileError e) {
+            log.warn("编译失败(sid={}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
     }
@@ -132,7 +133,7 @@ public class Compiler {
 
             return sourceFile.getPath();
         } catch (IOException e) {
-            log.error("写入代码失败({}): {}", sourceFile.getName(), e.getMessage());
+            log.error("写入代码失败: {}", e.getMessage());
             return "";
         }
     }

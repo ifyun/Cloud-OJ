@@ -186,7 +186,8 @@ public class Judgement {
 
             if (process.exitValue() != 0) {
                 // 非零退出
-                log.error(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
+                log.warn("JUDGE 非零退出(sid={}): {}", solution.getSolutionId(),
+                        IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
                 result = withError(IE, "JUDGE 非零退出");
             } else {
                 result = objectMapper.readValue(process.getInputStream(), Result.class);
@@ -194,10 +195,10 @@ public class Judgement {
         } catch (UnsupportedLanguageError e) {
             result = withError(IE, e.getMessage());
         } catch (InterruptedException e) {
-            log.error(e.getMessage());
-            result = withError(IE, "JUDGE 线程错误");
+            log.error("JUDGE 线程中断(sid={}): {}", solution.getSolutionId(), e.getMessage());
+            result = withError(IE, "JUDGE 线程中断");
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("JUDGE IO ERROR(sid={}): {}", solution.getSolutionId(), e.getMessage());
             result = withError(IE, "JUDGE 线程 IO 错误");
         } finally {
             if (process != null) {

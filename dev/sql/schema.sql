@@ -157,6 +157,21 @@ create table settings
     auto_del_solutions  tinyint(1) default 0 not null
 );
 
+create table log
+(
+    id          bigint unsigned primary key auto_increment,
+    service     char(16) comment '服务名称',
+    instance_id char(36) comment '实例 ID',
+    level       char(8)  not null comment '日志级别',
+    thread      char(36) not null comment '线程名称',
+    className   tinytext not null comment '类名',
+    message     text     not null,
+    time        bigint   not null
+) engine = Aria;
+
+create index idx_level on log(level);
+create index idx_time on log (time);
+
 create view contest_problem as
 select `c`.`contest_id`   AS `contest_id`,
        `c`.`contest_name` AS `contest_name`,
