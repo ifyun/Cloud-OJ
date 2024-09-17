@@ -165,6 +165,8 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
+        problem.setScore(0);
+
         if (problemRepo.insert(problem) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
         }

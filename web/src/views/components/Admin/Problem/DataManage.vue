@@ -27,6 +27,7 @@
               size="small"
               type="success"
               :loading="loading"
+              :disabled="disableSaveConf"
               @click="saveScoreConf">
               <template #icon>
                 <n-icon :component="SaveRound" />
@@ -289,6 +290,10 @@ const uploadData = computed<any>(() => {
 
 const disableUpload = computed<boolean>(() => {
   return loading.value || problemData.value == null
+})
+
+const disableSaveConf = computed<boolean>(() => {
+  return loading.value || problemData.value?.testData.length === 0
 })
 
 watch(
