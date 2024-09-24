@@ -123,10 +123,8 @@ public class ProblemService {
             problem.setCategory(StringUtils.join(categories, ","));
         }
 
-        if (problemRepo.update(problem) == 0 ||
-                solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle()) == 0) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "更新失败");
-        }
+        problemRepo.update(problem);
+        solutionRepo.updateTitle(problem.getProblemId(), problem.getTitle());
     }
 
     /**
