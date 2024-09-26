@@ -28,7 +28,7 @@ public class DatabaseMigration {
                     instance_id char(36),
                     level       char(8)  not null,
                     thread      char(64) not null,
-                    className   tinytext not null,
+                    class_name  tinytext not null,
                     message     text,
                     time        bigint   not null
                 ) engine = Aria

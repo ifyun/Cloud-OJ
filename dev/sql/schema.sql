@@ -164,12 +164,12 @@ create table log
     instance_id char(36) comment '实例 ID',
     level       char(8)  not null comment '日志级别',
     thread      char(36) not null comment '线程名称',
-    className   tinytext not null comment '类名',
+    class_name  tinytext not null comment '类名',
     message     text     not null,
     time        bigint   not null
 ) engine = Aria;
 
-create index idx_level on log(level);
+create index idx_level on log (level);
 create index idx_time on log (time);
 
 create view contest_problem as
