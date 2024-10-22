@@ -28,6 +28,8 @@ const ContestAdmin = () => import("@/views/components/Admin/Contest/Index.vue")
 const ContestEditor = () =>
   import("@/views/components/Admin/Contest/Editor.vue")
 const UserAdmin = () => import("@/views/components/Admin/User/Index.vue")
+const SolutionAdmin = () =>
+  import("@/views/components/Admin/Solution/Index.vue")
 const SystemSettings = () => import("@/views/components/Admin/Settings.vue")
 
 const router = createRouter({
@@ -200,6 +202,14 @@ const router = createRouter({
               component: UserAdmin
             }
           ]
+        },
+        {
+          path: "solution",
+          name: "solution_admin",
+          meta: {
+            title: "题解"
+          },
+          component: SolutionAdmin
         },
         {
           path: "settings",

@@ -24,6 +24,13 @@ public class UserRepo {
                 .single();
     }
 
+    public Optional<Integer> selectUidByUsername(String username) {
+        return client.sql("select uid from user where username = :username")
+                .param("username", username)
+                .query(Integer.class)
+                .optional();
+    }
+
     public Optional<User> selectById(Integer uid) {
         return client.sql("""
                         select uid,

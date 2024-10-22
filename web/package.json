@@ -1,6 +1,6 @@
 {
   "name": "cloud-oj",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vite",

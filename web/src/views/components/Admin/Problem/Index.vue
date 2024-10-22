@@ -1,67 +1,61 @@
 <template>
   <div class="admin-wrap">
-    <error-result
-      v-if="error != null"
-      :error="error"
-      style="margin-top: 48px" />
-    <div v-else>
-      <n-space vertical size="large">
-        <n-space align="center" justify="space-between">
-          <n-space align="center">
-            <n-input-group>
-              <n-input
-                v-model:value="keyword"
-                maxlength="10"
-                show-count
-                clearable
-                placeholder="输入题目名称、分类"
-                @clear="search">
-                <template #prefix>
-                  <n-icon class="input-prefix-icon">
-                    <search-round />
-                  </n-icon>
-                </template>
-              </n-input>
-              <n-button type="primary" @click="search">
-                <template #icon>
-                  <n-icon>
-                    <manage-search-round />
-                  </n-icon>
-                </template>
-                搜索题目
-              </n-button>
-            </n-input-group>
-          </n-space>
-          <n-space align="center" justify="end">
-            <n-button-group>
-              <n-button type="info" round secondary>
-                <template #icon>
-                  <n-icon>
-                    <add-icon />
-                  </n-icon>
-                </template>
-                <router-link
-                  :to="{ name: 'edit_problem', params: { id: 'new' } }">
-                  创建题目
-                </router-link>
-              </n-button>
-            </n-button-group>
-          </n-space>
+    <n-space vertical size="large">
+      <n-space align="center" justify="space-between">
+        <n-space align="center">
+          <n-input-group>
+            <n-input
+              v-model:value="keyword"
+              maxlength="10"
+              show-count
+              clearable
+              placeholder="输入题目名称、分类"
+              @clear="search">
+              <template #prefix>
+                <n-icon class="input-prefix-icon">
+                  <search-round />
+                </n-icon>
+              </template>
+            </n-input>
+            <n-button type="primary" @click="search">
+              <template #icon>
+                <n-icon>
+                  <manage-search-round />
+                </n-icon>
+              </template>
+              搜索题目
+            </n-button>
+          </n-input-group>
         </n-space>
-        <n-data-table
-          :row-props="rowProps"
-          :columns="problemColumns"
-          :data="problems.data"
-          :loading="loading" />
-        <n-pagination
-          v-model:page="pagination.page"
-          :page-size="pagination.pageSize"
-          :item-count="problems.total"
-          @update:page="pageChange">
-          <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
-        </n-pagination>
+        <n-space align="center" justify="end">
+          <n-button-group>
+            <n-button type="info" round secondary>
+              <template #icon>
+                <n-icon>
+                  <add-icon />
+                </n-icon>
+              </template>
+              <router-link
+                :to="{ name: 'edit_problem', params: { id: 'new' } }">
+                创建题目
+              </router-link>
+            </n-button>
+          </n-button-group>
+        </n-space>
       </n-space>
-    </div>
+      <n-data-table
+        :row-props="rowProps"
+        :columns="problemColumns"
+        :data="problems.data"
+        :loading="loading" />
+      <n-pagination
+        v-model:page="pagination.page"
+        :page-size="pagination.pageSize"
+        :item-count="problems.total"
+        @update:page="pageChange">
+        <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
+      </n-pagination>
+    </n-space>
   </div>
   <n-dropdown
     trigger="manual"
@@ -77,7 +71,6 @@
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, type Page, Problem } from "@/api/type"
-import { ErrorResult } from "@/components"
 import { useStore } from "@/store"
 import { renderIcon, setTitle } from "@/utils"
 import {
@@ -115,7 +108,6 @@ const message = useMessage()
 const dialog = useDialog()
 
 const loading = ref<boolean>(true)
-const error = ref<ErrorMessage | null>(null)
 
 const pagination = ref({
   page: 1,

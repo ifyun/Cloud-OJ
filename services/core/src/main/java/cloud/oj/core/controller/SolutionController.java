@@ -19,7 +19,7 @@ public class SolutionController {
     private final SolutionService solutionService;
 
     /**
-     * 根据过滤条件获取提交记录
+     * (User) 根据过滤条件获取提交记录
      */
     @GetMapping
     public ResponseEntity<PageData<Solution>> getAll(@RequestHeader Integer uid,
@@ -31,6 +31,28 @@ public class SolutionController {
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
+    }
+
+    /**
+     * (Admin) 根据过滤条件获取提交记录
+     *
+     * @param username 用户名
+     * @param pid      题目 Id
+     * @param date     日期
+     */
+    @GetMapping("admin")
+    public ResponseEntity<PageData<Solution>> getAllByFilter(@RequestParam(defaultValue = "1") int page,
+                                                             @RequestParam(defaultValue = "15") int size,
+                                                             String username, Integer pid, Long date) {
+        var data = solutionService.getSolutionsByAdmin(username, pid, date, page, size);
+        return data.getTotal() > 0 ?
+                ResponseEntity.ok(data) :
+                ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("admin/{sid}")
+    public ResponseEntity<Solution> getSolutionById(@PathVariable String sid) {
+        return ResponseEntity.ok(solutionService.getSolutionById(sid));
     }
 
     /**

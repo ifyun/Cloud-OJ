@@ -165,6 +165,8 @@ export type SubmitData = {
 export class JudgeResult {
   solutionId?: string
   uid?: number
+  username?: string
+  nickname?: string
   problemId?: number
   language?: number
   title?: string
@@ -175,14 +177,11 @@ export class JudgeResult {
   score?: number
   total?: number
   passed?: number
-  passRate?: number
   time?: number
   memory?: number
   errorInfo?: string
   sourceCode?: string
-  /**
-   * UNIX_TIMESTAMP(毫秒)
-   */
+  // UNIX_TIMESTAMP(毫秒)
   submitTime?: number
 }
 

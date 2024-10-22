@@ -169,7 +169,9 @@ const contestColumns: DataTableColumns<Contest> = [
     key: "name",
     render: (row) => (
       <NSpace align="center">
-        <NButton text>{row.contestName}</NButton>
+        <NButton text onClick={titleClick}>
+          {row.contestName}
+        </NButton>
       </NSpace>
     )
   },
@@ -216,6 +218,17 @@ onBeforeMount(() => {
   setTitle(route.meta.title as string)
   queryContests()
 })
+
+function titleClick(e: MouseEvent) {
+  nextTick().then(() => {
+    point.value = {
+      x: e.clientX,
+      y: e.clientY
+    }
+
+    showOperations.value = true
+  })
+}
 
 function hideOperation() {
   showOperations.value = false

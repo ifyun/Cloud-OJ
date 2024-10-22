@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/core/user/admin/**").hasRole(Role.ADMIN)
                         .requestMatchers("/api/core/problem/admin/**").hasRole(Role.ADMIN)
                         .requestMatchers("/api/core/solution/**").hasRole(Role.USER)
+                        .requestMatchers("/api/core/solution/admin/**").hasRole(Role.ADMIN)
                         .requestMatchers("/api/core/contest/admin/**").hasRole(Role.ADMIN)
                         .requestMatchers("/api/core/contest/problem/**").hasRole(Role.USER)
                         .requestMatchers("/api/core/ranking/admin/**").hasRole(Role.ADMIN)

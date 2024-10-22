@@ -9,6 +9,7 @@
 
 <script setup lang="tsx">
 import {
+  CodeRound,
   DashboardRound,
   LocalLibraryRound,
   PeopleAltRound,
@@ -56,6 +57,15 @@ const menuOptions = [
     icon: () => (
       <NIcon>
         <PeopleAltRound />
+      </NIcon>
+    )
+  },
+  {
+    label: () => <RouterLink to={{ name: "solution_admin" }}>题解</RouterLink>,
+    key: "solution_admin",
+    icon: () => (
+      <NIcon>
+        <CodeRound />
       </NIcon>
     )
   },

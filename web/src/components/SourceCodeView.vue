@@ -11,6 +11,28 @@
         </router-link>
       </template>
       <n-space vertical>
+        <n-table
+          v-if="showUser"
+          size="small"
+          style="text-align: center"
+          :single-line="false">
+          <thead>
+            <tr>
+              <th>Solution ID</th>
+              <th>UID</th>
+              <th>用户名</th>
+              <th>昵称</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ data.solutionId }}</td>
+              <td>{{ data.uid }}</td>
+              <td>{{ data.username }}</td>
+              <td>{{ data.nickname }}</td>
+            </tr>
+          </tbody>
+        </n-table>
         <n-table size="small" style="text-align: center" :single-line="false">
           <thead>
             <tr>
@@ -106,7 +128,7 @@ langs.forEach((v, i) => {
   highlightJs.registerLanguage(v, langFns[i])
 })
 
-defineProps<{ show: boolean; data: JudgeResult }>()
+defineProps<{ show: boolean; showUser: boolean; data: JudgeResult }>()
 const emit = defineEmits<{
   (e: "update:show", value: boolean): void
 }>()

@@ -5,6 +5,7 @@ import cloud.oj.core.entity.Solution;
 import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.SolutionRepo;
+import cloud.oj.core.repo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class SolutionService {
     private final SystemSettings systemSettings;
 
     private final ObjectMapper objectMapper;
+    private final UserRepo userRepo;
 
     /**
      * 根据 uid 和过滤条件查询提交
@@ -56,6 +58,58 @@ public class SolutionService {
         var data = solutionRepo.selectAllByUid(uid, page, size, filter, filterValue);
         var total = commonRepo.selectFoundRows();
         return new PageData<>(data, total);
+    }
+
+    /**
+     * (Admin) 根据过滤条件查询题解
+     *
+     * @param username 用户名
+     * @param pid      题目 Id
+     * @param date     日期 Timestamp
+     */
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public PageData<Solution> getSolutionsByAdmin(String username, Integer pid, Long date, Integer page, Integer size) {
+        // username 非空
+        if (username != null && !username.isEmpty()) {
+            var uid = userRepo.selectUidByUsername(username);
+            if (uid.isEmpty()) {
+                return new PageData<>(null, 0);
+            }
+
+            var data = solutionRepo.selectAllByFilter(uid.get(), pid, date, page, size);
+            var total = commonRepo.selectFoundRows();
+            return new PageData<>(data, total);
+        }
+
+        var data = solutionRepo.selectAllByFilter(null, pid, date, page, size);
+        var total = commonRepo.selectFoundRows();
+        return new PageData<>(data, total);
+    }
+
+    /**
+     * (Admin) 根据 Id 查询题解
+     *
+     * @param sid 题解 Id
+     * @return {@link Solution}
+     */
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public Solution getSolutionById(String sid) {
+        var solution = solutionRepo.selectBySid(sid);
+        var source = solutionRepo.selectSourceCode(sid);
+
+        solution.ifPresent(s -> {
+            source.ifPresent(s::setSourceCode);
+            userRepo.selectById(s.getUid()).ifPresent(u -> {
+                s.setUsername(u.getUsername());
+                s.setNickname(u.getNickname());
+            });
+        });
+
+        if (solution.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "找不到提交记录");
+        }
+
+        return solution.get();
     }
 
     /**
@@ -120,6 +174,13 @@ public class SolutionService {
         return emitter;
     }
 
+    /**
+     * 根据 uid 和 sid 查询提交
+     *
+     * @param uid 用户 Id
+     * @param sid 题解 Id
+     * @return {@link Solution}
+     */
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Solution getSolutionByUser(Integer uid, String sid) {
         var settings = systemSettings.getSettings();

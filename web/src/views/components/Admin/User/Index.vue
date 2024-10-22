@@ -92,8 +92,8 @@ const message = useMessage()
 
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
-  { label: "用户 ID", value: 1 },
-  { label: "用户名", value: 2 }
+  { label: "用户名", value: 1 },
+  { label: "昵称", value: 2 }
 ]
 
 const filter = ref<number>(0)

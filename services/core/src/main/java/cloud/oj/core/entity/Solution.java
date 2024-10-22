@@ -26,6 +26,9 @@ public class Solution {
     private Integer problemId;
     private String title;
     private Integer uid;
+    // username, nickname 管理查询时存在
+    private String username;
+    private String nickname;
     private Integer passed;
     private Integer total;
     private Double passRate;

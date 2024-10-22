@@ -108,6 +108,38 @@ public class SolutionRepo {
                 .optional();
     }
 
+    /**
+     * (Admin) 查询题解
+     *
+     * @param sid        题解 Id
+     * @return {@link Solution}
+     */
+    public Optional<Solution> selectBySid(String sid) {
+        return client.sql("""
+                        select solution_id,
+                               problem_id,
+                               uid,
+                               title,
+                               language,
+                               state - 1                                      as state,
+                               result - 1                                     as result,
+                               truncate(pass_rate, 2)                         as pass_rate,
+                               truncate(score, 2)                             as score,
+                               total,
+                               passed,
+                               time,
+                               memory,
+                               submit_time,
+                               error_info
+                        from solution
+                        where solution_id = :sid
+                          and deleted = 0
+                        """)
+                .param("sid", sid)
+                .query(Solution.class)
+                .optional();
+    }
+
     public Optional<String> selectSourceCode(String sid) {
         return client.sql("""
                         select code
@@ -149,8 +181,45 @@ public class SolutionRepo {
                 .list();
     }
 
-    public Integer updateTitle(Integer pid, String title) {
-        return client.sql("update solution set title = :title where problem_id = :pid")
+    /**
+     * 根据过滤条件查询题解
+     *
+     * @param uid  用户 Id
+     * @param pid  题目 Id
+     * @param date 日期 Timestamp
+     */
+    public List<Solution> selectAllByFilter(Integer uid, Integer pid, Long date, Integer page, Integer size) {
+        return client.sql("""
+                        select sql_calc_found_rows solution_id,
+                                                   problem_id,
+                                                   title,
+                                                   language,
+                                                   state - 1              as state,
+                                                   result - 1             as result,
+                                                   truncate(pass_rate, 2) as pass_rate,
+                                                   truncate(score, 2)     as score,
+                                                   time,
+                                                   memory,
+                                                   submit_time
+                        from solution
+                        where deleted = 0
+                          and if(not isnull(:pid), problem_id = :pid, true)
+                          and if(not isnull(:uid), uid = :uid, true)
+                          and if(not isnull(:date), timestampdiff(DAY, submit_time, :date) = 0, true)
+                        order by submit_time desc
+                        limit :start, :count
+                        """)
+                .param("uid", uid)
+                .param("pid", pid)
+                .param("date", date)
+                .param("start", (page - 1) * size)
+                .param("count", size)
+                .query(Solution.class)
+                .list();
+    }
+
+    public void updateTitle(Integer pid, String title) {
+        client.sql("update solution set title = :title where problem_id = :pid")
                 .param("pid", pid)
                 .param("title", title)
                 .update();
