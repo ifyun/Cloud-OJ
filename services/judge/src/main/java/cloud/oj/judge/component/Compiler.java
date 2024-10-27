@@ -13,8 +13,9 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +127,7 @@ public class Compiler {
         try {
             //noinspection ResultOfMethodCallIgnored
             sourceFile.createNewFile();
-            var writer = new FileWriter(sourceFile, false);
+            var writer = new OutputStreamWriter(new FileOutputStream(sourceFile), StandardCharsets.UTF_8);
             writer.write(source);
             writer.flush();
             writer.close();

@@ -41,7 +41,7 @@ public class SolutionReceiver {
     /**
      * 监听提交队列
      */
-    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE, ackMode = "MANUAL", concurrency = "10")
+    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE, ackMode = "MANUAL", concurrency = "2")
     public void handleSubmission(@Payload SubmitData data, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
         try {

@@ -169,7 +169,7 @@ const contestColumns: DataTableColumns<Contest> = [
     key: "name",
     render: (row) => (
       <NSpace align="center">
-        <NButton text onClick={titleClick}>
+        <NButton text onClick={(event) => titleClick(event, row)}>
           {row.contestName}
         </NButton>
       </NSpace>
@@ -219,8 +219,9 @@ onBeforeMount(() => {
   queryContests()
 })
 
-function titleClick(e: MouseEvent) {
+function titleClick(e: MouseEvent, row: Contest) {
   nextTick().then(() => {
+    selectedContest = row
     point.value = {
       x: e.clientX,
       y: e.clientY
