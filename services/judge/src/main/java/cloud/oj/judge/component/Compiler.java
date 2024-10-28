@@ -19,6 +19,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
@@ -88,17 +89,20 @@ public class Compiler {
             processBuilder.directory(new File(solutionDir));
 
             var process = processBuilder.start();
+            var timeout = new AtomicBoolean(false);
 
-            if (process.waitFor(60, TimeUnit.SECONDS)) {
-                if (process.exitValue() == 0) {
-                    return new Compile(solutionId, 0, null);
-                } else {
-                    String error = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
-                    throw new CompileError(error);
-                }
+            watchProcess(language, process, timeout);
+            process.waitFor();
+
+            if (timeout.get()) {
+                throw new CompileError("编译超时");
+            }
+
+            if (process.exitValue() == 0) {
+                return new Compile(solutionId, 0, null);
             } else {
-                process.destroy();
-                throw new InterruptedException("编译超时");
+                String error = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
+                throw new CompileError(error);
             }
         } catch (IOException e) {
             log.error("编译 IO 错误(sid={}): {}", solutionId, e.getMessage());
@@ -107,6 +111,33 @@ public class Compiler {
             log.warn("编译失败(sid={}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
+    }
+
+    private static void watchProcess(Integer language, Process process, AtomicBoolean timeout) throws InterruptedException {
+        new Thread(() -> {
+            int time = language == Language.KOTLIN ? 120 : 30;
+
+            while (time > 0) {
+                if (process.isAlive()) {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                        process.destroyForcibly();
+                        break;
+                    }
+                } else {
+                    // 进程已结束
+                    break;
+                }
+
+                time--;
+            }
+
+            // 超时 destroy
+            process.destroyForcibly();
+            timeout.set(true);
+        }).start();
     }
 
     /**

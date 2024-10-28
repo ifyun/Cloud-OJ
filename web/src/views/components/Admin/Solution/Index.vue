@@ -212,7 +212,7 @@ const columns: DataTableColumns<JudgeResult> = [
 ]
 
 onBeforeMount(() => {
-  setTitle("题解")
+  setTitle("提交")
 
   if (route.query.page) {
     pagination.value.page = Number(route.query.page)

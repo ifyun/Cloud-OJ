@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cloud.oj.judge.constant.Language.*;
 import static cloud.oj.judge.entity.Result.*;
@@ -153,7 +155,6 @@ public class Judgement {
      * @return 运行结果 {@link Result}
      */
     private Result execute(Solution solution, Problem problem) {
-        Process process = null;
         Result result;
 
         try {
@@ -181,8 +182,14 @@ public class Judgement {
                 default -> "";
             };
 
-            process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
+            var process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
+            var timeout = new AtomicBoolean(false);
+            watchProcess(process, timeout);
             process.waitFor();
+
+            if (timeout.get()) {
+                throw new InterruptedException("运行超时");
+            }
 
             if (process.exitValue() != 0) {
                 // 非零退出
@@ -196,16 +203,38 @@ public class Judgement {
             result = withError(IE, e.getMessage());
         } catch (InterruptedException e) {
             log.error("JUDGE 线程中断(sid={}): {}", solution.getSolutionId(), e.getMessage());
-            result = withError(IE, "JUDGE 线程中断");
+            result = withError(IE, e.getMessage());
         } catch (IOException e) {
             log.error("JUDGE IO ERROR(sid={}): {}", solution.getSolutionId(), e.getMessage());
             result = withError(IE, "JUDGE 线程 IO 错误");
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
         }
 
         return result;
+    }
+
+    private static void watchProcess(Process process, AtomicBoolean timeout) {
+        new Thread(() -> {
+            var time = 60;
+            while (time > 0) {
+                if (process.isAlive()) {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                        process.destroyForcibly();
+                        break;
+                    }
+                } else {
+                    // 进程已结束
+                    break;
+                }
+
+                time--;
+            }
+
+            // 超时 destroy
+            process.destroyForcibly();
+            timeout.set(true);
+        }).start();
     }
 }

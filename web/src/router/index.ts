@@ -207,7 +207,7 @@ const router = createRouter({
           path: "solution",
           name: "solution_admin",
           meta: {
-            title: "题解"
+            title: "提交"
           },
           component: SolutionAdmin
         },

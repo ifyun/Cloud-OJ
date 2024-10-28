@@ -61,7 +61,7 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "solution_admin" }}>题解</RouterLink>,
+    label: () => <RouterLink to={{ name: "solution_admin" }}>提交</RouterLink>,
     key: "solution_admin",
     icon: () => (
       <NIcon>
