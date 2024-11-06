@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -88,10 +87,11 @@ public class Compiler {
             processBuilder.command(CMD.get(language));
             processBuilder.directory(new File(solutionDir));
 
-            var process = processBuilder.start();
+            var time = language == Language.KOTLIN ? 120 : 15;
             var timeout = new AtomicBoolean(false);
+            var process = processBuilder.start();
 
-            watchProcess(language, process, timeout);
+            ProcessUtil.watchProcess(time, process, timeout);
             process.waitFor();
 
             if (timeout.get()) {
@@ -111,33 +111,6 @@ public class Compiler {
             log.warn("编译失败(sid={}): {}", solutionId, e.getMessage());
             return new Compile(solutionId, -1, e.getMessage());
         }
-    }
-
-    private static void watchProcess(Integer language, Process process, AtomicBoolean timeout) throws InterruptedException {
-        new Thread(() -> {
-            int time = language == Language.KOTLIN ? 120 : 30;
-
-            while (time > 0) {
-                if (process.isAlive()) {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        log.error(e.getMessage());
-                        process.destroyForcibly();
-                        break;
-                    }
-                } else {
-                    // 进程已结束
-                    break;
-                }
-
-                time--;
-            }
-
-            // 超时 destroy
-            process.destroyForcibly();
-            timeout.set(true);
-        }).start();
     }
 
     /**

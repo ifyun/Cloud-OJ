@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cloud.oj.judge.constant.Language.*;
@@ -182,9 +181,9 @@ public class Judgement {
                 default -> "";
             };
 
-            var process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
             var timeout = new AtomicBoolean(false);
-            watchProcess(process, timeout);
+            var process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
+            ProcessUtil.watchProcess(60, process, timeout);
             process.waitFor();
 
             if (timeout.get()) {
@@ -210,31 +209,5 @@ public class Judgement {
         }
 
         return result;
-    }
-
-    private static void watchProcess(Process process, AtomicBoolean timeout) {
-        new Thread(() -> {
-            var time = 60;
-            while (time > 0) {
-                if (process.isAlive()) {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        log.error(e.getMessage());
-                        process.destroyForcibly();
-                        break;
-                    }
-                } else {
-                    // 进程已结束
-                    break;
-                }
-
-                time--;
-            }
-
-            // 超时 destroy
-            process.destroyForcibly();
-            timeout.set(true);
-        }).start();
     }
 }
