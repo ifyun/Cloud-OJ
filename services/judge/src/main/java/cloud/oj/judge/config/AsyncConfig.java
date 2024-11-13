@@ -63,9 +63,10 @@ public class AsyncConfig {
         var cpuList = appConfig.getCpus();
 
         // 将 CPU 与线程名称绑定
+        // 注意：线程池 ID 从 1 开始
         for (int i = 0; i < cpuList.size(); i++) {
-            log.info("{} -> CPU-{}", THREAD_PREFIX + i, cpuList.get(i));
-            cpuMap.put(THREAD_PREFIX + i, cpuList.get(i));
+            log.info("{} -> CPU-{}", THREAD_PREFIX + (i + 1), cpuList.get(i));
+            cpuMap.put(THREAD_PREFIX + (i + 1), cpuList.get(i));
         }
 
         return cpuMap;

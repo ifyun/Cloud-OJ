@@ -41,13 +41,14 @@ public class JudgementEntry {
             judgement.judge(solution);
         } catch (Exception e) {
             var msg = ExceptionUtils.getRootCause(e).getMessage();
-            log.error("判题事务异常: {}",msg);
+            log.error("判题事务异常: {}", msg);
             // 判题发生异常，将结果设置为内部错误
             solution.endWithError(IE, msg);
             solutionRepo.updateResult(solution);
         } finally {
             onComplete.run();
-            log.debug("判题完成: sid={}, pid={}", solution.getSolutionId(), solution.getProblemId());
+            var t = Thread.currentThread().getName();
+            log.debug("判题完成: thread={}, sid={}, pid={}", t, solution.getSolutionId(), solution.getProblemId());
             if (settingsRepo.autoDelSolutions()) {
                 fileCleaner.deleteTempFile(solution.getId());
             }
