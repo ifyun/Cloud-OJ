@@ -183,7 +183,7 @@ public class Judgement {
 
             var timeout = new AtomicBoolean(false);
             var process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
-            ProcessUtil.watchProcess(60, process, timeout);
+            ProcessUtil.watchProcess(25, process, timeout);
             process.waitFor();
 
             if (timeout.get()) {

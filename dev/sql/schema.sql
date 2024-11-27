@@ -163,7 +163,7 @@ create table log
     service     char(16) comment '服务名称',
     instance_id char(36) comment '实例 ID',
     level       char(8)  not null comment '日志级别',
-    thread      char(36) not null comment '线程名称',
+    thread      char(64) not null comment '线程名称',
     class_name  tinytext not null comment '类名',
     message     text     not null,
     time        bigint   not null
