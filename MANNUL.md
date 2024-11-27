@@ -106,6 +106,10 @@ JUDGE_CPUS=0,1,2      # 使用 CPU-0, CPU-1, CPU-2
 
 默认使用 1 个线程，请根据 CPU 和可用内存量来设置
 
+`DB_POOL_SIZE`
+
+数据库连接池大小，在 JUDGE 服务中，`DB_POOL_SIZE` 必须大于 `JUDGE_CPUS` + 2
+
 `API_HOST`
 
 gateway 服务的地址 + 端口(仅 web 容器使用)
