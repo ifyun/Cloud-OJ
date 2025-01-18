@@ -220,9 +220,8 @@ function submit(data: SourceCode) {
 <style scoped lang="scss">
 .submission {
   height: calc(
-    100vh - var(--layout-padding) * 4 - var(--header-height) - var(
-        --footer-height
-      )
+    100vh - var(--layout-padding) *
+      4 - var(--header-height) - var(--footer-height)
   );
   width: calc(100% - var(--layout-padding) * 4);
   padding: calc(var(--layout-padding) * 2);

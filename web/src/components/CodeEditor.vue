@@ -98,9 +98,8 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
   (e: "update:modelValue", value: string): void
-  // eslint-disable-next-line no-unused-vars
+
   (e: "submit", value: SourceCode): void
 }>()
 

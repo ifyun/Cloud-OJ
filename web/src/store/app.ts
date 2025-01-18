@@ -5,7 +5,7 @@ import { defineStore } from "pinia"
 const THEME = "theme"
 const theme = localStorage.getItem(THEME)
 
-interface State {
+export interface State {
   menuCollapsed: boolean
   breadcrumb: Array<string> | null
   theme: GlobalTheme | null

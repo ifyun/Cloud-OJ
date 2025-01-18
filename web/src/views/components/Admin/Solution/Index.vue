@@ -58,7 +58,8 @@ import {
   NPopover,
   NSpace,
   NTag,
-  NText
+  NText,
+  useMessage
 } from "naive-ui"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 import {
@@ -78,6 +79,7 @@ import { SourceCodeView } from "@/components"
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
+const message = useMessage()
 
 const loading = ref<boolean>(true)
 const showSource = ref<boolean>(false)
@@ -148,12 +150,14 @@ const columns: DataTableColumns<JudgeResult> = [
   },
   {
     title: "SID",
+    key: "solutionId",
     align: "right",
     width: 100,
     render: (row) => <NText depth="2">{row.solutionId}</NText>
   },
   {
     title: "题目 ID",
+    key: "problemId",
     align: "right",
     render: (row) => <NText depth="2">{row.problemId}</NText>
   },
@@ -185,6 +189,7 @@ const columns: DataTableColumns<JudgeResult> = [
   },
   {
     title: "得分",
+    key: "score",
     align: "right",
     render: (row) => {
       const type = row.score === 0 ? "error" : ""
