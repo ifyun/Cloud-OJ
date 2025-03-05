@@ -26,6 +26,10 @@ spring:
         ip-address: ${SERVICE_IP:${spring.cloud.client.ip-address}}
         instance-id: ${spring.application.name}-${server.port}-${random.int}
         health-check-critical-timeout: 5m
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 128MB
 management:
   endpoint:
     health:

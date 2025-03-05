@@ -30,7 +30,7 @@ public class GlobalErrorHandler {
         if (e instanceof HttpServerErrorException) {
             // eg: 503 Service Unavailable
             status = (HttpStatus) ((HttpServerErrorException) e).getStatusCode();
-            msg = ((HttpServerErrorException) e).getStatusText();
+            msg = status.getReasonPhrase();
         } else if (e instanceof GenericException) {
             status = ((GenericException) e).getStatus();
         }
