@@ -38,7 +38,8 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 
 ## 文档
 
-[构建 & 运行](MANNUL.md)
+- [构建 / 安装运行](doc/Build&Setup.md)
+- [搭建开发环境 / Debug](doc/Dev.md)
 
 ## 相关资源
 

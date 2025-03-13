@@ -160,7 +160,6 @@ public class Judgement {
             check(solution.getLanguage());
 
             var bin = "judge";
-            var lang = "--lang=" + solution.getLanguage();
             var time = "--time=" + switch (solution.getLanguage()) {
                 case JAVA, JAVA_SCRIPT -> problem.getTimeout() * 2;
                 default -> problem.getTimeout();
@@ -177,12 +176,12 @@ public class Judgement {
                 case JAVA_SCRIPT -> "--cmd=node@Solution.js";
                 case PYTHON -> "--cmd=python3@Solution.py";
                 case BASH -> "--cmd=sh@Solution.sh";
-                case C_SHARP -> "--cmd=mono@Solution.exe";
+                case C_SHARP -> "--cmd=dotnet@Solution.exe";
                 default -> "";
             };
 
             var timeout = new AtomicBoolean(false);
-            var process = processBuilder.command(bin, cmd, lang, time, ram, cpu, output, workdir, data).start();
+            var process = processBuilder.command(bin, cmd, time, ram, cpu, output, workdir, data).start();
             ProcessUtil.watchProcess(25, process, timeout);
             process.waitFor();
 

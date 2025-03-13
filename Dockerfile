@@ -2,7 +2,7 @@
 FROM debian:bookworm AS openjdk
 RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
     && apt-get update \
-    && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
+    && apt-get install -y --no-install-recommends curl openjdk-17-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # BUILD ENV
@@ -47,27 +47,34 @@ ENV JVM_OPTS="-Xmx200m"
 CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
 # JUDGE
 FROM openjdk AS judge
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gcc g++ python3 mono-devel nodejs \
+RUN curl -LJO https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends gcc g++ python3 dotnet-sdk-8.0 nodejs \
     && apt-get clean \
-    && rm -r /var/lib/apt/lists/*
+    && rm -r /var/lib/apt/lists/* \
+    && rm packages-microsoft-prod.deb \
+    && echo -n "dotnet /usr/share/dotnet/sdk/$(dotnet --version)/Roslyn/bincore/csc.dll " > /bin/csc \
+    && echo -n "/r:/usr/share/dotnet/sdk/$(dotnet --version)/ref/netstandard.dll " >> /bin/csc \
+    && echo '"$@"' >> /bin/csc
 ARG PROXY=""
 ENV HTTP_PROXY=${PROXY}
 ENV HTTPS_PROXY=${PROXY}
-RUN curl -LJO \
-    https://go.dev/dl/go1.21.4.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.21.4.linux-amd64.tar.gz \
+# Download Golang
+RUN curl -LJO https://golang.google.cn/dl/go1.24.1.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz \
     && ln -s /usr/local/go/bin/go /usr/bin/go \
-    && rm go1.21.4.linux-amd64.tar.gz
-RUN curl -LJO \
-    https://github.com/JetBrains/kotlin/releases/download/v1.8.22/kotlin-native-linux-x86_64-1.8.22.tar.gz \
-    && tar -C /usr/share -xzf kotlin-native-linux-x86_64-1.8.22.tar.gz \
-    && mv /usr/share/kotlin-native-linux-x86_64-1.8.22 /usr/share/kotlin \
-    && ln -s /usr/share/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
-    && ln -s /usr/share/kotlin/bin/run_konan /usr/bin/run_konan \
-    && rm kotlin-native-linux-x86_64-1.8.22.tar.gz
-# install dependencies
-RUN kotlinc-native foo.kt || true
+    && rm go1.24.1.linux-amd64.tar.gz \
+# Download Kotlin Native
+RUN curl -LJO https://github.com/JetBrains/kotlin/releases/download/v2.1.10/kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
+    && sudo tar -C /usr/local -xzf kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
+    --transform 's/kotlin-native-prebuilt-linux-x86_64-2.1.10/kotlin/' \
+    && sudo ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
+    && sudo ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan \
+    && rm kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz
+# Download Kotlin Native Dependencies
+RUN kotlinc-native nothing.kt || true
+COPY dotnet.runtimeconfig.json /etc/
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar
 COPY --from=build-env \
     /build/judge/cmake-build-release/judge \

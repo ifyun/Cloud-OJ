@@ -2,10 +2,62 @@
   <n-config-provider abstract :hljs="highlightJs">
     <div class="wrap help">
       <n-h2>语言支持</n-h2>
-      <n-data-table
-        single-column
-        :columns="languageColumns"
-        :data="languageData" />
+      <n-table>
+        <thead>
+          <tr>
+            <th>语言</th>
+            <th>SDK</th>
+            <th>选项/参数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>C</td>
+            <td>gcc 12</td>
+            <td>C11</td>
+          </tr>
+          <tr>
+            <td>C++</td>
+            <td>g++ 12</td>
+            <td>C++17</td>
+          </tr>
+          <tr>
+            <td>Java</td>
+            <td>OpenJDK 17</td>
+            <td>Language Level 17</td>
+          </tr>
+          <tr>
+            <td>Python</td>
+            <td>Python 3.11</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>Bash Shell</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>C#</td>
+            <td>dotnet-sdk-8.0</td>
+            <td>C# 12 (支持顶级语句)</td>
+          </tr>
+          <tr>
+            <td>JavaScript</td>
+            <td>Node.js 18</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>Kotlin</td>
+            <td>Kotlin Native 2.1.x</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>Go</td>
+            <td>go 1.24.x</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </n-table>
       <n-h2>注意事项</n-h2>
       <n-alert :bordered="false" type="info" title="Java">
         Java 的类名必须为 Solution，且不能使用 package 关键字。
@@ -91,7 +143,8 @@ import {
   NConfigProvider,
   NDataTable,
   NH2,
-  NH3
+  NH3,
+  NTable
 } from "naive-ui"
 import { onBeforeMount } from "vue"
 
@@ -134,24 +187,6 @@ const kotlinSample = `fun main() {
     println(arr[0] + arr[1])
 }`
 // endregion
-
-const languageColumns = [
-  { title: "语言", key: "lang" },
-  { title: "编译器/解释器", key: "compiler" },
-  { title: "版本、参数说明", key: "version" }
-]
-
-const languageData = [
-  { lang: "C", compiler: "gcc", version: "11" },
-  { lang: "C++", compiler: "g++", version: "17" },
-  { lang: "Java", compiler: "OpenJDK", version: "Language Level 1.8" },
-  { lang: "Python", compiler: "Python3", version: "3.x" },
-  { lang: "Bash Shell", compiler: "GNU Bash", version: "5.1.x" },
-  { lang: "C#", compiler: "Mono", version: "C# 6.0(部分支持7.0)" },
-  { lang: "JavaScript", compiler: "Node.js", version: "18.x" },
-  { lang: "Kotlin", compiler: "kotlinc-native", version: "1.8.x" },
-  { lang: "Go", compiler: "-", version: "1.21.x" }
-]
 
 const judgeColumns = [
   {

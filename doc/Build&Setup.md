@@ -1,4 +1,4 @@
-# 构建 & 运行
+# 构建 / 运行
 
 构建过程在容器中进行，你只需要安装 [Docker Engine](https://docs.docker.com/engine/install/)
 
@@ -36,7 +36,7 @@
 
 ## 使用在线镜像
 
-如果你不想自己构建镜像，可以使用 `ghcr.io/ifyun/cloud-oj:tag`。
+如果你不想自己构建镜像，可以使用 `ghcr.io/ifyun/cloud-oj:tag`，`tag` 对应前面的 `--target` 参数。
 
 ## 运行
 
