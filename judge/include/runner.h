@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <vector>
-#include "syscall_rule.h"
 
 #define AC 1
 #define TLE 2
@@ -24,8 +23,8 @@ typedef bool (*spj_func)(std::ifstream *, std::ifstream *, std::ifstream *);
  */
 struct Config {
     long timeout{};            // 运行时间(μs)
-    long memory{};             // 内存限制(MiB)，用于判断是否超出限制
-    long output_size{};        // 输出限制(MiB)
+    long memory{};             // 内存限制(KiB)，用于判断是否超出限制
+    long output_size{};        // 输出限制(KiB)
     int cpu = 0;               // CPU 核心，将进程绑定到指定核心减少切换
     int std_in{};              // 输入文件 fd(用于重定向 stdin)
     int std_out{};             // 用户输出 fd(用于重定向 stdout)
@@ -42,8 +41,8 @@ struct Config {
  */
 struct Result {
     int status;
-    long time;
-    long mem;
+    long time;       // μs
+    long mem;        // KiB
     char err[128];
 };
 
@@ -68,9 +67,8 @@ private:
     char *work_dir;             // 工作目录(用户程序所在目录)
     char *data_dir;             // 测试数据目录
     Config config;
-    SyscallRule *syscall_rule;
-    void *dl_handler = nullptr;
-    spj_func spj = nullptr;
+    void *dl_handler = nullptr; // SPJ 动态链接库
+    spj_func spj = nullptr;     // SPJ 函数
 private:
     [[nodiscard]] int set_cpu() const;
 
@@ -81,7 +79,7 @@ private:
     void run(Result *res);
 
 public:
-    Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config);
+    Runner(char *cmd, char *work_dir, char *data_dir, Config &config);
 
     ~Runner();
 

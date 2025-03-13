@@ -15,20 +15,19 @@ void split(char **arr, char *str, const char *separator) {
 }
 
 static struct option long_options[] = {
-        {"cmd", 1, nullptr, 'c'},
-        {"lang", 1, nullptr, 'l'},
-        {"time", 1, nullptr, 't'},
-        {"ram", 1, nullptr, 'm'},
-        {"output", 1, nullptr, 'o'},
+        {"cmd",     1, nullptr, 'c'},
+        {"time",    1, nullptr, 't'},
+        {"ram",     1, nullptr, 'm'},
+        {"output",  1, nullptr, 'o'},
         {"workdir", 1, nullptr, 'w'},
-        {"data", 1, nullptr, 'd'},
-        {"cpu", 1, nullptr, 'u'},
-        {nullptr, 0, nullptr, 0}
+        {"data",    1, nullptr, 'd'},
+        {"cpu",     1, nullptr, 'u'},
+        {nullptr,   0, nullptr, 0}
 };
 
-static const char *short_options = "c:l:t:m:o:w:d:u:";
+static const char *short_options = "c:r:t:m:o:w:d:u:";
 
-int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char datadir[], Config &config) {
+int get_args(int argc, char *argv[], char *cmd, char workdir[], char datadir[], Config &config) {
     int opt;
     int index = 0;
     int count = 0;
@@ -45,10 +44,6 @@ int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char 
                 break;
             case 'd':
                 strcpy(datadir, optarg);
-                count++;
-                break;
-            case 'l':
-                lang = (int) strtol(optarg, nullptr, 10);
                 count++;
                 break;
             case 'u':
@@ -73,7 +68,7 @@ int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char 
         }
     }
 
-    if (count < 8) {
+    if (count < 7) {
         return -1;
     }
 

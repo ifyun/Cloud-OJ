@@ -10,7 +10,7 @@ Online Judge 判题程序。
    sudo apt install cmake build-essential
    ```
 
-2. 运行 `./build` 生成可执行文件和动态库
+2. 运行 `./build` 生成可执行文件
 
 ## Install
 
@@ -27,27 +27,12 @@ judge <options>
 ```
 
 - `--cmd`: 要执行的命令, 用 `@` 代替 <kbd>空格</kbd>
-- `--lang`: 语言，用于加载系统调用规则
 - `--time`: CPU 时间限制，单位：毫秒
 - `--ram`: 内存限制，此项用于判断是否超限，单位：MiB
 - `--output`: 输出限制，单位：MiB
 - `--workdir`: 工作目录，用户程序所在目录
 - `--data`: 测试数据目录，包含 `*.in`、 `*.out` 文件
 - `--cpu`: 用哪个 CPU 核心
-
-`--lang` 取值：
-
-| Value | Language   |
-|-------|------------|
-| 0     | C          |
-| 1     | C++        |
-| 2     | Java       |
-| 3     | Python     |
-| 4     | Bash       |
-| 5     | C#         |
-| 6     | JavaScript |
-| 7     | Kotlin     |
-| 8     | Go         |
 
 ### 示例
 
@@ -112,11 +97,11 @@ judge -c java@-Xmx256m@Solution \
 - 8: 内部错误(IE)
 - 9: 输出超限(OLE)
 
-如果发生错误(RE，IE)，输出如下：
+如果发生错误(IE)，输出如下：
 
 ```json
 {
-  "result": 7,
+  "result": 8,
   "error": "错误信息..."
 }
 ```

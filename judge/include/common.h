@@ -4,7 +4,7 @@
 #include "runner.h"
 
 /// 解析参数
-int get_args(int argc, char *argv[], char *cmd, int &lang, char workdir[], char datadir[], Config &config);
+int get_args(int argc, char *argv[], char *cmd, char workdir[], char datadir[], Config &config);
 
 /**
 * 分割字符串到数组

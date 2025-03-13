@@ -1,25 +1,23 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
-#include <sys/ptrace.h>
 #include <sys/prctl.h>
-#include <fcntl.h>
 #include <dirent.h>
+#include <dlfcn.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
 #include <cstring>
-#include <dlfcn.h>
 #include "runner.h"
 #include "utils.h"
 #include "env_setup.h"
 #include "common.h"
 
-Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &config) {
+Runner::Runner(char *cmd, char *work_dir, char *data_dir, Config &config) {
     split(this->argv, cmd, "@");
     root_fd = open("/", O_RDONLY);
 
     this->work_dir = work_dir;
     this->data_dir = data_dir;
-    this->syscall_rule = new SyscallRule(language);
     this->config = config;
     this->config.in = new std::ifstream;
     this->config.out = new std::ifstream;
@@ -35,7 +33,6 @@ Runner::Runner(char *cmd, char *work_dir, char *data_dir, int language, Config &
 }
 
 Runner::~Runner() {
-    delete this->syscall_rule;
     close(root_fd);
 
     if (dl_handler != nullptr) {
@@ -67,20 +64,9 @@ inline void Runner::run_cmd() {
 
     setrlimit(RLIMIT_CPU, &rl);
 
-    rl.rlim_cur = config.output_size << 10;
-    rl.rlim_max = rl.rlim_cur;
-
-    setrlimit(RLIMIT_FSIZE, &rl);
-
     if (set_cpu() != 0) {
         goto exit;
     }
-
-#ifdef DEBUG
-    cpu_set_t mask;
-    sched_getaffinity(0, sizeof(cpu_set_t), &mask);
-    printf("PID: %d, CPU_COUNT: %d\n", getpid(), CPU_COUNT(&mask));
-#endif
 
     dup2(config.std_in, STDIN_FILENO);
     dup2(config.std_out, STDOUT_FILENO);
@@ -88,7 +74,6 @@ inline void Runner::run_cmd() {
 
     setuid(65534);
     alarm(ALARM_SECONDS);
-    ptrace(PTRACE_TRACEME, 0, 0, 0);
     // * exec 成功不会返回
     if (execvp(argv[0], argv) != 0) {
         goto exit;
@@ -102,56 +87,62 @@ inline void Runner::run_cmd() {
  * @brief 等待结果
  */
 void Runner::watch_result(pid_t pid, Result *res) {
-    int syscall_number = 0;
+    int p;
     int status;
+    int options = WNOHANG;
+    int kill_why = 0;
+    long min_flt;
+    char stat[64];
+    char buf[256];
     struct rusage ru{};
-    res->mem = 0;
 
-    while (wait4(pid, &status, 0, &ru) > 0) {
+    sprintf(stat, "/proc/%d/stat", pid);
+    auto fp = open(stat, O_RDONLY);
+
+    while ((p = wait4(pid, &status, options, &ru)) == 0) {
+        // ? 读取 /proc/pid/stat 获取软缺页中断次数，在超出内存限制之前 kill 子进程
+        // * 第 10 列为软缺页中断次数
+        read(fp, buf, sizeof(buf));
+        sscanf(buf, "%*ld %*s %*c %*ld %*ld %*ld %*ld %*ld %*ld %ld", &min_flt); // NOLINT(*-err34-c)
+        lseek(fp, 0, SEEK_SET);
+        // 内存超限及时 kill
+        if (config.memory < min_flt * getpagesize() >> 10) {
+            kill(pid, SIGKILL);
+            kill_why = MLE;
+            options = 0;
+        }
+        // 获取 stdout 大小 (byte)
+        auto f_size = lseek(config.std_out, 0, SEEK_END);
+        if (f_size > config.output_size << 10) {
+            kill(pid, SIGKILL);
+            kill_why = OLE;
+            options = 0;
+        }
+    }
+
+    if (p > 0) {
         int stop_sig;
-        struct user_regs_struct regs{};
 
-        if (syscall_number == 0) {
-            // ? 检查系统调用
-            ptrace(PTRACE_GETREGS, pid, 0, &regs);
-            if ((syscall_number = syscall_rule->check(&regs)) != 0) {
-                kill(pid, SIGSYS);
-            }
-        }
-
-        // * Code + Data + Stack
-        res->mem = ru.ru_minflt * getpagesize() / 1024;
-        // ? 检查内存占用
-        if (res->mem > config.memory) {
-            kill(pid, SIGUSR1);
-        }
-
+        // 内存使用 = 软缺页中断次数 * 页大小 (byte => KiB)
+        res->mem = ru.ru_minflt * getpagesize() >> 10;
+        // 运行时间 (μs)
         res->time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
                     + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        if (WIFSTOPPED(status)
-            && (stop_sig = WSTOPSIG(status)) != SIGTRAP
-            && stop_sig != SIGURG
-            && stop_sig != SIGCHLD) {
+        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGURG) {
             // ? 子进程停止
-            // * 忽略 ptrace 产生的 SIGTRAP 信号
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
-            // ! 没有 return 会进入死循环
             switch (stop_sig) {
-                case SIGUSR1:
-                    res->status = MLE;
+                case SIGSEGV:
+                    sprintf(res->err, "段错误(SIGSEGV)");
+                    res->status = RE;
                     return;
                 case SIGALRM:
                     sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double) res->time / 1000.0);
                     res->status = RE;
                     return;
-                case SIGSEGV:
-                    sprintf(res->err, "段错误(SIGSEGV)");
-                    res->status = RE;
-                    return;
-                case SIGSYS:
-                    sprintf(res->err, "非法调用(SYSCALL: %d)", syscall_number);
-                    res->status = RE;
+                case SIGXCPU:
+                    res->status = TLE;
                     return;
                 default:
                     sprintf(res->err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
@@ -164,26 +155,25 @@ void Runner::watch_result(pid_t pid, Result *res) {
             // ? 子进程收到信号终止
             int sig = WTERMSIG(status);
             switch (sig) {
-                case SIGUSR1:
-                    res->status = MLE;
-                    break;
-                case SIGXCPU:
-                    res->status = TLE;
-                    break;
-                case SIGXFSZ:
-                    res->status = OLE;
-                    break;
                 case SIGKILL:
-                    sprintf(res->err, "程序终止(SIGKILL)");
-                    res->status = RE;
+                    if (kill_why == 0) {
+                        sprintf(res->err, "程序终止(SIGKILL)");
+                        res->status = RE;
+                    } else {
+                        res->status = kill_why;
+                    }
+
                     return;
                 case SIGSEGV:
                     sprintf(res->err, "段错误(SIGSEGV)");
                     res->status = RE;
                     return;
-                case SIGSYS:
-                    sprintf(res->err, "非法调用(SYSCALL: %d)", syscall_number);
+                case SIGALRM:
+                    sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double) res->time / 1000.0);
                     res->status = RE;
+                    return;
+                case SIGXCPU:
+                    res->status = TLE;
                     return;
                 default:
                     sprintf(res->err, "程序终止(%d: %s)", sig, strsignal(sig));
@@ -196,18 +186,17 @@ void Runner::watch_result(pid_t pid, Result *res) {
             // ? 子进程退出
             auto exit_code = WEXITSTATUS(status);
 
-            if (res->time > config.timeout) {
-                res->status = TLE;
-            } else if (exit_code != 0) {
+            if (exit_code != 0) {
                 sprintf(res->err, "非零退出(%d)", exit_code);
                 res->status = RE;
-                return;
+            } else if (res->time > config.timeout) {
+                res->status = TLE;
+            } else if (res->mem > config.memory) {
+                res->status = MLE;
             } else {
                 res->status = Utils::compare(config, spj) ? AC : WA;
             }
         }
-
-        ptrace(PTRACE_SYSCALL, pid, 0, 0);
     }
 }
 

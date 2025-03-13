@@ -15,7 +15,6 @@ inline int exec_cmd(const char *fmt, ...) {
 
 /**
  * @brief 设置运行环境
- * @return 临时测试数据目录
  */
 void setup_env(const char *work_dir) {
     exec_cmd("test -d %s/proc || mkdir %s/proc", work_dir, work_dir);
@@ -29,24 +28,25 @@ void setup_env(const char *work_dir) {
     exec_cmd("test -e %s/dev/null || mknod -m 666 %s/dev/null c 1 3", work_dir, work_dir);
     exec_cmd("chown root:root %s/dev/null", work_dir);
     // 挂载环境
-    exec_cmd("mountpoint %s/proc > /dev/null || mount --bind -o ro /proc %s/proc", work_dir, work_dir);
-    exec_cmd("mountpoint %s/etc > /dev/null || mount --bind -o ro /etc %s/etc",
-             work_dir, work_dir);
-    exec_cmd("mountpoint %s/bin > /dev/null || mount --bind -o ro /bin %s/bin", work_dir, work_dir);
-    exec_cmd("mountpoint %s/usr > /dev/null || mount --bind -o ro /usr %s/usr", work_dir, work_dir);
-    exec_cmd("mountpoint %s/lib > /dev/null || mount --bind -o ro /lib %s/lib", work_dir, work_dir);
+    exec_cmd("mountpoint %s/proc > /dev/null 2>&1 || mount --bind -o ro /proc %s/proc", work_dir, work_dir);
+    exec_cmd("mountpoint %s/etc > /dev/null 2>&1 || mount --bind -o ro /etc %s/etc", work_dir, work_dir);
+    exec_cmd("mountpoint %s/bin > /dev/null 2>&1 || mount --bind -o ro /bin %s/bin", work_dir, work_dir);
+    exec_cmd("mountpoint %s/usr > /dev/null 2>&1 || mount --bind -o ro /usr %s/usr", work_dir, work_dir);
+    exec_cmd("mountpoint %s/lib > /dev/null 2>&1 || mount --bind -o ro /lib %s/lib", work_dir, work_dir);
 #ifdef __x86_64__
-    exec_cmd("mountpoint %s/lib64 > /dev/null || mount --bind -o ro /lib64 %s/lib64", work_dir, work_dir);
+    exec_cmd("mountpoint %s/lib64 > /dev/null 2>&1 || mount --bind -o ro /lib64 %s/lib64", work_dir, work_dir);
 #endif
+    exec_cmd("ln -sf /etc/dotnet.runtimeconfig.json %s/Solution.runtimeconfig.json", work_dir);
 }
 
 /**
  * @brief 清理环境，解除挂载
  */
 void end_env(const char *work_dir) {
+    exec_cmd("unlink %s/Solution.runtimeconfig.json > /dev/null 2>&1", work_dir);
     exec_cmd("test -e %s/dev/null && rm -rf %s/dev/null", work_dir, work_dir);
-    exec_cmd("mountpoint %s/proc > /dev/null 2>&1 && umount %s/proc", work_dir, work_dir);
-    exec_cmd("mountpoint %s/etc > /dev/null 2>&1 && umount %s/etc", work_dir, work_dir);
+    exec_cmd("mountpoint %s/proc > /dev/null 2>&1 && umount -l %s/proc", work_dir, work_dir);
+    exec_cmd("mountpoint %s/etc > /dev/null 2>&1 && umount -l %s/etc", work_dir, work_dir);
     exec_cmd("mountpoint %s/bin > /dev/null 2>&1 && umount -l %s/bin", work_dir, work_dir);
     exec_cmd("mountpoint %s/usr > /dev/null 2>&1 && umount -l %s/usr", work_dir, work_dir);
     exec_cmd("mountpoint %s/lib > /dev/null 2>&1 && umount -l %s/lib", work_dir, work_dir);

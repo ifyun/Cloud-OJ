@@ -9,7 +9,6 @@ const char *RESULT_STR[] = {"", "AC", "TLE", "MLE", "PA",
                             "WA", "CE", "RE", "IE", "OLE"};
 
 int main(int argc, char *argv[]) {
-    int lang;
     char cmd[128];
     char work_dir[128];
     char data_dir[128];
@@ -25,7 +24,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    if (get_args(argc, argv, cmd, lang, work_dir, data_dir, config) != 0) {
+    if (get_args(argc, argv, cmd, work_dir, data_dir, config) != 0) {
         ss << "{\n"
            << R"( "result": )" << IE << ",\n"
            << R"( "error": "INVALID ARGS")" << "\n"
@@ -34,7 +33,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    Runner runner(cmd, work_dir, data_dir, lang, config);
+    Runner runner(cmd, work_dir, data_dir, config);
     RTN rtn = runner.judge();
 
     if (rtn.result == IE) {
