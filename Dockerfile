@@ -64,13 +64,13 @@ ENV HTTPS_PROXY=${PROXY}
 RUN curl -LJO https://golang.google.cn/dl/go1.24.1.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz \
     && ln -s /usr/local/go/bin/go /usr/bin/go \
-    && rm go1.24.1.linux-amd64.tar.gz \
+    && rm go1.24.1.linux-amd64.tar.gz
 # Download Kotlin Native
 RUN curl -LJO https://github.com/JetBrains/kotlin/releases/download/v2.1.10/kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
-    && sudo tar -C /usr/local -xzf kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
+    && tar -C /usr/local -xzf kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
     --transform 's/kotlin-native-prebuilt-linux-x86_64-2.1.10/kotlin/' \
-    && sudo ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
-    && sudo ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan \
+    && ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
+    && ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan \
     && rm kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz
 # Download Kotlin Native Dependencies
 RUN kotlinc-native nothing.kt || true
