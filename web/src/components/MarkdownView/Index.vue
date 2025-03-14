@@ -1,5 +1,5 @@
 <template>
-  <div :class="theme" class="markdown-body" v-html="html" />
+  <div id="md-view" :class="theme" class="markdown-body" v-html="html" />
 </template>
 
 <script setup lang="ts">
@@ -11,9 +11,12 @@ import markdown from "highlight.js/lib/languages/markdown"
 import python from "highlight.js/lib/languages/python"
 import MarkdownIt from "markdown-it"
 import markdownItContainer from "markdown-it-container"
-import { computed } from "vue"
+import { computed, onMounted } from "vue"
 import { ImgPlugin } from "./markdown-img"
 import { KatexPlugin } from "./markdown-katex"
+import githubLight from "highlight.js/styles/github.min.css?raw"
+import githubDark from "highlight.js/styles/github-dark.min.css?raw"
+import "./theme.scss"
 
 highlightJs.registerLanguage("markdown", markdown)
 highlightJs.registerLanguage("c", c)
@@ -81,8 +84,10 @@ const props = defineProps<{
 }>()
 
 const html = computed<string>(() => md.render(props.content))
-</script>
 
-<style lang="scss">
-@import "theme";
-</style>
+onMounted(() => {
+  const style = document.createElement("style")
+  style.innerHTML = props.theme === "light" ? githubLight : githubDark
+  document.getElementById("md-view")?.after(style)
+})
+</script>

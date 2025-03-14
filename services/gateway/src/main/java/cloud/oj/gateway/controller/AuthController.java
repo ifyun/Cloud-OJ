@@ -71,7 +71,7 @@ public class AuthController {
      */
     @DeleteMapping(path = "logoff")
     public ResponseEntity<String> logoff(@RequestHeader String Authorization) {
-        var token = Authorization.substring(6);
+        var token = Authorization.substring(7);
         var uid = JwtUtil.getUid(token);
 
         var secret = userService.getSecret(uid);
