@@ -188,6 +188,10 @@ function queryProblem() {
  * 提交代码
  */
 function submit(data: SourceCode) {
+  if (!store.user.isLoggedIn) {
+    message.warning("你必须先登录才能提交代码！")
+  }
+
   if (data.code.trim().length == 0 || disableSubmit.value) {
     return
   }

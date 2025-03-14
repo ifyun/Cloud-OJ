@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { onDeactivated, onMounted, ref } from "vue"
 import { NCard, NLog, NScrollbar, useThemeVars } from "naive-ui"
 import { LogApi } from "@/api/request"
 import { LogFormatter } from "@/utils"
@@ -21,7 +21,7 @@ onMounted(() => {
   getLogs(0)
 })
 
-onBeforeUnmount(() => {
+onDeactivated(() => {
   clearTimeout(timer)
 })
 
@@ -34,8 +34,7 @@ async function getLogs(time: number) {
     data.forEach((val) => {
       logs.value.push(LogFormatter.format(val))
     })
-  } catch (err) {
-    console.log(err)
+  } catch {
   } finally {
     timer = setTimeout(getLogs, 2000, lastTime)
   }

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount, onMounted, ref } from "vue"
+import { onDeactivated, onMounted, ref } from "vue"
 import QueuesInfoView from "./QueuesInfoView.vue"
 import ServiceLog from "./ServiceLog.vue"
 import { NFlex, useMessage } from "naive-ui"
@@ -38,11 +38,8 @@ const queuesInfo = ref<QueuesInfo>({
 
 let poller: QueuesInfoPoller
 
-onBeforeMount(() => {
-  setTitle("概览")
-})
-
 onMounted(() => {
+  setTitle("概览")
   poller = new QueuesInfoPoller(
     store.user.userInfo!.token,
     (data) => {
@@ -54,7 +51,7 @@ onMounted(() => {
   )
 })
 
-onBeforeUnmount(() => {
+onDeactivated(() => {
   poller.close()
 })
 </script>

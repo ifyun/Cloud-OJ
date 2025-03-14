@@ -53,11 +53,12 @@ import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import { NResult, NSpace, NTable, NText } from "naive-ui"
-import { computed, onBeforeUnmount, onMounted, ref } from "vue"
+import { computed, onDeactivated, onMounted, ref } from "vue"
 
 interface Result {
   status: any
   statusText: string
+  textColor?: string
   time?: string
   ram?: string
   score?: string | number
@@ -105,7 +106,7 @@ onMounted(() => {
   fetchResult()
 })
 
-onBeforeUnmount(() => {
+onDeactivated(() => {
   sse.close()
 })
 
