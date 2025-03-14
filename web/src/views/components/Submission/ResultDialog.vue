@@ -26,7 +26,7 @@
         <tbody>
           <tr>
             <td>
-              <n-text strong :type="result.status">
+              <n-text strong :type="result.textColor">
                 {{ result.statusText }}
               </n-text>
             </td>
@@ -84,12 +84,13 @@ const result = computed<Result>(() => {
   }
   // 等待/编译/运行状态
   if (s.state !== 0) {
-    return { status: "418", statusText: s.stateText! }
+    return { status: "418", statusText: s.stateText!, textColor: "info" }
   }
   // 运行结束
   return {
     status: ResultTypes[s.result!],
     statusText: s.resultText!,
+    textColor: ResultTypes[s.result!],
     time: s.time ? timeUsage(s.time) : "-",
     ram: s.memory ? ramUsage(s.memory) : "-",
     score: s.score ?? "-",
