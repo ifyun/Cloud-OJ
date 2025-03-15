@@ -56,7 +56,8 @@ RUN curl -LJO https://packages.microsoft.com/config/debian/12/packages-microsoft
     && rm packages-microsoft-prod.deb \
     && echo -n "dotnet /usr/share/dotnet/sdk/$(dotnet --version)/Roslyn/bincore/csc.dll " > /bin/csc \
     && echo -n "/r:/usr/share/dotnet/sdk/$(dotnet --version)/ref/netstandard.dll " >> /bin/csc \
-    && echo '"$@"' >> /bin/csc
+    && echo '"$@"' >> /bin/csc \
+    && chmod +x /bin/csc
 ARG PROXY=""
 ENV HTTP_PROXY=${PROXY}
 ENV HTTPS_PROXY=${PROXY}
