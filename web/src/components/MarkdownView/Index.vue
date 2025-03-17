@@ -11,7 +11,7 @@ import markdown from "highlight.js/lib/languages/markdown"
 import python from "highlight.js/lib/languages/python"
 import MarkdownIt from "markdown-it"
 import markdownItContainer from "markdown-it-container"
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { ImgPlugin } from "./markdown-img"
 import { KatexPlugin } from "./markdown-katex"
 import githubLight from "highlight.js/styles/github.min.css?raw"
@@ -85,8 +85,19 @@ const props = defineProps<{
 
 const html = computed<string>(() => md.render(props.content))
 
+watch(
+  () => props.theme,
+  (val) => {
+    const style = document.getElementById("md-style")
+    if (style) {
+      style.innerHTML = val === "light" ? githubLight : githubDark
+    }
+  }
+)
+
 onMounted(() => {
   const style = document.createElement("style")
+  style.id = "md-style"
   style.innerHTML = props.theme === "light" ? githubLight : githubDark
   document.getElementById("md-view")?.after(style)
 })

@@ -18,9 +18,19 @@ public class RankingController {
      * 获取排行榜
      */
     @GetMapping(produces = "application/json")
-    public ResponseEntity<?> getRankingList(@RequestParam(defaultValue = "1") Integer page,
-                                            @RequestParam(defaultValue = "15") Integer size) {
-        var data = rankingService.getRanking(page, size);
+    public ResponseEntity<?> getRanking(@RequestParam(defaultValue = "1") Integer page,
+                                        @RequestParam(defaultValue = "15") Integer size) {
+        var data = rankingService.getRanking(page, size, false);
+        return data.getTotal() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 获取排行榜
+     */
+    @GetMapping(path = "admin", produces = "application/json")
+    public ResponseEntity<?> getRankingAdmin(@RequestParam(defaultValue = "1") Integer page,
+                                             @RequestParam(defaultValue = "15") Integer size) {
+        var data = rankingService.getRanking(page, size, true);
         return data.getTotal() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
@@ -29,7 +39,7 @@ public class RankingController {
      */
     @GetMapping(path = "contest/{cid}")
     public ResponseEntity<?> getContestRanking(@PathVariable Integer cid) {
-        var scoreboard = rankingService.getContestRanking(cid);
+        var scoreboard = rankingService.getContestRanking(cid, false);
         return ResponseEntity.ok(scoreboard);
     }
 
@@ -38,6 +48,6 @@ public class RankingController {
      */
     @GetMapping(path = "admin/contest/{contestId}")
     public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId) {
-        return ResponseEntity.ok(rankingService.getContestRanking(contestId));
+        return ResponseEntity.ok(rankingService.getContestRanking(contestId, true));
     }
 }

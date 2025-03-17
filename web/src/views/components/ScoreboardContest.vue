@@ -2,20 +2,20 @@
   <div class="wrap" style="max-width: 100%">
     <empty-data v-if="noContent" />
     <div v-else>
-      <n-space vertical>
-        <n-space v-if="contestState != null" justify="space-between">
-          <n-space align="center">
+      <n-flex vertical>
+        <n-flex v-if="contestState != null" justify="space-between">
+          <n-flex align="center">
             <n-tag round :bordered="false" :type="contestState.type">
               <template #icon>
                 <n-icon :component="contestState.icon" />
               </template>
               {{ contestState.state }}
             </n-tag>
-            <n-h4 style="margin-bottom: 2px">
+            <n-h4 style="margin: 0">
               {{ ranking!.contest!.contestName }}
             </n-h4>
-          </n-space>
-        </n-space>
+          </n-flex>
+        </n-flex>
         <empty-data v-if="noRanking" style="margin-top: 48px" />
         <n-table v-else>
           <thead>
@@ -29,30 +29,40 @@
                 class="table-score">
                 {{ String.fromCharCode(i + 65) }}
               </th>
-              <th class="table-sum">提交 & 总分</th>
+              <th class="table-sum">提交 / 总分</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in ranking?.ranking" :key="user.uid">
-              <td class="table-rank">{{ user.rank }}</td>
+              <td class="table-rank">
+                <n-text class="text-large">{{ user.rank }}</n-text>
+              </td>
               <!-- User -->
               <td class="table-user">
-                <n-space size="small" align="center">
+                <n-flex size="small" align="center">
                   <user-avatar
-                    size="small"
+                    size="large"
                     :uid="user.uid!"
                     :nickname="user.nickname"
                     :has-avatar="user.hasAvatar" />
-                  <RouterLink
-                    :to="{ name: 'account', params: { uid: user.uid } }">
-                    <n-button text strong icon-placement="right">
-                      {{ user.nickname }}
-                      <template #icon>
-                        <n-icon v-if="user.star" :component="StarsRound" />
-                      </template>
-                    </n-button>
-                  </RouterLink>
-                </n-space>
+                  <n-flex vertical :size="0">
+                    <RouterLink
+                      :to="{ name: 'account', params: { uid: user.uid } }">
+                      <n-button text strong>
+                        {{ `${user.nickname}${user.star ? "⭐" : ""}` }}
+                      </n-button>
+                    </RouterLink>
+                    <n-text v-if="user.username" depth="3">
+                      {{ user.realName }}@{{ user.username }}
+                    </n-text>
+                    <n-skeleton
+                      v-else
+                      text
+                      round
+                      :animated="false"
+                      style="margin-top: 2px" />
+                  </n-flex>
+                </n-flex>
               </td>
               <td class="table-badge">
                 <span class="badge">{{ user.badge }}</span>
@@ -61,24 +71,27 @@
                 v-for="item in user.details"
                 :key="item.problemId"
                 class="table-score">
-                <n-text :style="{ color: resultColor(item.result) }">
+                <n-text
+                  class="text-large"
+                  :style="{ color: resultColor(item.result) }">
                   {{ item.score ?? "" }}
                 </n-text>
               </td>
               <td class="table-sum">
-                <n-space justify="center">
-                  <n-text depth="3">
+                <n-flex justify="center">
+                  <n-text class="text-large" depth="2">
                     {{ user.committed }}
                   </n-text>
-                  <n-text type="success" strong>
+                  <n-text class="text-large" depth="3">/</n-text>
+                  <n-text class="text-large" type="success" strong>
                     {{ user.score }}
                   </n-text>
-                </n-space>
+                </n-flex>
               </td>
             </tr>
           </tbody>
         </n-table>
-      </n-space>
+      </n-flex>
     </div>
   </div>
 </template>
@@ -89,13 +102,13 @@ import { ErrorMessage, RankingContest } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle, type StateTag, stateTag } from "@/utils"
-import { StarsRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
   NButton,
+  NFlex,
   NH4,
   NIcon,
-  NSpace,
+  NSkeleton,
   NTable,
   NTag,
   NText,
@@ -105,7 +118,7 @@ import {
   computed,
   nextTick,
   onBeforeMount,
-  onUnmounted,
+  onDeactivated,
   ref,
   shallowRef
 } from "vue"
@@ -146,7 +159,7 @@ onBeforeMount(() => {
   }
 })
 
-onUnmounted(() => {
+onDeactivated(() => {
   window.clearTimeout(timeout)
 })
 
@@ -189,6 +202,10 @@ function resultColor(r?: number) {
 </script>
 
 <style lang="scss" scoped>
+.text-large {
+  font-size: large;
+}
+
 .table-rank {
   text-align: center;
   width: 30px;

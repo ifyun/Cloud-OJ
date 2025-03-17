@@ -111,7 +111,7 @@ public class SolutionRepo {
     /**
      * (Admin) 查询题解
      *
-     * @param sid        题解 Id
+     * @param sid 题解 Id
      * @return {@link Solution}
      */
     public Optional<Solution> selectBySid(String sid) {

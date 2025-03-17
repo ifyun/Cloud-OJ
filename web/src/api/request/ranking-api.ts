@@ -1,11 +1,18 @@
 import axios, { ApiPath, resolveError } from "@/api"
 import type { Page, Ranking, RankingContest } from "@/api/type"
+import { useStore } from "@/store"
 
 const RankingApi = {
   get(page: number, size: number): Promise<Page<Ranking>> {
+    const userInfo = useStore().user.userInfo
+    const path =
+      userInfo == null || userInfo.role === 1
+        ? ApiPath.RANKING
+        : ApiPath.RANKING_ADMIN
+
     return new Promise<Page<Ranking>>((resolve, reject) => {
       axios({
-        url: ApiPath.RANKING,
+        url: path,
         method: "GET",
         params: {
           page,
@@ -26,9 +33,15 @@ const RankingApi = {
   },
 
   getContestRanking(cid: number): Promise<RankingContest> {
+    const userInfo = useStore().user.userInfo
+    const path =
+      userInfo == null || userInfo.role === 1
+        ? ApiPath.CONTEST_RANKING
+        : ApiPath.CONTEST_RANKING_ADMIN
+
     return new Promise<RankingContest>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST_RANKING}/${cid}`,
+        url: `${path}/${cid}`,
         method: "GET"
       })
         .then((res) => {

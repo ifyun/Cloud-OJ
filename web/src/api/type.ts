@@ -15,6 +15,7 @@ export class User {
   uid?: number
   username?: string
   nickname?: string
+  realName?: string
   password?: string
   confirmPassword: string = ""
   role?: number
@@ -32,6 +33,7 @@ export class UserInfo {
   uid?: number
   username?: string
   nickname?: string
+  realName?: string
   email?: string
   section?: string
   token?: string
@@ -130,6 +132,7 @@ export class Ranking {
   uid?: number
   username: string = ""
   nickname: string = ""
+  realName: string = ""
   badge: string = ""
   hasAvatar: boolean = false
   star: boolean = false
@@ -167,6 +170,7 @@ export class JudgeResult {
   uid?: number
   username?: string
   nickname?: string
+  realName?: string
   problemId?: number
   language?: number
   title?: string

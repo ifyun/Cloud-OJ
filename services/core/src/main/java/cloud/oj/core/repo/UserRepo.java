@@ -36,6 +36,7 @@ public class UserRepo {
                         select uid,
                                username,
                                nickname,
+                               real_name,
                                email,
                                section,
                                has_avatar,
@@ -83,8 +84,8 @@ public class UserRepo {
 
     public Integer insert(User user) {
         return client.sql("""
-                        insert into `user`(username, nickname, password, secret, email, section, role)
-                        values (:username, :nickname, :password, :secret, :email, :section, :role)
+                        insert into `user`(username, nickname, real_name, password, secret, email, section, role)
+                        values (:username, :nickname, :realName, :password, :secret, :email, :section, :role)
                         """)
                 .paramSource(user)
                 .update();
@@ -93,7 +94,11 @@ public class UserRepo {
     public Integer update(User user) {
         return client.sql("""
                         update `user`
-                        set nickname = :nickname,
+                        set username = if (:username is not null, :username, username),
+                            nickname = :nickname,
+                            real_name = :realName,
+                            email = :email,
+                            section = :section,
                             password = if(:password is not null, :password, password),
                             role = if(:role is not null, :role, role),
                             secret = if(:secret is not null, :secret, secret),

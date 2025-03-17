@@ -29,15 +29,15 @@ public class RankingService {
     private final SystemSettings systemSettings;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PageData<Ranking> getRanking(int page, int size) {
-        var data =  scoreboardRepo.selectAll(page, size);
+    public PageData<Ranking> getRanking(int page, int size, boolean admin) {
+        var data =  scoreboardRepo.selectAll(page, size, admin);
         var total = commonRepo.selectFoundRows();
 
         return new PageData<>(data, total);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public RankingContest getContestRanking(Integer cid) {
+    public RankingContest getContestRanking(Integer cid, boolean admin) {
         var contest = contestRepo.selectById(cid);
 
         if (contest.isEmpty()) {
@@ -50,7 +50,7 @@ public class RankingService {
 
         var data = new RankingContest(contest.get().withoutKey());      // 排名顶层包装
         var problemOrders = contestRepo.selectOrders(cid);              // 题目 id 和 order
-        var ranking = scoreboardRepo.selectByCid(cid);                  // 排名
+        var ranking = scoreboardRepo.selectByCid(cid, admin);                  // 排名
 
         ranking.forEach((r) -> {
             var detailList = scoreboardRepo.selectScores(r.getUid(), cid);

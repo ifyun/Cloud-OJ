@@ -40,11 +40,18 @@ public class UserController {
     }
 
     /**
-     * 获取用户的个人信息
+     * 获取用户个人信息
      */
     @GetMapping(path = "profile")
-    public ResponseEntity<User> getUserInfo(Integer uid) {
-        return ResponseEntity.ok(userService.getUserInfo(uid));
+    public ResponseEntity<User> getUserInfo(@RequestHeader(name = "uid", required = false) Integer hUid,
+                                            @RequestParam Integer uid) {
+        var isSelf = uid.equals(hUid);
+        return ResponseEntity.ok(userService.getUserInfo(uid, isSelf));
+    }
+
+    @GetMapping(path = "admin/profile")
+    public ResponseEntity<User> getUserInfoAdmin(@RequestParam Integer uid) {
+        return ResponseEntity.ok(userService.getUserInfo(uid, true));
     }
 
     /**
@@ -70,7 +77,8 @@ public class UserController {
      */
     @PutMapping(path = "profile")
     public ResponseEntity<?> updateProfile(@RequestHeader Integer uid, @RequestBody User user) {
-        userService.updateProfile(uid, user);
+        user.setUid(uid);
+        userService.updateProfile(user);
         return ResponseEntity.ok().build();
     }
 

@@ -2,9 +2,8 @@
   <div class="wrap">
     <empty-data v-if="noContent" />
     <div v-else>
-      <n-space vertical>
+      <n-flex vertical>
         <n-data-table
-          single-column
           :loading="loading"
           :columns="rankingColumns"
           :data="rankings.data" />
@@ -13,7 +12,7 @@
           :page-size="pagination.pageSize"
           :item-count="rankings.total"
           @update:page="pageChange" />
-      </n-space>
+      </n-flex>
     </div>
   </div>
 </template>
@@ -24,14 +23,13 @@ import { ErrorMessage, type Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
-import { StarsRound } from "@vicons/material"
 import {
   type DataTableColumns,
   NButton,
   NDataTable,
-  NIcon,
+  NFlex,
   NPagination,
-  NSpace,
+  NSkeleton,
   NText
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
@@ -59,43 +57,65 @@ const noContent = computed<boolean>(
 const rankingColumns: DataTableColumns<Ranking> = [
   {
     title: "排名",
+    key: "rank",
     align: "center",
     width: 90,
-    key: "rank"
+    render: (row) => (
+      <NText strong style="font-size: large">
+        {row.rank}
+      </NText>
+    )
   },
   {
     title: "用户",
     key: "name",
     render: (row) => (
-      <NSpace align="center" size="small">
+      <NFlex align="center" size="small">
         <UserAvatar
-          size="small"
+          size="large"
           uid={row.uid!}
           nickname={row.nickname}
           hasAvatar={row.hasAvatar}
         />
-        <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
-          <NButton text strong iconPlacement="right">
-            {{
-              default: () => row.nickname,
-              icon: () => (row.star ? <NIcon component={StarsRound} /> : null)
-            }}
-          </NButton>
-        </RouterLink>
-      </NSpace>
+        <NFlex vertical size={0}>
+          <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
+            <NButton text strong>
+              {`${row.nickname}${row.star ? "⭐" : ""}`}
+            </NButton>
+          </RouterLink>
+          {row.username ? (
+            <NText depth="3" italic>
+              {row.realName}@{row.username}
+            </NText>
+          ) : (
+            <NSkeleton text round animated={false} style="margin-top: 2px" />
+          )}
+        </NFlex>
+        <NFlex size="small"></NFlex>
+      </NFlex>
     )
   },
   {
     title: "提交",
+    key: "committed",
     width: 100,
     align: "right",
-    key: "committed"
+    render: (row) => (
+      <NText strong style="font-size: large">
+        {row.committed}
+      </NText>
+    )
   },
   {
     title: "通过",
+    key: "passed",
     width: 100,
     align: "right",
-    key: "passed"
+    render: (row) => (
+      <NText strong style="font-size: large">
+        {row.passed}
+      </NText>
+    )
   },
   {
     title: "分数",
@@ -103,7 +123,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
     width: 100,
     align: "right",
     render: (row) => (
-      <NText type="success" strong>
+      <NText type="success" strong style="font-size: large">
         {row.score}
       </NText>
     )

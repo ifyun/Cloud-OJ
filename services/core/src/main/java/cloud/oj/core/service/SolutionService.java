@@ -83,6 +83,13 @@ public class SolutionService {
 
         var data = solutionRepo.selectAllByFilter(null, pid, date, page, size);
         var total = commonRepo.selectFoundRows();
+
+        data.forEach(s -> userRepo.selectById(s.getUid()).ifPresent(u -> {
+            s.setUsername(u.getUsername());
+            s.setNickname(u.getNickname());
+            s.setRealName(u.getRealName());
+        }));
+
         return new PageData<>(data, total);
     }
 
@@ -102,6 +109,7 @@ public class SolutionService {
             userRepo.selectById(s.getUid()).ifPresent(u -> {
                 s.setUsername(u.getUsername());
                 s.setNickname(u.getNickname());
+                s.setRealName(u.getRealName());
             });
         });
 

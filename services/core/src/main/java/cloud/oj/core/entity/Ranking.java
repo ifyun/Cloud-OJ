@@ -13,6 +13,7 @@ public class Ranking {
     private Integer uid;
     private String username;
     private String nickname;
+    private String realName;
     private Integer committed;
     private Integer passed;
     private Double score;

@@ -59,17 +59,21 @@ function reload() {
 }
 
 router.beforeEach((to, from) => {
+  if (isLoggedIn.value) {
+    // 已登录，检查是否有效
+    checkToken()
+  } else {
+    if (to.name === "edit_account" || to.path.includes("/admin")) {
+      router.replace("/")
+    }
+  }
+
   if (to.name !== "error") {
     // 进入正常页面，清空错误信息
     store.app.setError(null)
   } else if (store.app.error === null) {
     // 意外进入错误页面却没有错误信息，返回上一页
     router.replace({ path: from.fullPath })
-  }
-
-  if (isLoggedIn.value) {
-    // 已登录，检查是否有效
-    checkToken()
   }
 })
 

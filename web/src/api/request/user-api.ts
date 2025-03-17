@@ -1,6 +1,7 @@
 import axios, { ApiPath, resolveError } from "@/api"
 import type { JudgeResult, Overview, Page, User } from "@/api/type"
 import type { AxiosResponse } from "axios"
+import { useStore } from "@/store"
 
 const UserApi = {
   /**
@@ -57,9 +58,15 @@ const UserApi = {
   },
 
   getProfile(uid: number): Promise<User> {
+    const userInfo = useStore().user.userInfo
+    const path =
+      userInfo == null || userInfo.role === 1
+        ? ApiPath.PROFILE
+        : ApiPath.PROFILE_ADMIN
+
     return new Promise<User>((resolve, reject) => {
       axios({
-        url: ApiPath.PROFILE,
+        url: path,
         method: "GET",
         params: {
           uid

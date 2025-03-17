@@ -70,6 +70,7 @@ create table user
     uid        int auto_increment primary key      not null,
     username   char(32)                            not null,
     nickname   char(16)                            not null,
+    real_name  char(16)                            null,
     password   char(100)                           not null,
     secret     char(36)                            not null comment '用于加密 JWT',
     email      char(32)                            null,
@@ -79,11 +80,12 @@ create table user
     role       int        default 1                not null,
     create_at  bigint     default unix_timestamp() not null comment '秒级',
     deleted    tinyint(1) default 0                not null,
-    constraint idx_username
-        unique (username)
+    constraint idx_username unique (username),
+    constraint idx_nickname unique (nickname)
 );
 
 create index idx_nickname on user (nickname);
+create index idx_real_name on user (real_name);
 create index idx_time on user (create_at);
 
 # 提交

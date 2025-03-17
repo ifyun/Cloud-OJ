@@ -40,10 +40,18 @@
             </n-space>
           </n-form-item>
           <n-form-item label="用户名">
-            <n-input disabled :value="user.username" />
+            <n-input
+              :disabled="user.role === 1"
+              v-model:value="user.username"
+              placeholder="字母和数字(16 个字符以内)" />
           </n-form-item>
           <n-form-item path="nickname" label="昵称">
-            <n-input v-model:value="user.nickname" />
+            <n-input
+              v-model:value="user.nickname"
+              placeholder="16 个字符以内" />
+          </n-form-item>
+          <n-form-item path="realName" label="真实姓名">
+            <n-input v-model:value="user.realName" placeholder="仅管理员可见" />
           </n-form-item>
           <n-form-item path="password" label="新密码">
             <n-input
@@ -65,7 +73,7 @@
           <n-form-item path="section" label="来自哪里(可选)">
             <n-input
               v-model:value="user.section"
-              placeholder="学院 / 班级 / Lab" />
+              placeholder="地区 / 学院 / 班级 / Lab" />
           </n-form-item>
           <n-form-item label="&nbsp;">
             <n-button type="primary" secondary :loading="loading" @click="save">
@@ -104,7 +112,7 @@ import {
   NUpload,
   useMessage
 } from "naive-ui"
-import { computed, inject, onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const uploadUrl = ApiPath.AVATAR
@@ -194,11 +202,15 @@ const rules: FormRules = {
   }
 }
 
-const reload = inject("reload", () => {})
-
 onMounted(() => {
   setTitle("编辑个人信息")
-  user.value = userInfo.value! as User
+  UserApi.getProfile(userInfo.value!.uid!)
+    .then((data) => {
+      user.value = data
+    })
+    .catch((err) => {
+      store.app.setError(err)
+    })
 })
 
 function save() {
@@ -207,8 +219,8 @@ function save() {
       loading.value = true
       UserApi.update(user.value)
         .then(() => {
-          message.success("个人信息已更新")
           refresh()
+          message.success("个人信息已更新")
         })
         .catch((err: ErrorMessage) => {
           message.error(err.toString())
@@ -238,9 +250,6 @@ function refresh() {
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
-    })
-    .finally(() => {
-      reload()
     })
 }
 </script>

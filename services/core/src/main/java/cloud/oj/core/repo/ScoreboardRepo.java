@@ -14,12 +14,13 @@ public class ScoreboardRepo {
 
     private final JdbcClient client;
 
-    public List<Ranking> selectAll(Integer page, Integer size) {
+    public List<Ranking> selectAll(Integer page, Integer size, boolean admin) {
         return client.sql("""
                         select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
                                                    u.uid,
-                                                   u.username,
                                                    u.nickname,
+                                                   if (:admin, u.username, null) as username,
+                                                   if (:admin, u.real_name, null) as real_name,
                                                    u.has_avatar,
                                                    u.star,
                                                    committed,
@@ -33,18 +34,20 @@ public class ScoreboardRepo {
                         order by score desc, update_time
                         limit :start, :count
                         """)
+                .param("admin", admin)
                 .param("start", (page - 1) * size)
                 .param("count", size)
                 .query(Ranking.class)
                 .list();
     }
 
-    public List<Ranking> selectByCid(Integer cid) {
+    public List<Ranking> selectByCid(Integer cid, boolean admin) {
         return client.sql("""
                         select (@ranking := @ranking + 1) as `rank`,
                                u.uid,
-                               u.username,
                                u.nickname,
+                               if (:admin, u.username, null) as username,
+                               if (:admin, u.real_name, null) as real_name,
                                u.has_avatar,
                                u.star,
                                committed,
@@ -58,6 +61,7 @@ public class ScoreboardRepo {
                           and score > 0
                         order by score desc, update_time
                         """)
+                .param("admin", admin)
                 .param("cid", cid)
                 .query(Ranking.class)
                 .list();

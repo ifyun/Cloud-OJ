@@ -23,7 +23,20 @@
         :input-props="{ autocomplete: 'off' }">
         <template #prefix>
           <n-icon class="input-prefix-icon">
-            <user-icon />
+            <nick-name-icon />
+          </n-icon>
+        </template>
+      </n-input>
+    </n-form-item>
+    <n-form-item path="realName">
+      <n-input
+        v-model:value="user.realName"
+        placeholder="真实姓名 (可选/仅管理员可见)"
+        maxlength="16"
+        :input-props="{ autocomplete: 'off' }">
+        <template #prefix>
+          <n-icon class="input-prefix-icon">
+            <real-name-icon />
           </n-icon>
         </template>
       </n-input>
@@ -91,13 +104,14 @@
 import { UserApi } from "@/api/request"
 import { ErrorMessage, User } from "@/api/type"
 import { setTitle } from "@/utils"
+import { Building } from "@vicons/fa"
 import {
-  Building,
-  Envelope as MailIcon,
-  IdCard as UsernameIcon,
-  Lock as PasswordIcon,
-  User as UserIcon
-} from "@vicons/fa"
+  AccountBoxRound as NickNameIcon,
+  AccountCircleFilled as RealNameIcon,
+  LockRound as PasswordIcon,
+  MailRound as MailIcon,
+  PersonPinCircleRound as UsernameIcon
+} from "@vicons/material"
 import {
   type FormRules,
   NButton,

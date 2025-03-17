@@ -5,9 +5,9 @@
       v-model:show="showSource"
       :show-user="true"
       :data="solution" />
-    <n-space v-else vertical size="large">
+    <n-flex v-else vertical size="large">
       <!-- 搜索过滤 -->
-      <n-space align="center">
+      <n-flex align="center">
         <n-input-group>
           <n-input-group-label>题目 ID:</n-input-group-label>
           <n-input v-model:value="pid" :style="{ width: '33%' }" />
@@ -27,7 +27,7 @@
             </template>
           </n-button>
         </n-input-group>
-      </n-space>
+      </n-flex>
       <!-- 数据 -->
       <n-data-table
         :columns="columns"
@@ -38,7 +38,7 @@
         :item-count="solutions.total"
         :page-size="pagination.pageSize"
         @update:page="pageChange" />
-    </n-space>
+    </n-flex>
   </div>
 </template>
 
@@ -50,13 +50,13 @@ import {
   NButton,
   NDataTable,
   NDatePicker,
+  NFlex,
   NIcon,
   NInput,
   NInputGroup,
   NInputGroupLabel,
   NPagination,
   NPopover,
-  NSpace,
   NTag,
   NText,
   useMessage

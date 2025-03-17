@@ -62,14 +62,22 @@ public class UserService {
      * @param uid 用户 Id
      * @return {@link User}
      */
-    public User getUserInfo(Integer uid) {
+    public User getUserInfo(Integer uid, boolean admin) {
         var user = userRepo.selectById(uid);
 
         if (user.isEmpty()) {
             throw new GenericException(HttpStatus.NOT_FOUND, "找不到用户");
         }
 
-        return user.get();
+        var u = user.get();
+
+        // 仅允许管理员/用户自己查看用户名和真实姓名
+        if (!admin) {
+            u.setUsername(null);
+            u.setRealName(null);
+        }
+
+        return u;
     }
 
     /**
@@ -87,7 +95,7 @@ public class UserService {
         user.setSecret(newUUID());
 
         if (userRepo.insert(user) == 0) {
-           throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "操作失败");
         }
     }
 
@@ -96,8 +104,12 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(User user) {
-        if (user.getUid() == 1 && user.getRole() != 0) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
+        if (user.getUid() == 1) {
+            if (user.getRole() != 0) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, "不准移除初始管理员权限");
+            }
+            // 初始管理员不允许修改用户名
+            user.setUsername(null);
         }
 
         if (user.getPassword() != null) {
@@ -113,8 +125,7 @@ public class UserService {
      * 更新用户信息(个人)
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateProfile(Integer uid, User user) {
-        user.setUid(uid);
+    public void updateProfile(User user) {
         user.setRole(null);
         updateUser(user);
     }
