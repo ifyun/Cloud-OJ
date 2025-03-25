@@ -35,7 +35,7 @@
           <tbody>
             <tr v-for="user in ranking?.ranking" :key="user.uid">
               <td class="table-rank">
-                <n-text class="text-large">{{ user.rank }}</n-text>
+                <n-text>{{ user.rank }}</n-text>
               </td>
               <!-- User -->
               <td class="table-user">
@@ -65,19 +65,17 @@
                 v-for="item in user.details"
                 :key="item.problemId"
                 class="table-score">
-                <n-text
-                  class="text-large"
-                  :style="{ color: resultColor(item.result) }">
+                <n-text :style="{ color: resultColor(item.result) }">
                   {{ item.score ?? "" }}
                 </n-text>
               </td>
               <td class="table-sum">
                 <n-flex justify="center">
-                  <n-text class="text-large" depth="2">
+                  <n-text depth="2">
                     {{ user.committed }}
                   </n-text>
-                  <n-text class="text-large" depth="3">-</n-text>
-                  <n-text class="text-large" type="success" strong>
+                  <n-text depth="3">-</n-text>
+                  <n-text type="success" strong>
                     {{ user.score }}
                   </n-text>
                 </n-flex>
@@ -195,10 +193,6 @@ function resultColor(r?: number) {
 </script>
 
 <style lang="scss" scoped>
-.text-large {
-  font-size: large;
-}
-
 .table-rank {
   text-align: center;
   width: 30px;

@@ -59,11 +59,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
     key: "rank",
     align: "center",
     width: 90,
-    render: (row) => (
-      <NText strong style="font-size: large">
-        {row.rank}
-      </NText>
-    )
+    render: (row) => <NText strong>{row.rank}</NText>
   },
   {
     title: "用户",
@@ -99,22 +95,14 @@ const rankingColumns: DataTableColumns<Ranking> = [
     key: "committed",
     width: 100,
     align: "right",
-    render: (row) => (
-      <NText strong style="font-size: large">
-        {row.committed}
-      </NText>
-    )
+    render: (row) => <NText strong>{row.committed}</NText>
   },
   {
     title: "通过",
     key: "passed",
     width: 100,
     align: "right",
-    render: (row) => (
-      <NText strong style="font-size: large">
-        {row.passed}
-      </NText>
-    )
+    render: (row) => <NText strong>{row.passed}</NText>
   },
   {
     title: "分数",
@@ -122,7 +110,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
     width: 100,
     align: "right",
     render: (row) => (
-      <NText type="success" strong style="font-size: large">
+      <NText type="success" strong>
         {row.score}
       </NText>
     )
