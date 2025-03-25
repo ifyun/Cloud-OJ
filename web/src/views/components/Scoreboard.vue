@@ -29,7 +29,6 @@ import {
   NDataTable,
   NFlex,
   NPagination,
-  NSkeleton,
   NText
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
@@ -88,7 +87,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
               {row.realName}@{row.username}
             </NText>
           ) : (
-            <NSkeleton text round animated={false} style="margin-top: 2px" />
+            ""
           )}
         </NFlex>
         <NFlex size="small"></NFlex>

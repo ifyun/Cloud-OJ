@@ -29,7 +29,7 @@
                 class="table-score">
                 {{ String.fromCharCode(i + 65) }}
               </th>
-              <th class="table-sum">提交 / 总分</th>
+              <th class="table-sum">提交 - 总分</th>
             </tr>
           </thead>
           <tbody>
@@ -55,12 +55,6 @@
                     <n-text v-if="user.username" depth="3">
                       {{ user.realName }}@{{ user.username }}
                     </n-text>
-                    <n-skeleton
-                      v-else
-                      text
-                      round
-                      :animated="false"
-                      style="margin-top: 2px" />
                   </n-flex>
                 </n-flex>
               </td>
@@ -82,7 +76,7 @@
                   <n-text class="text-large" depth="2">
                     {{ user.committed }}
                   </n-text>
-                  <n-text class="text-large" depth="3">/</n-text>
+                  <n-text class="text-large" depth="3">-</n-text>
                   <n-text class="text-large" type="success" strong>
                     {{ user.score }}
                   </n-text>
@@ -108,7 +102,6 @@ import {
   NFlex,
   NH4,
   NIcon,
-  NSkeleton,
   NTable,
   NTag,
   NText,
