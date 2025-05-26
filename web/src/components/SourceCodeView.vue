@@ -31,7 +31,9 @@
               <td>{{ data.uid }}</td>
               <td>{{ data.username }}</td>
               <td>{{ data.nickname }}</td>
-              <td>{{ data.realName }}</td>
+              <td>
+                <n-text strong type="error">{{ data.realName }}</n-text>
+              </td>
             </tr>
           </tbody>
         </n-table>

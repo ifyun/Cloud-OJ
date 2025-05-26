@@ -149,11 +149,21 @@ const columns: DataTableColumns<JudgeResult> = [
     }
   },
   {
-    title: "SID",
+    title: "Solution ID",
     key: "solutionId",
     align: "right",
     width: 100,
-    render: (row) => <NText depth="2">{row.solutionId}</NText>
+    render: (row) => (
+      <NTag
+        round
+        checkable
+        size="small"
+        style="cursor: pointer"
+        // @ts-ignore
+        onClick={() => querySolution(row.solutionId)}>
+        {row.solutionId}
+      </NTag>
+    )
   },
   {
     title: "题目 ID",
@@ -177,14 +187,16 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "language",
     align: "left",
     render: (row) => (
-      <div style="display: flex; align-items: center">
-        <NIcon color={LanguageColors[row.language!]}>
-          <CircleRound />
-        </NIcon>
-        <NText strong style="margin-left: 6px">
-          {LanguageNames[row.language!]}
-        </NText>
-      </div>
+      <NTag round size="small">
+        {{
+          avatar: () => (
+            <NIcon color={LanguageColors[row.language!]}>
+              <CircleRound />
+            </NIcon>
+          ),
+          default: () => <NText>{LanguageNames[row.language!]}</NText>
+        }}
+      </NTag>
     )
   },
   {
@@ -193,7 +205,11 @@ const columns: DataTableColumns<JudgeResult> = [
     align: "right",
     render: (row) => {
       const type = row.score === 0 ? "error" : ""
-      return <NText type={type}>{row.score}</NText>
+      return (
+        <NText strong type={type}>
+          {row.score}
+        </NText>
+      )
     }
   },
   {
