@@ -1,33 +1,50 @@
 <template>
   <div class="admin-wrap">
-    <div style="margin: 4px">
-      <n-space vertical size="large">
-        <n-space>
-          <n-button type="info" secondary round>
+    <n-flex vertical size="large">
+      <n-flex align="center">
+        <n-input-group style="width: auto">
+          <n-input
+            v-model:value="filter.keyword"
+            clearable
+            show-count
+            maxlength="30"
+            placeholder="输入关键字" />
+          <n-button type="primary" @click="queryContests">
+            搜 索
             <template #icon>
               <n-icon>
-                <playlist-add-round />
+                <search-round />
               </n-icon>
             </template>
-            <router-link :to="{ name: 'edit_contest', params: { id: 'new' } }">
-              创建竞赛
-            </router-link>
           </n-button>
-        </n-space>
-        <n-data-table
-          :row-props="rowProps"
-          :columns="contestColumns"
-          :data="contests.data"
-          :loading="loading" />
-        <n-pagination
-          v-model:page="pagination.page"
-          :page-size="pagination.pageSize"
-          :item-count="contests.total"
-          @update:page="pageChange">
-          <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
-        </n-pagination>
-      </n-space>
-    </div>
+        </n-input-group>
+        <n-checkbox @updateChecked="checkboxChange">
+          隐藏已结束竞赛
+        </n-checkbox>
+        <n-button type="info" tertiary style="margin-left: auto">
+          <template #icon>
+            <n-icon>
+              <playlist-add-round />
+            </n-icon>
+          </template>
+          <router-link :to="{ name: 'edit_contest', params: { id: 'new' } }">
+            创建竞赛
+          </router-link>
+        </n-button>
+      </n-flex>
+      <n-data-table
+        :row-props="rowProps"
+        :columns="contestColumns"
+        :data="contests.data"
+        :loading="loading" />
+      <n-pagination
+        v-model:page="pagination.page"
+        :page-size="pagination.pageSize"
+        :item-count="contests.total"
+        @update:page="pageChange">
+        <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
+      </n-pagination>
+    </n-flex>
   </div>
   <n-dropdown
     trigger="manual"
@@ -42,7 +59,7 @@
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, type Page } from "@/api/type"
+import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
 import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
@@ -51,20 +68,23 @@ import {
   EditNoteRound,
   KeyRound,
   PlaylistAddRound,
-  RefreshRound
+  RefreshRound,
+  SearchRound
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
   type DataTableColumns,
   NButton,
+  NCheckbox,
   NDataTable,
   NDropdown,
   NEllipsis,
+  NFlex,
   NFormItem,
   NIcon,
   NInput,
+  NInputGroup,
   NPagination,
-  NSpace,
   NTag,
   NText,
   useDialog,
@@ -82,7 +102,10 @@ const dialog = useDialog()
 const notification = useNotification()
 
 const loading = ref<boolean>(true)
-
+const filter = ref<ContestFilter>({
+  keyword: "",
+  hideEnded: false
+})
 const pagination = ref({
   page: 1,
   pageSize: 15
@@ -168,11 +191,9 @@ const contestColumns: DataTableColumns<Contest> = [
     title: "竞赛",
     key: "name",
     render: (row) => (
-      <NSpace align="center">
-        <NButton text onClick={(event) => titleClick(event, row)}>
-          {row.contestName}
-        </NButton>
-      </NSpace>
+      <NButton text onClick={(event) => titleClick(event, row)}>
+        {row.contestName}
+      </NButton>
     )
   },
   {
@@ -269,7 +290,7 @@ function pageChange(page: number) {
 function queryContests() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ContestApi.getAll(page, pageSize)
+  ContestApi.getAll(page, pageSize, filter.value)
     .then((data) => {
       contests.value = data
     })
@@ -370,5 +391,9 @@ function calcTimeRange(c: Contest): string {
   }
 
   return str
+}
+
+function checkboxChange(value: boolean) {
+  filter.value.hideEnded = value
 }
 </script>

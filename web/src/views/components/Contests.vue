@@ -1,21 +1,39 @@
 <template>
   <div class="wrap">
-    <empty-data v-if="noContent" />
-    <div v-else>
-      <n-space vertical size="large">
-        <n-data-table
-          :loading="loading"
-          :columns="contestColumns"
-          :data="contests.data" />
-        <n-pagination
-          v-model:page="pagination.page"
-          :page-size="pagination.pageSize"
-          :item-count="contests.total"
-          @update:page="pageChange">
-          <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
-        </n-pagination>
-      </n-space>
-    </div>
+    <n-flex vertical size="large">
+      <n-flex align="center">
+        <n-input-group style="width: auto">
+          <n-input
+            v-model:value="filter.keyword"
+            clearable
+            show-count
+            maxlength="30"
+            placeholder="输入关键字" />
+          <n-button type="primary" @click="queryContests">
+            搜 索
+            <template #icon>
+              <n-icon>
+                <search-round />
+              </n-icon>
+            </template>
+          </n-button>
+        </n-input-group>
+        <n-checkbox @updateChecked="checkboxChange">
+          隐藏已结束竞赛
+        </n-checkbox>
+      </n-flex>
+      <n-data-table
+        :loading="loading"
+        :columns="contestColumns"
+        :data="contests.data" />
+      <n-pagination
+        v-model:page="pagination.page"
+        :page-size="pagination.pageSize"
+        :item-count="contests.total"
+        @update:page="pageChange">
+        <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+      </n-pagination>
+    </n-flex>
   </div>
 </template>
 
@@ -27,25 +45,28 @@ export default {
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ErrorMessage, type Page } from "@/api/type"
-import { EmptyData } from "@/components"
+import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
 import { useStore } from "@/store"
 import { LanguageNames } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
+import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
   type DataTableColumns,
   NButton,
+  NCheckbox,
   NDataTable,
   NDropdown,
+  NFlex,
   NIcon,
+  NInput,
+  NInputGroup,
   NPagination,
-  NSpace,
   NTag,
   NText,
   useMessage
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { onBeforeMount, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const store = useStore()
@@ -58,15 +79,15 @@ const pagination = ref({
 })
 
 const loading = ref<boolean>(true)
+const filter = ref<ContestFilter>({
+  keyword: "",
+  hideEnded: false
+})
 const selectedContest = ref<Contest | null>(null)
 const contests = ref<Page<Contest>>({
   data: [],
   total: 0
 })
-
-const noContent = computed<boolean>(
-  () => !loading.value && contests.value.total === 0
-)
 
 const contestColumns: DataTableColumns<Contest> = [
   {
@@ -155,7 +176,11 @@ function pageChange(page: number) {
 }
 
 function queryContests() {
-  ContestApi.getAll(pagination.value.page, pagination.value.pageSize)
+  ContestApi.getAll(
+    pagination.value.page,
+    pagination.value.pageSize,
+    filter.value
+  )
     .then((data) => {
       contests.value = data
     })
@@ -215,5 +240,9 @@ function calcTimeRange(c: Contest): string {
   }
 
   return str
+}
+
+function checkboxChange(value: boolean) {
+  filter.value.hideEnded = value
 }
 </script>

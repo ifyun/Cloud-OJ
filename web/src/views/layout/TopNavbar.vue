@@ -7,17 +7,17 @@
       <n-menu :value="routeName" mode="horizontal" :options="navMenuOptions" />
     </div>
     <div style="margin-left: auto">
-      <n-space size="large" align="center">
+      <n-flex size="large" align="center">
         <theme-switch />
         <user-menu />
-      </n-space>
+      </n-flex>
     </div>
   </div>
 </template>
 
 <script setup lang="tsx">
 import { Logo } from "@/components"
-import { NMenu, NSpace } from "naive-ui"
+import { NFlex, NMenu } from "naive-ui"
 import { computed } from "vue"
 import { RouterLink, useRoute } from "vue-router"
 import ThemeSwitch from "./ThemeSwitch.vue"
@@ -29,19 +29,21 @@ const routeName = computed(() => route.name?.toString())
 
 const navMenuOptions = [
   {
-    label: () => <RouterLink to={{ name: "problems" }}>题目</RouterLink>,
+    label: () => <RouterLink to={{ name: "problems" }}>📘 题目</RouterLink>,
     key: "problems"
   },
   {
-    label: () => <RouterLink to={{ name: "contests" }}>竞赛 & 练习</RouterLink>,
+    label: () => (
+      <RouterLink to={{ name: "contests" }}>🕹️ 竞赛 & 练习</RouterLink>
+    ),
     key: "contests"
   },
   {
-    label: () => <RouterLink to={{ name: "scoreboard" }}>排名</RouterLink>,
+    label: () => <RouterLink to={{ name: "scoreboard" }}>🎈 排名</RouterLink>,
     key: "leaderboard"
   },
   {
-    label: () => <RouterLink to={{ name: "help" }}>帮助</RouterLink>,
+    label: () => <RouterLink to={{ name: "help" }}>🛟 帮助</RouterLink>,
     key: "help"
   }
 ]

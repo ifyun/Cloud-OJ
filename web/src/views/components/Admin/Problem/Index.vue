@@ -29,7 +29,7 @@
         </n-space>
         <n-space align="center" justify="end">
           <n-button-group>
-            <n-button type="info" round secondary>
+            <n-button type="info" tertiary>
               <template #icon>
                 <n-icon>
                   <add-icon />

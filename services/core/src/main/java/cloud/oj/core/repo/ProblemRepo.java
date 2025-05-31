@@ -53,7 +53,7 @@ public class ProblemRepo {
                                                    create_at
                         from problem
                         where deleted = false
-                          and if(:keyword is not null,
+                          and if(LENGTH(:keyword) > 0,
                                  title like concat('%', :keyword, '%') or find_in_set(:keyword, category),
                                  true)
                         limit :start, :count

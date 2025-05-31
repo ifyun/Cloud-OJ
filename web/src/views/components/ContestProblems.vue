@@ -95,11 +95,11 @@ const columns: DataTableColumns<Problem> = [
     align: "center",
     width: 100,
     render: (_, rowIndex: number) => (
-      <NText>{String.fromCharCode(rowIndex + 65)}</NText>
+      <NText italic>{String.fromCharCode(rowIndex + 65)}</NText>
     )
   },
   {
-    title: "题名",
+    title: "题目名称",
     key: "title",
     render: (row) => (
       <NButton
@@ -144,7 +144,8 @@ const columns: DataTableColumns<Problem> = [
   {
     title: "分数",
     key: "score",
-    align: "right"
+    align: "right",
+    render: (row) => <NText strong>{row.score}</NText>
   }
 ]
 

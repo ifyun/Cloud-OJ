@@ -2,8 +2,8 @@
   <div class="wrap">
     <empty-data v-if="noContent" />
     <div v-else>
-      <n-space vertical size="large">
-        <n-space align="center">
+      <n-flex vertical size="large">
+        <n-flex align="center" style="width: fit-content">
           <n-input-group>
             <n-input
               v-model:value="keyword"
@@ -21,7 +21,7 @@
               </template>
             </n-button>
           </n-input-group>
-        </n-space>
+        </n-flex>
         <n-data-table
           single-column
           :columns="problemColumns"
@@ -34,7 +34,7 @@
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
-      </n-space>
+      </n-flex>
     </div>
   </div>
 </template>
@@ -57,11 +57,11 @@ import {
   type DataTableColumns,
   NButton,
   NDataTable,
+  NFlex,
   NIcon,
   NInput,
   NInputGroup,
   NPagination,
-  NSpace,
   NTag
 } from "naive-ui"
 import { type Component, computed, nextTick, onBeforeMount, ref } from "vue"

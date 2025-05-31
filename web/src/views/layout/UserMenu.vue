@@ -1,5 +1,5 @@
 <template>
-  <n-space v-if="isLoggedIn" align="center" size="small">
+  <n-flex v-if="isLoggedIn" align="center" size="small">
     <user-avatar
       size="small"
       :uid="userInfo!.uid!"
@@ -20,12 +20,12 @@
         </template>
       </n-button>
     </n-dropdown>
-  </n-space>
-  <n-space v-else size="small">
+  </n-flex>
+  <n-flex v-else size="small">
     <n-button secondary type="primary" round size="small" @click="login">
       注册/登录
     </n-button>
-  </n-space>
+  </n-flex>
 </template>
 
 <script setup lang="tsx">
@@ -43,8 +43,8 @@ import {
 import {
   NButton,
   NDropdown,
+  NFlex,
   NIcon,
-  NSpace,
   useDialog,
   useMessage
 } from "naive-ui"

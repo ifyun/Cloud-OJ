@@ -1,6 +1,7 @@
 package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.entity.ProblemOrder;
 import lombok.RequiredArgsConstructor;
@@ -132,33 +133,34 @@ public class ContestRepo {
     /**
      * 查询所有已开始的竞赛
      */
-    public List<Contest> selectAllStarted(Integer page, Integer size) {
+    public List<Contest> selectAllStarted(ContestFilter filter, Integer page, Integer size) {
         return client.sql("""
-                        select sql_calc_found_rows c.contest_id as contest_id,
+                        select sql_calc_found_rows contest_id,
                                                    contest_name,
                                                    languages,
                                                    start_at,
                                                    end_at,
                                                    if(start_at <= unix_timestamp(), true, false) as started,
-                                                   if(end_at <= unix_timestamp(), true, false)   as ended,
-                                                   count(cp.problem_id)                          as problem_count
-                        from contest c
-                                 left join `contest-problem` cp on c.contest_id = cp.contest_id
-                        where c.deleted = false
+                                                   if(end_at <= unix_timestamp(), true, false)   as ended
+                        from contest
+                        where deleted = false
                           and start_at <= unix_timestamp(now())
-                        group by c.contest_id
-                        order by started desc, ended
+                          and if(:hideEnded, end_at > unix_timestamp(now()), true)
+                          and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
+                        order by start_at desc, end_at
                         limit :start, :count
                         """)
                 .param("start", (page - 1) * size)
                 .param("count", size)
+                .param("hideEnded", filter.getHideEnded())
+                .param("keyword", filter.getKeyword())
                 .query(Contest.class)
                 .list();
     }
 
-    public List<Contest> selectAll(Integer page, Integer size, Boolean isAdmin) {
+    public List<Contest> selectAll(ContestFilter filter, Integer page, Integer size, Boolean isAdmin) {
         return client.sql("""
-                        select sql_calc_found_rows c.contest_id                                  as contest_id,
+                        select sql_calc_found_rows contest_id,
                                                    contest_name,
                                                    if(:admin, invite_key, null)                  as invite_key,
                                                    languages,
@@ -166,18 +168,19 @@ public class ContestRepo {
                                                    end_at,
                                                    create_at,
                                                    if(start_at <= unix_timestamp(), true, false) as started,
-                                                   if(end_at <= unix_timestamp(), true, false)   as ended,
-                                                   count(cp.problem_id)                          as problem_count
-                        from contest c
-                                 left join `contest-problem` cp on c.contest_id = cp.contest_id
-                        where c.deleted = false
-                        group by c.contest_id
-                        order by started desc, ended
+                                                   if(end_at <= unix_timestamp(), true, false)   as ended
+                        from contest
+                        where deleted = false
+                          and if(:hideEnded, end_at > unix_timestamp(now()), true)
+                          and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
+                        order by start_at desc, end_at
                         limit :start, :count
                         """)
                 .param("admin", isAdmin)
                 .param("start", (page - 1) * size)
                 .param("count", size)
+                .param("hideEnded", filter.getHideEnded())
+                .param("keyword", filter.getKeyword())
                 .query(Contest.class)
                 .list();
     }

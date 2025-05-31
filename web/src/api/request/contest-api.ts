@@ -1,5 +1,10 @@
 import axios, { ApiPath, resolveError } from "@/api"
-import type { Contest, Page, Problem } from "@/api/type"
+import {
+  type Contest,
+  ContestFilter,
+  type Page,
+  type Problem
+} from "@/api/type"
 import { useStore } from "@/store"
 import type { AxiosResponse } from "axios"
 
@@ -46,7 +51,11 @@ const ContestApi = {
   /**
    * 获取所有竞赛
    */
-  getAll(page: number, size: number): Promise<Page<Contest>> {
+  getAll(
+    page: number,
+    size: number,
+    filter: ContestFilter | null = null
+  ): Promise<Page<Contest>> {
     const userInfo = useStore().user.userInfo
     const path =
       userInfo == null || userInfo.role === 1
@@ -55,12 +64,13 @@ const ContestApi = {
 
     return new Promise<Page<Contest>>((resolve, reject) => {
       axios({
-        url: path,
-        method: "GET",
+        url: `${path}/queries`,
+        method: "POST",
         params: {
           page,
           size
-        }
+        },
+        data: JSON.stringify(filter)
       })
         .then((res) => {
           resolve(res.status === 200 ? res.data : { data: [], total: 0 })
@@ -178,11 +188,8 @@ const ContestApi = {
   getById(cid: number): Promise<Contest> {
     return new Promise<Contest>((resolve, reject) => {
       axios({
-        url: `${ApiPath.CONTEST}/detail`,
-        method: "GET",
-        params: {
-          cid
-        }
+        url: `${ApiPath.CONTEST}/${cid}`,
+        method: "GET"
       })
         .then((res) => {
           resolve(res.data)

@@ -1,6 +1,7 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.service.ContestService;
@@ -21,18 +22,21 @@ public class ContestController {
     /**
      * 获取竞赛的详细信息
      */
-    @GetMapping(path = "detail")
-    public ResponseEntity<Contest> getContest(Integer cid) {
+    @GetMapping(path = "{cid}")
+    public ResponseEntity<Contest> getContest(@PathVariable Integer cid) {
         return ResponseEntity.ok(contestService.getContest(cid));
     }
 
     /**
      * 获取所有竞赛
      */
-    @GetMapping
-    public ResponseEntity<PageData<Contest>> getContests(@RequestParam(defaultValue = "1") Integer page,
-                                                         @RequestParam(defaultValue = "15") Integer size) {
-        var data = contestService.getAllContest(page, size);
+    @RequestMapping(path = "queries", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<PageData<Contest>> getContests(
+            @RequestBody(required = false) ContestFilter filter,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "15") Integer size
+    ) {
+        var data = contestService.getAllContest(filter, page, size);
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
@@ -41,10 +45,13 @@ public class ContestController {
     /**
      * 获取所有竞赛(Admin)
      */
-    @GetMapping(path = "admin")
-    public ResponseEntity<PageData<Contest>> getContestsAdmin(@RequestParam(defaultValue = "1") Integer page,
-                                                              @RequestParam(defaultValue = "15") Integer size) {
-        var data = contestService.getAllContestAdmin(page, size);
+    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<PageData<Contest>> getContestsAdmin(
+            @RequestBody(required = false) ContestFilter filter,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "15") Integer size
+    ) {
+        var data = contestService.getAllContestAdmin(filter, page, size);
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();

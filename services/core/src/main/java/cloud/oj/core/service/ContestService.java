@@ -1,6 +1,7 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.entity.Contest;
+import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
@@ -78,18 +79,19 @@ public class ContestService {
     /**
      * 分页查询所有竞赛(User)
      *
-     * @param page 页数
-     * @param size 每页数量
+     * @param filter 过滤条件
+     * @param page   页数
+     * @param size   每页数量
      * @return {@link PageData} of {@link Contest}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PageData<Contest> getAllContest(Integer page, Integer size) {
+    public PageData<Contest> getAllContest(ContestFilter filter, Integer page, Integer size) {
         List<Contest> data;
 
         if (systemSettings.getSettings().isShowAllContest()) {
-            data = contestRepo.selectAll(page, size, false);
+            data = contestRepo.selectAll(filter, page, size, false);
         } else {
-            data = contestRepo.selectAllStarted(page, size);
+            data = contestRepo.selectAllStarted(filter, page, size);
         }
 
         var total = commonRepo.selectFoundRows();
@@ -100,13 +102,18 @@ public class ContestService {
     /**
      * 分页查询所有竞赛(Admin)
      *
-     * @param page 页数
-     * @param size 每页数量
+     * @param filter 过滤条件
+     * @param page   页数
+     * @param size   每页数量
      * @return {@link PageData} of {@link Contest}
      */
     @Transactional
-    public PageData<Contest> getAllContestAdmin(Integer page, Integer size) {
-        var data = contestRepo.selectAll(page, size, true);
+    public PageData<Contest> getAllContestAdmin(ContestFilter filter, Integer page, Integer size) {
+        if (filter == null) {
+            filter = new ContestFilter();
+        }
+
+        var data = contestRepo.selectAll(filter, page, size, true);
         var total = commonRepo.selectFoundRows();
 
         return new PageData<>(data, total);

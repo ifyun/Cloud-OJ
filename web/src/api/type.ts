@@ -121,6 +121,11 @@ export class Contest {
   timeRange?: [number, number]
 }
 
+export class ContestFilter {
+  keyword?: string = ""
+  hideEnded: boolean = false
+}
+
 export class ScoreDetail {
   problemId?: number
   score?: number

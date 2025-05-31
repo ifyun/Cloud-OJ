@@ -1,14 +1,21 @@
 <template>
   <n-flex vertical>
     <n-flex align="center">
-      <n-button text size="small" :loading="loading" @click="querySolutions">
+      <n-button
+        tertiary
+        round
+        size="small"
+        :loading="loading"
+        @click="querySolutions">
         <template #icon>
-          <n-icon :component="HistoryRound" />
+          <n-icon :component="RefreshRound" />
         </template>
-        最近 15 次提交(点我刷新)
+        刷新
       </n-button>
+      <n-text>最近 15 次提交：</n-text>
     </n-flex>
-    <n-timeline style="width: 400px; margin-left: 12px">
+    <empty-data v-if="solutions.total === 0" />
+    <n-timeline v-else style="width: 400px; margin-left: 12px">
       <n-timeline-item
         v-for="s in solutions.data"
         :key="s.solutionId"
@@ -57,8 +64,8 @@ import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
   CircleRound,
-  HistoryRound,
   DataSaverOffRound,
+  RefreshRound,
   TimerOutlined
 } from "@vicons/material"
 import dayjs from "dayjs"
@@ -72,6 +79,7 @@ import {
   useMessage
 } from "naive-ui"
 import { onBeforeMount, ref } from "vue"
+import { EmptyData } from "@/components"
 
 const props = defineProps<{ problemId: string }>()
 
