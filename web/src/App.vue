@@ -28,6 +28,7 @@ import {
 } from "naive-ui"
 import { computed, nextTick, onMounted, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { setTitle } from "@/utils"
 
 const store = useStore()
 const route = useRoute()
@@ -78,8 +79,17 @@ router.beforeEach((to, from) => {
 })
 
 // 根据路由生成管理页面导航
-router.afterEach(() => {
+router.afterEach((to, from) => {
   const routes: Array<string> = []
+
+  if (route.meta.title) {
+    setTitle(route.meta.title as string)
+  }
+
+  // 跳转时清除当前页面的查询条件
+  if (from.name && to.name !== from.name) {
+    sessionStorage.removeItem("query")
+  }
 
   route.matched.forEach((r) => {
     if (r.meta.title) {

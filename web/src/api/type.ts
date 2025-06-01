@@ -26,8 +26,13 @@ export class User {
   createAt?: number
 }
 
+export class UserFilter {
+  type?: number
+  keyword?: string
+}
+
 /**
- * 用户信息（登录成功后）
+ * 用户信息(登录成功后)
  */
 export class UserInfo {
   uid?: number
@@ -168,6 +173,12 @@ export type SubmitData = {
   language: number
   sourceCode: string
   type: number
+}
+
+export class SolutionFilter {
+  pid?: number
+  username?: string
+  date?: number
 }
 
 export class JudgeResult {

@@ -130,7 +130,6 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { setTitle } from "@/utils"
 import highlightJs from "highlight.js/lib/core"
 import cpp from "highlight.js/lib/languages/cpp"
 import java from "highlight.js/lib/languages/java"
@@ -146,7 +145,6 @@ import {
   NH3,
   NTable
 } from "naive-ui"
-import { onBeforeMount } from "vue"
 
 highlightJs.registerLanguage("cpp", cpp)
 highlightJs.registerLanguage("py", py)
@@ -213,10 +211,6 @@ const judgeData = [
   },
   { status: "内部错误 IE", desc: "判题服务器出问题了，快滴滴管理员" }
 ]
-
-onBeforeMount(() => {
-  setTitle("帮助文档")
-})
 </script>
 
 <style scoped lang="scss">

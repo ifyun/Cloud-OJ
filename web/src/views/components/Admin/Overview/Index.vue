@@ -15,7 +15,6 @@ import { NFlex, useMessage } from "naive-ui"
 import { useStore } from "@/store"
 import { type QueuesInfo } from "@/api/type"
 import { QueuesInfoPoller } from "@/api/request"
-import { setTitle } from "@/utils"
 
 const store = useStore()
 const message = useMessage()
@@ -39,7 +38,6 @@ const queuesInfo = ref<QueuesInfo>({
 let poller: QueuesInfoPoller
 
 onMounted(() => {
-  setTitle("概览")
   poller = new QueuesInfoPoller(
     store.user.userInfo!.token,
     (data) => {

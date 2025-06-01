@@ -5,7 +5,7 @@
         <n-space align="center">
           <n-input-group>
             <n-input
-              v-model:value="keyword"
+              v-model:value="filter.keyword"
               maxlength="10"
               show-count
               clearable
@@ -72,7 +72,7 @@
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { useStore } from "@/store"
-import { renderIcon, setTitle } from "@/utils"
+import { renderIcon } from "@/utils"
 import {
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
@@ -98,7 +98,7 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -124,7 +124,7 @@ const point = ref({
   y: 0
 })
 
-const keyword = ref<string>("")
+const filter = ref({ keyword: "" })
 const showOperations = ref<boolean>(false)
 
 let selectedId: number | undefined
@@ -246,16 +246,10 @@ const delRule = {
   }
 }
 
-onBeforeMount(() => {
-  setTitle("题目管理")
-
-  if ("page" in route.query) {
-    pagination.value.page = Number(route.query.page)
-  }
-
-  if ("keyword" in route.query) {
-    keyword.value = String(route.query.keyword)
-  }
+onMounted(() => {
+  const { page = 1, keyword = "" } = route.query
+  pagination.value.page = Number(page)
+  filter.value.keyword = String(keyword)
 
   queryProblems()
 })
@@ -296,16 +290,16 @@ function pageChange(page: number) {
 }
 
 function tagClick(tag: string) {
-  keyword.value = tag
+  filter.value.keyword = tag
   search()
 }
 
 function search() {
   nextTick(() => {
-    if (keyword.value !== "") {
+    if (filter.value.keyword !== "") {
       pagination.value.page = 1
       router.push({
-        query: { keyword: keyword.value, page: 1 }
+        query: { keyword: filter.value.keyword, page: 1 }
       })
     }
 
@@ -358,7 +352,7 @@ function deleteProblem() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAll(page, pageSize, keyword.value)
+  ProblemApi.getAll(page, pageSize, filter.value.keyword)
     .then((data) => {
       problems.value = data
     })

@@ -205,7 +205,7 @@ public class SolutionRepo {
                         where deleted = 0
                           and if(not isnull(:pid), problem_id = :pid, true)
                           and if(not isnull(:uid), uid = :uid, true)
-                          and if(not isnull(:date), timestampdiff(DAY, submit_time, :date) = 0, true)
+                          and if(not isnull(:date), submit_time - :date between 0 and 86400000, true)
                         order by submit_time desc
                         limit :start, :count
                         """)

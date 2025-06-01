@@ -152,8 +152,8 @@ public class ContestRepo {
                         """)
                 .param("start", (page - 1) * size)
                 .param("count", size)
-                .param("hideEnded", filter.getHideEnded())
-                .param("keyword", filter.getKeyword())
+                .param("hideEnded", filter.hideEnded)
+                .param("keyword", filter.keyword)
                 .query(Contest.class)
                 .list();
     }
@@ -179,8 +179,8 @@ public class ContestRepo {
                 .param("admin", isAdmin)
                 .param("start", (page - 1) * size)
                 .param("count", size)
-                .param("hideEnded", filter.getHideEnded())
-                .param("keyword", filter.getKeyword())
+                .param("hideEnded", filter.hideEnded)
+                .param("keyword", filter.keyword)
                 .query(Contest.class)
                 .list();
     }

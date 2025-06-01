@@ -2,6 +2,7 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
+import cloud.oj.core.entity.SolutionFilter;
 import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.SolutionRepo;
@@ -63,25 +64,27 @@ public class SolutionService {
     /**
      * (Admin) 根据过滤条件查询题解
      *
-     * @param username 用户名
-     * @param pid      题目 Id
-     * @param date     日期 Timestamp
+     * @param filter 查询条件
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public PageData<Solution> getSolutionsByAdmin(String username, Integer pid, Long date, Integer page, Integer size) {
+    public PageData<Solution> getSolutionsByAdmin(SolutionFilter filter, Integer page, Integer size) {
+        if (filter == null) {
+            filter = new SolutionFilter();
+        }
+
         // username 非空
-        if (username != null && !username.isEmpty()) {
-            var uid = userRepo.selectUidByUsername(username);
+        if (filter.username != null && !filter.username.isEmpty()) {
+            var uid = userRepo.selectUidByUsername(filter.username);
             if (uid.isEmpty()) {
                 return new PageData<>(null, 0);
             }
 
-            var data = solutionRepo.selectAllByFilter(uid.get(), pid, date, page, size);
+            var data = solutionRepo.selectAllByFilter(uid.get(), filter.pid, filter.date, page, size);
             var total = commonRepo.selectFoundRows();
             return new PageData<>(data, total);
         }
 
-        var data = solutionRepo.selectAllByFilter(null, pid, date, page, size);
+        var data = solutionRepo.selectAllByFilter(null, filter.pid, filter.date, page, size);
         var total = commonRepo.selectFoundRows();
 
         data.forEach(s -> userRepo.selectById(s.getUid()).ifPresent(u -> {

@@ -1,6 +1,7 @@
 package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.User;
+import cloud.oj.core.entity.UserFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -52,11 +53,8 @@ public class UserRepo {
 
     /**
      * 根据过滤条件查询用户
-     *
-     * @param filter 1: by username, 2: by nickname
-     * @param value  Value of filter
      */
-    public List<User> selectByFilter(Integer filter, String value, Integer page, Integer size) {
+    public List<User> selectByFilter(UserFilter filter, Integer page, Integer size) {
         return client.sql("""
                         select sql_calc_found_rows uid,
                                                    username,
@@ -69,13 +67,13 @@ public class UserRepo {
                                                    create_at
                         from user
                         where deleted = false
-                          and if(:filter = 1, username like concat(:value, '%'), true)
-                          and if(:filter = 2, nickname like concat('%', :value, '%'), true)
+                          and if(:filterBy = 1, username like concat(:value, '%'), true)
+                          and if(:filterBy = 2, nickname like concat('%', :value, '%'), true)
                         order by role, create_at
                         limit :start, :count
                         """)
-                .param("filter", filter)
-                .param("value", value)
+                .param("filterBy", filter.type)
+                .param("value", filter.keyword)
                 .param("start", (page - 1) * size)
                 .param("count", size)
                 .query(User.class)

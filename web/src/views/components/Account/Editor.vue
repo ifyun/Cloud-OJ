@@ -97,7 +97,6 @@ import { AuthApi, UserApi } from "@/api/request"
 import { ErrorMessage, User } from "@/api/type"
 import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
 import {
   type FormRules,
@@ -203,7 +202,6 @@ const rules: FormRules = {
 }
 
 onMounted(() => {
-  setTitle("编辑个人信息")
   UserApi.getProfile(userInfo.value!.uid!)
     .then((data) => {
       user.value = data

@@ -55,11 +55,17 @@ const router = createRouter({
         {
           path: "/problems",
           name: "problems",
+          meta: {
+            title: "题目"
+          },
           component: ProblemList
         },
         {
           path: "/contests",
           name: "contests",
+          meta: {
+            title: "竞赛 & 练习"
+          },
           component: ContestList
         },
         {
@@ -73,6 +79,9 @@ const router = createRouter({
         {
           path: "/scoreboard",
           name: "scoreboard",
+          meta: {
+            title: "排名"
+          },
           component: Scoreboard
         },
         {
@@ -95,6 +104,9 @@ const router = createRouter({
         {
           path: "/help",
           name: "help",
+          meta: {
+            title: "帮助文档"
+          },
           component: HelpDoc
         },
         {
@@ -105,6 +117,9 @@ const router = createRouter({
         {
           path: "/account/edit",
           name: "edit_account",
+          meta: {
+            title: "编辑个人信息"
+          },
           component: AccountEditor
         },
         {
@@ -118,6 +133,9 @@ const router = createRouter({
         {
           path: "/:catchAll(.*)",
           name: "404",
+          meta: {
+            title: "404"
+          },
           component: NotFound
         }
       ]
@@ -207,7 +225,7 @@ const router = createRouter({
           path: "solution",
           name: "solution_admin",
           meta: {
-            title: "提交"
+            title: "提交记录"
           },
           component: SolutionAdmin
         },

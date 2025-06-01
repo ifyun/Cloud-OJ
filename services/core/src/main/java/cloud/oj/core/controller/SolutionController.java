@@ -2,6 +2,7 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
+import cloud.oj.core.entity.SolutionFilter;
 import cloud.oj.core.service.SolutionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +36,14 @@ public class SolutionController {
 
     /**
      * (Admin) 根据过滤条件获取提交记录
-     *
-     * @param username 用户名
-     * @param pid      题目 Id
-     * @param date     日期
      */
-    @GetMapping("admin")
-    public ResponseEntity<PageData<Solution>> getAllByFilter(@RequestParam(defaultValue = "1") int page,
-                                                             @RequestParam(defaultValue = "15") int size,
-                                                             String username, Integer pid, Long date) {
-        var data = solutionService.getSolutionsByAdmin(username, pid, date, page, size);
+    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<PageData<Solution>> getAllByFilter(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size,
+            @RequestBody(required = false) SolutionFilter filter
+    ) {
+        var data = solutionService.getSolutionsByAdmin(filter, page, size);
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();

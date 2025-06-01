@@ -66,7 +66,7 @@
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage } from "@/api/type"
 import { type LanguageOption, LanguageOptions } from "@/type"
-import { LanguageUtil, setTitle } from "@/utils"
+import { LanguageUtil } from "@/utils"
 import { SaveOutlined as SaveIcon } from "@vicons/material"
 import dayjs from "dayjs"
 import {
@@ -85,7 +85,7 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
-import { computed, onBeforeMount, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import ProblemManage from "./ProblemManage.vue"
 
@@ -160,8 +160,7 @@ watch(languages, (value) => {
   contest.value.languages = LanguageUtil.toNumber(value)
 })
 
-onBeforeMount(() => {
-  setTitle(route.meta.title as string)
+onMounted(() => {
   const reg = /^\d+$/
   const id = route.params.id.toString()
 

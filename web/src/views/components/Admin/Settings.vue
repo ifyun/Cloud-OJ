@@ -81,7 +81,6 @@ export default {
 import { SettingsApi } from "@/api/request"
 import { ErrorMessage, Settings } from "@/api/type"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
 import { SaveRound } from "@vicons/material"
 import {
   NButton,
@@ -93,7 +92,7 @@ import {
   NThing,
   useMessage
 } from "naive-ui"
-import { onBeforeMount, ref } from "vue"
+import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 
 const store = useStore()
@@ -103,8 +102,7 @@ const message = useMessage()
 const loading = ref<boolean>(true)
 const settings = ref<Settings>({})
 
-onBeforeMount(() => {
-  setTitle(route.meta.title as string)
+onMounted(() => {
   getSettings()
 })
 

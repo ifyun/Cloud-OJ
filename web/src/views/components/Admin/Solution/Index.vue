@@ -10,15 +10,19 @@
       <n-flex align="center">
         <n-input-group>
           <n-input-group-label>题目 ID:</n-input-group-label>
-          <n-input v-model:value="pid" :style="{ width: '33%' }" />
+          <n-input-number
+            v-model:value="filter.pid"
+            :show-button="false"
+            :style="{ width: '33%' }" />
           <n-input-group-label>用户名:</n-input-group-label>
-          <n-input v-model:value="username" :style="{ width: '33%' }" />
+          <n-input v-model:value="filter.username" :style="{ width: '33%' }" />
           <n-input-group-label>日期:</n-input-group-label>
           <n-date-picker
-            v-model:value="date"
+            v-model:value="filter.date"
+            clearable
             type="date"
             :style="{ width: '33%' }" />
-          <n-button type="primary" secondary @click="search">
+          <n-button type="primary" @click="search">
             查找记录
             <template #icon>
               <n-icon>
@@ -43,8 +47,7 @@
 </template>
 
 <script setup lang="tsx">
-import { type Component, nextTick, onBeforeMount, ref } from "vue"
-import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
+import { type Component, nextTick, onMounted, ref } from "vue"
 import {
   type DataTableColumns,
   NButton,
@@ -55,6 +58,7 @@ import {
   NInput,
   NInputGroup,
   NInputGroupLabel,
+  NInputNumber,
   NPagination,
   NPopover,
   NTag,
@@ -70,10 +74,15 @@ import {
   TimelapseRound
 } from "@vicons/material"
 import { SolutionApi } from "@/api/request"
+import {
+  ErrorMessage,
+  JudgeResult,
+  type Page,
+  SolutionFilter
+} from "@/api/type"
 import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import dayjs from "dayjs"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
 import { SourceCodeView } from "@/components"
 
 const route = useRoute()
@@ -83,10 +92,7 @@ const message = useMessage()
 
 const loading = ref<boolean>(true)
 const showSource = ref<boolean>(false)
-
-const pid = ref<string>("")
-const username = ref<string>("")
-const date = ref<number | null>(null)
+const filter = ref<SolutionFilter>({})
 
 const solution = ref<JudgeResult>(new JudgeResult())
 const solutions = ref<Page<JudgeResult>>({
@@ -232,25 +238,12 @@ const columns: DataTableColumns<JudgeResult> = [
   }
 ]
 
-onBeforeMount(() => {
-  setTitle("提交")
-
+onMounted(() => {
   if (route.query.page) {
     pagination.value.page = Number(route.query.page)
   }
 
-  if (route.query.pid) {
-    pid.value = String(route.query.pid)
-  }
-
-  if (route.query.username) {
-    username.value = String(route.query.username)
-  }
-
-  if (route.query.date) {
-    date.value = Number(route.query.date)
-  }
-
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
   querySolutions()
 })
 
@@ -258,7 +251,7 @@ function querySolutions() {
   loading.value = true
   const { page, pageSize } = pagination.value
 
-  SolutionApi.getByFilter(page, pageSize, username.value, pid.value, date.value)
+  SolutionApi.getByFilter(page, pageSize, filter.value)
     .then((data) => {
       solutions.value = data
     })
@@ -282,17 +275,15 @@ function querySolution(sid: string) {
 }
 
 function search() {
+  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: {
-      page,
-      pid: pid.value,
-      username: username.value,
-      date: date.value
+      page
     }
   })
 

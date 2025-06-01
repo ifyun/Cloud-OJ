@@ -6,7 +6,7 @@
         <n-flex align="center" style="width: fit-content">
           <n-input-group>
             <n-input
-              v-model:value="keyword"
+              v-model:value="filter.keyword"
               maxlength="10"
               show-count
               clearable
@@ -51,7 +51,6 @@ import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { EmptyData } from "@/components"
 import { useStore } from "@/store"
 import { ResultTypes } from "@/type"
-import { setTitle } from "@/utils"
 import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
 import {
   type DataTableColumns,
@@ -64,7 +63,7 @@ import {
   NPagination,
   NTag
 } from "naive-ui"
-import { type Component, computed, nextTick, onBeforeMount, ref } from "vue"
+import { type Component, computed, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -166,34 +165,27 @@ const problemColumns: DataTableColumns<Problem> = [
   }
 ]
 
-/* 题目数据 */
 const problems = ref<Page<Problem>>({
   data: [],
   total: 0
 })
 
-const keyword = ref<string>("")
+const filter = ref({ keyword: "" })
 
 const noContent = computed<boolean>(
   () => !loading.value && problems.value.total === 0
 )
 
-onBeforeMount(() => {
-  setTitle("题目")
-
-  if ("page" in route.query) {
-    pagination.value.page = Number(route.query.page)
-  }
-
-  if ("keyword" in route.query) {
-    keyword.value = String(route.query.keyword)
-  }
+onMounted(() => {
+  const { page = 1, keyword = "" } = route.query
+  pagination.value.page = Number(page)
+  filter.value.keyword = String(keyword)
 
   queryProblems()
 })
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: { page }
   })
 
@@ -201,16 +193,16 @@ function pageChange(page: number) {
 }
 
 function tagClick(tag: string) {
-  keyword.value = tag
+  filter.value.keyword = tag
   search()
 }
 
 function search() {
   nextTick(() => {
-    if (keyword.value !== "") {
+    if (filter.value.keyword !== "") {
       pagination.value.page = 1
-      router.push({
-        query: { keyword: keyword.value, page: 1 }
+      router.replace({
+        query: { keyword: filter.value.keyword, page: 1 }
       })
     }
 
@@ -224,7 +216,7 @@ function search() {
 function queryProblems() {
   loading.value = true
   const { page, pageSize } = pagination.value
-  ProblemApi.getAllOpened(page, pageSize, keyword.value)
+  ProblemApi.getAllOpened(page, pageSize, filter.value.keyword)
     .then((data) => {
       problems.value = data
     })

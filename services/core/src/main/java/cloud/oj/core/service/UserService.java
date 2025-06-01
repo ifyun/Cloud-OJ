@@ -1,9 +1,6 @@
 package cloud.oj.core.service;
 
-import cloud.oj.core.entity.AcCount;
-import cloud.oj.core.entity.PageData;
-import cloud.oj.core.entity.User;
-import cloud.oj.core.entity.UserStatistics;
+import cloud.oj.core.entity.*;
 import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.*;
 import lombok.RequiredArgsConstructor;
@@ -43,16 +40,20 @@ public class UserService {
     /**
      * 根据过滤条件分页查询用户
      *
-     * @param filter      过滤条件，1 -> username，2 -> nickname
-     * @param filterValue 过滤值
-     * @param page        页数
-     * @param limit       每页数量
+     * @param filter 过滤条件
+     * @param page   页数
+     * @param limit  每页数量
      * @return {@link PageData} of {@link User}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PageData<User> getUsersByFilter(Integer filter, String filterValue, Integer page, Integer limit) {
-        var data = userRepo.selectByFilter(filter, filterValue, page, limit);
+    public PageData<User> getUsersByFilter(UserFilter filter, Integer page, Integer limit) {
+        if (filter == null) {
+            filter = new UserFilter();
+        }
+
+        var data = userRepo.selectByFilter(filter, page, limit);
         var total = (commonRepo.selectFoundRows());
+
         return new PageData<>(data, total);
     }
 

@@ -4,17 +4,20 @@
       <n-space vertical size="large">
         <n-input-group style="width: 520px">
           <n-select
-            v-model:value="filter"
+            v-model:value="filter.type"
             :options="filterOptions"
             style="width: 180px"
             @update:value="filterChange" />
           <n-input
-            v-model:value="filterValue"
+            v-model:value="filter.keyword"
             clearable
             show-count
             maxlength="15"
-            :disabled="filter === 0" />
-          <n-button type="primary" :disabled="filter === 0" @click="search">
+            :disabled="filter.type === 0" />
+          <n-button
+            type="primary"
+            :disabled="filter.type === 0"
+            @click="search">
             <template #icon>
               <n-icon>
                 <search-icon />
@@ -52,10 +55,10 @@
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, type Page, User } from "@/api/type"
+import { ErrorMessage, type Page, User, UserFilter } from "@/api/type"
 import { UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { renderIcon, setTitle } from "@/utils"
+import { renderIcon } from "@/utils"
 import {
   CalendarCheck as DateIcon,
   UserShield as RoleIcon,
@@ -82,7 +85,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -96,8 +99,7 @@ const filterOptions = [
   { label: "昵称", value: 2 }
 ]
 
-const filter = ref<number>(0)
-const filterValue = ref<string>("")
+const filter = ref<UserFilter>({})
 const loading = ref<boolean>(true)
 const showOperations = ref<boolean>(false)
 const users = ref<Page<User>>({
@@ -248,35 +250,29 @@ const columns: DataTableColumns<User> = [
   }
 ]
 
-onBeforeMount(() => {
-  setTitle(route.meta.title as string)
-
-  if (route.query.filter) {
-    filter.value = Number(route.query.filter)
-    filterValue.value = route.query.filterValue as string
-  }
-
+onMounted(() => {
   if (route.query.page) {
     pagination.value.page = Number(route.query.page)
   }
+
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
 
   queryUsers()
 })
 
 function filterChange(value: number) {
   if (value == 0) {
-    filter.value = 0
-    filterValue.value = ""
-    pageChange(1)
+    nextTick(() => {
+      filter.value.keyword = ""
+      search()
+    })
   }
 }
 
 function pageChange(page: number) {
   router.push({
     query: {
-      page,
-      filter: filter.value,
-      filterValue: filterValue.value
+      page
     }
   })
 
@@ -284,6 +280,7 @@ function pageChange(page: number) {
 }
 
 function search() {
+  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
@@ -293,8 +290,7 @@ function queryUsers() {
   UserApi.getByFilter(
     pagination.value.page,
     pagination.value.pageSize,
-    filter.value,
-    filterValue.value
+    filter.value
   )
     .then((data) => {
       users.value = data

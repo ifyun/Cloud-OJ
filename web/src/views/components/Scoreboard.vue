@@ -22,7 +22,6 @@ import { RankingApi } from "@/api/request"
 import { ErrorMessage, type Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
 import {
   type DataTableColumns,
   NButton,
@@ -118,8 +117,6 @@ const rankingColumns: DataTableColumns<Ranking> = [
 ]
 
 onBeforeMount(() => {
-  setTitle("排名")
-
   if ("page" in route.query) {
     pagination.value.page = Number(route.query.page)
   }

@@ -9,7 +9,7 @@
             show-count
             maxlength="30"
             placeholder="输入关键字" />
-          <n-button type="primary" @click="queryContests">
+          <n-button type="primary" @click="search">
             搜 索
             <template #icon>
               <n-icon>
@@ -18,7 +18,7 @@
             </template>
           </n-button>
         </n-input-group>
-        <n-checkbox @updateChecked="checkboxChange">
+        <n-checkbox :checked="filter.hideEnded" @updateChecked="checkboxChange">
           隐藏已结束竞赛
         </n-checkbox>
         <n-button type="info" tertiary style="margin-left: auto">
@@ -62,7 +62,7 @@ import { ContestApi } from "@/api/request"
 import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
 import { useStore } from "@/store"
 import { LanguageOptions } from "@/type"
-import { LanguageUtil, renderIcon, setTitle, stateTag } from "@/utils"
+import { LanguageUtil, renderIcon, stateTag } from "@/utils"
 import {
   DeleteForeverRound,
   EditNoteRound,
@@ -91,7 +91,7 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onBeforeMount, ref } from "vue"
+import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -235,8 +235,13 @@ const contests = ref<Page<Contest>>({
   total: 0
 })
 
-onBeforeMount(() => {
-  setTitle(route.meta.title as string)
+onMounted(() => {
+  if (route.query.page) {
+    pagination.value.page = Number(route.query.page)
+  }
+
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
+
   queryContests()
 })
 
@@ -277,6 +282,12 @@ function operationSelect(key: string) {
     default:
       return
   }
+}
+
+function search() {
+  sessionStorage.setItem("query", JSON.stringify(filter.value))
+  pagination.value.page = 1
+  pageChange(1)
 }
 
 function pageChange(page: number) {

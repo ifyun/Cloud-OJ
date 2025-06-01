@@ -9,7 +9,7 @@
             show-count
             maxlength="30"
             placeholder="输入关键字" />
-          <n-button type="primary" @click="queryContests">
+          <n-button type="primary" @click="search">
             搜 索
             <template #icon>
               <n-icon>
@@ -18,7 +18,7 @@
             </template>
           </n-button>
         </n-input-group>
-        <n-checkbox @updateChecked="checkboxChange">
+        <n-checkbox :checked="filter.hideEnded" @updateChecked="checkboxChange">
           隐藏已结束竞赛
         </n-checkbox>
       </n-flex>
@@ -48,7 +48,7 @@ import { ContestApi } from "@/api/request"
 import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
 import { useStore } from "@/store"
 import { LanguageNames } from "@/type"
-import { LanguageUtil, setTitle, stateTag } from "@/utils"
+import { LanguageUtil, stateTag } from "@/utils"
 import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
@@ -66,10 +66,11 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { onBeforeMount, ref } from "vue"
-import { useRouter } from "vue-router"
+import { onMounted, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
+const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
@@ -162,10 +163,20 @@ const options = [
   }
 ]
 
-onBeforeMount(() => {
-  setTitle("竞赛 & 练习")
+onMounted(() => {
+  if (route.query.page) {
+    pagination.value.page = Number(route.query.page)
+  }
+
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
   queryContests()
 })
+
+function search() {
+  sessionStorage.setItem("query", JSON.stringify(filter.value))
+  pagination.value.page = 1
+  pageChange(1)
+}
 
 function pageChange(page: number) {
   router.push({

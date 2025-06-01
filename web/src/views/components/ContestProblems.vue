@@ -70,7 +70,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { type Component, computed, onBeforeMount, ref } from "vue"
+import { type Component, computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const store = useStore()
@@ -153,7 +153,7 @@ const contestState = computed(() => {
   return contest.value == null ? null : stateTag(contest.value)
 })
 
-onBeforeMount(() => {
+onMounted(() => {
   const reg = /^\d+$/
   if (reg.test(props.cid)) {
     queryContest(Number(props.cid))

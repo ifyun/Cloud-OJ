@@ -1,5 +1,11 @@
 import axios, { ApiPath, resolveError } from "@/api"
-import type { JudgeResult, Overview, Page, User } from "@/api/type"
+import {
+  type JudgeResult,
+  type Overview,
+  type Page,
+  type User,
+  UserFilter
+} from "@/api/type"
 import type { AxiosResponse } from "axios"
 import { useStore } from "@/store"
 
@@ -10,19 +16,17 @@ const UserApi = {
   getByFilter(
     page: number,
     size: number,
-    filter: number | null = null,
-    filterValue: string | null = null
+    filter: UserFilter | null = null
   ): Promise<Page<User>> {
     return new Promise<Page<User>>((resolve, reject) => {
       axios({
-        url: ApiPath.USER_ADMIN,
-        method: "GET",
+        url: `${ApiPath.USER_ADMIN}/queries`,
+        method: "POST",
         params: {
           page,
-          size,
-          filter,
-          filterValue
-        }
+          size
+        },
+        data: JSON.stringify(filter)
       })
         .then((res) => {
           resolve(res.status === 200 ? res.data : { data: [], count: 0 })

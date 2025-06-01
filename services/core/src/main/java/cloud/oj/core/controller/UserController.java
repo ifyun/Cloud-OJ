@@ -1,6 +1,7 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.User;
+import cloud.oj.core.entity.UserFilter;
 import cloud.oj.core.entity.UserStatistics;
 import cloud.oj.core.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,13 @@ public class UserController {
     /**
      * 根据过滤条件获取用户
      */
-    @GetMapping(path = "admin")
-    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "1") Integer page,
-                                      @RequestParam(defaultValue = "15") Integer limit,
-                                      Integer filter,
-                                      String filterValue) {
-        var data = userService.getUsersByFilter(filter, filterValue, page, limit);
+    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<?> getUsers(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "15") Integer limit,
+            @RequestBody(required = false) UserFilter filter
+    ) {
+        var data = userService.getUsersByFilter(filter, page, limit);
         return data.getTotal() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();

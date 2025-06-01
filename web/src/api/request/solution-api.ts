@@ -1,26 +1,21 @@
-import type { Page } from "@/api/type"
-import { JudgeResult } from "@/api/type"
+import { JudgeResult, type Page, SolutionFilter } from "@/api/type"
 import axios, { ApiPath, resolveError } from "@/api"
 
 const SolutionApi = {
   getByFilter(
     page: number,
     size: number,
-    username: string | null,
-    pid: string | null,
-    date: number | null
+    filter: SolutionFilter | null = null
   ): Promise<Page<JudgeResult>> {
     return new Promise<Page<JudgeResult>>((resolve, reject) => {
       axios({
-        url: ApiPath.SOLUTION_ADMIN,
-        method: "GET",
+        url: `${ApiPath.SOLUTION_ADMIN}/queries`,
+        method: "POST",
         params: {
           page,
-          size,
-          username,
-          pid,
-          date
-        }
+          size
+        },
+        data: JSON.stringify(filter)
       })
         .then((res) => {
           resolve(res.status === 200 ? res.data : { data: [], count: 0 })

@@ -108,8 +108,8 @@ import {
 import {
   computed,
   nextTick,
-  onBeforeMount,
   onDeactivated,
+  onMounted,
   ref,
   shallowRef
 } from "vue"
@@ -136,7 +136,7 @@ const noRanking = computed<boolean>(
 let contestId: number
 let timeout: number | undefined
 
-onBeforeMount(() => {
+onMounted(() => {
   const reg = /^\d+$/
   if (reg.test(props.cid)) {
     contestId = Number(props.cid)
