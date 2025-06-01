@@ -7,21 +7,27 @@
         <n-layout-header bordered>
           <app-logo style="height: 50px" />
         </n-layout-header>
-        <n-layout-content>
-          <div v-if="checked" style="width: 320px; margin: 24px auto 0 auto">
-            <n-tabs type="line" :value="tab" animated @update:value="tabChange">
-              <n-tab-pane name="login" tab="登录">
-                <login />
-              </n-tab-pane>
-              <n-tab-pane name="signup" tab="注册">
-                <signup />
-              </n-tab-pane>
-            </n-tabs>
-          </div>
-        </n-layout-content>
-        <n-layout-footer style="margin-top: auto">
-          <bottom-info />
-        </n-layout-footer>
+        <n-layout>
+          <n-scrollbar>
+            <div v-if="checked" style="width: 320px; margin: 24px auto 0 auto">
+              <n-tabs
+                type="line"
+                :value="tab"
+                animated
+                @update:value="tabChange">
+                <n-tab-pane name="login" tab="登录">
+                  <login />
+                </n-tab-pane>
+                <n-tab-pane name="signup" tab="注册">
+                  <signup />
+                </n-tab-pane>
+              </n-tabs>
+            </div>
+            <n-layout-footer style="margin-top: auto">
+              <bottom-info />
+            </n-layout-footer>
+          </n-scrollbar>
+        </n-layout>
       </n-layout>
     </n-message-provider>
   </n-config-provider>
@@ -37,10 +43,10 @@ import {
   type GlobalThemeOverrides,
   NConfigProvider,
   NLayout,
-  NLayoutContent,
   NLayoutFooter,
   NLayoutHeader,
   NMessageProvider,
+  NScrollbar,
   NTabPane,
   NTabs
 } from "naive-ui"
