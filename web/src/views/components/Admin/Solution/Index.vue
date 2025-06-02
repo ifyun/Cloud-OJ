@@ -298,6 +298,8 @@ function dateFmt(time: number) {
     return "今天"
   } else if (t.isSame(now, "year")) {
     return t.format("M 月 DD")
+  } else {
+    return t.format("YYYY 年 M 月 DD")
   }
 }
 </script>

@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
-import { ErrorMessage } from "@/api/type"
 import { useStore } from "@/store"
 import { themeBase, themeDark } from "@/theme"
 import {
@@ -59,13 +58,13 @@ function reload() {
   })
 }
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    checkToken()
+    await checkToken()
   } else {
     if (to.name === "edit_account" || to.path.includes("/admin")) {
-      router.replace("/")
+      await router.replace("/")
     }
   }
 
@@ -74,11 +73,10 @@ router.beforeEach((to, from) => {
     store.app.setError(null)
   } else if (store.app.error === null) {
     // 意外进入错误页面却没有错误信息，返回上一页
-    router.replace({ path: from.fullPath })
+    await router.replace({ path: from.fullPath })
   }
 })
 
-// 根据路由生成管理页面导航
 router.afterEach((to, from) => {
   const routes: Array<string> = []
 
@@ -91,8 +89,18 @@ router.afterEach((to, from) => {
     sessionStorage.removeItem("query")
   }
 
+  // 为 Admin 页面生成面包屑
   route.matched.forEach((r) => {
-    if (r.meta.title) {
+    if (!r.meta.inBreadcrumb) {
+      return
+    }
+
+    if (
+      (r.name === "edit_problem" || r.name === "edit_contest") &&
+      route.params.id === "new"
+    ) {
+      routes.push(r.meta._title as string)
+    } else {
       routes.push(r.meta.title as string)
     }
   })
@@ -104,12 +112,14 @@ onMounted(() => {
   console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone)
 })
 
-function checkToken() {
-  AuthApi.verify().catch((error: ErrorMessage) => {
+async function checkToken() {
+  try {
+    await AuthApi.verify()
+  } catch (error: any) {
     if (error.status === 401) {
       store.user.clearToken()
-      router.push({ name: "auth", params: { tab: "login" } })
+      await router.push({ name: "auth", params: { tab: "login" } })
     }
-  })
+  }
 }
 </script>

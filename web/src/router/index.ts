@@ -150,28 +150,32 @@ const router = createRouter({
           path: "overview",
           name: "admin_overview",
           meta: {
-            title: "概览"
+            title: "概览",
+            inBreadcrumb: true
           },
           component: AdminOverview
         },
         {
           path: "problem",
           redirect: "/admin/problem/index",
+          meta: {
+            title: "题目",
+            inBreadcrumb: true
+          },
           component: RouterLayout,
           children: [
             {
               path: "index",
               name: "problem_admin",
-              meta: {
-                title: "题目"
-              },
               component: ProblemAdmin
             },
             {
               path: "edit/:id",
               name: "edit_problem",
               meta: {
-                title: "编辑题目"
+                title: "编辑题目",
+                _title: "新建题目",
+                inBreadcrumb: true
               },
               component: ProblemEditor
             },
@@ -179,7 +183,8 @@ const router = createRouter({
               path: "data/:id",
               name: "test_data",
               meta: {
-                title: "测试数据管理"
+                title: "测试数据管理",
+                inBreadcrumb: true
               },
               component: TestData
             }
@@ -187,21 +192,25 @@ const router = createRouter({
         },
         {
           path: "contest",
+          redirect: "/admin/contest/index",
+          meta: {
+            title: "竞赛",
+            inBreadcrumb: true
+          },
           component: RouterLayout,
           children: [
             {
               path: "index",
               name: "contest_admin",
-              meta: {
-                title: "竞赛"
-              },
               component: ContestAdmin
             },
             {
               path: "edit/:id",
               name: "edit_contest",
               meta: {
-                title: "编辑竞赛"
+                title: "编辑竞赛",
+                _title: "新建竞赛",
+                inBreadcrumb: true
               },
               component: ContestEditor
             }
@@ -209,14 +218,16 @@ const router = createRouter({
         },
         {
           path: "user",
+          redirect: "/admin/user/index",
+          meta: {
+            title: "用户",
+            inBreadcrumb: true
+          },
           component: RouterLayout,
           children: [
             {
               path: "index",
               name: "user_admin",
-              meta: {
-                title: "用户"
-              },
               component: UserAdmin
             }
           ]
@@ -225,7 +236,8 @@ const router = createRouter({
           path: "solution",
           name: "solution_admin",
           meta: {
-            title: "提交记录"
+            title: "提交记录",
+            inBreadcrumb: true
           },
           component: SolutionAdmin
         },
@@ -233,7 +245,8 @@ const router = createRouter({
           path: "settings",
           name: "settings",
           meta: {
-            title: "设置"
+            title: "设置",
+            inBreadcrumb: true
           },
           component: SystemSettings
         }

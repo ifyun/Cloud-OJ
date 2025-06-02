@@ -132,7 +132,7 @@ const rules: FormRules = {
 
 const title = computed(() => {
   if (create.value) {
-    return "创建新竞赛"
+    return route.meta._title as string
   }
 
   if (typeof contest.value.contestId === "undefined") {

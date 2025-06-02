@@ -229,7 +229,7 @@ const helpDoc = computed(() => {
 
 const title = computed<string>(() => {
   if (create.value) {
-    return "创建题目"
+    return route.meta._title as string
   }
 
   if (typeof problem.value.problemId === "undefined") {
