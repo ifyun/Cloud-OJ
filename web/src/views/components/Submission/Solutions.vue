@@ -20,30 +20,23 @@
         v-for="s in solutions.data"
         :key="s.solutionId"
         :type="ResultTypes[s.result!]"
-        :title="s.resultText!"
-        :time="date(s.submitTime!)"
+        :title="s.resultText"
+        :time="date(s.submitTime)"
         line-type="dashed">
         <n-flex align="center">
           <!-- Language -->
-          <n-flex align="center" :size="4">
-            <n-icon size="12" :color="LanguageColors[s.language!]">
-              <circle-round />
-            </n-icon>
-            <n-text strong depth="2" style="width: 100px">
-              {{ LanguageNames[s.language!] }}
-            </n-text>
-          </n-flex>
+          <language-tag :language="s.language" />
           <!-- CPU Time -->
           <n-flex align="center" :size="4">
             <n-icon depth="2" :component="TimerOutlined" />
             <n-text depth="2" style="width: 100px">
-              {{ timeUsage(s.time!) }}
+              {{ timeUsage(s.time) }}
             </n-text>
           </n-flex>
           <!-- RAM -->
           <n-flex align="center" :size="4">
             <n-icon depth="3" :component="DataSaverOffRound" />
-            <n-text depth="3">{{ ramUsage(s.memory!) }}</n-text>
+            <n-text depth="3">{{ ramUsage(s.memory) }}</n-text>
           </n-flex>
         </n-flex>
       </n-timeline-item>
@@ -60,10 +53,9 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
-import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
+import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
-  CircleRound,
   DataSaverOffRound,
   RefreshRound,
   TimerOutlined
@@ -78,20 +70,19 @@ import {
   NTimelineItem,
   useMessage
 } from "naive-ui"
-import { onBeforeMount, ref } from "vue"
-import { EmptyData } from "@/components"
+import { onMounted, ref } from "vue"
+import { EmptyData, LanguageTag } from "@/components"
 
 const props = defineProps<{ problemId: string }>()
 
 const message = useMessage()
-
 const loading = ref<boolean>(true)
 const solutions = ref<Page<JudgeResult>>({
   data: [],
   total: 0
 })
 
-onBeforeMount(() => {
+onMounted(() => {
   querySolutions()
 })
 
@@ -109,7 +100,7 @@ function querySolutions() {
     })
 }
 
-function date(time: number) {
+function date(time?: number) {
   const now = dayjs()
   const t = dayjs(time)
 

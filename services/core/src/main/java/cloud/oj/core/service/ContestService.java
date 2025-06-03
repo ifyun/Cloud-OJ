@@ -222,10 +222,12 @@ public class ContestService {
         // 普通用户查询，同时返回每题结果
         var problems = contestRepo.selectProblems(cid, true);
 
-        problems.forEach(p -> {
-            var result = solutionRepo.selectResultOfContest(uid, cid, p.getProblemId());
-            result.ifPresent(p::setResult);
-        });
+        problems.forEach(p -> solutionRepo.selectResultOfContest(uid, cid, p.getProblemId())
+                .ifPresent((r) -> {
+                    p.setState(0);
+                    p.setResult(r);
+                })
+        );
 
         return problems;
     }

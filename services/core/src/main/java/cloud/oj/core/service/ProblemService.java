@@ -52,7 +52,12 @@ public class ProblemService {
         var data = problemRepo.selectAllEnabled(page, size, keyword);
         var total = commonRepo.selectFoundRows();
 
-        data.forEach(p -> solutionRepo.selectResult(uid, p.getProblemId()).ifPresent(p::setResult));
+        data.forEach(p -> solutionRepo.selectResult(uid, p.getProblemId())
+                .ifPresent((r) -> {
+                    p.setState(0);
+                    p.setResult(r);
+                })
+        );
 
         return new PageData<>(data, total);
     }

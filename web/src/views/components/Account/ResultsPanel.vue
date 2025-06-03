@@ -11,8 +11,8 @@
             :style="{
               backgroundColor: color,
               borderRadius: '4px',
-              width: '14px',
-              height: '14px',
+              width: '12px',
+              height: '12px',
               marginRight: '4px'
             }" />
           <n-text style="font-size: small">
@@ -45,12 +45,12 @@ const colors = [
   "#F56C6C", // WA
   "#EBB563", // TLE
   "#409EFF", // MLE
-  "#777770", // RE
-  "#DDDDD0" // CE
+  "#707172", // RE
+  "#EEEDEF" // CE
 ]
 
 const keys = ["AC", "WA", "TLE", "MLE", "RE", "CE"]
-const names = ["正确", "错误", "超时", "超内存", "运行错误", "编译错误"]
+const names = ["正确", "错误", "时间超限", "内存超限", "运行错误", "编译错误"]
 
 const props = defineProps<{
   data: Results

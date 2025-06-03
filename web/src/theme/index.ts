@@ -85,6 +85,9 @@ const themeDark: GlobalThemeOverrides = {
   Dropdown: {
     color: "#222D3D"
   },
+  Dialog: {
+    color: "#0D1117"
+  },
   Table: {
     borderColor: "#161B22",
     borderColorModal: "#26292F",

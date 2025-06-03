@@ -8,13 +8,13 @@
     <n-space v-else vertical>
       <n-input-group style="width: 520px">
         <n-select
-          v-model:value="filter"
+          v-model:value="filter.type"
+          @update:value="filterChange"
           :options="filterOptions"
-          style="width: 180px"
-          @update:value="filterChange" />
-        <n-input v-model:value="filterValue" :disabled="filter === 0" />
+          style="width: 180px" />
+        <n-input v-model:value="filter.keyword" :disabled="filter.type === 0" />
         <n-button
-          :disabled="filter === 0"
+          :disabled="filter.type === 0"
           type="primary"
           secondary
           @click="search">
@@ -52,17 +52,10 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
-import { SourceCodeView } from "@/components"
+import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
 import { useStore } from "@/store"
-import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
-import {
-  CheckCircleFilled,
-  CircleRound,
-  ErrorRound,
-  SearchRound,
-  TimelapseRound
-} from "@vicons/material"
+import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
   type DataTableColumns,
@@ -75,11 +68,10 @@ import {
   NPopover,
   NSelect,
   NSpace,
-  NTag,
   NText,
   useMessage
 } from "naive-ui"
-import { type Component, nextTick, onBeforeMount, ref } from "vue"
+import { nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -100,8 +92,11 @@ const solutions = ref<Page<JudgeResult>>({
 })
 
 const solution = ref<JudgeResult>(new JudgeResult())
-const filter = ref<number>(0)
-const filterValue = ref<string>("")
+const filter = ref<{
+  type: number
+  keyword: string
+}>({ type: 0, keyword: "" })
+
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
   { label: "题目 ID", value: 1 },
@@ -125,46 +120,21 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "result",
     width: 100,
     align: "center",
-    render: (row) => {
-      let icon: Component
-
-      if (row.state != 0) {
-        icon = TimelapseRound
-      } else if (row.result! === 0) {
-        icon = CheckCircleFilled
-      } else {
-        icon = ErrorRound
-      }
-
-      const { type, text } =
-        row.state === 0
-          ? { type: ResultTypes[row.result!], text: row.resultText }
-          : { type: "info", text: row.stateText }
-
-      return (
-        <NTag
-          class="resultTag"
-          size="small"
-          bordered={false}
-          type={type as any}
-          // @ts-ignore
-          onClick={() => querySolution(row.solutionId)}>
-          {{
-            icon: () => <NIcon component={icon} />,
-            default: () => <span>{text}</span>
-          }}
-        </NTag>
-      )
-    }
+    render: (row) => (
+      <ResultTag
+        class="resultTag"
+        data={row}
+        // @ts-ignore
+        onClick={() => querySolution(row.solutionId)}
+      />
+    )
   },
   {
     title: "题名",
     key: "title",
     render: (row) => (
       <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
-        <NButton text style="font-weight: 500">
-          {row.title}
-        </NButton>
+        <NButton text>{row.title}</NButton>
       </RouterLink>
     )
   },
@@ -172,16 +142,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "语言",
     key: "language",
     align: "left",
-    render: (row) => (
-      <div style="display: flex; align-items: center">
-        <NIcon color={LanguageColors[row.language!]}>
-          <CircleRound />
-        </NIcon>
-        <NText strong depth="1" style="margin-left: 6px">
-          {LanguageNames[row.language!]}
-        </NText>
-      </div>
-    )
+    render: (row) => <LanguageTag language={row.language} />
   },
   {
     title: "CPU 时间",
@@ -198,7 +159,15 @@ const columns: DataTableColumns<JudgeResult> = [
   {
     title: "得分",
     key: "score",
-    align: "right"
+    align: "right",
+    render: (row) => {
+      const type = row.score === 0 ? "error" : ""
+      return (
+        <NText strong type={type}>
+          {row.score}
+        </NText>
+      )
+    }
   },
   {
     title: "提交时间",
@@ -220,16 +189,12 @@ const columns: DataTableColumns<JudgeResult> = [
   }
 ]
 
-onBeforeMount(() => {
-  if (route.query.filter) {
-    filter.value = Number(route.query.filter)
-    filterValue.value = route.query.filterValue as string
-  }
-
+onMounted(() => {
   if (route.query.page) {
     pagination.value.page = Number(route.query.page)
   }
 
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? `{"type": 0}`)
   querySolutions()
 })
 
@@ -237,7 +202,7 @@ function querySolutions() {
   loading.value = true
   const { page, pageSize } = pagination.value
 
-  UserApi.getSolutions(page, pageSize, filter.value, filterValue.value)
+  UserApi.getSolutions(page, pageSize, filter.value.type, filter.value.keyword)
     .then((data) => {
       solutions.value = data
     })
@@ -261,12 +226,10 @@ function querySolution(sid: string) {
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: {
       tab: "solutions",
-      page,
-      filter: filter.value,
-      filterValue: filterValue.value
+      page
     }
   })
 
@@ -276,14 +239,14 @@ function pageChange(page: number) {
 function filterChange(value: number) {
   // 关闭过滤条件
   if (value == 0) {
-    filter.value = 0
-    filterValue.value = ""
+    filter.value.keyword = ""
     pagination.value.page = 1
     pageChange(1)
   }
 }
 
 function search() {
+  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
@@ -296,6 +259,8 @@ function date(time: number) {
     return "今天"
   } else if (t.isSame(now, "year")) {
     return t.format("M 月 DD")
+  } else {
+    return t.format("YYYY 年 M 月 DD")
   }
 }
 </script>

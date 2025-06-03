@@ -1,7 +1,7 @@
 <template>
   <div class="admin-wrap">
     <div style="margin: 4px">
-      <n-space vertical size="large">
+      <n-flex vertical size="large">
         <n-input-group style="width: 520px">
           <n-select
             v-model:value="filter.type"
@@ -38,7 +38,7 @@
           @update:page="pageChange">
           <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
         </n-pagination>
-      </n-space>
+      </n-flex>
     </div>
   </div>
   <n-dropdown
@@ -75,12 +75,12 @@ import {
   NButton,
   NDataTable,
   NDropdown,
+  NFlex,
   NIcon,
   NInput,
   NInputGroup,
   NPagination,
   NSelect,
-  NSpace,
   NTag,
   NText,
   useMessage
@@ -176,15 +176,15 @@ const columns: DataTableColumns<User> = [
     key: "nickname",
     width: 300,
     title: () => (
-      <NSpace size="small" align="center" style="margin-left: 7px">
+      <NFlex size="small" align="center" style="margin-left: 7px">
         <NIcon style="display: flex">
           <UserIcon />
         </NIcon>
         <NText>昵称</NText>
-      </NSpace>
+      </NFlex>
     ),
     render: (row) => (
-      <NSpace align="center" size="small">
+      <NFlex align="center" size="small">
         <UserAvatar
           size="small"
           uid={row.uid!}
@@ -206,19 +206,19 @@ const columns: DataTableColumns<User> = [
         ) : (
           <span />
         )}
-      </NSpace>
+      </NFlex>
     )
   },
   {
     key: "role",
     align: "center",
     title: () => (
-      <NSpace size="small" align="center" justify="center">
+      <NFlex size="small" align="center" justify="center">
         <NIcon style="display: flex">
           <RoleIcon />
         </NIcon>
         <NText>权限</NText>
-      </NSpace>
+      </NFlex>
     ),
     render: (row) => {
       if (row.role! == 0) {
@@ -237,15 +237,15 @@ const columns: DataTableColumns<User> = [
     key: "createAt",
     align: "right",
     title: () => (
-      <NSpace size="small" align="center" justify="end">
+      <NFlex size="small" align="center" justify="end">
         <NIcon style="display: flex">
           <DateIcon />
         </NIcon>
         <NText>注册时间</NText>
-      </NSpace>
+      </NFlex>
     ),
     render: (row) => (
-      <NText depth="2">{dayjs.unix(row.createAt!).format("YYYY/MM/DD")}</NText>
+      <NText depth="3">{dayjs.unix(row.createAt!).format("YYYY/MM/DD")}</NText>
     )
   }
 ]
@@ -255,8 +255,7 @@ onMounted(() => {
     pagination.value.page = Number(route.query.page)
   }
 
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
-
+  filter.value = JSON.parse(sessionStorage.getItem("query") ?? `{"type": 0}`)
   queryUsers()
 })
 

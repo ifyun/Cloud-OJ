@@ -48,10 +48,9 @@ export default {
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, type Page, Problem } from "@/api/type"
-import { EmptyData } from "@/components"
+import { EmptyData, ResultTag } from "@/components"
 import { useStore } from "@/store"
-import { ResultTypes } from "@/type"
-import { CheckCircleFilled, ErrorRound, SearchRound } from "@vicons/material"
+import { SearchRound } from "@vicons/material"
 import {
   type DataTableColumns,
   NButton,
@@ -63,7 +62,7 @@ import {
   NPagination,
   NTag
 } from "naive-ui"
-import { type Component, computed, nextTick, onMounted, ref } from "vue"
+import { computed, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -108,28 +107,13 @@ const problemColumns: DataTableColumns<Problem> = [
     )
   },
   {
-    title: () => (store.user.isLoggedIn ? "状态" : ""),
+    title: () => (store.user.isLoggedIn ? "提交状态" : ""),
     key: "result",
     width: store.user.isLoggedIn ? 100 : 0,
     align: "center",
     render: (row) => {
-      let icon: Component
       if (typeof row.result !== "undefined") {
-        icon = row.result! === 0 ? CheckCircleFilled : ErrorRound
-
-        const { type, text } = {
-          type: ResultTypes[row.result!],
-          text: row.resultText
-        }
-
-        return (
-          <NTag size="small" bordered={false} type={type as any}>
-            {{
-              icon: () => <NIcon component={icon} />,
-              default: () => <span>{text}</span>
-            }}
-          </NTag>
-        )
+        return <ResultTag data={row} />
       }
     }
   },

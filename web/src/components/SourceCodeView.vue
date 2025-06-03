@@ -56,12 +56,8 @@
                   {{ data.resultText }}
                 </n-text>
               </td>
-              <td>
-                <n-text
-                  strong
-                  :style="{ color: LanguageColors[data.language!] }">
-                  {{ LanguageNames[data.language!] }}
-                </n-text>
+              <td style="display: flex; justify-content: center">
+                <language-tag auto-width :language="data.language" />
               </td>
               <td>{{ timeUsage(data.time) }}</td>
               <td>{{ ramUsage(data.memory) }}</td>
@@ -78,7 +74,7 @@
             trim
             show-line-numbers
             :code="data.sourceCode"
-            :language="langs[data.language!]" />
+            :language="langId[data.language!]" />
         </n-card>
       </n-flex>
       <template v-if="data.errorInfo" #footer>
@@ -100,7 +96,7 @@
 
 <script setup lang="ts">
 import { JudgeResult } from "@/api/type"
-import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
+import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import dayjs from "dayjs"
 import highlightJs from "highlight.js/lib/core"
@@ -124,12 +120,13 @@ import {
   NTable,
   NText
 } from "naive-ui"
+import { LanguageTag } from "@/components"
 
-const langs = ["c", "cpp", "java", "py", "bash", "cs", "js", "kt", "go"]
-const langFns = [c, cpp, java, py, bash, cs, js, kt, go]
+const langId = ["c", "cpp", "java", "py", "bash", "cs", "js", "kt", "go"]
+const langFn = [c, cpp, java, py, bash, cs, js, kt, go]
 
-langs.forEach((v, i) => {
-  highlightJs.registerLanguage(v, langFns[i])
+langId.forEach((v, i) => {
+  highlightJs.registerLanguage(v, langFn[i])
 })
 
 defineProps<{ show: boolean; showUser: boolean; data: JudgeResult }>()

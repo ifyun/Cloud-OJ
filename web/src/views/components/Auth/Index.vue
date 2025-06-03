@@ -8,7 +8,7 @@
           <app-logo style="height: 50px" />
         </n-layout-header>
         <n-layout>
-          <n-scrollbar>
+          <n-scrollbar class="global">
             <div v-if="checked" style="width: 320px; margin: 24px auto 0 auto">
               <n-tabs
                 type="line"

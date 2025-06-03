@@ -49,14 +49,10 @@
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
+import { ResultTag } from "@/components"
 import { useStore } from "@/store"
-import { ResultTypes } from "@/type"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
-import {
-  ArrowForwardRound,
-  CheckCircleFilled,
-  ErrorRound
-} from "@vicons/material"
+import { ArrowForwardRound } from "@vicons/material"
 import {
   type DataTableColumns,
   NButton,
@@ -70,7 +66,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { type Component, computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const store = useStore()
@@ -116,28 +112,13 @@ const columns: DataTableColumns<Problem> = [
     )
   },
   {
-    title: "状态",
+    title: "提交状态",
     key: "result",
     width: 100,
     align: "center",
     render: (row) => {
-      let icon: Component
       if (typeof row.result !== "undefined") {
-        icon = row.result! === 0 ? CheckCircleFilled : ErrorRound
-
-        const { type, text } = {
-          type: ResultTypes[row.result!],
-          text: row.resultText
-        }
-
-        return (
-          <NTag size="small" bordered={false} type={type as any}>
-            {{
-              icon: () => <NIcon component={icon} />,
-              default: () => <span>{text}</span>
-            }}
-          </NTag>
-        )
+        return <ResultTag data={row} />
       }
     }
   },

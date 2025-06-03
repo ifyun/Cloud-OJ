@@ -276,7 +276,7 @@ function addToContest(p: Problem) {
 function handleRemove(p: Problem) {
   dialog.warning({
     title: "警告",
-    content: `是否移除 [${p.title}]？`,
+    content: `是否移除 ${p.problemId}.${p.title}？`,
     positiveText: "是",
     negativeText: "不要",
     onPositiveClick: () => remove(p)
@@ -289,7 +289,7 @@ function handleRemove(p: Problem) {
 function remove(p: Problem) {
   ContestApi.removeProblem(props.contestId!, p.problemId!)
     .then(() => {
-      message.warning(`[${p.title}] 已移除`)
+      message.warning(`${p.problemId}.${p.title} 已移除`)
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())

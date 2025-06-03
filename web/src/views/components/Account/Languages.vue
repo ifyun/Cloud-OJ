@@ -17,10 +17,10 @@
         <n-icon :color="item.color" size="12">
           <circle-round />
         </n-icon>
-        <n-text depth="1" strong style="margin-left: 12px"
-          >{{ item.name }}
+        <n-text depth="1" strong style="margin-left: 8px">
+          {{ item.name }}
         </n-text>
-        <n-text depth="3" style="margin-left: 6px">{{ item.percent }}% </n-text>
+        <n-text depth="3" style="margin-left: 4px">{{ item.percent }}% </n-text>
       </div>
     </div>
   </div>

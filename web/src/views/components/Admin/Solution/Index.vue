@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="tsx">
-import { type Component, nextTick, onMounted, ref } from "vue"
+import { nextTick, onMounted, ref } from "vue"
 import {
   type DataTableColumns,
   NButton,
@@ -66,13 +66,7 @@ import {
   useMessage
 } from "naive-ui"
 import { RouterLink, useRoute, useRouter } from "vue-router"
-import {
-  CheckCircleFilled,
-  CircleRound,
-  ErrorRound,
-  SearchRound,
-  TimelapseRound
-} from "@vicons/material"
+import { SearchRound } from "@vicons/material"
 import { SolutionApi } from "@/api/request"
 import {
   ErrorMessage,
@@ -80,10 +74,9 @@ import {
   type Page,
   SolutionFilter
 } from "@/api/type"
-import { LanguageColors, LanguageNames, ResultTypes } from "@/type"
 import dayjs from "dayjs"
 import { useStore } from "@/store"
-import { SourceCodeView } from "@/components"
+import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
 
 const route = useRoute()
 const router = useRouter()
@@ -122,37 +115,14 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "result",
     width: 100,
     align: "center",
-    render: (row) => {
-      let icon: Component
-
-      if (row.state != 0) {
-        icon = TimelapseRound
-      } else if (row.result! === 0) {
-        icon = CheckCircleFilled
-      } else {
-        icon = ErrorRound
-      }
-
-      const { type, text } =
-        row.state === 0
-          ? { type: ResultTypes[row.result!], text: row.resultText }
-          : { type: "info", text: row.stateText }
-
-      return (
-        <NTag
-          class="resultTag"
-          size="small"
-          bordered={false}
-          type={type as any}
-          // @ts-ignore
-          onClick={() => querySolution(row.solutionId)}>
-          {{
-            icon: () => <NIcon component={icon} />,
-            default: () => <span>{text}</span>
-          }}
-        </NTag>
-      )
-    }
+    render: (row) => (
+      <ResultTag
+        class="resultTag"
+        data={row}
+        // @ts-ignore
+        onClick={() => querySolution(row.solutionId)}
+      />
+    )
   },
   {
     title: "Solution ID",
@@ -172,18 +142,12 @@ const columns: DataTableColumns<JudgeResult> = [
     )
   },
   {
-    title: "题目 ID",
-    key: "problemId",
-    align: "right",
-    render: (row) => <NText depth="2">{row.problemId}</NText>
-  },
-  {
-    title: "题名",
+    title: "题目",
     key: "title",
     render: (row) => (
       <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
-        <NButton text style="font-weight: 500">
-          {row.title}
+        <NButton text>
+          {row.problemId}.{row.title}
         </NButton>
       </RouterLink>
     )
@@ -192,18 +156,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "语言",
     key: "language",
     align: "left",
-    render: (row) => (
-      <NTag round size="small">
-        {{
-          avatar: () => (
-            <NIcon color={LanguageColors[row.language!]}>
-              <CircleRound />
-            </NIcon>
-          ),
-          default: () => <NText>{LanguageNames[row.language!]}</NText>
-        }}
-      </NTag>
-    )
+    render: (row) => <LanguageTag language={row.language} />
   },
   {
     title: "得分",

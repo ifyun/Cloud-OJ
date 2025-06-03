@@ -222,6 +222,7 @@ const contestColumns: DataTableColumns<Contest> = [
 // endregion
 
 const delRule = {
+  required: true,
   trigger: ["input", "blur"],
   validator() {
     if (confirmDelete !== selectedContest!.contestName) {

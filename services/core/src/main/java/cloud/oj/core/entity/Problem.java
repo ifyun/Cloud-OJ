@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static cloud.oj.core.entity.Solution.R;
+import static cloud.oj.core.entity.Solution.S;
 
 @Getter
 @Setter
@@ -11,7 +12,6 @@ public class Problem {
     private Integer contestId;
     private Boolean enable;
     private Integer problemId;
-    private Integer result;
     private Integer passed;
     private Integer memoryLimit;
     private Integer outputLimit;
@@ -26,9 +26,16 @@ public class Problem {
     private String title;
     private String description;
     private String category;
+    private Integer state;
+    private Integer result;
+    private String stateText;
     private String resultText;
 
-    @SuppressWarnings("unused")
+    public void setState(Integer state) {
+        this.state = state;
+        this.stateText = S[state];
+    }
+
     public void setResult(Integer result) {
         if (result == null) {
             return;

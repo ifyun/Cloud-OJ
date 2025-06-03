@@ -238,6 +238,7 @@ const problemColumns: DataTableColumns<Problem> = [
 // endregion
 
 const delRule = {
+  required: true,
   trigger: ["input", "blur"],
   validator() {
     if (confirmDelete !== selectedTitle) {
@@ -331,7 +332,7 @@ function deleteProblem() {
       d.loading = true
       ProblemApi.delete(selectedId!)
         .then(() => {
-          message.warning(`${selectedTitle} 已删除！`)
+          message.warning(`${selectedId}.${selectedTitle} 已删除！`)
           queryProblems()
           return true
         })
