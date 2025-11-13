@@ -37,7 +37,7 @@ public class ContestService {
      * 为竞赛生成新邀请码
      */
     public String newInviteKey(Integer cid) {
-        var key = RandomStringUtils.randomNumeric(6);
+        var key = RandomStringUtils.secure().nextNumeric(6);
 
         if (contestRepo.newInviteKey(cid, key) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "竞赛不存在");
@@ -125,7 +125,7 @@ public class ContestService {
      * @param contest 竞赛
      */
     public void create(Contest contest) {
-        contest.setInviteKey(RandomStringUtils.randomNumeric(6));
+        contest.setInviteKey(RandomStringUtils.secure().nextNumeric(6));
 
         if (contestRepo.insert(contest) == 0) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "创建失败");

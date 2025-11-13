@@ -31,26 +31,27 @@ spring:
         instance-id: ${spring.application.name}-${server.port}-${random.int}
         health-check-critical-timeout: 5m
     gateway:
-      mvc:
-        routes:
-          - id: core
-            uri: lb://core
-            filters:
-              - StripPrefix=2
-            predicates:
-              - Path=/api/core/**
-          - id: judge
-            uri: lb://judge
-            filters:
-              - StripPrefix=2
-            predicates:
-              - Path=/api/judge/**
-          - id: auth
-            uri: lb://gateway
-            filters:
-              - StripPrefix=2
-            predicates:
-              - Path=/api/auth/**
+      server:
+        webmvc:
+          routes:
+            - id: core
+              uri: lb://core
+              filters:
+                - StripPrefix=2
+              predicates:
+                - Path=/api/core/**
+            - id: judge
+              uri: lb://judge
+              filters:
+                - StripPrefix=2
+              predicates:
+                - Path=/api/judge/**
+            - id: auth
+              uri: lb://gateway
+              filters:
+                - StripPrefix=2
+              predicates:
+                - Path=/api/auth/**
     discovery:
       enabled: true
 management:
