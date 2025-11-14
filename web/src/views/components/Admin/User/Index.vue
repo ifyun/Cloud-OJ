@@ -66,6 +66,7 @@ import {
 } from "@vicons/fa"
 import {
   AdminPanelSettingsRound as AdminIcon,
+  LockResetRound,
   PersonSearchRound as SearchIcon,
   StarsRound
 } from "@vicons/material"
@@ -83,7 +84,9 @@ import {
   NSelect,
   NTag,
   NText,
-  useMessage
+  useMessage,
+  useModal,
+  useNotification
 } from "naive-ui"
 import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
@@ -92,6 +95,8 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
+const modal = useModal()
+const notification = useNotification()
 
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
@@ -152,6 +157,11 @@ const operations = [
     key: "set_star",
     label: () => (selectedUser!.star ? "取消打星用户" : "设为打星用户"),
     icon: renderIcon(StarsRound, "#E6A23C")
+  },
+  {
+    key: "reset_passwd",
+    label: "重置密码",
+    icon: renderIcon(LockResetRound, "#D03050")
   }
 ]
 
@@ -174,7 +184,7 @@ const columns: DataTableColumns<User> = [
   },
   {
     key: "nickname",
-    width: 300,
+    width: 240,
     title: () => (
       <NFlex size="small" align="center" style="margin-left: 7px">
         <NIcon style="display: flex">
@@ -208,6 +218,12 @@ const columns: DataTableColumns<User> = [
         )}
       </NFlex>
     )
+  },
+  {
+    title: "真实姓名",
+    key: "realName",
+    align: "left",
+    render: (row) => <NText depth="3">{row.realName}</NText>
   },
   {
     key: "role",
@@ -326,6 +342,32 @@ function operationSelect(key: string) {
   } else if (key === "set_star") {
     selectedUser!.star = !selectedUser!.star
     updateUser()
+  } else if (key === "reset_passwd") {
+    modal.create({
+      title: "提示",
+      type: "info",
+      content: `重置用户“${selectedUser?.nickname}”的密码？`,
+      preset: "dialog",
+      negativeText: "不要",
+      positiveText: "确定",
+      onPositiveClick: () => {
+        const passwd =
+          (crypto.getRandomValues(new Uint32Array(1))[0]! % 9e7) + 1e7
+        selectedUser!.password = passwd.toString()
+        UserApi.update(selectedUser!, true)
+          .then(() => {
+            notification.info({
+              content: `用户“${selectedUser!.nickname}”的密码已重置`,
+              meta: `新密码：${selectedUser!.password}`,
+              duration: 10000
+            })
+          })
+          .catch((err: ErrorMessage) => {
+            message.error(err.toString())
+          })
+          .finally(() => modal.destroyAll())
+      }
+    })
   }
 
   hideOperation()

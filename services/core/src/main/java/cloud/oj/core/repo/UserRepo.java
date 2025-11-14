@@ -59,6 +59,7 @@ public class UserRepo {
                         select sql_calc_found_rows uid,
                                                    username,
                                                    nickname,
+                                                   real_name,
                                                    email,
                                                    section,
                                                    has_avatar,

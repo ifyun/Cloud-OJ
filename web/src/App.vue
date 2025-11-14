@@ -6,10 +6,18 @@
     :locale="zhCN"
     :date-locale="dateZhCN">
     <n-config-provider abstract :theme-overrides="themeOverrides">
-      <n-global-style />
-      <router-view v-if="show" v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
+      <n-modal-provider>
+        <n-dialog-provider>
+          <n-message-provider>
+            <n-notification-provider>
+              <n-global-style />
+              <router-view v-if="show" v-slot="{ Component }">
+                <component :is="Component" />
+              </router-view>
+            </n-notification-provider>
+          </n-message-provider>
+        </n-dialog-provider>
+      </n-modal-provider>
     </n-config-provider>
   </n-config-provider>
 </template>
@@ -18,16 +26,20 @@
 import { AuthApi } from "@/api/request"
 import { useStore } from "@/store"
 import { themeBase, themeDark } from "@/theme"
+import { setTitle } from "@/utils"
 import {
   dateZhCN,
   type GlobalThemeOverrides,
   NConfigProvider,
+  NDialogProvider,
   NGlobalStyle,
+  NMessageProvider,
+  NModalProvider,
+  NNotificationProvider,
   zhCN
 } from "naive-ui"
 import { computed, nextTick, onMounted, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { setTitle } from "@/utils"
 
 const store = useStore()
 const route = useRoute()
