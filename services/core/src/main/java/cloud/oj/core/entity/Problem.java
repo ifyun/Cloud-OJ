@@ -1,5 +1,6 @@
 package cloud.oj.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,9 @@ import static cloud.oj.core.entity.Solution.S;
 @Getter
 @Setter
 public class Problem {
+    @JsonIgnore
+    public Integer _total;
+
     private Integer contestId;
     private Boolean enable;
     private Integer problemId;

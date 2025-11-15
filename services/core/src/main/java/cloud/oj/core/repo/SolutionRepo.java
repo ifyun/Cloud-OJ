@@ -73,10 +73,10 @@ public class SolutionRepo {
     }
 
     /**
-     * 查询题解
+     * 查询提交记录(User)
      *
      * @param uid        用户 Id
-     * @param sid        题解 Id
+     * @param sid        Solution Id
      * @param showPassed 是否查询通过的测试点
      * @return {@link Solution}
      */
@@ -109,9 +109,9 @@ public class SolutionRepo {
     }
 
     /**
-     * (Admin) 查询题解
+     * 查询提交记录(Admin)
      *
-     * @param sid 题解 Id
+     * @param sid Solution Id
      * @return {@link Solution}
      */
     public Optional<Solution> selectBySid(String sid) {
@@ -153,17 +153,18 @@ public class SolutionRepo {
 
     public List<Solution> selectAllByUid(Integer uid, Integer page, Integer size, Integer filter, String value) {
         return client.sql("""
-                        select sql_calc_found_rows solution_id,
-                                                   problem_id,
-                                                   title,
-                                                   language,
-                                                   state - 1              as state,
-                                                   result - 1             as result,
-                                                   truncate(pass_rate, 2) as pass_rate,
-                                                   truncate(score, 2)     as score,
-                                                   time,
-                                                   memory,
-                                                   submit_time
+                        select count(*) over ()       as _total,
+                               solution_id,
+                               problem_id,
+                               title,
+                               language,
+                               state - 1              as state,
+                               result - 1             as result,
+                               truncate(pass_rate, 2) as pass_rate,
+                               truncate(score, 2)     as score,
+                               time,
+                               memory,
+                               submit_time
                         from solution
                         where deleted = 0
                           and uid = :uid
@@ -182,25 +183,26 @@ public class SolutionRepo {
     }
 
     /**
-     * 根据过滤条件查询题解
+     * 根据过滤条件查询提交记录
      *
      * @param uid  用户 Id
      * @param pid  题目 Id
-     * @param date 日期 Timestamp
+     * @param date 日期时间戳
      */
     public List<Solution> selectAllByFilter(Integer uid, Integer pid, Long date, Integer page, Integer size) {
         return client.sql("""
-                        select sql_calc_found_rows solution_id,
-                                                   problem_id,
-                                                   title,
-                                                   language,
-                                                   state - 1              as state,
-                                                   result - 1             as result,
-                                                   truncate(pass_rate, 2) as pass_rate,
-                                                   truncate(score, 2)     as score,
-                                                   time,
-                                                   memory,
-                                                   submit_time
+                        select count(*) over ()       as _total,
+                               solution_id,
+                               problem_id,
+                               title,
+                               language,
+                               state - 1              as state,
+                               result - 1             as result,
+                               truncate(pass_rate, 2) as pass_rate,
+                               truncate(score, 2)     as score,
+                               time,
+                               memory,
+                               submit_time
                         from solution
                         where deleted = 0
                           and if(not isnull(:pid), problem_id = :pid, true)

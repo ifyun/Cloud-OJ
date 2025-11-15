@@ -22,6 +22,9 @@ public class Solution {
             "运行错误", "内部错误", "输出超限"
     };
 
+    @JsonIgnore
+    public Integer _total;
+
     private BigInteger solutionId;
     private Integer problemId;
     private String title;

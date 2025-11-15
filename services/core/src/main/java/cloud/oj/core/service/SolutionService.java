@@ -4,7 +4,6 @@ import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
 import cloud.oj.core.entity.SolutionFilter;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.SolutionRepo;
 import cloud.oj.core.repo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,17 +31,16 @@ public class SolutionService {
 
     private final PlatformTransactionManager transactionManager;
 
-    private final CommonRepo commonRepo;
-
     private final SolutionRepo solutionRepo;
 
     private final SystemSettings systemSettings;
 
     private final ObjectMapper objectMapper;
+
     private final UserRepo userRepo;
 
     /**
-     * 根据 uid 和过滤条件查询提交
+     * 根据 uid 和过滤条件分页查询提交记录
      *
      * <p>隔离级别：读未提交</p>
      *
@@ -57,12 +55,12 @@ public class SolutionService {
     public PageData<Solution> getSolutionsByUidAndFilter(Integer uid, Integer page, Integer size,
                                                          Integer filter, String filterValue) {
         var data = solutionRepo.selectAllByUid(uid, page, size, filter, filterValue);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
         return new PageData<>(data, total);
     }
 
     /**
-     * (Admin) 根据过滤条件查询题解
+     * 根据过滤条件分页查询提交记录(Admin)
      *
      * @param filter 查询条件
      */
@@ -80,12 +78,12 @@ public class SolutionService {
             }
 
             var data = solutionRepo.selectAllByFilter(uid.get(), filter.pid, filter.date, page, size);
-            var total = commonRepo.selectFoundRows();
+            var total = data.isEmpty() ? 0 : data.get(0)._total;
             return new PageData<>(data, total);
         }
 
         var data = solutionRepo.selectAllByFilter(null, filter.pid, filter.date, page, size);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         data.forEach(s -> userRepo.selectById(s.getUid()).ifPresent(u -> {
             s.setUsername(u.getUsername());
@@ -97,9 +95,9 @@ public class SolutionService {
     }
 
     /**
-     * (Admin) 根据 Id 查询题解
+     * 根据 Id 查询提交记录(Admin)
      *
-     * @param sid 题解 Id
+     * @param sid Solution Id
      * @return {@link Solution}
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
@@ -124,7 +122,7 @@ public class SolutionService {
     }
 
     /**
-     * 根据 uid 和提交时间查询提交
+     * 根据 uid 和提交时间查询提交记录
      *
      * <p>隔离级别：读未提交</p>
      * <p>开启了新的线程，不可使用声明式事务</p>
@@ -186,10 +184,10 @@ public class SolutionService {
     }
 
     /**
-     * 根据 uid 和 sid 查询提交
+     * 根据 uid 和 sid 查询提交记录
      *
      * @param uid 用户 Id
-     * @param sid 题解 Id
+     * @param sid Solution Id
      * @return {@link Solution}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)

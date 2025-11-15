@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.UUID;
 
@@ -95,12 +96,12 @@ public class FileService {
     /**
      * 保存测试数据
      *
-     * @param pid   题目 Id
-     * @param files 文件
+     * @param pid  题目 Id
+     * @param file 文件
      */
-    public void saveTestData(Integer pid, MultipartFile[] files) {
-        if (files.length == 0) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "没有文件");
+    public void saveTestData(Integer pid, MultipartFile file) {
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "文件是空的");
         }
 
         // ! 开放的题目不允许上传测试数据
@@ -114,23 +115,23 @@ public class FileService {
             throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准上传测试数据");
         }
 
-        var testDataDir = fileDir + "data/";
-        var dir = new File(testDataDir + pid);
+        var dir = new File(fileDir + "data/" + pid);
 
         if (!dir.exists() && !dir.mkdirs()) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
         }
 
-        for (MultipartFile file : files) {
-            var fileName = file.getOriginalFilename();
-            var dest = new File(dir.getAbsolutePath() + "/" + fileName);
+        try {
+            var dest = Paths.get(dir.getCanonicalPath()).resolve(file.getOriginalFilename()).normalize();
 
-            try {
-                file.transferTo(dest);
-                log.info("上传文件 {} ", dest.getAbsolutePath());
-            } catch (IOException e) {
-                throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            if (!dest.startsWith(dir.getCanonicalPath())) {
+                throw new SecurityException("检测到路径穿越");
             }
+
+            file.transferTo(dest);
+            log.info("上传文件 {} ", dest.toRealPath());
+        } catch (IOException e) {
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -203,10 +204,10 @@ public class FileService {
      * @return 文件名
      */
     public String saveProblemImage(MultipartFile file) {
-        var originalName = file.getOriginalFilename();
+        String fileName;
 
-        if (originalName == null) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "文件为空");
+        if (file.isEmpty() || (fileName = file.getOriginalFilename()) == null) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "文件是空的");
         }
 
         var dir = new File(fileDir + "image/problem/");
@@ -215,13 +216,18 @@ public class FileService {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
         }
 
-        var ext = originalName.substring(originalName.lastIndexOf("."));
-        var fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
-
-        var image = new File(dir.getAbsolutePath() + "/" + fileName);
+        var ext = fileName.substring(fileName.lastIndexOf("."));
+        fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
 
         try {
+            var image = Paths.get(dir.getCanonicalPath()).resolve(file.getOriginalFilename()).normalize();
+
+            if (!image.startsWith(dir.getCanonicalPath())) {
+                throw new SecurityException("检测到路径穿越");
+            }
+
             file.transferTo(image);
+            log.info("上传题目图片 {}", image.toRealPath());
             return fileName;
         } catch (IOException e) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

@@ -5,7 +5,6 @@ import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.ContestRepo;
 import cloud.oj.core.repo.InviteeRepo;
 import cloud.oj.core.repo.SolutionRepo;
@@ -22,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @RequiredArgsConstructor
 public class ContestService {
-
-    private final CommonRepo commonRepo;
 
     private final InviteeRepo inviteeRepo;
 
@@ -94,7 +91,7 @@ public class ContestService {
             data = contestRepo.selectAllStarted(filter, page, size);
         }
 
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }
@@ -114,7 +111,7 @@ public class ContestService {
         }
 
         var data = contestRepo.selectAll(filter, page, size, true);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }
@@ -194,7 +191,7 @@ public class ContestService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public PageData<Problem> getIdleProblems(Integer cid, Integer page, Integer size) {
         var data = contestRepo.selectIdleProblems(cid, page, size);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }

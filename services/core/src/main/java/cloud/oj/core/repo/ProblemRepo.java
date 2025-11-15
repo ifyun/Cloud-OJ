@@ -43,14 +43,18 @@ public class ProblemRepo {
                 .optional();
     }
 
+    /**
+     * 分页查询所有题目
+     */
     public List<Problem> selectAll(Integer page, Integer size, String keyword) {
         return client.sql("""
-                        select sql_calc_found_rows problem_id,
-                                                   title,
-                                                   enable,
-                                                   category as category,
-                                                   score,
-                                                   create_at
+                        select count(*) over () as _total,
+                               problem_id,
+                               title,
+                               enable,
+                               category         as category,
+                               score,
+                               create_at
                         from problem
                         where deleted = false
                           and if(LENGTH(:keyword) > 0,
@@ -65,14 +69,18 @@ public class ProblemRepo {
                 .list();
     }
 
+    /**
+     * 分页查询所有开放的题目
+     */
     public List<Problem> selectAllEnabled(Integer page, Integer size, String keyword) {
         return client.sql("""
-                        select sql_calc_found_rows problem_id,
-                                                   title,
-                                                   enable,
-                                                   category,
-                                                   score,
-                                                   create_at
+                        select count(*) over () as _total,
+                               problem_id,
+                               title,
+                               enable,
+                               category,
+                               score,
+                               create_at
                         from problem
                         where deleted = false
                           and enable = true
@@ -95,6 +103,7 @@ public class ProblemRepo {
      * @return {@link Map}
      */
     public Optional<Map<String, Integer>> selectDataConf(Integer pid) {
+        // data_conf 是 JSON 类型
         return client.sql("""
                         select * from data_conf where problem_id = :pid
                         """)

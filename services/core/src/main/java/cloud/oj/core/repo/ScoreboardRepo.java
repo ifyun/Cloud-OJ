@@ -14,18 +14,22 @@ public class ScoreboardRepo {
 
     private final JdbcClient client;
 
+    /**
+     * 分页查询排名
+     */
     public List<Ranking> selectAll(Integer page, Integer size, boolean admin) {
         return client.sql("""
-                        select sql_calc_found_rows (@ranking := @ranking + 1) as `rank`,
-                                                   u.uid,
-                                                   u.nickname,
-                                                   if (:admin, u.username, null) as username,
-                                                   if (:admin, u.real_name, null) as real_name,
-                                                   u.has_avatar,
-                                                   u.star,
-                                                   committed,
-                                                   passed,
-                                                   truncate(score, 2)         as score
+                        select count(*) over ()               as _total,
+                               (@ranking := @ranking + 1)     as `rank`,
+                               u.uid,
+                               u.nickname,
+                               if (:admin, u.username, null)  as username,
+                               if (:admin, u.real_name, null) as real_name,
+                               u.has_avatar,
+                               u.star,
+                               committed,
+                               passed,
+                               truncate(score, 2)             as score
                         from scoreboard l
                                  join user u on l.deleted = false and l.uid = u.uid,
                              (select @ranking := :start) rn

@@ -1,5 +1,6 @@
 package cloud.oj.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Contest {
+    @JsonIgnore
+    public Integer _total;
+
     private Integer contestId;
     private String contestName;
     private String inviteKey;
@@ -24,7 +28,6 @@ public class Contest {
     private boolean ended;
     // UNIX 时间戳(10 位)
     private Long createAt;
-
     private List<Ranking> ranking;
 
     public Contest withoutKey() {

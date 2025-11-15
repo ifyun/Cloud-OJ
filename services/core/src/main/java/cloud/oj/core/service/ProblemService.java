@@ -5,7 +5,6 @@ import cloud.oj.core.entity.DataConf;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.ContestRepo;
 import cloud.oj.core.repo.ProblemRepo;
 import cloud.oj.core.repo.SolutionRepo;
@@ -26,8 +25,6 @@ public class ProblemService {
 
     private final AppConfig appConfig;
 
-    private final CommonRepo commonRepo;
-
     private final ProblemRepo problemRepo;
 
     private final ContestRepo contestRepo;
@@ -35,7 +32,7 @@ public class ProblemService {
     private final SolutionRepo solutionRepo;
 
     /**
-     * 分页查询所有开放的题目
+     * 分页查询开放的题目
      *
      * @param uid     用户 Id，用于查询判题结果
      * @param keyword 关键字，用于搜索题目
@@ -50,7 +47,7 @@ public class ProblemService {
         }
 
         var data = problemRepo.selectAllEnabled(page, size, keyword);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         data.forEach(p -> solutionRepo.selectResult(uid, p.getProblemId())
                 .ifPresent((r) -> {
@@ -77,7 +74,7 @@ public class ProblemService {
         }
 
         var data = problemRepo.selectAll(page, size, keyword);
-        var total = commonRepo.selectFoundRows();
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }

@@ -41,7 +41,9 @@
         v-model:page="pagination.page"
         :item-count="solutions.total"
         :page-size="pagination.pageSize"
-        @update:page="pageChange" />
+        @update:page="pageChange">
+        <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+      </n-pagination>
     </n-flex>
   </div>
 </template>

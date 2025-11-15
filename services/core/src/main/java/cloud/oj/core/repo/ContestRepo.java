@@ -131,17 +131,18 @@ public class ContestRepo {
     }
 
     /**
-     * 查询所有已开始的竞赛
+     * 分页查询已开始的竞赛
      */
     public List<Contest> selectAllStarted(ContestFilter filter, Integer page, Integer size) {
         return client.sql("""
-                        select sql_calc_found_rows contest_id,
-                                                   contest_name,
-                                                   languages,
-                                                   start_at,
-                                                   end_at,
-                                                   if(start_at <= unix_timestamp(), true, false) as started,
-                                                   if(end_at <= unix_timestamp(), true, false)   as ended
+                        select count(*) over ()                              as _total,
+                               contest_id,
+                               contest_name,
+                               languages,
+                               start_at,
+                               end_at,
+                               if(start_at <= unix_timestamp(), true, false) as started,
+                               if(end_at <= unix_timestamp(), true, false)   as ended
                         from contest
                         where deleted = false
                           and start_at <= unix_timestamp(now())
@@ -158,17 +159,21 @@ public class ContestRepo {
                 .list();
     }
 
+    /**
+     * 分页查询所有竞赛
+     */
     public List<Contest> selectAll(ContestFilter filter, Integer page, Integer size, Boolean isAdmin) {
         return client.sql("""
-                        select sql_calc_found_rows contest_id,
-                                                   contest_name,
-                                                   if(:admin, invite_key, null)                  as invite_key,
-                                                   languages,
-                                                   start_at,
-                                                   end_at,
-                                                   create_at,
-                                                   if(start_at <= unix_timestamp(), true, false) as started,
-                                                   if(end_at <= unix_timestamp(), true, false)   as ended
+                        select count(*) over ()                              as _total,
+                               contest_id,
+                               contest_name,
+                               if(:admin, invite_key, null)                  as invite_key,
+                               languages,
+                               start_at,
+                               end_at,
+                               create_at,
+                               if(start_at <= unix_timestamp(), true, false) as started,
+                               if(end_at <= unix_timestamp(), true, false)   as ended
                         from contest
                         where deleted = false
                           and if(:hideEnded, end_at > unix_timestamp(now()), true)
@@ -218,11 +223,12 @@ public class ContestRepo {
     }
 
     /**
-     * 查询所有可用题目
+     * 分页查询可用题目
      */
     public List<Problem> selectIdleProblems(Integer cid, Integer page, Integer size) {
         return client.sql("""
-                        select sql_calc_found_rows *
+                        select count(*) over () as _total,
+                               *
                         from problem
                         where deleted = false
                           and enable = false
@@ -240,7 +246,8 @@ public class ContestRepo {
 
     /**
      * 查询指定竞赛中的所有题目
-     * @param cid 竞赛 ID
+     *
+     * @param cid         竞赛 ID
      * @param onlyStarted 仅从已开始的竞赛中查询
      */
     public List<Problem> selectProblems(Integer cid, Boolean onlyStarted) {

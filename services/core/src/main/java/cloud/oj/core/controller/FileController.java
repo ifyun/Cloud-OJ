@@ -46,8 +46,8 @@ public class FileController {
      */
     @PostMapping(path = "data")
     public ResponseEntity<?> uploadTestData(@RequestParam Integer pid,
-                                            @RequestParam("file") MultipartFile[] files) {
-        fileService.saveTestData(pid, files);
+                                            @RequestParam("file") MultipartFile file) {
+        fileService.saveTestData(pid, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

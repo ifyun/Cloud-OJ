@@ -1,6 +1,7 @@
 package cloud.oj.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,9 @@ import java.util.Set;
 @Getter
 @Setter
 public class Ranking {
+    @JsonIgnore
+    public Integer _total;
+
     private Integer rank;
     private Integer uid;
     private String username;

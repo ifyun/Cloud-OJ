@@ -8,6 +8,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 题目的测试数据和 SPJ 代码
+ */
 @Getter
 @Setter
 public class ProblemData {

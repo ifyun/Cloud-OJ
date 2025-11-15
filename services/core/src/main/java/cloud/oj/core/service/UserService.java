@@ -52,7 +52,7 @@ public class UserService {
         }
 
         var data = userRepo.selectByFilter(filter, page, limit);
-        var total = (commonRepo.selectFoundRows());
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }

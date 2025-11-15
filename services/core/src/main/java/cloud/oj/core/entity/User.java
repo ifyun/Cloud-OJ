@@ -1,11 +1,15 @@
 package cloud.oj.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class User {
+    @JsonIgnore
+    public Integer _total;
+
     private Integer uid;
     private String username;
     private String nickname;

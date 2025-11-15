@@ -52,20 +52,21 @@ public class UserRepo {
     }
 
     /**
-     * 根据过滤条件查询用户
+     * 根据过滤条件分页查询用户
      */
     public List<User> selectByFilter(UserFilter filter, Integer page, Integer size) {
         return client.sql("""
-                        select sql_calc_found_rows uid,
-                                                   username,
-                                                   nickname,
-                                                   real_name,
-                                                   email,
-                                                   section,
-                                                   has_avatar,
-                                                   star,
-                                                   role,
-                                                   create_at
+                        select count(*) over () as _total,
+                               uid,
+                               username,
+                               nickname,
+                               real_name,
+                               email,
+                               section,
+                               has_avatar,
+                               star,
+                               role,
+                               create_at
                         from user
                         where deleted = false
                           and if(:filterBy = 1, username like concat(:value, '%'), true)

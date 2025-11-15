@@ -2,7 +2,6 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.*;
 import cloud.oj.core.error.GenericException;
-import cloud.oj.core.repo.CommonRepo;
 import cloud.oj.core.repo.ContestRepo;
 import cloud.oj.core.repo.ScoreboardRepo;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,6 @@ import java.util.TreeSet;
 @RequiredArgsConstructor
 public class RankingService {
 
-    private final CommonRepo commonRepo;
-
     private final ScoreboardRepo scoreboardRepo;
 
     private final ContestRepo contestRepo;
@@ -30,8 +27,8 @@ public class RankingService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public PageData<Ranking> getRanking(int page, int size, boolean admin) {
-        var data =  scoreboardRepo.selectAll(page, size, admin);
-        var total = commonRepo.selectFoundRows();
+        var data = scoreboardRepo.selectAll(page, size, admin);
+        var total = data.isEmpty() ? 0 : data.get(0)._total;
 
         return new PageData<>(data, total);
     }
@@ -50,7 +47,7 @@ public class RankingService {
 
         var data = new RankingContest(contest.get().withoutKey());      // 排名顶层包装
         var problemOrders = contestRepo.selectOrders(cid);              // 题目 id 和 order
-        var ranking = scoreboardRepo.selectByCid(cid, admin);                  // 排名
+        var ranking = scoreboardRepo.selectByCid(cid, admin);           // 排名
 
         ranking.forEach((r) -> {
             var detailList = scoreboardRepo.selectScores(r.getUid(), cid);
