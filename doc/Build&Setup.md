@@ -2,6 +2,13 @@
 
 构建过程在容器中进行，你只需要安装 [Docker Engine](https://docs.docker.com/engine/install/)
 
+## 准备依赖
+
+在 `.build` 目录中放入以下文件：
+
+- `go1.25.4.linux-amd64.tar.gz`
+- `kotlin-native-prebuilt-linux-x86_64-2.2.21.tar.gz`
+
 ## 构建 Docker 镜像
 
 ```bash
@@ -27,12 +34,6 @@
 - mariadb
 
 如果构建时有一些镜像失败，可以用这种方式重新构建。
-
-构建 `judge` 可能需要代理，使用 `--proxy` 选项：
-
-```bash
-./build --docker --target=judge --proxy=192.168.1.100:10809
-```
 
 ## 使用在线镜像
 

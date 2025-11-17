@@ -13,22 +13,22 @@
         <tbody>
           <tr>
             <td>C</td>
-            <td>gcc 12</td>
+            <td>gcc 14</td>
             <td>C11</td>
           </tr>
           <tr>
             <td>C++</td>
-            <td>g++ 12</td>
+            <td>g++ 14</td>
             <td>C++17</td>
           </tr>
           <tr>
             <td>Java</td>
-            <td>OpenJDK 17</td>
+            <td>OpenJDK 21</td>
             <td>Language Level 17</td>
           </tr>
           <tr>
             <td>Python</td>
-            <td>Python 3.11</td>
+            <td>Python 3.13</td>
             <td>-</td>
           </tr>
           <tr>
@@ -43,17 +43,17 @@
           </tr>
           <tr>
             <td>JavaScript</td>
-            <td>Node.js 18</td>
+            <td>Node.js 20</td>
             <td>-</td>
           </tr>
           <tr>
             <td>Kotlin</td>
-            <td>Kotlin Native 2.1.x</td>
+            <td>Kotlin Native 2.2.x</td>
             <td>-</td>
           </tr>
           <tr>
             <td>Go</td>
-            <td>go 1.24.x</td>
+            <td>go 1.25.x</td>
             <td>-</td>
           </tr>
         </tbody>

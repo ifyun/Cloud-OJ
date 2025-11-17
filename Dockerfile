@@ -1,8 +1,8 @@
 # OPENJDK ENV
-FROM debian:bookworm AS openjdk
+FROM debian:trixie AS openjdk
 RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
     && apt-get update \
-    && apt-get install -y --no-install-recommends curl openjdk-17-jdk-headless \
+    && apt-get install -y --no-install-recommends curl openjdk-21-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # BUILD ENV
@@ -58,28 +58,19 @@ RUN curl -LJO https://packages.microsoft.com/config/debian/12/packages-microsoft
     && echo -n "/r:/usr/share/dotnet/sdk/$(dotnet --version)/ref/netstandard.dll " >> /bin/csc \
     && echo '"$@"' >> /bin/csc \
     && chmod +x /bin/csc
-ARG PROXY=""
-ENV HTTP_PROXY=${PROXY}
-ENV HTTPS_PROXY=${PROXY}
-# Download Golang
-RUN curl -LJO https://golang.google.cn/dl/go1.24.1.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz \
-    && ln -s /usr/local/go/bin/go /usr/bin/go \
-    && rm go1.24.1.linux-amd64.tar.gz
-# Download Kotlin Native
-RUN curl -LJO https://github.com/JetBrains/kotlin/releases/download/v2.1.10/kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
-    && tar -C /usr/local -xzf kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
-    --transform 's/kotlin-native-prebuilt-linux-x86_64-2.1.10/kotlin/' \
+COPY dotnet.runtimeconfig.json /etc/
+# Install Golang
+ADD .build/go1.25.4.linux-amd64.tar.gz /usr/local/
+RUN ln -s /usr/local/go/bin/go /usr/bin/go
+# Install Kotlin Native
+ADD .build/kotlin-native-prebuilt-linux-x86_64-2.2.21.tar.gz /usr/local/
+RUN mv /usr/local/kotlin-native-prebuilt-linux-x86_64-2.2.21 /usr/local/kotlin \
     && ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
-    && ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan \
-    && rm kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz
+    && ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan
 # Download Kotlin Native Dependencies
 RUN kotlinc-native nothing.kt || true
-COPY dotnet.runtimeconfig.json /etc/
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar
-COPY --from=build-env \
-    /build/judge/cmake-build-release/judge \
-    /usr/bin/
+COPY --from=build-env /build/judge/cmake-build-release/judge /usr/bin/
 WORKDIR /app
 EXPOSE 8380
 ENV JVM_OPTS="-Xmx200m"
