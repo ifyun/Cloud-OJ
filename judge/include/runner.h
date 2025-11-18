@@ -72,14 +72,14 @@ private:
 private:
     [[nodiscard]] int set_cpu() const;
 
-    void run_cmd();
+    void run_cmd() const;
 
-    void watch_result(pid_t pid, Result *res);
+    void watch_result(pid_t pid, Result *res) const;
 
-    void run(Result *res);
+    void run(Result *res) const;
 
 public:
-    Runner(char *cmd, char *work_dir, char *data_dir, Config &config);
+    Runner(char *cmd, char *work_dir, char *data_dir, const Config &config);
 
     ~Runner();
 

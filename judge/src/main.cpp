@@ -8,7 +8,7 @@
 const char *RESULT_STR[] = {"", "AC", "TLE", "MLE", "PA",
                             "WA", "CE", "RE", "IE", "OLE"};
 
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     char cmd[128];
     char work_dir[128];
     char data_dir[128];
@@ -33,8 +33,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    Runner runner(cmd, work_dir, data_dir, config);
-    RTN rtn = runner.judge();
+    RTN rtn = Runner(cmd, work_dir, data_dir, config).judge();
 
     if (rtn.result == IE) {
         ss << "{\n"
@@ -64,7 +63,7 @@ int main(int argc, char *argv[]) {
                 auto index = iter->find_last_of('/');
                 auto name = iter->substr(index + 1, iter->length() - index - 1);
                 ss << "\"" << name << "\"";
-                iter++;
+                ++iter;
 
                 if (iter != rtn.detail.end()) {
                     ss << ", ";

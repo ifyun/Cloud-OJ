@@ -8,7 +8,7 @@ inline int exec_cmd(const char *fmt, ...) {
     va_start(ap, fmt);
     vsprintf(cmd, fmt, ap);
 
-    int r = system(cmd);
+    const int r = system(cmd);
     va_end(ap);
     return r;
 }

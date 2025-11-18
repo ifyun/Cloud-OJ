@@ -26,12 +26,12 @@ public:
     * @brief 比较文件
     * @return @c true - 相同, @c false - 不同
     */
-    static bool compare(Config config, spj_func spj);
+    static bool compare(const Config& config, spj_func spj);
 
     /**
     * @brief 计算结果
     */
-    static void calc_results(RTN &rtn, const std::vector<Result> &results, std::vector<std::string> &test_points);
+    static void calc_results(RTN &rtn, const std::vector<Result> &results, const std::vector<std::string> &test_points);
 };
 
 #endif // UTILS_H

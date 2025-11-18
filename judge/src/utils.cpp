@@ -28,14 +28,13 @@ std::vector<std::string> Utils::get_files(const std::string &path, const std::st
     return files;
 }
 
-void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, std::vector<std::string> &test_points) {
-    /// results.size() <= test_points.size()
+void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, const std::vector<std::string> &test_points) {
     if (rtn.result == IE) {
         return;
     }
 
     int status;
-    int total = (int) test_points.size();
+    const int total = (int) test_points.size();
     long time = 0, memory = 0;
     double pass_rate = 0;
     // * 1 -> 9: AC ... OLE
@@ -76,11 +75,10 @@ void Utils::calc_results(RTN &rtn, const std::vector<Result> &results, std::vect
     rtn.memory = memory;
 }
 
-__off_t Utils::get_rtrim_offset(int fd) {
-    __off_t offset;
+__off_t Utils::get_rtrim_offset(const int fd) {
     char buf;
 
-    offset = lseek(fd, -1, SEEK_END);
+    __off_t offset = lseek(fd, -1, SEEK_END);
     read(fd, &buf, sizeof(buf));
 
     while (true) {
@@ -97,7 +95,7 @@ __off_t Utils::get_rtrim_offset(int fd) {
     return offset;
 }
 
-bool Utils::compare(Config config, spj_func spj) {
+bool Utils::compare(const Config& config, const spj_func spj) {
     bool same = true;
 
     if (spj != nullptr) {
@@ -105,11 +103,11 @@ bool Utils::compare(Config config, spj_func spj) {
         return spj(config.in, config.out, config.ans);
     }
 
-    auto len1 = get_rtrim_offset(config.out_fd);
-    auto len2 = get_rtrim_offset(config.ans_fd);
+    const auto len1 = get_rtrim_offset(config.out_fd);
+    const auto len2 = get_rtrim_offset(config.ans_fd);
 
-    char *addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_SHARED, config.out_fd, 0);
-    char *addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_SHARED, config.ans_fd, 0);
+    const auto addr1 = (char *) mmap(nullptr, len1, PROT_READ, MAP_SHARED, config.out_fd, 0);
+    const auto addr2 = (char *) mmap(nullptr, len2, PROT_READ, MAP_SHARED, config.ans_fd, 0);
 
     if (len1 != len2) {
         same = false;

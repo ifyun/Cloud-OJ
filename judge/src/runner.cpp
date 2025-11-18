@@ -12,7 +12,7 @@
 #include "env_setup.h"
 #include "common.h"
 
-Runner::Runner(char *cmd, char *work_dir, char *data_dir, Config &config) {
+Runner::Runner(char *cmd, char *work_dir, char *data_dir, const Config &config) {
     split(this->argv, cmd, "@");
     root_fd = open("/", O_RDONLY);
 
@@ -56,8 +56,9 @@ int Runner::set_cpu() const {
     return sched_setaffinity(0, sizeof(cpu_set_t), &mask);
 }
 
-inline void Runner::run_cmd() {
-    struct rlimit rl{};
+inline void Runner::run_cmd() const
+{
+    rlimit rl{};
 
     rl.rlim_cur = (config.timeout / 1000000) + 1;
     rl.rlim_max = rl.rlim_cur;
@@ -86,7 +87,8 @@ inline void Runner::run_cmd() {
 /**
  * @brief 等待结果
  */
-void Runner::watch_result(pid_t pid, Result *res) {
+void Runner::watch_result(const pid_t pid, Result *res) const
+{
     int p;
     int status;
     int options = WNOHANG;
@@ -94,10 +96,10 @@ void Runner::watch_result(pid_t pid, Result *res) {
     long min_flt;
     char stat[64];
     char buf[256];
-    struct rusage ru{};
+    rusage ru{};
 
     sprintf(stat, "/proc/%d/stat", pid);
-    auto fp = open(stat, O_RDONLY);
+    const auto fp = open(stat, O_RDONLY);
 
     while ((p = wait4(pid, &status, options, &ru)) == 0) {
         // ? 读取 /proc/pid/stat 获取软缺页中断次数，在超出内存限制之前 kill 子进程
@@ -121,15 +123,13 @@ void Runner::watch_result(pid_t pid, Result *res) {
     }
 
     if (p > 0) {
-        int stop_sig;
-
         // 内存使用 = 软缺页中断次数 * 页大小 (byte => KiB)
         res->mem = ru.ru_minflt * getpagesize() >> 10;
         // 运行时间 (μs)
         res->time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
                     + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        if (WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGURG) {
+        if (int stop_sig; WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGURG) {
             // ? 子进程停止
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
             switch (stop_sig) {
@@ -153,8 +153,7 @@ void Runner::watch_result(pid_t pid, Result *res) {
 
         if (WIFSIGNALED(status)) {
             // ? 子进程收到信号终止
-            int sig = WTERMSIG(status);
-            switch (sig) {
+            switch (const int sig = WTERMSIG(status)) {
                 case SIGKILL:
                     if (kill_why == 0) {
                         sprintf(res->err, "程序终止(SIGKILL)");
@@ -184,9 +183,7 @@ void Runner::watch_result(pid_t pid, Result *res) {
 
         if (WIFEXITED(status)) {
             // ? 子进程退出
-            auto exit_code = WEXITSTATUS(status);
-
-            if (exit_code != 0) {
+            if (const auto exit_code = WEXITSTATUS(status); exit_code != 0) {
                 sprintf(res->err, "非零退出(%d)", exit_code);
                 res->status = RE;
             } else if (res->time > config.timeout) {
@@ -200,7 +197,8 @@ void Runner::watch_result(pid_t pid, Result *res) {
     }
 }
 
-void Runner::run(Result *res) {
+void Runner::run(Result *res) const
+{
     if (chdir(work_dir) != 0) {
         res->status = IE;
         sprintf(res->err, "chdir: %s", strerror(errno));

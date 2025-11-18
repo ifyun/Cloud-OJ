@@ -171,7 +171,7 @@ public class Judgement {
             var data = "--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId();
             var cmd = switch (solution.getLanguage()) {
                 case C, CPP, GO -> "--cmd=./Solution";
-                case JAVA -> "--cmd=java@-Xmx256m@Solution";
+                case JAVA -> "--cmd=java@-XX:+UseSerialGC@-XX:TieredStopAtLevel=1@-Xms32m@-Xmx256m@Solution";
                 case KOTLIN -> "--cmd=./Solution.kexe";
                 case JAVA_SCRIPT -> "--cmd=node@Solution.js";
                 case PYTHON -> "--cmd=python3@Solution.py";
