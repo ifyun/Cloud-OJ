@@ -1,8 +1,6 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -13,29 +11,6 @@
 #include "utils.h"
 #include "env_setup.h"
 #include "common.h"
-
-long get_vm_rss(const pid_t pid)
-{
-    long rss = -1;
-    char status_file[32];
-    char buf[4096];
-
-    sprintf(status_file, "/proc/%d/status", pid);
-    const auto fd = open(status_file, O_RDONLY);
-
-    read(fd, buf, sizeof(buf) - 1);
-    buf[sizeof(buf) - 1] = 0;
-    if (const char* s = strstr(buf, "VmRSS:"); s != nullptr)
-    {
-        sscanf(s, "VmRSS: %ld kB", &rss); // NOLINT(*-err34-c)
-    }
-
-#ifdef  DEBUG
-    printf("VmRSS: %ld\n", rss);
-#endif
-
-    return rss;
-}
 
 Runner::Runner(char* cmd, char* work_dir, char* data_dir, const Config& config)
 {
@@ -109,15 +84,35 @@ exit:
  */
 void Runner::watch_result(const pid_t pid, Result* res) const
 {
+    rusage ru{};
     int p;
     int status;
     int kill_why = 0;
-    rusage ru{};
+    unsigned long vm_rss = 0;
+    char buf[128];
+    char path[32];
+
+    sprintf(path, "/proc/%d/status", pid);
+    FILE* f = fopen(path, "r");
 
     while (true)
     {
+        rewind(f);
+        fflush(f);
+
+        while (fgets(buf, sizeof(buf), f))
+        {
+            if (sscanf(buf, "VmRSS: %lu", &vm_rss) == 1) // NOLINT(*-err34-c)
+            {
+#ifdef DEBUG
+                printf("VmRSS = %lu KiB\n", vm_rss);
+#endif
+                break;
+            }
+        }
+
         // 瞬时内存超限 kill
-        if (config.memory < get_vm_rss(pid))
+        if (config.memory < vm_rss)
         {
             kill(pid, SIGKILL);
             kill_why = MLE;
@@ -134,6 +129,8 @@ void Runner::watch_result(const pid_t pid, Result* res) const
     wait:
         p = wait4(pid, &status, WNOHANG, &ru);
         if (p != 0) { break; }
+        timespec ts = {.tv_sec = 0, .tv_nsec = 500000L};
+        nanosleep(&ts, nullptr);
     }
 
     if (p > 0)
@@ -225,6 +222,8 @@ void Runner::watch_result(const pid_t pid, Result* res) const
             }
         }
     }
+
+    fclose(f);
 }
 
 void Runner::run(Result* res) const
