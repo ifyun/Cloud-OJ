@@ -5,73 +5,87 @@
 #include "runner.h"
 #include "common.h"
 
-const char *RESULT_STR[] = {"", "AC", "TLE", "MLE", "PA",
-                            "WA", "CE", "RE", "IE", "OLE"};
+const char* RESULT_STR[] = {
+    "", "AC", "TLE", "MLE", "PA",
+    "WA", "CE", "RE", "IE", "OLE"
+};
 
-int main(const int argc, char *argv[]) {
+int main(const int argc, char* argv[])
+{
     char cmd[128];
     char work_dir[128];
     char data_dir[128];
     Config config;
     std::stringstream ss;
 
-    if (getuid() != 0) {
+    if (getuid() != 0)
+    {
         ss << "{\n"
-           << R"( "result": )" << IE << ",\n"
-           << R"( "error": "RUN AS ROOT")" << "\n"
-           << "}\n";
+            << R"( "result": )" << IE << ",\n"
+            << R"( "error": "RUN AS ROOT")" << "\n"
+            << "}\n";
         std::cout << ss.str();
         return 0;
     }
 
-    if (get_args(argc, argv, cmd, work_dir, data_dir, config) != 0) {
+    if (get_args(argc, argv, cmd, work_dir, data_dir, config) != 0)
+    {
         ss << "{\n"
-           << R"( "result": )" << IE << ",\n"
-           << R"( "error": "INVALID ARGS")" << "\n"
-           << "}\n";
+            << R"( "result": )" << IE << ",\n"
+            << R"( "error": "INVALID ARGS")" << "\n"
+            << "}\n";
         std::cout << ss.str();
         return 0;
     }
 
     RTN rtn = Runner(cmd, work_dir, data_dir, config).judge();
 
-    if (rtn.result == IE) {
+    if (rtn.result == IE)
+    {
         ss << "{\n"
-           << R"( "result": )" << rtn.result << ",\n"
-           << R"( "error": ")" << rtn.err << "\"\n"
-           << "}\n";
-    } else {
+            << R"( "result": )" << rtn.result << ",\n"
+            << R"( "error": ")" << rtn.err << "\"\n"
+            << "}\n";
+    }
+    else
+    {
         ss << "{\n"
-           << R"( "result": )" << rtn.result << ",\n"
-           << R"( "desc": ")" << RESULT_STR[rtn.result] << "\",\n";
+            << R"( "result": )" << rtn.result << ",\n"
+            << R"( "desc": ")" << RESULT_STR[rtn.result] << "\",\n";
 
-        if (strlen(rtn.err) > 0) {
+        if (strlen(rtn.err) > 0)
+        {
             ss << R"( "error": ")" << rtn.err << "\",\n";
         }
 
         ss << R"( "total": )" << rtn.total << ",\n"
-           << R"( "passed": )" << rtn.passed << ",\n"
-           << R"( "passRate": )" << rtn.passRate << ",\n"
-           << R"( "time": )" << rtn.time << ",\n"
-           << R"( "memory": )" << rtn.memory << ",\n";
+            << R"( "passed": )" << rtn.passed << ",\n"
+            << R"( "passRate": )" << rtn.passRate << ",\n"
+            << R"( "time": )" << rtn.time << ",\n"
+            << R"( "memory": )" << rtn.memory << ",\n";
 
-        if (!rtn.detail.empty()) {
+        if (!rtn.detail.empty())
+        {
             ss << R"( "detail": )" << "[ ";
             auto iter = rtn.detail.begin();
 
-            while (iter != rtn.detail.end()) {
-                auto index = iter->find_last_of('/');
+            while (iter != rtn.detail.end())
+            {
+                const auto index = iter->find_last_of('/');
                 auto name = iter->substr(index + 1, iter->length() - index - 1);
                 ss << "\"" << name << "\"";
                 ++iter;
 
-                if (iter != rtn.detail.end()) {
+                if (iter != rtn.detail.end())
+                {
                     ss << ", ";
                 }
             }
 
             ss << " ]\n";
-        } else {
+        }
+        else
+        {
             ss << R"( "detail": [])" << "\n";
         }
 

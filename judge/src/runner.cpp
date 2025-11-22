@@ -1,6 +1,8 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -12,7 +14,31 @@
 #include "env_setup.h"
 #include "common.h"
 
-Runner::Runner(char *cmd, char *work_dir, char *data_dir, const Config &config) {
+long get_vm_rss(const pid_t pid)
+{
+    long rss = -1;
+    char status_file[32];
+    char buf[4096];
+
+    sprintf(status_file, "/proc/%d/status", pid);
+    const auto fd = open(status_file, O_RDONLY);
+
+    read(fd, buf, sizeof(buf) - 1);
+    buf[sizeof(buf) - 1] = 0;
+    if (const char* s = strstr(buf, "VmRSS:"); s != nullptr)
+    {
+        sscanf(s, "VmRSS: %ld kB", &rss); // NOLINT(*-err34-c)
+    }
+
+#ifdef  DEBUG
+    printf("VmRSS: %ld\n", rss);
+#endif
+
+    return rss;
+}
+
+Runner::Runner(char* cmd, char* work_dir, char* data_dir, const Config& config)
+{
     split(this->argv, cmd, "@");
     root_fd = open("/", O_RDONLY);
 
@@ -27,15 +53,18 @@ Runner::Runner(char *cmd, char *work_dir, char *data_dir, const Config &config) 
     sprintf(spj_path, "%s/%s", data_dir, "spj.so");
     dl_handler = dlopen(spj_path, RTLD_NOW);
 
-    if (dl_handler != nullptr) {
-        spj = (spj_func) dlsym(dl_handler, "spj");
+    if (dl_handler != nullptr)
+    {
+        spj = (spj_func)dlsym(dl_handler, "spj");
     }
 }
 
-Runner::~Runner() {
+Runner::~Runner()
+{
     close(root_fd);
 
-    if (dl_handler != nullptr) {
+    if (dl_handler != nullptr)
+    {
         dlclose(dl_handler);
     }
 
@@ -44,28 +73,22 @@ Runner::~Runner() {
     delete config.ans;
 }
 
-/**
- * @brief 设置当前进程的 CPU 核心
- */
-int Runner::set_cpu() const {
-    cpu_set_t mask;
-
-    CPU_ZERO(&mask);
-    CPU_SET(config.cpu, &mask);
-
-    return sched_setaffinity(0, sizeof(cpu_set_t), &mask);
-}
-
 inline void Runner::run_cmd() const
 {
     rlimit rl{};
 
-    rl.rlim_cur = (config.timeout / 1000000) + 1;
+    rl.rlim_cur = config.timeout / 1000000 + 1;
     rl.rlim_max = rl.rlim_cur;
 
     setrlimit(RLIMIT_CPU, &rl);
 
-    if (set_cpu() != 0) {
+    cpu_set_t mask;
+
+    CPU_ZERO(&mask);
+    CPU_SET(config.cpu, &mask);
+    // 设置当前进程的 CPU 核心
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &mask) != 0)
+    {
         goto exit;
     }
 
@@ -76,147 +99,159 @@ inline void Runner::run_cmd() const
     setuid(65534);
     alarm(ALARM_SECONDS);
     // * exec 成功不会返回
-    if (execvp(argv[0], argv) != 0) {
-        goto exit;
-    }
-
-    exit:
+    execvp(argv[0], argv);
+exit:
     _exit(IE);
 }
 
 /**
- * @brief 等待结果
+ * 等待结果
  */
-void Runner::watch_result(const pid_t pid, Result *res) const
+void Runner::watch_result(const pid_t pid, Result* res) const
 {
     int p;
     int status;
-    int options = WNOHANG;
     int kill_why = 0;
-    long min_flt;
-    char stat[64];
-    char buf[256];
     rusage ru{};
 
-    sprintf(stat, "/proc/%d/stat", pid);
-    const auto fp = open(stat, O_RDONLY);
-
-    while ((p = wait4(pid, &status, options, &ru)) == 0) {
-        // ? 读取 /proc/pid/stat 获取软缺页中断次数，在超出内存限制之前 kill 子进程
-        // * 第 10 列为软缺页中断次数
-        read(fp, buf, sizeof(buf));
-        sscanf(buf, "%*ld %*s %*c %*ld %*ld %*ld %*ld %*ld %*ld %ld", &min_flt); // NOLINT(*-err34-c)
-        lseek(fp, 0, SEEK_SET);
-        // 内存超限及时 kill
-        if (config.memory < min_flt * getpagesize() >> 10) {
+    while (true)
+    {
+        // 瞬时内存超限 kill
+        if (config.memory < get_vm_rss(pid))
+        {
             kill(pid, SIGKILL);
             kill_why = MLE;
-            options = 0;
+            goto wait;
         }
-        // 获取 stdout 大小 (byte)
-        auto f_size = lseek(config.std_out, 0, SEEK_END);
-        if (f_size > config.output_size << 10) {
+        // stdout (byte) 超限 kill
+        if (const auto f_size = lseek(config.std_out, 0, SEEK_END);
+            f_size > config.output_size << 10)
+        {
             kill(pid, SIGKILL);
             kill_why = OLE;
-            options = 0;
         }
+
+    wait:
+        p = wait4(pid, &status, WNOHANG, &ru);
+        if (p != 0) { break; }
     }
 
-    if (p > 0) {
-        // 内存使用 = 软缺页中断次数 * 页大小 (byte => KiB)
-        res->mem = ru.ru_minflt * getpagesize() >> 10;
+    if (p > 0)
+    {
+        // 内存使用 (KiB)
+        res->mem = ru.ru_maxrss;
         // 运行时间 (μs)
         res->time = (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) * 1000000
-                    + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
+            + (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec);
 
-        if (int stop_sig; WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGURG) {
+        if (int stop_sig; WIFSTOPPED(status) && (stop_sig = WSTOPSIG(status)) != SIGURG)
+        {
             // ? 子进程停止
             // * 忽略 SIGURG 信号 (Golang Urgent I/O condition)
-            switch (stop_sig) {
-                case SIGSEGV:
-                    sprintf(res->err, "段错误(SIGSEGV)");
-                    res->status = RE;
-                    return;
-                case SIGALRM:
-                    sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double) res->time / 1000.0);
-                    res->status = RE;
-                    return;
-                case SIGXCPU:
-                    res->status = TLE;
-                    return;
-                default:
-                    sprintf(res->err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
-                    res->status = RE;
-                    return;
+            switch (stop_sig)
+            {
+            case SIGSEGV:
+                sprintf(res->err, "段错误(SIGSEGV)");
+                res->status = RE;
+                return;
+            case SIGALRM:
+                sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double)res->time / 1000.0);
+                res->status = RE;
+                return;
+            case SIGXCPU:
+                res->status = TLE;
+                return;
+            default:
+                sprintf(res->err, "程序停止(%d: %s)", stop_sig, strsignal(stop_sig));
+                res->status = RE;
+                return;
             }
         }
 
-        if (WIFSIGNALED(status)) {
+        if (WIFSIGNALED(status))
+        {
             // ? 子进程收到信号终止
-            switch (const int sig = WTERMSIG(status)) {
-                case SIGKILL:
-                    if (kill_why == 0) {
-                        sprintf(res->err, "程序终止(SIGKILL)");
-                        res->status = RE;
-                    } else {
-                        res->status = kill_why;
-                    }
+            switch (const int sig = WTERMSIG(status))
+            {
+            case SIGKILL:
+                if (kill_why == 0)
+                {
+                    sprintf(res->err, "程序终止(SIGKILL)");
+                    res->status = RE;
+                }
+                else
+                {
+                    res->status = kill_why;
+                }
 
-                    return;
-                case SIGSEGV:
-                    sprintf(res->err, "段错误(SIGSEGV)");
-                    res->status = RE;
-                    return;
-                case SIGALRM:
-                    sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double) res->time / 1000.0);
-                    res->status = RE;
-                    return;
-                case SIGXCPU:
-                    res->status = TLE;
-                    return;
-                default:
-                    sprintf(res->err, "程序终止(%d: %s)", sig, strsignal(sig));
-                    res->status = RE;
-                    return;
+                return;
+            case SIGSEGV:
+                sprintf(res->err, "段错误(SIGSEGV)");
+                res->status = RE;
+                return;
+            case SIGALRM:
+                sprintf(res->err, "SIGALRM(CPU: %.2fms)", (double)res->time / 1000.0);
+                res->status = RE;
+                return;
+            case SIGXCPU:
+                res->status = TLE;
+                return;
+            default:
+                sprintf(res->err, "程序终止(%d: %s)", sig, strsignal(sig));
+                res->status = RE;
+                return;
             }
         }
 
-        if (WIFEXITED(status)) {
+        if (WIFEXITED(status))
+        {
             // ? 子进程退出
-            if (const auto exit_code = WEXITSTATUS(status); exit_code != 0) {
+            if (const auto exit_code = WEXITSTATUS(status); exit_code != 0)
+            {
                 sprintf(res->err, "非零退出(%d)", exit_code);
                 res->status = RE;
-            } else if (res->time > config.timeout) {
+            }
+            else if (res->time > config.timeout)
+            {
                 res->status = TLE;
-            } else if (res->mem > config.memory) {
+            }
+            else if (res->mem > config.memory)
+            {
                 res->status = MLE;
-            } else {
+            }
+            else
+            {
                 res->status = Utils::compare(config, spj) ? AC : WA;
             }
         }
     }
 }
 
-void Runner::run(Result *res) const
+void Runner::run(Result* res) const
 {
-    if (chdir(work_dir) != 0) {
+    if (chdir(work_dir) != 0)
+    {
         res->status = IE;
         sprintf(res->err, "chdir: %s", strerror(errno));
         fprintf(stderr, "%s", res->err);
     }
 
     chroot(work_dir);
-    pid_t pid = vfork();
 
-    if (pid < 0) {
+    if (const pid_t pid = fork(); pid < 0)
+    {
         res->status = IE;
         sprintf(res->err, "fork: %s", strerror(errno));
         fprintf(stderr, "%s", res->err);
-    } else if (pid == 0) {
+    }
+    else if (pid == 0)
+    {
         // child process
         prctl(PR_SET_PDEATHSIG, SIGKILL);
         run_cmd();
-    } else {
+    }
+    else
+    {
         watch_result(pid, res);
 
         close(config.std_in);
@@ -233,14 +268,16 @@ void Runner::run(Result *res) const
     }
 }
 
-RTN Runner::judge() {
+RTN Runner::judge()
+{
     RTN rtn{};
     std::vector<std::string> input_files;
     std::vector<std::string> output_files;
     std::vector<Result> results;
-    DIR *dp = opendir(work_dir);
+    DIR* dp = opendir(work_dir);
 
-    if (dp == nullptr) {
+    if (dp == nullptr)
+    {
         rtn = {.result = IE, .err = "工作目录不存在"};
         goto exit;
     }
@@ -248,32 +285,38 @@ RTN Runner::judge() {
     closedir(dp);
     setup_env(work_dir);
 
-    try {
+    try
+    {
         // * 获取测试数据
         input_files = Utils::get_files(data_dir, ".in");
         output_files = Utils::get_files(data_dir, ".out");
-    } catch (const std::invalid_argument &error) {
+    }
+    catch (const std::invalid_argument& error)
+    {
         rtn.result = IE;
         strcpy(rtn.err, error.what());
         goto exit;
     }
 
-    char out_path[128];     // 用户输出文件路径
+    char out_path[128]; // 用户输出文件路径
 
-    if (!input_files.empty() && !output_files.empty()) {
-        if (input_files.size() != output_files.size()) {
+    if (!input_files.empty() && !output_files.empty())
+    {
+        if (input_files.size() != output_files.size())
+        {
             rtn = {.result = IE, .err = "测试数据文件数量不一致"};
             goto exit;
         }
 
         // * N 组数据(N >= 1)
-        for (auto i = 0; i < input_files.size(); i++) {
+        for (auto i = 0; i < input_files.size(); i++)
+        {
             sprintf(out_path, "%s/%d.out", work_dir, i + 1);
             config.in_fd = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_in = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             config.out_fd = open(out_path, O_RDONLY, 0644);
-            config.ans_fd = open(output_files[i].c_str(), O_RDONLY, 0644);
+            config.ans_fd = open(output_files[i].c_str(), O_RDONLY | O_CLOEXEC, 0644);
             config.in->open(input_files[i], std::ios_base::in);
             config.out->open(out_path, std::ios_base::in);
             config.ans->open(output_files[i], std::ios_base::in);
@@ -282,13 +325,16 @@ RTN Runner::judge() {
             run(&res);
             results.push_back(res);
 
-            if (res.status == RE || res.status == IE) {
+            if (res.status == RE || res.status == IE)
+            {
                 rtn.result = res.status;
                 strcpy(rtn.err, res.err);
                 goto exit;
             }
         }
-    } else if (!output_files.empty()) {
+    }
+    else if (!output_files.empty())
+    {
         // * 没有输入数据，读取第一个 .out 文件
         sprintf(out_path, "%s/%s", work_dir, "1.out");
         config.in_fd = open("/dev/null", O_RDONLY, 0644);
@@ -304,16 +350,18 @@ RTN Runner::judge() {
         run(&res);
         results.push_back(res);
 
-        if (res.status == RE || res.status == IE) {
+        if (res.status == RE || res.status == IE)
+        {
             rtn.result = res.status;
             strcpy(rtn.err, res.err);
-            goto exit;
         }
-    } else {
+    }
+    else
+    {
         rtn = {.result = IE, .err = "无测试数据"};
     }
 
-    exit:
+exit:
     Utils::calc_results(rtn, results, output_files);
     end_env(work_dir);
     return rtn;

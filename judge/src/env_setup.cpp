@@ -1,7 +1,10 @@
 #include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include "env_setup.h"
 
-inline int exec_cmd(const char *fmt, ...) {
+inline int exec_cmd(const char* fmt, ...)
+{
     char cmd[256];
     va_list ap;
 
@@ -14,9 +17,10 @@ inline int exec_cmd(const char *fmt, ...) {
 }
 
 /**
- * @brief 设置运行环境
+ * 设置运行环境
  */
-void setup_env(const char *work_dir) {
+void setup_env(const char* work_dir)
+{
     exec_cmd("test -d %s/proc || mkdir %s/proc", work_dir, work_dir);
     exec_cmd("test -d %s/etc || mkdir %s/etc", work_dir, work_dir);
     exec_cmd("test -d %s/dev || mkdir %s/dev", work_dir, work_dir);
@@ -40,9 +44,10 @@ void setup_env(const char *work_dir) {
 }
 
 /**
- * @brief 清理环境，解除挂载
+ * 清理环境，解除挂载
  */
-void end_env(const char *work_dir) {
+void end_env(const char* work_dir)
+{
     exec_cmd("unlink %s/Solution.runtimeconfig.json > /dev/null 2>&1", work_dir);
     exec_cmd("test -e %s/dev/null && rm -rf %s/dev/null", work_dir, work_dir);
     exec_cmd("mountpoint %s/proc > /dev/null 2>&1 && umount -l %s/proc", work_dir, work_dir);

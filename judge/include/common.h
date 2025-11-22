@@ -4,7 +4,7 @@
 #include "runner.h"
 
 /// 解析参数
-int get_args(int argc, char *argv[], char *cmd, char workdir[], char datadir[], Config &config);
+int get_args(int argc, char* argv[], char* cmd, char workdir[], char datadir[], Config& config);
 
 /**
 * 分割字符串到数组
@@ -12,6 +12,6 @@ int get_args(int argc, char *argv[], char *cmd, char workdir[], char datadir[], 
 * @param str 被分割的字符串
 * @param separator 分隔符
 */
-void split(char **arr, char *str, const char *separator);
+void split(char** arr, char* str, const char* separator);
 
 #endif // COMMON_H
