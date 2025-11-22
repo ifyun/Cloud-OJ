@@ -7,7 +7,7 @@
 在 `.build` 目录中放入以下文件：
 
 - `go1.25.4.linux-amd64.tar.gz`
-- `kotlin-native-prebuilt-linux-x86_64-2.2.21.tar.gz`
+- `kotlinc-compiler-2.2.21`（解压自 `kotlinc-compiler-2.2.21.zip`）
 
 ## 构建 Docker 镜像
 

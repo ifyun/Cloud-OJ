@@ -30,7 +30,7 @@ public class Compiler {
             Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "Solution.cpp", "-o", "Solution"},
             Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "17", "-target", "17", "Solution.java"},
             Language.C_SHARP, new String[]{"csc", "Solution.cs"},
-            Language.KOTLIN, new String[]{"kotlinc-native", "Solution.kt", "-o", "Solution"},
+            Language.KOTLIN, new String[]{"kotlinc", "-Xjdk-release=17", "Solution.kt"},
             Language.GO, new String[]{"go", "build", "Solution.go"}
     );
 

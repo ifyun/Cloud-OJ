@@ -62,13 +62,9 @@ COPY dotnet.runtimeconfig.json /etc/
 # Install Golang
 ADD .build/go1.25.4.linux-amd64.tar.gz /usr/local/
 RUN ln -s /usr/local/go/bin/go /usr/bin/go
-# Install Kotlin Native
-ADD .build/kotlin-native-prebuilt-linux-x86_64-2.2.21.tar.gz /usr/local/
-RUN mv /usr/local/kotlin-native-prebuilt-linux-x86_64-2.2.21 /usr/local/kotlin \
-    && ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
-    && ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan
-# Download Kotlin Native Dependencies
-RUN kotlinc-native nothing.kt || true
+# Install Kotlin
+COPY .build/kotlin-compiler-2.2.21/kotlinc /usr/local/
+RUN ln -s /usr/local/kotlinc/bin/kotlinc /usr/bin/kotlinc
 COPY --from=build-env /build/services/judge/target/*.jar /app/judge.jar
 COPY --from=build-env /build/judge/cmake-build-release/judge /usr/bin/
 WORKDIR /app

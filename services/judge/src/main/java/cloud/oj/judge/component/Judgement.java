@@ -154,6 +154,7 @@ public class Judgement {
      * @return 运行结果 {@link Result}
      */
     private Result execute(Solution solution, Problem problem) {
+        final String JVM_ARGS = "-XX:+UseSerialGC@-XX:TieredStopAtLevel=1@-Xms32m@-Xmx256m";
         Result result;
 
         try {
@@ -171,8 +172,8 @@ public class Judgement {
             var data = "--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId();
             var cmd = switch (solution.getLanguage()) {
                 case C, CPP, GO -> "--cmd=./Solution";
-                case JAVA -> "--cmd=java@-XX:+UseSerialGC@-XX:TieredStopAtLevel=1@-Xms32m@-Xmx256m@Solution";
-                case KOTLIN -> "--cmd=./Solution.kexe";
+                case JAVA -> "--cmd=java@" + JVM_ARGS + "@Solution";
+                case KOTLIN -> "--cmd=java@" + JVM_ARGS + "@-cp@'.:/usr/local/kotlinc/lib/*'@SolutionKt";
                 case JAVA_SCRIPT -> "--cmd=node@Solution.js";
                 case PYTHON -> "--cmd=python3@Solution.py";
                 case BASH -> "--cmd=sh@Solution.sh";
