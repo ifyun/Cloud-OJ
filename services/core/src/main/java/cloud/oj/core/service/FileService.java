@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.UUID;
@@ -83,6 +84,7 @@ public class FileService {
                 }
             }
         } catch (IOException e) {
+            log.error(e.getMessage());
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
@@ -115,16 +117,13 @@ public class FileService {
             throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准上传测试数据");
         }
 
-        var dir = new File(fileDir + "data/" + pid);
-
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
-        }
+        var dir = Paths.get(fileDir + "data/" + pid);
 
         try {
-            var dest = Paths.get(dir.getCanonicalPath()).resolve(file.getOriginalFilename()).normalize();
+            Files.createDirectories(dir);
+            var dest = dir.resolve(file.getOriginalFilename()).normalize();
 
-            if (!dest.startsWith(dir.getCanonicalPath())) {
+            if (!dest.toAbsolutePath().startsWith(dir.toAbsolutePath())) {
                 throw new SecurityException("检测到路径穿越");
             }
 
@@ -157,8 +156,7 @@ public class FileService {
         // ! 同步修改测试数据配置
         problemRepo.removeFromDataConf(pid, name);
 
-        var testDataDir = fileDir + "data/";
-        var file = new File(testDataDir + pid + "/" + name);
+        var file = new File(fileDir + "data/" + pid + "/" + name);
 
         if (file.exists()) {
             if (file.delete()) {
@@ -178,22 +176,18 @@ public class FileService {
     @Transactional(rollbackFor = Exception.class)
     public void saveAvatar(Integer uid, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
-        var dir = new File(avatarDir);
         var avatar = new File(avatarDir + uid + ".png");
 
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
-        }
-
         try {
+            Files.createDirectories(Paths.get(avatarDir));
+
             if (userRepo.updateAvatar(uid) == 0) {
                 throw new GenericException(HttpStatus.BAD_REQUEST, "更新头像失败");
             }
 
             file.transferTo(avatar);
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "更新头像失败");
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -210,24 +204,20 @@ public class FileService {
             throw new GenericException(HttpStatus.BAD_REQUEST, "文件是空的");
         }
 
-        var dir = new File(fileDir + "image/problem/");
-
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
-        }
-
+        var dir = Paths.get(fileDir + "image/problem/");
         var ext = fileName.substring(fileName.lastIndexOf("."));
         fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
 
         try {
-            var image = Paths.get(dir.getCanonicalPath()).resolve(file.getOriginalFilename()).normalize();
+            Files.createDirectories(dir);
+            var image = dir.resolve(file.getOriginalFilename()).normalize();
 
-            if (!image.startsWith(dir.getCanonicalPath())) {
+            if (!image.toAbsolutePath().startsWith(dir.toAbsolutePath())) {
                 throw new SecurityException("检测到路径穿越");
             }
 
             file.transferTo(image);
-            log.info("上传题目图片 {}", image.toRealPath());
+
             return fileName;
         } catch (IOException e) {
             throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -240,21 +230,25 @@ public class FileService {
      * @param spj {@link SPJ}
      */
     public void saveSPJ(SPJ spj) {
-        var pid = spj.getPid();
-        var source = spj.getSource();
-        var dir = new File(fileDir + "data/" + pid);
+        // ! 开放的题目不允许上传 SPJ
+        var enable = problemRepo.isEnable(spj.getPid());
 
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法创建目录");
+        if (enable.isEmpty()) {
+            throw new GenericException(HttpStatus.NOT_FOUND, "题目不存在");
         }
 
-        var file = new File(fileDir + "data/" + pid + "/spj.cpp");
+        if (enable.get()) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "题目已开放，不准上传 SPJ");
+        }
+
+        var source = spj.getSource();
+        var file = new File(fileDir + "data/" + spj.getPid() + "/spj.cpp");
 
         try {
+            Files.createDirectories(file.getParentFile().toPath());
             FileUtils.writeStringToFile(file, source, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, "无法写入文件");
+            throw new GenericException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         try {
@@ -262,7 +256,7 @@ public class FileService {
                     "g++",
                     "-fPIC",
                     "-shared",
-                    "-o", dir.getAbsolutePath() + "/spj.so",
+                    "-o", file.getParent() + "/spj.so",
                     file.getAbsolutePath()
             ).start();
 
