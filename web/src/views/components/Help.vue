@@ -2,86 +2,84 @@
   <n-config-provider abstract :hljs="highlightJs">
     <div class="wrap help">
       <n-h2>语言支持</n-h2>
-      <n-table>
-        <thead>
-          <tr>
-            <th>语言</th>
-            <th>SDK</th>
-            <th>选项/参数</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>C</td>
-            <td>gcc 14</td>
-            <td>C11</td>
-          </tr>
-          <tr>
-            <td>C++</td>
-            <td>g++ 14</td>
-            <td>C++17</td>
-          </tr>
-          <tr>
-            <td>Java</td>
-            <td>OpenJDK 21</td>
-            <td>Language Level 17</td>
-          </tr>
-          <tr>
-            <td>Python</td>
-            <td>Python 3.13</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td>Bash Shell</td>
-            <td>-</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td>C#</td>
-            <td>dotnet-sdk-8.0</td>
-            <td>C# 12 (支持顶级语句)</td>
-          </tr>
-          <tr>
-            <td>JavaScript</td>
-            <td>Node.js 20</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td>Kotlin</td>
-            <td>Kotlin Native 2.2.x</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td>Go</td>
-            <td>go 1.25.x</td>
-            <td>-</td>
-          </tr>
-        </tbody>
-      </n-table>
+      <n-flex vertical>
+        <n-table>
+          <thead>
+            <tr>
+              <th>语言</th>
+              <th>SDK</th>
+              <th>选项/参数/备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>C</td>
+              <td>gcc 14</td>
+              <td>C11</td>
+            </tr>
+            <tr>
+              <td>C++</td>
+              <td>g++ 14</td>
+              <td>C++17</td>
+            </tr>
+            <tr>
+              <td>Java</td>
+              <td>OpenJDK 21</td>
+              <td>Language Level 17</td>
+            </tr>
+            <tr>
+              <td>Python</td>
+              <td>Python 3.13</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Bash Shell</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>C#</td>
+              <td>dotnet-sdk-8.0</td>
+              <td>C# 12 (支持顶级语句)</td>
+            </tr>
+            <tr>
+              <td>JavaScript</td>
+              <td>QuickJS</td>
+              <td>ES2023</td>
+            </tr>
+            <tr>
+              <td>Kotlin</td>
+              <td>Kotlin 2.2.x</td>
+              <td>生成 Java 17 字节码</td>
+            </tr>
+            <tr>
+              <td>Go</td>
+              <td>go 1.25.x</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </n-table>
+        <n-alert type="success" :bordered="false">
+          C/C++ 开启 O2 优化。
+        </n-alert>
+      </n-flex>
       <n-h2>注意事项</n-h2>
-      <n-alert :bordered="false" type="info" title="Java">
-        Java 的类名必须为 Solution，且不能使用 package 关键字。
-      </n-alert>
-      <n-alert
-        :bordered="false"
-        type="info"
-        title="Kotlin Native"
-        style="margin-top: 24px">
-        Kotlin 编译时间可能长达 30 秒以上。
-      </n-alert>
-      <n-alert
-        :bordered="false"
-        type="info"
-        title="输入输出"
-        style="margin-top: 24px">
-        <ul>
-          <li>你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容</li>
-          <li>
-            你的程序必须从标准输入流(stdin)读取输入，并将结果输出到标准输出流(stdout)
-          </li>
-          <li>不存在格式错误，格式不对等同答案错误</li>
-        </ul>
-      </n-alert>
+      <n-flex vertical>
+        <n-alert :bordered="false" type="info" title="Java">
+          Java 的类名必须为 Solution，且不能使用 package 关键字。
+        </n-alert>
+        <n-alert :bordered="false" type="info" title="输入输出">
+          <ul>
+            <li>
+              你的程序必须严格按照题目要求输入输出，不能包含任何多余的内容
+            </li>
+            <li>
+              你的程序必须从标准输入流(stdin)读取输入，并将结果输出到标准输出流(stdout)
+            </li>
+            <li>不存在格式错误，格式不对等同答案错误</li>
+          </ul>
+        </n-alert>
+      </n-flex>
       <n-h2>判题相关</n-h2>
       <n-alert type="info" :bordered="false" style="margin-bottom: 24px">
         若提交成功一直获取不到结果(下表前 3
@@ -101,8 +99,9 @@
         </ul>
       </n-alert>
       <n-h2>示例</n-h2>
-      <span>A + B</span>
-      <p>输入：在一行中给出两个数 A，B，以空格分隔，输出：A + B 的值。</p>
+      <n-text>
+        输入：在一行中给出两个数 A，B，以空格分隔，输出：A + B 的值。
+      </n-text>
       <n-h3>C++ 示例</n-h3>
       <n-card>
         <n-code language="cpp" :code="cppSample" />
@@ -110,6 +109,10 @@
       <n-h3>Python 示例</n-h3>
       <n-card>
         <n-code language="py" :code="pySample" />
+      </n-card>
+      <n-h3>JavaScript 示例(QuickJS)</n-h3>
+      <n-card>
+        <n-code language="js" :code="jsSample" />
       </n-card>
       <n-h3>Java 示例</n-h3>
       <n-card>
@@ -133,6 +136,7 @@ export default {
 import highlightJs from "highlight.js/lib/core"
 import cpp from "highlight.js/lib/languages/cpp"
 import java from "highlight.js/lib/languages/java"
+import js from "highlight.js/lib/languages/javascript"
 import kotlin from "highlight.js/lib/languages/kotlin"
 import py from "highlight.js/lib/languages/python"
 import {
@@ -141,13 +145,16 @@ import {
   NCode,
   NConfigProvider,
   NDataTable,
+  NFlex,
   NH2,
   NH3,
-  NTable
+  NTable,
+  NText
 } from "naive-ui"
 
 highlightJs.registerLanguage("cpp", cpp)
 highlightJs.registerLanguage("py", py)
+highlightJs.registerLanguage("js", js)
 highlightJs.registerLanguage("java", java)
 highlightJs.registerLanguage("kotlin", kotlin)
 
@@ -164,7 +171,15 @@ int main()
 `
 
 const pySample = `a, b = map(int, input().split())
-print(a + b)`
+print(a + b)
+`
+
+const jsSample = `import * as std from "std";
+
+const data = std.in.getline();
+const [a, b] = data.split(" ").map(Number);
+console.log(a + b);
+`
 
 const javaSample = `import java.util.*;
 import java.io.*;
@@ -196,7 +211,7 @@ const judgeColumns = [
 
 const judgeData = [
   { status: "等待判题", desc: "提交已经加入队列" },
-  { status: "正在编译", desc: "Kotlin 用户会经常看到这个状态" },
+  { status: "正在编译", desc: "Kotlin 编译时间可能长一些(秒级)" },
   { status: "正在运行", desc: "字面意思，但你可能很少看到这个状态" },
   { status: "部分通过 PA", desc: "可能有一些情况没有考虑到" },
   { status: "完全正确 AC", desc: "字面意思" },

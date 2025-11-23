@@ -161,10 +161,7 @@ public class Judgement {
             check(solution.getLanguage());
 
             var bin = "judge";
-            var time = "--time=" + switch (solution.getLanguage()) {
-                case JAVA, JAVA_SCRIPT -> problem.getTimeout() * 2;
-                default -> problem.getTimeout();
-            };
+            var time = "--time=" + problem.getTimeout();
             var ram = "--ram=" + problem.getMemoryLimit();
             var output = "--output=" + problem.getOutputLimit();
             var cpu = "--cpu=" + cpuMap.get(Thread.currentThread().getName());
@@ -174,7 +171,7 @@ public class Judgement {
                 case C, CPP, GO -> "--cmd=./Solution";
                 case JAVA -> "--cmd=java@" + JVM_ARGS + "@Solution";
                 case KOTLIN -> "--cmd=java@" + JVM_ARGS + "@-cp@'.:/usr/local/kotlinc/lib/*'@SolutionKt";
-                case JAVA_SCRIPT -> "--cmd=node@Solution.js";
+                case JAVA_SCRIPT -> "--cmd=qjs@Solution.js";
                 case PYTHON -> "--cmd=python3@Solution.py";
                 case BASH -> "--cmd=sh@Solution.sh";
                 case C_SHARP -> "--cmd=dotnet@Solution.exe";

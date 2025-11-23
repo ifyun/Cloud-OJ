@@ -8,6 +8,7 @@
 
 - `go1.25.4.linux-amd64.tar.gz`
 - `kotlinc-compiler-2.2.21`（解压自 `kotlinc-compiler-2.2.21.zip`）
+- `quickjs-linux-x86_64-2025-09-13`（解压自 `quickjs-linux-x86_64-2025-09-13.zip`）
 
 ## 构建 Docker 镜像
 
