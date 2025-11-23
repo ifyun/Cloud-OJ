@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Compiler {
 
     private static final Map<Integer, String[]> CMD = Map.of(
-            Language.C, new String[]{"gcc", "-std=c11", "-fmax-errors=3", "-Wfatal-errors", "Solution.c", "-o", "Solution", "-lm"},
-            Language.CPP, new String[]{"g++", "-std=c++17", "-fmax-errors=3", "-Wfatal-errors", "Solution.cpp", "-o", "Solution"},
+            Language.C, new String[]{"gcc", "-O2", "-std=c11", "-fmax-errors=3", "Solution.c", "-o", "Solution", "-lm"},
+            Language.CPP, new String[]{"g++", "-O2", "-std=c++17", "-fmax-errors=3", "Solution.cpp", "-o", "Solution"},
             Language.JAVA, new String[]{"javac", "-encoding", "UTF-8", "-source", "17", "-target", "17", "Solution.java"},
             Language.C_SHARP, new String[]{"csc", "Solution.cs"},
             Language.KOTLIN, new String[]{"kotlinc", "-Xjdk-release=17", "Solution.kt"},
