@@ -22,21 +22,25 @@
                 :nickname="userInfo!.nickname!"
                 :has-avatar="userInfo!.hasAvatar"
                 :timestamp="t" />
-              <n-upload
-                accept=".jpg,.jpeg,.png"
-                :action="uploadUrl"
-                :show-file-list="false"
-                :headers="headers"
-                :on-finish="uploadFinish">
-                <n-button type="info" size="small" tertiary round>
-                  上传新头像
-                  <template #icon>
-                    <n-icon>
-                      <file-upload-outlined />
-                    </n-icon>
-                  </template>
-                </n-button>
-              </n-upload>
+              <input
+                ref="avatarInput"
+                type="file"
+                accept="image/*"
+                style="display: none"
+                @change="onSelectAvatar" />
+              <n-button
+                type="info"
+                size="small"
+                tertiary
+                round
+                @click="selectAvatar">
+                上传新头像
+                <template #icon>
+                  <n-icon>
+                    <file-upload-outlined />
+                  </n-icon>
+                </template>
+              </n-button>
             </n-space>
           </n-form-item>
           <n-form-item label="用户名">
@@ -92,7 +96,6 @@
 </template>
 
 <script setup lang="ts">
-import { ApiPath } from "@/api"
 import { AuthApi, UserApi } from "@/api/request"
 import { ErrorMessage, User } from "@/api/type"
 import { UserAvatar } from "@/components"
@@ -108,31 +111,23 @@ import {
   NInput,
   NPageHeader,
   NSpace,
-  NUpload,
   useMessage
 } from "naive-ui"
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
-
-const uploadUrl = ApiPath.AVATAR
 
 const store = useStore()
 const router = useRouter()
 const message = useMessage()
 
 const loading = ref<boolean>(false)
+const avatarInput = ref<HTMLInputElement | null>(null)
 const userForm = ref<HTMLFormElement | null>(null)
 const user = ref<User>(new User())
 const t = ref<number>(Date.now())
 
 const userInfo = computed(() => {
   return store.user.userInfo
-})
-
-const headers = computed<Record<string, string>>(() => {
-  return {
-    Authorization: `Baerer ${userInfo.value!.token}`
-  }
 })
 
 const rules: FormRules = {
@@ -249,5 +244,57 @@ function refresh() {
     .catch((err: ErrorMessage) => {
       message.error(err.toString())
     })
+}
+
+function selectAvatar() {
+  avatarInput.value?.click()
+}
+
+function onSelectAvatar(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) {
+    compressAvatar(file).then((blob) => {
+      UserApi.updateAvatar(blob)
+        .then(() => {
+          t.value = Date.now()
+          refresh()
+        })
+        .catch((err) => message.error(err.toString()))
+    })
+  }
+}
+
+async function compressAvatar(file: File): Promise<Blob> {
+  // canvas 分辨率 * 显示器缩放比，否则实际分辨率不正确
+  const dpr = window.devicePixelRatio || 1
+  const img = await createImageBitmap(file)
+  const { width: w, height: h } = img
+
+  // 按短边居中裁减
+  let s = Math.min(w, h)
+  let sx = (w - s) / 2
+  let sy = (h - s) / 2
+
+  const size = s > 150 ? 150 : s
+  const canvas = document.createElement("canvas")
+  canvas.width = size * dpr
+  canvas.height = size * dpr
+  const ctx = canvas.getContext("2d")!
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.drawImage(img, sx, sy, s, s, 0, 0, size, size)
+  img.close()
+
+  const blob = await new Promise<Blob | null>((res) =>
+    canvas.toBlob(res, "image/jpeg", 0.9)
+  )
+
+  if (!blob) {
+    throw new Error("图片处理失败")
+  }
+
+  ctx.clearRect(0, 0, size, size)
+  canvas.width = canvas.height = 0
+
+  return blob
 }
 </script>

@@ -24,12 +24,16 @@ import { RankingApi } from "@/api/request"
 import { ErrorMessage, type Page, Ranking } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
+import { StarRound } from "@vicons/material"
 import {
   type DataTableColumns,
+  NBadge,
   NButton,
   NDataTable,
   NFlex,
+  NIcon,
   NPagination,
+  NTag,
   NText
 } from "naive-ui"
 import { computed, onBeforeMount, ref } from "vue"
@@ -67,18 +71,39 @@ const rankingColumns: DataTableColumns<Ranking> = [
     key: "name",
     render: (row) => (
       <NFlex align="center" size="small">
-        <UserAvatar
-          size="large"
-          uid={row.uid!}
-          nickname={row.nickname}
-          hasAvatar={row.hasAvatar}
-        />
+        <NBadge color="transparent">
+          {{
+            default: () => (
+              <UserAvatar
+                size="large"
+                uid={row.uid!}
+                nickname={row.nickname}
+                hasAvatar={row.hasAvatar}
+              />
+            ),
+            value: () =>
+              row.star ? (
+                <NIcon component={StarRound} color="#f9a825" size="16" />
+              ) : (
+                ""
+              )
+          }}
+        </NBadge>
         <NFlex vertical size={0}>
-          <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
-            <NButton text strong>
-              {`${row.nickname}${row.star ? "⭐" : ""}`}
-            </NButton>
-          </RouterLink>
+          <NFlex size="small">
+            <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
+              <NButton text strong>
+                {row.nickname}
+              </NButton>
+            </RouterLink>
+            {row.uid === store.user.userInfo!.uid ? (
+              <NTag type="primary" size="small" round>
+                你自己
+              </NTag>
+            ) : (
+              ""
+            )}
+          </NFlex>
           {row.username ? (
             <NText depth="3" italic>
               {row.realName}@{row.username}
@@ -87,7 +112,6 @@ const rankingColumns: DataTableColumns<Ranking> = [
             ""
           )}
         </NFlex>
-        <NFlex size="small"></NFlex>
       </NFlex>
     )
   },

@@ -12,7 +12,7 @@
     round
     :size="size"
     style="vertical-align: middle; background: var(--primary-color)">
-    {{ nickname.substring(0, 1).toUpperCase() }}
+    {{ nickname.slice(-1).toUpperCase() }}
   </n-avatar>
 </template>
 
@@ -38,7 +38,7 @@ const url = ref<string>("")
 watch(
   props,
   async (newValue) => {
-    url.value = `${ApiPath.AVATAR}/${newValue.uid}.png?t=${newValue.timestamp}`
+    url.value = `${ApiPath.AVATAR}/${newValue.uid}.jpg?t=${newValue.timestamp}`
   },
   { immediate: true, deep: true }
 )

@@ -40,18 +40,35 @@
               <!-- User -->
               <td class="table-user">
                 <n-flex size="small" align="center">
-                  <user-avatar
-                    size="large"
-                    :uid="user.uid!"
-                    :nickname="user.nickname"
-                    :has-avatar="user.hasAvatar" />
+                  <n-badge color="transparent">
+                    <user-avatar
+                      size="large"
+                      :uid="user.uid!"
+                      :nickname="user.nickname"
+                      :has-avatar="user.hasAvatar" />
+                    <template #value v-if="user.star">
+                      <n-icon
+                        :component="StarRound"
+                        color="#f9a825"
+                        size="16" />
+                    </template>
+                  </n-badge>
                   <n-flex vertical :size="0">
-                    <RouterLink
-                      :to="{ name: 'account', params: { uid: user.uid } }">
-                      <n-button text strong>
-                        {{ `${user.nickname}${user.star ? "⭐" : ""}` }}
-                      </n-button>
-                    </RouterLink>
+                    <n-flex>
+                      <RouterLink
+                        :to="{ name: 'account', params: { uid: user.uid } }">
+                        <n-button text strong>
+                          {{ user.nickname }}
+                        </n-button>
+                      </RouterLink>
+                      <n-tag
+                        v-if="user.uid === store.user.userInfo!.uid"
+                        type="primary"
+                        size="small"
+                        round>
+                        你自己
+                      </n-tag>
+                    </n-flex>
                     <n-text v-if="user.username" depth="3">
                       {{ user.realName }}@{{ user.username }}
                     </n-text>
@@ -94,8 +111,10 @@ import { ErrorMessage, RankingContest } from "@/api/type"
 import { EmptyData, UserAvatar } from "@/components"
 import { useStore } from "@/store"
 import { setTitle, type StateTag, stateTag } from "@/utils"
+import { StarRound } from "@vicons/material"
 import dayjs from "dayjs"
 import {
+  NBadge,
   NButton,
   NFlex,
   NH4,

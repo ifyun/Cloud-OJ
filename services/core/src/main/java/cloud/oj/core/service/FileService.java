@@ -176,7 +176,7 @@ public class FileService {
     @Transactional(rollbackFor = Exception.class)
     public void saveAvatar(Integer uid, MultipartFile file) {
         var avatarDir = fileDir + "image/avatar/";
-        var avatar = new File(avatarDir + uid + ".png");
+        var avatar = new File(avatarDir + uid + ".jpg");
 
         try {
             Files.createDirectories(Paths.get(avatarDir));
@@ -200,17 +200,22 @@ public class FileService {
     public String saveProblemImage(MultipartFile file) {
         String fileName;
 
-        if (file.isEmpty() || (fileName = file.getOriginalFilename()) == null) {
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "文件是空的");
         }
 
         var dir = Paths.get(fileDir + "image/problem/");
-        var ext = fileName.substring(fileName.lastIndexOf("."));
+        var ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")).toLowerCase();
+
+        if (!ext.matches("\\.(?i)(jpg|jpeg|png|gif|webp|svg)")) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "不允许的图片格式");
+        }
+
         fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
 
         try {
             Files.createDirectories(dir);
-            var image = dir.resolve(file.getOriginalFilename()).normalize();
+            var image = dir.resolve(fileName).normalize();
 
             if (!image.toAbsolutePath().startsWith(dir.toAbsolutePath())) {
                 throw new SecurityException("检测到路径穿越");

@@ -68,7 +68,7 @@ import {
   AdminPanelSettingsRound as AdminIcon,
   LockResetRound,
   PersonSearchRound as SearchIcon,
-  StarsRound
+  StarRound
 } from "@vicons/material"
 import dayjs from "dayjs"
 import {
@@ -156,7 +156,7 @@ const operations = [
   {
     key: "set_star",
     label: () => (selectedUser!.star ? "取消打星用户" : "设为打星用户"),
-    icon: renderIcon(StarsRound, "#E6A23C")
+    icon: renderIcon(StarRound, "#E6A23C")
   },
   {
     key: "reset_passwd",
@@ -205,7 +205,8 @@ const columns: DataTableColumns<User> = [
           <NButton text strong iconPlacement="right">
             {{
               default: () => row.nickname,
-              icon: () => (row.star ? <NIcon component={StarsRound} /> : null)
+              icon: () =>
+                row.star ? <NIcon component={StarRound} color="#f9a825" /> : ""
             }}
           </NButton>
         </RouterLink>
@@ -214,7 +215,7 @@ const columns: DataTableColumns<User> = [
             你自己
           </NTag>
         ) : (
-          <span />
+          ""
         )}
       </NFlex>
     )

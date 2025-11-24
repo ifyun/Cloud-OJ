@@ -6,8 +6,8 @@ import {
   type User,
   UserFilter
 } from "@/api/type"
-import type { AxiosResponse } from "axios"
 import { useStore } from "@/store"
+import type { AxiosResponse } from "axios"
 
 const UserApi = {
   /**
@@ -146,6 +146,20 @@ const UserApi = {
         .catch((error) => {
           reject(resolveError(error))
         })
+    })
+  },
+
+  updateAvatar(blob: Blob): Promise<AxiosResponse> {
+    const form = new FormData()
+    form.append("file", blob, "avatar")
+
+    return axios({
+      url: ApiPath.AVATAR,
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+      data: form
     })
   }
 }
