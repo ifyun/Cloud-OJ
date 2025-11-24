@@ -314,10 +314,10 @@ onBeforeMount(() => {
 
 onMounted(() => {
   const reg = /^\d+$/
-  const id = route.params.id.toString()
+  const id = route.params.id?.toString()
   cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions.value)
 
-  if (reg.test(id)) {
+  if (id && reg.test(id)) {
     queryData(Number(id))
   }
 })
@@ -378,15 +378,26 @@ function saveSPJ() {
   const source = cmEditor!.getValue()
 
   if (source.trim().length === 0) {
+    message.warning("代码为空")
     return
   }
 
-  ProblemApi.saveSPJ(problemData.value!.pid!, source)
-    .then(() => {
-      message.success("SPJ 已编译")
-      reloadData()
-    })
-    .catch((err) => message.error(err.toString()))
+  const d = dialog.info({
+    title: "上传 SPJ",
+    content: "你正在上传并编译 SPJ，请确认！",
+    positiveText: "确认",
+    negativeText: "不要",
+    onPositiveClick() {
+      d.loading = true
+      ProblemApi.saveSPJ(problemData.value!.pid!, source)
+        .then(() => {
+          message.success("SPJ 已编译")
+          reloadData()
+        })
+        .catch((err) => message.error(err.toString()))
+        .finally(() => (d.loading = false))
+    }
+  })
 }
 
 function removeSPJ() {
