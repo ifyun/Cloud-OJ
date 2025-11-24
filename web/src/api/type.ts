@@ -105,9 +105,9 @@ export class Problem {
   score?: number
   result?: number
   resultText?: string
-  timeout?: number
-  memoryLimit?: number
-  outputLimit?: number
+  timeout?: number = 100
+  memoryLimit?: number = 32
+  outputLimit?: number = 1
 }
 
 export class Contest {

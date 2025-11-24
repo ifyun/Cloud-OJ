@@ -40,7 +40,7 @@
             <n-form-item-grid-item label="时间限制" path="timeout" :span="1">
               <n-input-number
                 v-model:value="problem.timeout"
-                :show-button="false"
+                :step="50"
                 :min="100"
                 :max="10000"
                 placeholder="100 ~ 10000">
@@ -51,14 +51,9 @@
               label="内存限制"
               path="memoryLimit"
               :span="1">
-              <n-input-number
+              <n-select
                 v-model:value="problem.memoryLimit"
-                :show-button="false"
-                :min="16"
-                :max="256"
-                placeholder="16 ~ 256">
-                <template #suffix>MB</template>
-              </n-input-number>
+                :options="ramOptions" />
             </n-form-item-grid-item>
             <n-form-item-grid-item
               label="输出限制"
@@ -70,7 +65,7 @@
                 :min="1"
                 :max="128"
                 placeholder="1 ~ 128">
-                <template #suffix>MB</template>
+                <template #suffix>MiB</template>
               </n-input-number>
             </n-form-item-grid-item>
             <n-form-item-grid-item label="题目分数" path="score" :span="1">
@@ -152,6 +147,7 @@ import {
   NInputNumber,
   NPageHeader,
   NScrollbar,
+  NSelect,
   NSpace,
   NSpin,
   NTooltip,
@@ -172,6 +168,25 @@ const problem = ref<Problem>(new Problem())
 const showHelp = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const create = ref<boolean>(false)
+
+const ramOptions = [
+  {
+    label: "32 MiB",
+    value: 32
+  },
+  {
+    label: "64 MiB",
+    value: 64
+  },
+  {
+    label: "128 MiB",
+    value: 128
+  },
+  {
+    label: "256 MiB",
+    value: 256
+  }
+]
 
 /* 表单验证规则 */
 const rules: FormRules = {
@@ -256,11 +271,11 @@ onMounted(() => {
     .querySelector(".admin .n-scrollbar-content")
     ?.classList.add("layout-max-height")
   const reg = /^\d+$/
-  const id = route.params.id.toString()
+  const id = route.params.id?.toString()
 
-  if (id === "new") {
+  if (id && id === "new") {
     create.value = true
-  } else if (reg.test(id)) {
+  } else if (id && reg.test(id)) {
     loading.value = true
     queryProblem(Number(id))
   }

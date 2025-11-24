@@ -29,13 +29,13 @@
                 <template #icon>
                   <n-icon :component="DataSaverOffRound" />
                 </template>
-                内存限制 {{ problem.memoryLimit }} MB
+                内存限制 {{ problem.memoryLimit }} MiB
               </n-tag>
               <n-tag type="info" size="small" round :bordered="false">
                 <template #icon>
                   <n-icon :component="PrintRound" />
                 </template>
-                输出限制 {{ problem.outputLimit }} MB
+                输出限制 {{ problem.outputLimit }} MiB
               </n-tag>
             </n-space>
             <!-- 题目内容 -->
