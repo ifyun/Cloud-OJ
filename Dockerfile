@@ -37,14 +37,14 @@ COPY --from=build-env /build/services/core/target/*.jar /app/core.jar
 WORKDIR /app
 EXPOSE 8180
 ENV JVM_OPTS="-Xmx200m"
-CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core.jar
+CMD ["bash", "-c", "exec java ${JVM_OPTS} -Dspring.profiles.active=prod -jar core.jar"]
 # GATEWAY
 FROM openjdk AS gateway
 COPY --from=build-env /build/services/gateway/target/*.jar /app/gateway.jar
 WORKDIR /app
 EXPOSE 8080
 ENV JVM_OPTS="-Xmx200m"
-CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar
+CMD ["bash", "-c", "exec java ${JVM_OPTS} -Dspring.profiles.active=prod -jar gateway.jar"]
 # JUDGE
 FROM openjdk AS judge
 RUN curl -LJO https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb \
@@ -72,4 +72,4 @@ COPY --from=build-env /build/judge/cmake-build-release/judge /usr/bin/
 WORKDIR /app
 EXPOSE 8380
 ENV JVM_OPTS="-Xmx200m"
-CMD java ${JVM_OPTS} -Dspring.profiles.active=prod -jar judge.jar
+CMD ["bash", "-c", "exec java ${JVM_OPTS} -Dspring.profiles.active=prod -jar judge.jar"]
