@@ -228,8 +228,10 @@ public class ContestRepo {
     public List<Problem> selectIdleProblems(Integer cid, Integer page, Integer size) {
         return client.sql("""
                         select count(*) over () as _total,
-                               *
-                        from problem
+                               p.problem_id,
+                               p.title,
+                               p.score
+                        from problem p
                         where deleted = false
                           and enable = false
                           and problem_id
