@@ -84,7 +84,6 @@ create table user
     constraint idx_nickname unique (nickname)
 );
 
-create index idx_nickname on user (nickname);
 create index idx_real_name on user (real_name);
 create index idx_time on user (create_at);
 
