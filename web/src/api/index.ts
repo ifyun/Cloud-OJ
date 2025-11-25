@@ -43,11 +43,13 @@ function resolveError(error: any): ErrorMessage {
   if (err.response) {
     if (
       err.response.data &&
-      err.response.headers["content-type"] === "application/json"
+      (err.response.headers["content-type"] as string).includes(
+        "application/json"
+      )
     ) {
       return ErrorMessage.from(err.response.data)
     } else {
-      return new ErrorMessage(err.response.status, err.response.statusText)
+      return new ErrorMessage(err.response.status, "发生了错误")
     }
   } else if (err.request) {
     return new ErrorMessage(0, "请求失败")
