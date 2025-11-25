@@ -235,6 +235,7 @@ public class ContestRepo {
                           and problem_id
                             not in
                               (select problem_id from contest_problem where contest_id = :cid)
+                        order by problem_id
                         limit :start, :count
                         """)
                 .param("cid", cid)

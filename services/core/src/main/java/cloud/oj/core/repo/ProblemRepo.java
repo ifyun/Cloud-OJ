@@ -60,6 +60,7 @@ public class ProblemRepo {
                           and if(LENGTH(:keyword) > 0,
                                  title like concat('%', :keyword, '%') or find_in_set(:keyword, category),
                                  true)
+                        order by problem_id
                         limit :start, :count
                         """)
                 .param("start", (page - 1) * size)
@@ -87,6 +88,7 @@ public class ProblemRepo {
                           and if(:keyword is not null,
                                  title like concat('%', :keyword, '%') or find_in_set(:keyword, category),
                                  true)
+                        order by problem_id
                         limit :start, :count
                         """)
                 .param("start", (page - 1) * size)

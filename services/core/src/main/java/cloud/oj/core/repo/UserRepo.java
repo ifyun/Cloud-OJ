@@ -71,7 +71,7 @@ public class UserRepo {
                         where deleted = false
                           and if(:filterBy = 1, username like concat(:value, '%'), true)
                           and if(:filterBy = 2, nickname like concat('%', :value, '%'), true)
-                        order by role, create_at
+                        order by role, uid
                         limit :start, :count
                         """)
                 .param("filterBy", filter.type)

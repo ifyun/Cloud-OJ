@@ -62,7 +62,7 @@
                         </n-button>
                       </RouterLink>
                       <n-tag
-                        v-if="user.uid === store.user.userInfo!.uid"
+                        v-if="user.uid === store.user?.userInfo?.uid"
                         type="primary"
                         size="small"
                         round>

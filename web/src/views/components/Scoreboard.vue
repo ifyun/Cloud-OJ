@@ -96,7 +96,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
                 {row.nickname}
               </NButton>
             </RouterLink>
-            {row.uid === store.user.userInfo!.uid ? (
+            {row.uid === store.user?.userInfo?.uid ? (
               <NTag type="primary" size="small" round>
                 你自己
               </NTag>

@@ -19,24 +19,24 @@ public class ScoreboardRepo {
      */
     public List<Ranking> selectAll(Integer page, Integer size, boolean admin) {
         return client.sql("""
-                        select count(*) over ()               as _total,
-                               (@ranking := @ranking + 1)     as `rank`,
-                               u.uid,
-                               u.nickname,
-                               if (:admin, u.username, null)  as username,
-                               if (:admin, u.real_name, null) as real_name,
-                               u.has_avatar,
-                               u.star,
-                               committed,
-                               passed,
-                               truncate(score, 2)             as score
-                        from scoreboard l
-                                 join user u on l.deleted = false and l.uid = u.uid,
-                             (select @ranking := :start) rn
-                        where u.role = 1
-                          and score > 0
-                        order by score desc, update_time
-                        limit :start, :count
+                        select *
+                        from (select count(*) over ()                                     as _total,
+                                     row_number() over (order by score desc, update_time) as `rank`,
+                                     u.uid,
+                                     u.nickname,
+                                     if(:admin, u.username, null)                         as username,
+                                     if(:admin, u.real_name, null)                        as real_name,
+                                     u.has_avatar,
+                                     u.star,
+                                     committed,
+                                     passed,
+                                     truncate(score, 2)                                   as score
+                              from scoreboard l
+                                       join user u on l.deleted = false and l.uid = u.uid
+                              where u.role = 1
+                                and score > 0) t
+                        where `rank` between :start + 1 and :start + :count
+                        order by `rank`;
                         """)
                 .param("admin", admin)
                 .param("start", (page - 1) * size)
@@ -47,16 +47,16 @@ public class ScoreboardRepo {
 
     public List<Ranking> selectByCid(Integer cid, boolean admin) {
         return client.sql("""
-                        select (@ranking := @ranking + 1) as `rank`,
+                        select (@ranking := @ranking + 1)     as `rank`,
                                u.uid,
                                u.nickname,
-                               if (:admin, u.username, null) as username,
+                               if (:admin, u.username, null)  as username,
                                if (:admin, u.real_name, null) as real_name,
                                u.has_avatar,
                                u.star,
                                committed,
                                passed,
-                               truncate(score, 2)         as score
+                               truncate(score, 2)             as score
                         from scoreboard_contest lc
                                   join user u on lc.deleted = false and lc.uid = u.uid,
                              (select @ranking := 0) rn
