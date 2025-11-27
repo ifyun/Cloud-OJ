@@ -7,3 +7,4 @@ logging:
   level:
     root: info
     cloud.oj: info
+    org.springframework.boot.availability: DEBUG
