@@ -17,11 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cloud.oj.judge.constant.Language.*;
@@ -66,7 +68,7 @@ public class Judgement {
             // 运行
             var result = execute(solution, problem);
             // 保存结果
-            saveResult(solution, result, problem, dataConf);
+            saveResult(solution, result, problem, dataConf.orElse(null));
         } else {
             // 编译失败
             solution.endWithError(CE, compile.getInfo());
@@ -80,7 +82,7 @@ public class Judgement {
      * @param result {@link Result}
      */
     private void saveResult(Solution solution, Result result, Problem problem,
-                            Optional<Map<String, Integer>> dataConf) {
+                            Map<String, Integer> dataConf) {
         // 内部错误，结束
         if (result.getResult().equals(IE)) {
             solution.endWithError(result.getResult(), result.getError());
@@ -108,11 +110,10 @@ public class Judgement {
         var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
         var score = 0.0;
 
-        if (dataConf.isPresent() && result.getDetail() != null && !result.getDetail().isEmpty()) {
+        if (dataConf != null && result.getDetail() != null && !result.getDetail().isEmpty()) {
             // 根据通过的测试点计算分数
-            var data = dataConf.get();
             for (var fileName : result.getDetail()) {
-                score += data.get(fileName);
+                score += dataConf.get(fileName);
             }
         } else {
             // 兼容没有指定测试数据分数的旧题目
@@ -155,6 +156,7 @@ public class Judgement {
      */
     private Result execute(Solution solution, Problem problem) {
         final String JVM_ARGS = "-XX:+UseSerialGC@-XX:TieredStopAtLevel=1@-Xms32m@-Xmx256m";
+        final String SOLUTION_DIR = appConfig.getCodeDir() + solution.getSolutionId();
         Result result;
 
         try {
@@ -165,7 +167,7 @@ public class Judgement {
             var ram = "--ram=" + problem.getMemoryLimit();
             var output = "--output=" + problem.getOutputLimit();
             var cpu = "--cpu=" + cpuMap.get(Thread.currentThread().getName());
-            var workdir = "--workdir=" + appConfig.getCodeDir() + solution.getSolutionId();
+            var workdir = "--workdir=" + SOLUTION_DIR;
             var data = "--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId();
             var cmd = switch (solution.getLanguage()) {
                 case C, CPP, GO -> "--cmd=./Solution";
@@ -180,7 +182,7 @@ public class Judgement {
 
             var timeout = new AtomicBoolean(false);
             var process = processBuilder.command(bin, cmd, time, ram, cpu, output, workdir, data).start();
-            ProcessUtil.watchProcess(25, process, timeout);
+            ProcessUtil.watchProcess(90, process, timeout);
             process.waitFor();
 
             if (timeout.get()) {
@@ -188,12 +190,26 @@ public class Judgement {
             }
 
             if (process.exitValue() != 0) {
-                // 非零退出
-                log.warn("JUDGE 非零退出(sid={}): {}", solution.getSolutionId(),
+                log.error("JUDGE 非零退出(sid={}): {}", solution.getSolutionId(),
                         IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
                 result = withError(IE, "JUDGE 非零退出");
             } else {
                 result = objectMapper.readValue(process.getInputStream(), Result.class);
+                if (result.getResult() == RE) {
+                    // 读取 stderr 至多 512 个字符
+                    var stderr = new File(SOLUTION_DIR + "/stderr.txt");
+                    if (stderr.exists() && stderr.length() > 0) {
+                        char[] buf = new char[513];
+                        try (var r = new InputStreamReader(new FileInputStream(stderr), StandardCharsets.UTF_8)) {
+                            var n = r.read(buf);
+                            var err = result.getError()
+                                    + "\n"
+                                    + new String(buf, 0, n)
+                                    + (n > 512 ? "...已截断" : "");
+                            result.setError(err);
+                        }
+                    }
+                }
             }
         } catch (UnsupportedLanguageError e) {
             result = withError(IE, e.getMessage());

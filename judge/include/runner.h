@@ -29,6 +29,7 @@ struct Config
     int cpu = 0; // CPU 核心，将进程绑定到指定核心减少切换
     int std_in{}; // 输入文件 fd(用于重定向 stdin)
     int std_out{}; // 用户输出 fd(用于重定向 stdout)
+    int std_err{}; // 错误输出 fd(用于重定向 stderr)
     int in_fd{}; // 输入文件 fd
     int out_fd{}; // 用户输出 fd(用于对比)
     int ans_fd{}; // 正确输出 fd(用于对比)

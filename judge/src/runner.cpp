@@ -69,7 +69,8 @@ inline void Runner::run_cmd() const
 
     dup2(config.std_in, STDIN_FILENO);
     dup2(config.std_out, STDOUT_FILENO);
-    dup2(config.std_out, STDERR_FILENO);
+    dup2(config.std_err, STDERR_FILENO);
+    close_range(3, ~0U, 0);
 
     setuid(65534);
     alarm(ALARM_SECONDS);
@@ -110,7 +111,6 @@ void Runner::watch_result(const pid_t pid, Result* res) const
                 break;
             }
         }
-
         // 瞬时内存超限 kill
         if (config.memory < vm_rss)
         {
@@ -118,9 +118,9 @@ void Runner::watch_result(const pid_t pid, Result* res) const
             kill_why = MLE;
             goto wait;
         }
-        // stdout (byte) 超限 kill
-        if (const auto f_size = lseek(config.std_out, 0, SEEK_END);
-            f_size > config.output_size << 10)
+        // stdout | stderr (byte) 超限 kill
+        if (lseek(config.std_out, 0, SEEK_END) > config.output_size << 10 ||
+            lseek(config.std_err, 0, SEEK_END) > 256 << 10)
         {
             kill(pid, SIGKILL);
             kill_why = OLE;
@@ -255,6 +255,7 @@ void Runner::run(Result* res) const
 
         close(config.std_in);
         close(config.std_out);
+        close(config.std_err);
         close(config.in_fd);
         close(config.out_fd);
         close(config.ans_fd);
@@ -298,6 +299,9 @@ RTN Runner::judge()
     }
 
     char out_path[128]; // 用户输出文件路径
+    char err_path[128]; // 错误输出文件路径
+    sprintf(err_path, "%s/%s", work_dir, "stderr.txt");
+    config.std_err = open(err_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
     if (!input_files.empty() && !output_files.empty())
     {
@@ -306,7 +310,6 @@ RTN Runner::judge()
             rtn = {.result = IE, .err = "测试数据文件数量不一致"};
             goto exit;
         }
-
         // * N 组数据(N >= 1)
         for (auto i = 0; i < input_files.size(); i++)
         {
@@ -315,7 +318,7 @@ RTN Runner::judge()
             config.std_in = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             config.out_fd = open(out_path, O_RDONLY, 0644);
-            config.ans_fd = open(output_files[i].c_str(), O_RDONLY | O_CLOEXEC, 0644);
+            config.ans_fd = open(output_files[i].c_str(), O_RDONLY, 0644);
             config.in->open(input_files[i], std::ios_base::in);
             config.out->open(out_path, std::ios_base::in);
             config.ans->open(output_files[i], std::ios_base::in);
