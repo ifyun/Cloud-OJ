@@ -17,7 +17,7 @@
     "echarts": "^5.6.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.25",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "markdown-it": "^14.1.0",
     "markdown-it-container": "^4.0.0",
     "pinia": "^3.0.4",
