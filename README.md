@@ -47,21 +47,9 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 - [Consul](https://www.consul.io/)
 - [MariaDB](https://mariadb.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
-- [Vite](https://vitejs.dev/)
 - [Vue.js](https://vuejs.org/)
-- [Pinia](https://pinia.vuejs.org/)
 - [Naive UI](https://naiveui.com/)
-- [Axios](https://github.com/axios/axios)
-- [Day.js](https://day.js.org/)
 - [CodeMirror 5](https://codemirror.net/5/)
-- [KaTeX](https://katex.org/)
-- [Apache Echarts](https://echarts.apache.org/)
+- [Apache ECharts](https://echarts.apache.org/)
+- [unified](https://unifiedjs.com/)
 - [highlight.js](https://highlightjs.org/)
-- [markdown-it](https://github.com/markdown-it/)
-- [xicons](https://www.xicons.org/)
-
-Thanks to JetBrains for providing the Open Source Development license.
-
-<a href="https://www.jetbrains.com/">
-<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" alt="JetBrains Logo.">
-</a>
