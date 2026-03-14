@@ -22,8 +22,8 @@ public class UserController {
      * @param tz 时区
      */
     @GetMapping(path = "overview")
-    public ResponseEntity<UserStatistics> getOverview(Integer uid, Integer year, String tz) {
-        return ResponseEntity.ok(userService.getOverview(uid, year, tz));
+    public ResponseEntity<UserStatistics> getOverview(@RequestParam Integer uid, String tz, Integer year) {
+        return ResponseEntity.ok(userService.getOverview(uid, tz, year));
     }
 
     /**

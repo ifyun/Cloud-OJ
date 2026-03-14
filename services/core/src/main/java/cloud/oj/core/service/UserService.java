@@ -10,12 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,8 @@ public class UserService {
     private final UserStatisticRepo userStatisticRepo;
 
     private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+
+    private static final Set<String> VALID_TIMEZONES = Set.of(TimeZone.getAvailableIDs());
 
     private String newUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
@@ -146,42 +147,46 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserStatistics getOverview(Integer uid, Integer year, String tz) {
-        String timezone = "+8:00";
+    public UserStatistics getOverview(Integer uid, String tz, Integer year) {
+        var timezone = Optional.ofNullable(tz)
+                .filter(VALID_TIMEZONES::contains)
+                .orElse("+08:00");
 
-        if (tz != null && Set.of(TimeZone.getAvailableIDs()).contains(tz)) {
-            timezone = ZonedDateTime.now(ZoneId.of(tz)).getOffset().getId();
+        var zone = ZoneId.of(timezone);
+        long start;
+        long end;
+
+        if (year != null && year != 0) {
+            start = LocalDate.of(year, 1, 1).atStartOfDay(zone).toInstant().toEpochMilli();
+            end = LocalDate.of(year + 1, 1, 1).atStartOfDay(zone).toInstant().toEpochMilli();
+        } else {
+            var now = LocalDate.now(zone);
+            // 明天 0 点 ~ 去年今天 0 点
+            start = now.minusYears(1).atStartOfDay(zone).toInstant().toEpochMilli();
+            end = now.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli();
         }
 
         commonRepo.setTimezone(timezone);
 
         var userStatistic = new UserStatistics();
+        var dataMap = userStatisticRepo.selectHeatmap(uid, start, end)
+                .stream()
+                .collect(Collectors.toMap(HeatmapData::timestamp, HeatmapData::value, (t, v) -> t));
+        var heatmap = new ArrayList<HeatmapData>(366);
+        // 生成 [start, end) 之间的时间戳，填充 heatmap
+        var startDate = Instant.ofEpochMilli(start).atZone(zone).toLocalDate();
+        var endDate = Instant.ofEpochMilli(end).atZone(zone).toLocalDate();
 
+        for (var date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            var timestamp = date.atStartOfDay(zone).toInstant().toEpochMilli();
+            var value = dataMap.getOrDefault(timestamp, 0);
+            heatmap.add(new HeatmapData(timestamp, value));
+        }
+
+        userStatistic.setHeatmap(heatmap);
         userStatistic.setPreference(userStatisticRepo.selectLanguages(uid));
         userStatistic.setResults(userStatisticRepo.selectResults(uid));
 
-        var acCounts = userStatisticRepo.selectActivities(uid, year);
-        // date -> count
-        var activities = new HashMap<String, Integer>();
-        AcCount last = null;
-        // 原始数据按 (problem_id, date) 分组，处理重复的数据
-        for (var t : acCounts) {
-            if (last != null) {
-                // 日期重复，题目不同，合并 count
-                if (last.getDate().equals(t.getDate())) {
-                    t.setCount(t.getCount() + last.getCount());
-                } else if (last.getPid().equals(t.getPid())) {
-                    // 题目 Id 重复，保留日期较小的
-                    last = t;
-                    continue;
-                }
-            }
-
-            activities.put(t.getDate(), t.getCount());
-            last = t;
-        }
-
-        userStatistic.setActivities(activities);
         return userStatistic;
     }
 }

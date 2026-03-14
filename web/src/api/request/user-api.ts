@@ -85,7 +85,7 @@ const UserApi = {
     })
   },
 
-  getOverview(uid: number, year: number) {
+  getOverview(uid: number, year?: number) {
     return new Promise<Overview>((resolve, reject) => {
       axios({
         url: ApiPath.OVERVIEW,

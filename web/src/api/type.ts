@@ -226,8 +226,7 @@ export class Overview {
     TLE: 0,
     total: 0
   }
-  // eg: "YYYY-MM-DD": 10
-  activities: { [date: string]: number } = {}
+  heatmap: Array<{ timestamp: number; value: number }> = []
 }
 
 type QueueInfo = {

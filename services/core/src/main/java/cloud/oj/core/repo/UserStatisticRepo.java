@@ -1,12 +1,13 @@
 package cloud.oj.core.repo;
 
-import cloud.oj.core.entity.AcCount;
+import cloud.oj.core.entity.HeatmapData;
 import cloud.oj.core.entity.Language;
 import cloud.oj.core.entity.Results;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.util.List;
 
 @Repository
@@ -28,22 +29,32 @@ public class UserStatisticRepo {
                 .list();
     }
 
-    public List<AcCount> selectActivities(Integer uid, Integer year) {
+    public List<HeatmapData> selectHeatmap(Integer uid, Long start, Long end) {
         return client.sql("""
-                        select problem_id                                                 as pid,
-                               DATE_FORMAT(from_unixtime(submit_time / 1000), '%Y-%m-%d') as date,
-                               count(distinct problem_id, language)                       as count
-                        from solution
-                        where contest_id is null
-                          and uid = :uid
-                          and year(from_unixtime(submit_time / 1000)) = :year
-                          and result = 'AC'
-                        group by problem_id, date
-                        order by date
+                        -- 一年内同一题目同一语言仅算一次
+                        with yearly_ac as (
+                            select problem_id,
+                                   language,
+                                   min(submit_time)                        as timestamp,
+                                   year(from_unixtime(submit_time / 1000)) as ac_year
+                            from solution
+                            where contest_id is null
+                              and uid = :uid
+                              and result = 'AC'
+                              and submit_time >= :start
+                              and submit_time < :end
+                            group by problem_id, language, ac_year
+                        )
+                        select unix_timestamp(date(from_unixtime(timestamp / 1000))) * 1000 as timestamp,
+                               count(*)                                                     as value
+                        from yearly_ac
+                        group by date(from_unixtime(timestamp / 1000))
+                        order by timestamp;
                         """)
                 .param("uid", uid)
-                .param("year", year)
-                .query(AcCount.class)
+                .param("start", start, Types.BIGINT)
+                .param("end", end, Types.BIGINT)
+                .query(HeatmapData.class)
                 .list();
     }
 

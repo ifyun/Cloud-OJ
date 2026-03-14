@@ -13,11 +13,11 @@ public class CommonRepo {
     /**
      * 设置当前会话的时区
      *
-     * @param timezone 时区偏移，eg: +8:00
+     * @param timezone 时区，eg: +8:00, Asia/Shanghai
      */
     public void setTimezone(String timezone) {
         client.sql("set time_zone = :timezone")
                 .param("timezone", timezone)
-                .query();
+                .update();
     }
 }
