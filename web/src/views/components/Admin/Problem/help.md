@@ -4,11 +4,11 @@
 
 #### 四级标题
 
-::: info
+:::info
 提示：为了排版美观，最好使用三级及以下标题。
 :::
 
-::: warning
+:::warning
 警告：快去学习！
 :::
 
@@ -54,9 +54,9 @@ int main(int argc, char *argv[]) {
 
 #### 数学公式(KaTeX)
 
-行内公式：`$a, b, c \neq \{ \{ a\}, b, c\}$`
+行内公式：$a, b, c \neq \{ \{ a\}, b, c\}$
 
-行内公式：`$x \leq 0, a_i \geq 10$`
+行内公式：$x \leq 0, a_i \geq 10$
 
 块级公式：
 

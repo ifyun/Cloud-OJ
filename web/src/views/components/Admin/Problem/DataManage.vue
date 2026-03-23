@@ -1,88 +1,86 @@
 <template>
-  <div class="test-data-div">
-    <div style="margin: 4px">
-      <n-page-header @back="back">
-        <template #title>
-          <n-text>
-            {{ title }}
-          </n-text>
-        </template>
-        <template #extra>
-          <n-tag v-if="isSPJ" type="info" round>
-            <template #icon>
-              <n-icon :component="VerifiedRound" />
-            </template>
-            Special Judge
-          </n-tag>
-        </template>
-        <n-flex vertical size="large">
-          <n-data-table
-            v-if="problemData != null"
-            max-height="350"
+  <div style="padding: var(--layout-padding)">
+    <n-page-header @back="back">
+      <template #title>
+        <n-text>
+          {{ title }}
+        </n-text>
+      </template>
+      <template #extra>
+        <n-tag v-if="isSPJ" type="info" round>
+          <template #icon>
+            <n-icon :component="VerifiedRound" />
+          </template>
+          Special Judge
+        </n-tag>
+      </template>
+      <n-flex vertical size="large">
+        <n-data-table
+          v-if="problemData != null"
+          max-height="350"
+          :loading="loading"
+          :columns="columns"
+          :data="problemData.testData" />
+        <n-flex align="center" justify="end">
+          <n-button
+            size="small"
+            type="success"
             :loading="loading"
-            :columns="columns"
-            :data="problemData.testData" />
-          <n-flex align="center" justify="end">
-            <n-button
-              size="small"
-              type="success"
-              :loading="loading"
-              :disabled="disableSaveConf"
-              @click="saveScoreConf">
-              <template #icon>
-                <n-icon :component="SaveRound" />
-              </template>
-              保存分数配置
-            </n-button>
-          </n-flex>
-          <n-upload
-            multiple
-            :action="action"
-            :headers="headers"
-            :data="uploadData"
-            :disabled="disableUpload"
-            accept=".in,.out"
-            @before-upload="beforeUpload"
-            @error="handleError"
-            @finish="handleUploadFinish">
-            <n-upload-dragger style="width: 100%">
-              <div>
-                <n-icon size="48" depth="3" :component="UnarchiveRound" />
-              </div>
-              <n-text style="font-size: 16px">
-                点击或拖动文件到该区域上传
-              </n-text>
-              <n-p depth="3">
-                文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件<br />
-                使用 SPJ 且不需要输出文件？请上传空的 .out 文件
-              </n-p>
-            </n-upload-dragger>
-          </n-upload>
-          <n-alert type="warning" :bordered="false">
-            换行符必须使用 LF，不能使用 CRLF
-          </n-alert>
+            :disabled="disableSaveConf"
+            @click="saveScoreConf">
+            <template #icon>
+              <n-icon :component="SaveRound" />
+            </template>
+            保存分数配置
+          </n-button>
         </n-flex>
-        <n-divider title-placement="left">
-          Special Judge ({{ isSPJ ? "已启用" : "未启用" }})
-        </n-divider>
-        <div id="spj-editor">
-          <textarea ref="editor" />
-          <n-button-group size="small" style="margin-top: 12px">
-            <n-button secondary type="primary" @click="saveSPJ">
-              提交编译
-            </n-button>
-            <n-button
-              secondary
-              size="small"
-              type="error"
-              :disabled="!isSPJ"
-              @click="removeSPJ">
-              移除 SPJ
-            </n-button>
-          </n-button-group>
-        </div>
-      </n-page-header>
-    </div>
+        <n-upload
+          multiple
+          :action="action"
+          :headers="headers"
+          :data="uploadData"
+          :disabled="disableUpload"
+          accept=".in,.out"
+          @before-upload="beforeUpload"
+          @error="handleError"
+          @finish="handleUploadFinish">
+          <n-upload-dragger style="width: 100%">
+            <div>
+              <n-icon size="48" depth="3" :component="UnarchiveRound" />
+            </div>
+            <n-text style="font-size: 16px">
+              点击或拖动文件到该区域上传
+            </n-text>
+            <n-p depth="3">
+              文件类型为 .in 和 .out，每个 .in 文件对应一个 .out 文件<br />
+              使用 SPJ 且不需要输出文件？请上传空的 .out 文件
+            </n-p>
+          </n-upload-dragger>
+        </n-upload>
+        <n-alert type="warning" :bordered="false">
+          换行符必须使用 LF，不能使用 CRLF
+        </n-alert>
+      </n-flex>
+      <n-divider title-placement="left">
+        Special Judge ({{ isSPJ ? "已启用" : "未启用" }})
+      </n-divider>
+      <n-flex v-show="!loading" vertical>
+        <div ref="editor" />
+        <n-button-group size="small">
+          <n-button secondary type="primary" @click="saveSPJ">
+            提交编译
+          </n-button>
+          <n-button
+            secondary
+            size="small"
+            type="error"
+            :disabled="!isSPJ"
+            @click="removeSPJ">
+            移除 SPJ
+          </n-button>
+        </n-button-group>
+      </n-flex>
+    </n-page-header>
   </div>
 </template>
 
@@ -92,6 +90,17 @@ import { ProblemApi } from "@/api/request"
 import { ErrorMessage, ProblemData, TestData } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
+import { closeBrackets } from "@codemirror/autocomplete"
+import { indentWithTab } from "@codemirror/commands"
+import { cpp } from "@codemirror/lang-cpp"
+import { bracketMatching, indentOnInput } from "@codemirror/language"
+import { Compartment, type Extension } from "@codemirror/state"
+import {
+  EditorView,
+  highlightActiveLine,
+  keymap,
+  lineNumbers
+} from "@codemirror/view"
 import {
   DeleteForeverRound as DeleteIcon,
   FileDownloadOutlined as DownloadIcon,
@@ -99,13 +108,6 @@ import {
   UnarchiveRound,
   VerifiedRound
 } from "@vicons/material"
-import CodeMirror, { type Editor, type EditorConfiguration } from "codemirror"
-import "codemirror/addon/edit/closebrackets.js"
-import "codemirror/addon/edit/matchbrackets.js"
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/clike/clike.js"
-import "codemirror/theme/material-darker.css"
-import "codemirror/theme/ttcn.css"
 import {
   type DataTableColumns,
   NAlert,
@@ -130,10 +132,12 @@ import {
 import { computed, nextTick, onBeforeMount, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import SPJDeclare from "./spj.cpp?raw"
+import { githubLight } from "@fsegurai/codemirror-theme-github-light"
+import { githubDark } from "@fsegurai/codemirror-theme-github-dark"
 
-let cmEditor: Editor | null = null
+let cmView: EditorView
 
-const editor = ref<HTMLTextAreaElement | null>(null)
+const editor = ref<HTMLDivElement | null>(null)
 const action = ApiPath.TEST_DATA
 
 const store = useStore()
@@ -145,16 +149,19 @@ const message = useMessage()
 const loading = ref<boolean>(false)
 const problemData = ref<ProblemData | null>(null)
 
-const cmOptions = ref<EditorConfiguration>({
-  mode: "text/x-c++src",
-  tabSize: 4,
-  smartIndent: true,
-  indentUnit: 4,
-  lineNumbers: true,
-  matchBrackets: true,
-  autoCloseBrackets: true,
-  scrollbarStyle: "overlay"
-})
+const themeCompartment = new Compartment()
+const cmExtensions: Extension = [
+  [
+    bracketMatching(),
+    closeBrackets(),
+    highlightActiveLine(),
+    indentOnInput(),
+    lineNumbers()
+  ],
+  cpp(),
+  themeCompartment.of(githubLight),
+  keymap.of([indentWithTab])
+]
 
 const columns: DataTableColumns<TestData> = [
   {
@@ -299,10 +306,11 @@ const disableSaveConf = computed<boolean>(() => {
 watch(
   () => store.app.theme,
   (val) => {
+    const t = val == null ? githubLight : githubDark
     nextTick(() => {
-      val == null
-        ? cmEditor!.setOption("theme", "ttcn")
-        : cmEditor!.setOption("theme", "material-darker")
+      cmView.dispatch({
+        effects: themeCompartment.reconfigure(t)
+      })
     })
   },
   { immediate: true }
@@ -315,7 +323,11 @@ onBeforeMount(() => {
 onMounted(() => {
   const reg = /^\d+$/
   const id = route.params.id?.toString()
-  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions.value)
+  cmView = new EditorView({
+    doc: SPJDeclare,
+    parent: editor.value!,
+    extensions: cmExtensions
+  })
 
   if (id && reg.test(id)) {
     queryData(Number(id))
@@ -328,9 +340,15 @@ function queryData(id: number) {
     .then((data) => {
       problemData.value = data
       nextTick(() => {
-        data.spj
-          ? cmEditor!.setValue(data.SPJSource)
-          : cmEditor!.setValue(SPJDeclare)
+        if (data.spj) {
+          cmView.dispatch({
+            changes: {
+              from: 0,
+              to: cmView.state.doc.length,
+              insert: data.SPJSource
+            }
+          })
+        }
       })
     })
     .catch((err: ErrorMessage) => message.error(err.toString()))
@@ -375,7 +393,7 @@ function deleteFile(fileName: string) {
 }
 
 function saveSPJ() {
-  const source = cmEditor!.getValue()
+  const source = cmView.state.doc.toString()
 
   if (source.trim().length === 0) {
     message.warning("代码为空")
@@ -444,21 +462,7 @@ function saveScoreConf() {
 </script>
 
 <style scoped lang="scss">
-.test-data-div {
-  height: calc(100% - var(--layout-padding));
-  width: calc(100% - var(--layout-padding) * 2);
-  padding: var(--layout-padding);
-  display: flex;
-  flex-direction: column;
-}
-
-#spj-editor {
-  margin-bottom: 24px;
-
-  :deep(.CodeMirror) {
-    height: 100%;
-    font-size: 14px;
-    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-  }
+:deep(.cm-editor) {
+  font-family: v-mono, SFMono-Regular, Consolas, monospace;
 }
 </style>

@@ -49,7 +49,7 @@ Cloud OJ 是一个“微”服务架构的 Online Judge 系统，基于 Spring C
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Vue.js](https://vuejs.org/)
 - [Naive UI](https://naiveui.com/)
-- [CodeMirror 5](https://codemirror.net/5/)
+- [CodeMirror](https://codemirror.net/)
 - [Apache ECharts](https://echarts.apache.org/)
 - [unified](https://unifiedjs.com/)
 - [highlight.js](https://highlightjs.org/)

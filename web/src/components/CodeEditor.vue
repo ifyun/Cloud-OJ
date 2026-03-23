@@ -1,5 +1,5 @@
 <template>
-  <div class="code-editor">
+  <n-flex vertical size="small" class="code-editor">
     <n-input-group>
       <n-input-group-label :style="{ width: '110px' }">
         选择语言
@@ -8,7 +8,7 @@
         v-model:value="language"
         :options="languageOptions"
         :render-label="renderLabel" />
-      <n-button type="primary" secondary :loading="loading" @click="submit">
+      <n-button type="primary" :loading="loading" @click="submit">
         <template #icon>
           <n-icon>
             <send-round />
@@ -17,31 +17,43 @@
         提交运行
       </n-button>
     </n-input-group>
-    <div class="editor-wrapper" :class="theme">
-      <textarea ref="editor" />
-    </div>
-  </div>
+    <div
+      ref="editor"
+      style="display: flex; flex-direction: column; flex: 1; min-height: 0" />
+  </n-flex>
 </template>
 
 <script setup lang="ts">
 import type { LanguageOption, SourceCode } from "@/type"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
+import { closeBrackets } from "@codemirror/autocomplete"
+import { indentWithTab } from "@codemirror/commands"
+import { cpp } from "@codemirror/lang-cpp"
+import { go } from "@codemirror/lang-go"
+import { java } from "@codemirror/lang-java"
+import { javascript } from "@codemirror/lang-javascript"
+import { python } from "@codemirror/lang-python"
+import {
+  bracketMatching,
+  indentOnInput,
+  StreamLanguage
+} from "@codemirror/language"
+import { csharp, kotlin } from "@codemirror/legacy-modes/mode/clike"
+import { shell } from "@codemirror/legacy-modes/mode/shell"
+import { Compartment, type Extension } from "@codemirror/state"
+import {
+  EditorView,
+  highlightActiveLine,
+  keymap,
+  lineNumbers
+} from "@codemirror/view"
+import { githubDark } from "@fsegurai/codemirror-theme-github-dark"
+import { githubLight } from "@fsegurai/codemirror-theme-github-light"
 import { SendRound } from "@vicons/material"
-import CodeMirror, { type Editor, type EditorConfiguration } from "codemirror"
-import "codemirror/addon/edit/closebrackets.js"
-import "codemirror/addon/edit/matchbrackets.js"
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/clike/clike.js"
-import "codemirror/mode/go/go.js"
-import "codemirror/mode/javascript/javascript.js"
-import "codemirror/mode/python/python.js"
-import "codemirror/mode/shell/shell.js"
-import "codemirror/mode/sql/sql.js"
-import "codemirror/theme/material-darker.css"
-import "codemirror/theme/ttcn.css"
 import {
   NButton,
+  NFlex,
   NIcon,
   NInputGroup,
   NInputGroupLabel,
@@ -49,39 +61,42 @@ import {
 } from "naive-ui"
 import { nextTick, onMounted, ref, watch } from "vue"
 
-// CodeMirror 语言模式
-const Modes = [
-  "text/x-csrc",
-  "text/x-c++src",
-  "text/x-java",
-  "text/x-python",
-  "text/x-sh",
-  "text/x-csharp",
-  "text/javascript",
-  "text/x-kotlin",
-  "text/x-go"
-]
+let cmView: EditorView
+
+const langModes: { [key: number]: Extension } = {
+  0: cpp(),
+  1: cpp(),
+  2: java(),
+  3: python(),
+  4: StreamLanguage.define(shell),
+  5: StreamLanguage.define(csharp),
+  6: javascript(),
+  7: StreamLanguage.define(kotlin),
+  8: go()
+}
 
 const renderLabel = (option: LanguageOption) => {
   return [option.label]
 }
 
-const cmOptions = ref<EditorConfiguration>({
-  mode: Modes[0],
-  tabSize: 4,
-  smartIndent: true,
-  indentUnit: 4,
-  lineNumbers: true,
-  matchBrackets: true,
-  autoCloseBrackets: true,
-  scrollbarStyle: "overlay"
-})
-
 const language = ref<number>(0) // 当前选中的语言ID
 const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
 const editor = ref<HTMLTextAreaElement | null>(null)
 
-let cmEditor: Editor | null = null
+const themeCompartment = new Compartment()
+const langCompartment = new Compartment()
+const cmExtensions: Extension = [
+  [
+    bracketMatching(),
+    closeBrackets(),
+    highlightActiveLine(),
+    indentOnInput(),
+    lineNumbers()
+  ],
+  langCompartment.of(langModes[0]),
+  themeCompartment.of(githubLight),
+  keymap.of([indentWithTab])
+]
 
 const props = withDefaults(
   defineProps<{
@@ -98,8 +113,6 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string): void
-
   (e: "submit", value: SourceCode): void
 }>()
 
@@ -122,74 +135,44 @@ watch(
 watch(
   () => props.theme,
   (val) => {
-    if (val === "light") {
-      cmOptions.value.theme = "ttcn"
-    } else {
-      cmOptions.value.theme = "material-darker"
-    }
+    const t = val === "light" ? githubLight : githubDark
+    nextTick(() => {
+      cmView.dispatch({
+        effects: themeCompartment.reconfigure(t)
+      })
+    })
   },
   { immediate: true }
 )
 
 watch(language, (val) => {
-  cmOptions.value.mode = Modes[val]
+  cmView.dispatch({
+    effects: langCompartment.reconfigure(langModes[val])
+  })
 })
 
-watch(
-  cmOptions,
-  (val) => {
-    nextTick(() => {
-      cmEditor!.setOption("mode", val.mode)
-      cmEditor!.setOption("theme", val.theme)
-    })
-  },
-  { deep: true, immediate: true }
-)
-
-watch(
-  () => props.value,
-  (val) => {
-    nextTick(() => {
-      cmEditor!.setValue(val)
-    })
-  }
-)
-
 onMounted(() => {
-  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions.value)
-  cmEditor.setValue(props.value)
+  cmView = new EditorView({
+    doc: props.value,
+    parent: editor.value!,
+    extensions: cmExtensions
+  })
 })
 
 function submit() {
-  emit("submit", { language: language.value, code: cmEditor!.getValue() })
+  emit("submit", {
+    language: language.value,
+    code: cmView.state.doc.toString()
+  })
 }
 </script>
 
 <style scoped lang="scss">
 .code-editor {
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+}
+
+:deep(.cm-editor) {
   height: 100%;
-
-  .editor-wrapper {
-    margin-top: 5px;
-    height: calc(100% - 39px);
-  }
-
-  .editor-wrapper {
-    :deep(.CodeMirror) {
-      height: 100%;
-      font-size: 14px;
-      font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
-    }
-
-    &.dark {
-      :deep(.CodeMirror-overlayscroll-horizontal div),
-      :deep(.CodeMirror-overlayscroll-vertical div) {
-        width: 5px;
-        background-color: #5c6065;
-      }
-    }
-  }
 }
 </style>

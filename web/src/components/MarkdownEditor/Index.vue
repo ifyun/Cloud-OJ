@@ -1,26 +1,26 @@
-<!-- Markdown 编辑器 -->
 <template>
   <div class="markdown-editor">
-    <markdown-toolbar
-      style="margin-bottom: 2px"
-      @click="toolbarClick"
-      @insert-table="insertTable" />
-    <textarea ref="editor" />
+    <toolbar style="margin-bottom: 2px" @click="toolbarClick" />
+    <div ref="editor" class="editor" />
   </div>
 </template>
 
 <script setup lang="tsx">
 import { ApiPath } from "@/api"
+import { closeBrackets } from "@codemirror/autocomplete"
+import { indentWithTab } from "@codemirror/commands"
+import { markdown } from "@codemirror/lang-markdown"
+import { Compartment, type Extension } from "@codemirror/state"
+import {
+  EditorView,
+  highlightActiveLine,
+  keymap,
+  lineNumbers
+} from "@codemirror/view"
+import { githubDark } from "@fsegurai/codemirror-theme-github-dark"
+import { githubLight } from "@fsegurai/codemirror-theme-github-light"
 import { ArchiveRound as ArchiveIcon } from "@vicons/material"
-import CodeMirror, { type Editor, type EditorConfiguration } from "codemirror"
-import "codemirror/addon/scroll/simplescrollbars"
-import "codemirror/addon/scroll/simplescrollbars.css"
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/markdown/markdown.js"
-import "codemirror/theme/ayu-dark.css"
-import "codemirror/theme/juejin.css"
-import "codemirror/theme/material-darker.css"
-import debounce from "lodash/debounce"
+import { debounce } from "lodash-es"
 import {
   NIcon,
   NText,
@@ -31,43 +31,43 @@ import {
   useDialog
 } from "naive-ui"
 import { nextTick, onMounted, ref, watch } from "vue"
-import MarkdownToolbar from "./Toolbar.vue"
+import Toolbar from "./Toolbar.vue"
 
-let cmEditor: Editor | null = null
+let cmView: EditorView
 const action = ApiPath.PROBLEM_IMAGE
 
 const dialog = useDialog()
 
-const cmOptions: EditorConfiguration = {
-  mode: {
-    name: "text/x-markdown",
-    highlightFormatting: true
-  },
-  scrollbarStyle: "simple",
-  lineNumbers: true,
-  lineWrapping: true,
-  tabSize: 4
-}
+const debouncedUpdate = debounce((doc) => {
+  modelValue.value = doc
+}, 300)
 
-const editor = ref<HTMLTextAreaElement | null>(null)
+const readOnlyCompartment = new Compartment()
+const themeCompartment = new Compartment()
+const cmExtensions: Extension = [
+  [closeBrackets(), highlightActiveLine(), lineNumbers()],
+  markdown(),
+  themeCompartment.of(githubLight),
+  keymap.of([indentWithTab]),
+  EditorView.lineWrapping,
+  EditorView.updateListener.of((update) => {
+    debouncedUpdate(update.state.doc.toString())
+  })
+]
 
+const editor = ref<HTMLDivElement | null>(null)
+
+const modelValue = defineModel<string>({ default: "" })
 const props = withDefaults(
   defineProps<{
-    modelValue: string
     readOnly: boolean
     theme: "light" | "dark"
     headers: Record<string, string>
   }>(),
   {
-    modelValue: "",
     readOnly: false
   }
 )
-
-const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
-  (e: "update:modelValue", value: string): void
-}>()
 
 const fileCount = ref<number>(0)
 const uploaded = ref<boolean>(false)
@@ -76,46 +76,48 @@ const uploadRef = ref<UploadInst | null>(null)
 watch(
   () => props.readOnly,
   (val) => {
-    nextTick(() => cmEditor!.setOption("readOnly", val))
+    nextTick(() => {
+      cmView.dispatch({
+        effects: readOnlyCompartment.reconfigure(EditorView.editable.of(val))
+      })
+    })
   }
 )
 
 watch(
   () => props.theme,
   (val) => {
+    const t = val === "light" ? githubLight : githubDark
     nextTick(() => {
-      if (val === "light") {
-        cmEditor!.setOption("theme", "juejin")
-      } else {
-        cmEditor!.setOption("theme", "ayu-dark")
-      }
+      cmView.dispatch({
+        effects: themeCompartment.reconfigure(t)
+      })
     })
   },
   { immediate: true }
 )
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    // 内外数据相等时不更新 CodeMirror 编辑器
-    if (cmEditor!.getValue() !== val) {
-      nextTick(() => {
-        cmEditor!.setValue(val)
+watch(modelValue, (val) => {
+  // 内外数据相等时不更新 CodeMirror 编辑器
+  if (cmView.state.doc.toString() !== val) {
+    nextTick(() => {
+      cmView.dispatch({
+        changes: {
+          from: 0,
+          to: cmView.state.doc.length,
+          insert: val
+        }
       })
-    }
+    })
   }
-)
+})
 
 onMounted(() => {
-  cmEditor = CodeMirror.fromTextArea(editor.value!, cmOptions)
-  cmEditor.setValue(props.modelValue)
-  cmEditor.on(
-    "change",
-    debounce((cm: Editor) => {
-      // 改变内部数据，触发 emit
-      emit("update:modelValue", cm.getValue())
-    }, 250)
-  )
+  cmView = new EditorView({
+    doc: modelValue.value,
+    parent: editor.value!,
+    extensions: cmExtensions
+  })
 })
 
 function toolbarClick(key: string) {
@@ -130,10 +132,10 @@ function toolbarClick(key: string) {
       addSymbol("> ", true)
       break
     case "info":
-      addBlock("::: info", ":::")
+      addBlock(":::info", ":::")
       break
     case "warning":
-      addBlock("::: warning", ":::")
+      addBlock(":::warning", ":::")
       break
     case "code":
       addBlock("```", "```")
@@ -155,16 +157,8 @@ function toolbarClick(key: string) {
   }
 }
 
-/**
- * 插入表格
- * @param value {cols, rows}
- */
-function insertTable(value: any) {
-  addTable(value.cols, value.rows)
-}
-
 function hasSelected(): boolean | undefined {
-  return cmEditor?.somethingSelected()
+  return cmView.state.selection.ranges.some((r) => !r.empty)
 }
 
 /**
@@ -177,23 +171,32 @@ function addSymbol(symbol: string, onlyLeft = false) {
     return
   }
 
-  const { anchor, head } = cmEditor!.listSelections()[0]!
+  let { anchor, head } = cmView.state.selection.main
 
   if (!onlyLeft) {
-    cmEditor?.setCursor(anchor)
-    cmEditor?.replaceSelection(symbol)
-  } else if (head.ch != 0) {
-    // 只在左边插入说明是块级元素，不在行首另起一行
-    cmEditor?.replaceSelection("\n\n")
-    head.line += 2
-    head.ch = 0
+    cmView.dispatch({
+      changes: { from: anchor, to: anchor, insert: symbol },
+      selection: { anchor: anchor + symbol.length }
+    })
+  } else {
+    const headLine = cmView.state.doc.lineAt(head)
+    if (headLine.from !== head) {
+      // 只在左边插入说明是块级元素，不在行首另起一行
+      cmView.dispatch({
+        changes: { from: head, to: head, insert: "\n\n" },
+        selection: { anchor: head + 2 }
+      })
+
+      head += 2
+    }
   }
 
-  cmEditor?.setCursor(head)
-  cmEditor?.replaceSelection(symbol)
-  head.ch += symbol.length
-  cmEditor?.setCursor(head) // 光标移动到符号中间（右侧）
-  cmEditor?.focus()
+  cmView.dispatch({
+    changes: { from: head, to: head, insert: symbol },
+    selection: { anchor: head + symbol.length }
+  })
+  head = head + symbol.length
+  cmView.focus()
 }
 
 /**
@@ -206,81 +209,33 @@ function addBlock(start: string, end: string) {
     return
   }
 
-  const head = cmEditor?.getCursor()!
+  let head = cmView.state.selection.main.head
+  const headLine = cmView.state.doc.lineAt(head)
 
-  if (head.ch != 0) {
+  if (headLine.from !== head) {
     // 不在行首，另起一行
-    cmEditor?.replaceSelection("\n\n")
-    head.line += 2
-    head.ch = 0
+    cmView.dispatch({
+      changes: { from: head, to: head, insert: "\n\n" },
+      selection: { anchor: head + 2 }
+    })
+
+    head = cmView.state.selection.main.anchor
   }
 
-  cmEditor?.setCursor(head)
-  cmEditor?.replaceSelection(`${start}\n\n${end}`)
-  head.line += 1
-  cmEditor?.setCursor(head)
-  cmEditor?.focus()
-}
-
-/**
- * 插入表格
- * @param cols 列数
- * @param rows 行数
- */
-function addTable(cols: number, rows: number) {
-  if (hasSelected()) {
-    return
-  }
-
-  const headCell = "| Name\t\t"
-  const dividerCell = "|:---------:"
-  const bodyCell = "|\t\t\t"
-
-  const header: Array<string> = []
-  const divider: Array<string> = []
-  const body: Array<string> = []
-  const bodyRows: Array<string> = []
-
-  for (let i = 0; i < cols; i += 1) {
-    header.push(headCell)
-    divider.push(dividerCell)
-    body.push(bodyCell)
-  }
-
-  header.push("|")
-  divider.push("|")
-  body.push("|")
-
-  for (let i = 0; i < rows; i += 1) {
-    bodyRows.push(body.join(""))
-    bodyRows.push("\n")
-  }
-
-  const content = `${header.join("")}\n${divider.join("")}\n${bodyRows.join(
-    ""
-  )}`
-  const head = cmEditor?.getCursor()!
-
-  if (head.ch != 0) {
-    // 不在行首，另起一行
-    cmEditor?.replaceSelection("\n\n")
-    head.line += 2
-    head.ch = 0
-  }
-
-  cmEditor?.setCursor(head)
-  cmEditor?.replaceSelection(content)
-  head.line += rows + 2
-  cmEditor?.setCursor(head)
-  cmEditor?.focus()
+  cmView.dispatch({
+    changes: { from: head, to: head, insert: `${start}\n\n${end}` },
+    selection: { anchor: head + start.length + 1 } // 光标移到中间空行
+  })
+  cmView.focus()
 }
 
 function addImage(link: boolean) {
   if (link) {
     addSymbol("![]()", true)
-    const head = cmEditor?.getCursor()!
-    head.ch -= 1
-    cmEditor?.setCursor(head)
+    const head = cmView.state.selection.main.head
+    cmView.dispatch({
+      selection: { anchor: head - 1 }
+    })
   } else {
     uploaded.value = false
     fileCount.value = 0
@@ -323,49 +278,24 @@ function uploadFinish(options: {
   uploaded.value = true
   let name = (options.event?.target as XMLHttpRequest).response
   addSymbol(`![](${name})`, true)
+  dialog.destroyAll()
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .markdown-editor {
-  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
-  .CodeMirror {
-    font-size: 14px;
-    font-family: Consolas, Monaco, monospace;
-    height: calc(100% - 30px);
+  .editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 
-    &.cm-s-elegant {
-      border-right: 1px solid #f7f7f7;
-
-      .CodeMirror-gutters {
-        border-right: none;
-      }
-    }
-
-    &.cm-s-ayu-dark {
-      .CodeMirror-scrollbar-filler {
-        background-color: transparent;
-      }
-
-      .CodeMirror-simplescroll-horizontal {
-        background: transparent;
-
-        div {
-          border: none;
-          background-color: #28282c;
-        }
-      }
-
-      .CodeMirror-simplescroll-vertical {
-        background: transparent;
-
-        div {
-          border: none;
-          background-color: #28282c;
-        }
-      }
-    }
+  :deep(.cm-editor) {
+    flex: 1;
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="submission">
     <Skeleton v-if="loading" />
     <div v-else class="content">
-      <n-tabs type="line">
+      <n-tabs type="card">
         <n-tab-pane
           name="problem"
           tab="题目描述"
@@ -60,14 +60,12 @@
         </n-tab-pane>
       </n-tabs>
       <!-- 代码编辑器 -->
-      <div>
-        <code-editor
-          :value="code"
-          :theme="theme"
-          :loading="disableSubmit"
-          :available-languages="problem.languages"
-          @submit="submitClick" />
-      </div>
+      <code-editor
+        :value="code"
+        :theme="theme"
+        :loading="disableSubmit"
+        :available-languages="problem.languages"
+        @submit="submitClick" />
     </div>
   </div>
   <n-modal
@@ -93,7 +91,7 @@ import {
   PrintRound,
   TimerOutlined
 } from "@vicons/material"
-import _ from "lodash"
+import { throttle } from "lodash-es"
 import {
   NH3,
   NIcon,
@@ -130,7 +128,7 @@ const isLoggedIn = computed(() => store.user.isLoggedIn)
 let problemId: number | null = null
 let contestId: number | null = null
 
-const submitClick = _.throttle(submit, 1000)
+const submitClick = throttle(submit, 1000)
 
 onBeforeMount(() => {
   const reg = /^\d+$/
@@ -230,7 +228,6 @@ function submit(data: SourceCode) {
   );
   width: calc(100% - var(--layout-padding) * 4);
   padding: calc(var(--layout-padding) * 2);
-  overflow: hidden;
 
   .content {
     height: 100%;

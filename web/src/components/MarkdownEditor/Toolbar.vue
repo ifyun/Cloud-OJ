@@ -42,16 +42,6 @@
     </n-button>
     <n-dropdown
       placement="bottom-start"
-      :show-arrow="true"
-      :options="tableOptions">
-      <n-button tertiary>
-        <n-icon :size="iconSize">
-          <table-icon />
-        </n-icon>
-      </n-button>
-    </n-dropdown>
-    <n-dropdown
-      placement="bottom-start"
       size="small"
       :show-arrow="true"
       :options="imgOptions"
@@ -65,72 +55,24 @@
   </n-button-group>
 </template>
 
-<script lang="tsx">
-export default {
-  name: "MarkdownToolbar"
-}
-</script>
-
 <script setup lang="tsx">
-import {
-  NSpace,
-  NButtonGroup,
-  NButton,
-  NInputNumber,
-  NDropdown,
-  NIcon
-} from "naive-ui"
-import {
-  FormatItalicRound as ItalicIcon,
-  FormatBoldRound as BoldIcon,
-  FormatQuoteRound as QuoteIcon,
-  InfoOutlined as InfoIcon,
-  WarningAmberRound as WarningIcon,
-  CodeRound as CodeIcon,
-  FormatListBulletedRound as ListUlIcon,
-  FormatListNumberedRound as ListOlIcon,
-  TableChartOutlined as TableIcon,
-  AddPhotoAlternateOutlined as ImageIcon,
-  AddLinkRound as LinkIcon,
-  FileUploadOutlined as UploadIcon
-} from "@vicons/material"
 import { renderIcon } from "@/utils"
+import {
+  FormatBoldRound as BoldIcon,
+  CodeRound as CodeIcon,
+  AddPhotoAlternateOutlined as ImageIcon,
+  InfoOutlined as InfoIcon,
+  FormatItalicRound as ItalicIcon,
+  AddLinkRound as LinkIcon,
+  FormatListNumberedRound as ListOlIcon,
+  FormatListBulletedRound as ListUlIcon,
+  FormatQuoteRound as QuoteIcon,
+  FileUploadOutlined as UploadIcon,
+  WarningAmberRound as WarningIcon
+} from "@vicons/material"
+import { NButton, NButtonGroup, NDropdown, NIcon } from "naive-ui"
 
 const iconSize = 20
-
-let cols = 3
-let rows = 3
-
-// region 表格选项
-const tableOptions = [
-  {
-    key: "header",
-    type: "render",
-    render: () => (
-      <NSpace vertical={true} style="padding: 0 6px">
-        <NInputNumber
-          value={cols}
-          onUpdateValue={(value) => (cols = value as number)}
-          style="width: 120px">
-          {{ suffix: () => "列" }}
-        </NInputNumber>
-        <NInputNumber
-          value={rows}
-          onUpdateValue={(value) => (rows = value as number)}
-          style="width: 120px">
-          {{ suffix: () => "行" }}
-        </NInputNumber>
-        <NButton
-          type="primary"
-          onClick={() => insertTable()}
-          style="width: 100%">
-          插入表格
-        </NButton>
-      </NSpace>
-    )
-  }
-]
-// endregion
 
 // 图片选项
 const imgOptions = [
@@ -147,18 +89,8 @@ const imgOptions = [
 ]
 
 const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
-  (e: "insertTable", value: any): void
-  // eslint-disable-next-line no-unused-vars
   (e: "click", value: string): void
 }>()
-
-function insertTable() {
-  emit("insertTable", {
-    cols: cols,
-    rows: rows
-  })
-}
 
 function click(key: string) {
   emit("click", key)

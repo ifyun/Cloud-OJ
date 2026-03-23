@@ -3,7 +3,7 @@
     <n-page-header class="page-header" @back="back">
       <template #title>{{ title }}</template>
       <template #extra>
-        <n-space size="small">
+        <n-flex size="small">
           <n-button type="primary" size="small" @click="handleSave">
             <template #icon>
               <save-icon />
@@ -16,11 +16,11 @@
             </template>
             帮助
           </n-button>
-        </n-space>
+        </n-flex>
       </template>
     </n-page-header>
     <!-- 表单 -->
-    <n-space class="editor-from" vertical size="small">
+    <n-flex vertical size="small">
       <n-spin :show="loading">
         <n-form
           ref="problemForm"
@@ -87,26 +87,25 @@
           </n-form-item>
         </n-form>
       </n-spin>
-    </n-space>
+    </n-flex>
     <!-- 题目内容编辑器 -->
-    <div class="editor-area">
+    <n-flex style="flex: 1">
       <markdown-editor
         v-model="problem.description"
         :read-only="loading"
         :theme="theme"
-        :headers="headers" />
-      <div>
-        <markdown-view
-          :content="problem.description"
-          :theme="theme"
-          style="
-            margin-top: 30px;
-            padding: 0 8px 0 8px;
-            overflow: auto;
-            max-height: calc(100% - 30px);
-          " />
-      </div>
-    </div>
+        :headers="headers"
+        style="flex: 1" />
+      <markdown-view
+        :content="problem.description"
+        :theme="theme"
+        style="
+          flex: 1;
+          margin-top: 30px;
+          padding: 0 8px 0 8px;
+          overflow: auto;
+        " />
+    </n-flex>
   </div>
   <n-drawer v-model:show="showHelp" :width="750" placement="right">
     <n-drawer-content
@@ -139,6 +138,7 @@ import {
   NDrawer,
   NDrawerContent,
   NDynamicTags,
+  NFlex,
   NForm,
   NFormItem,
   NFormItemGridItem,
@@ -148,12 +148,11 @@ import {
   NPageHeader,
   NScrollbar,
   NSelect,
-  NSpace,
   NSpin,
   NTooltip,
   useMessage
 } from "naive-ui"
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { computed, inject, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import MarkdownHelp from "./help.md?raw"
 
@@ -281,13 +280,6 @@ onMounted(() => {
   }
 })
 
-onBeforeUnmount(() => {
-  // 移除最大高度样式，避免其他页面不显示滚动条
-  document
-    .querySelector(".admin .n-scrollbar-content")
-    ?.classList.remove("layout-max-height")
-})
-
 function back() {
   router.back()
 }
@@ -350,7 +342,6 @@ function save() {
 
 <style scoped lang="scss">
 .problem-editor {
-  width: calc(100% - var(--layout-padding) * 2);
   padding: var(--layout-padding);
   display: flex;
   flex: 1;
@@ -358,22 +349,6 @@ function save() {
 
   .page-header {
     margin-bottom: 12px;
-  }
-
-  .editor-area {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-
-    & > * {
-      flex: 1;
-      margin-left: 12px;
-      height: auto;
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
   }
 }
 </style>

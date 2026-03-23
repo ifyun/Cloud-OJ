@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import "katex/dist/katex.min.css"
 import rehypeKatex from "rehype-katex"
 import rehypeRaw from "rehype-raw"
 import rehypeStringify from "rehype-stringify"
