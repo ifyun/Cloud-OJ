@@ -1,7 +1,7 @@
 <template>
   <n-flex vertical size="small" class="code-editor">
     <n-input-group>
-      <n-input-group-label :style="{ width: '110px' }">
+      <n-input-group-label :style="{ width: '100px' }">
         选择语言
       </n-input-group-label>
       <n-select
@@ -17,13 +17,14 @@
         提交运行
       </n-button>
     </n-input-group>
-    <div
-      ref="editor"
-      style="display: flex; flex-direction: column; flex: 1; min-height: 0" />
+    <n-scrollbar>
+      <div ref="editor" class="cm-parent"></div>
+    </n-scrollbar>
   </n-flex>
 </template>
 
 <script setup lang="ts">
+import { cmDark, cmLight } from "@/theme/cm-theme"
 import type { LanguageOption, SourceCode } from "@/type"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
@@ -48,8 +49,6 @@ import {
   keymap,
   lineNumbers
 } from "@codemirror/view"
-import { githubDark } from "@fsegurai/codemirror-theme-github-dark"
-import { githubLight } from "@fsegurai/codemirror-theme-github-light"
 import { SendRound } from "@vicons/material"
 import {
   NButton,
@@ -57,6 +56,7 @@ import {
   NIcon,
   NInputGroup,
   NInputGroupLabel,
+  NScrollbar,
   NSelect
 } from "naive-ui"
 import { nextTick, onMounted, ref, watch } from "vue"
@@ -94,7 +94,7 @@ const cmExtensions: Extension = [
     lineNumbers()
   ],
   langCompartment.of(langModes[0]),
-  themeCompartment.of(githubLight),
+  themeCompartment.of(cmLight),
   keymap.of([indentWithTab])
 ]
 
@@ -135,7 +135,7 @@ watch(
 watch(
   () => props.theme,
   (val) => {
-    const t = val === "light" ? githubLight : githubDark
+    const t = val === "light" ? cmLight : cmDark
     nextTick(() => {
       cmView.dispatch({
         effects: themeCompartment.reconfigure(t)
@@ -168,11 +168,26 @@ function submit() {
 </script>
 
 <style scoped lang="scss">
-.code-editor {
-  min-height: 0;
+:deep(.n-scrollbar) {
+  > .n-scrollbar-container {
+    display: flex;
+    flex-direction: column;
+
+    > .n-scrollbar-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }
 
-:deep(.cm-editor) {
-  height: 100%;
+.cm-parent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  :deep(.cm-editor) {
+    flex: 1;
+  }
 }
 </style>

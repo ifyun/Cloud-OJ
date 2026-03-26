@@ -9,7 +9,7 @@
     <n-form-item path="username">
       <n-input v-model:value="user.username" placeholder="用户名 (字母和数字)">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <username-icon />
           </n-icon>
         </template>
@@ -22,7 +22,7 @@
         maxlength="16"
         :input-props="{ autocomplete: 'off' }">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <nick-name-icon />
           </n-icon>
         </template>
@@ -35,7 +35,7 @@
         maxlength="16"
         :input-props="{ autocomplete: 'off' }">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <real-name-icon />
           </n-icon>
         </template>
@@ -49,7 +49,7 @@
         maxlength="16"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <password-icon />
           </n-icon>
         </template>
@@ -63,7 +63,7 @@
         maxlength="16"
         :input-props="{ autocomplete: 'new-password' }">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <password-icon />
           </n-icon>
         </template>
@@ -72,7 +72,7 @@
     <n-form-item path="email">
       <n-input v-model:value="user.email" placeholder="邮箱 (可选)">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <mail-icon />
           </n-icon>
         </template>
@@ -81,7 +81,7 @@
     <n-form-item path="section">
       <n-input v-model:value="user.section" placeholder="来自哪里 (可选)">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <building />
           </n-icon>
         </template>
@@ -106,10 +106,10 @@ import { ErrorMessage, User } from "@/api/type"
 import { setTitle } from "@/utils"
 import { Building } from "@vicons/fa"
 import {
-  AccountBoxRound as NickNameIcon,
-  AccountCircleFilled as RealNameIcon,
-  LockRound as PasswordIcon,
   MailRound as MailIcon,
+  AccountBoxRound as NickNameIcon,
+  LockRound as PasswordIcon,
+  AccountCircleFilled as RealNameIcon,
   PersonPinCircleRound as UsernameIcon
 } from "@vicons/material"
 import {

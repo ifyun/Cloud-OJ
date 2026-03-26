@@ -85,14 +85,14 @@
   }
 
   p code {
-    font-family: v-mono, SFMono-Regular, Menlo, Consolas, Courier, monospace;
+    font-family: var(--code-font);
     background-color: #f8f8f8;
     border-radius: 2px;
     padding: 2px 4px;
   }
 
   pre {
-    font-family: v-mono, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--code-font);
     background-color: #f8f8f8;
     padding: 15px;
     border-radius: 4px;

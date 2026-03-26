@@ -4,7 +4,7 @@
     <n-form-item label="用户名" path="username">
       <n-input v-model:value="user.username">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <user-icon />
           </n-icon>
         </template>
@@ -13,7 +13,7 @@
     <n-form-item label="密码" path="password">
       <n-input v-model:value="user.password" type="password" maxlength="16">
         <template #prefix>
-          <n-icon class="input-prefix-icon">
+          <n-icon>
             <password-icon />
           </n-icon>
         </template>

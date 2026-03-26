@@ -53,6 +53,7 @@ export default {
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
+import { EmptyData, LanguageTag } from "@/components"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -71,9 +72,8 @@ import {
   useMessage
 } from "naive-ui"
 import { onMounted, ref } from "vue"
-import { EmptyData, LanguageTag } from "@/components"
 
-const props = defineProps<{ problemId: string }>()
+const props = defineProps<{ problemId: number }>()
 
 const message = useMessage()
 const loading = ref<boolean>(true)
@@ -88,7 +88,7 @@ onMounted(() => {
 
 function querySolutions() {
   loading.value = true
-  UserApi.getSolutions(1, 15, 1, props.problemId)
+  UserApi.getSolutions(1, 15, 1, props.problemId.toString())
     .then((data) => {
       solutions.value = data
     })

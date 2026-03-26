@@ -37,9 +37,6 @@ export const useAppStore = defineStore("app", {
     },
     setError(value: ErrorMessage | null) {
       this.error = value
-      if (value != null) {
-        this.router.replace({ name: "error" })
-      }
     }
   }
 })

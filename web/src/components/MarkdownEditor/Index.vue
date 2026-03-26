@@ -1,7 +1,7 @@
 <template>
   <div class="markdown-editor">
     <toolbar style="margin-bottom: 2px" @click="toolbarClick" />
-    <div ref="editor" class="editor" />
+    <div ref="editor" class="editor"></div>
   </div>
 </template>
 
@@ -195,7 +195,6 @@ function addSymbol(symbol: string, onlyLeft = false) {
     changes: { from: head, to: head, insert: symbol },
     selection: { anchor: head + symbol.length }
   })
-  head = head + symbol.length
   cmView.focus()
 }
 

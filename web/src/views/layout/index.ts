@@ -1,15 +1,6 @@
-import TopNavbar from "./TopNavbar.vue"
-import BottomInfo from "./BottomInfo.vue"
-import UserMenu from "./UserMenu.vue"
-import AdminNavbar from "./AdminNavbar.vue"
-import ThemeSwitch from "./ThemeSwitch.vue"
-import RouterLayout from "./RouterLayout.vue"
-
-export {
-  TopNavbar,
-  BottomInfo,
-  UserMenu,
-  AdminNavbar,
-  ThemeSwitch,
-  RouterLayout
-}
+export { default as AdminNav } from "./AdminNav.vue"
+export { default as BottomInfo } from "./BottomInfo.vue"
+export { default as NavMenu } from "./NavMenu.vue"
+export { default as RouterLayout } from "./RouterLayout.vue"
+export { default as ThemeSwitch } from "./ThemeSwitch.vue"
+export { default as UserMenu } from "./UserMenu.vue"

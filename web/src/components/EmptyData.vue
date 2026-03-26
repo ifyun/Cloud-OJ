@@ -6,11 +6,11 @@
   </n-flex>
 </template>
 
-<script setup>
-import { inject } from "vue"
-import { NFlex, NText } from "naive-ui"
-import Empty from "@/assets/empty.svg?raw"
+<script setup lang="ts">
 import EmptyDark from "@/assets/empty-dark.svg?raw"
+import Empty from "@/assets/empty.svg?raw"
+import { NFlex, NText } from "naive-ui"
+import { inject } from "vue"
 
-const theme = inject("themeStr")
+const theme = inject("themeStr") as "light" | "dark"
 </script>

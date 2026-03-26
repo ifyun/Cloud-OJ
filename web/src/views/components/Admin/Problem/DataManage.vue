@@ -65,7 +65,7 @@
         Special Judge ({{ isSPJ ? "已启用" : "未启用" }})
       </n-divider>
       <n-flex v-show="!loading" vertical>
-        <div ref="editor" />
+        <div ref="editor"></div>
         <n-button-group size="small">
           <n-button secondary type="primary" @click="saveSPJ">
             提交编译
@@ -89,6 +89,7 @@ import { ApiPath } from "@/api"
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, ProblemData, TestData } from "@/api/type"
 import { useStore } from "@/store"
+import { cmDark, cmLight } from "@/theme/cm-theme"
 import { setTitle } from "@/utils"
 import { closeBrackets } from "@codemirror/autocomplete"
 import { indentWithTab } from "@codemirror/commands"
@@ -132,8 +133,6 @@ import {
 import { computed, nextTick, onBeforeMount, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import SPJDeclare from "./spj.cpp?raw"
-import { githubLight } from "@fsegurai/codemirror-theme-github-light"
-import { githubDark } from "@fsegurai/codemirror-theme-github-dark"
 
 let cmView: EditorView
 
@@ -146,6 +145,7 @@ const router = useRouter()
 const dialog = useDialog()
 const message = useMessage()
 
+const props = defineProps<{ id: number }>()
 const loading = ref<boolean>(false)
 const problemData = ref<ProblemData | null>(null)
 
@@ -159,7 +159,7 @@ const cmExtensions: Extension = [
     lineNumbers()
   ],
   cpp(),
-  themeCompartment.of(githubLight),
+  themeCompartment.of(cmLight),
   keymap.of([indentWithTab])
 ]
 
@@ -278,7 +278,6 @@ const title = computed(() => {
   return `${problemData.value.pid}. ${problemData.value.title}`
 })
 
-// upload token
 const headers = computed(() => {
   return {
     Authorization: `Baerer ${store.user.userInfo!.token}`
@@ -306,7 +305,7 @@ const disableSaveConf = computed<boolean>(() => {
 watch(
   () => store.app.theme,
   (val) => {
-    const t = val == null ? githubLight : githubDark
+    const t = val == null ? cmLight : cmDark
     nextTick(() => {
       cmView.dispatch({
         effects: themeCompartment.reconfigure(t)
@@ -318,20 +317,15 @@ watch(
 
 onBeforeMount(() => {
   setTitle(route.meta.title as string)
+  queryData(props.id)
 })
 
 onMounted(() => {
-  const reg = /^\d+$/
-  const id = route.params.id?.toString()
   cmView = new EditorView({
     doc: SPJDeclare,
     parent: editor.value!,
     extensions: cmExtensions
   })
-
-  if (id && reg.test(id)) {
-    queryData(Number(id))
-  }
 })
 
 function queryData(id: number) {
@@ -356,7 +350,7 @@ function queryData(id: number) {
 }
 
 function back() {
-  router.back()
+  router.replace({ name: "problem_admin" })
 }
 
 async function beforeUpload(options: { file: UploadFileInfo }) {
@@ -460,9 +454,3 @@ function saveScoreConf() {
     .finally(() => [(loading.value = false)])
 }
 </script>
-
-<style scoped lang="scss">
-:deep(.cm-editor) {
-  font-family: v-mono, SFMono-Regular, Consolas, monospace;
-}
-</style>
