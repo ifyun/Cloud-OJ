@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 
 const RouterLayout = () => import("@/views/layout/RouterLayout.vue")
 const Auth = () => import("@/views/components/Auth/Index.vue")
-const Front = () => import("@/views/FrontRoot.vue")
+const FrontRoot = () => import("@/views/FrontRoot.vue")
 const ProblemList = () => import("@/views/components/Problems.vue")
 const ContestList = () => import("@/views/components/Contests.vue")
 const ContestProblemList = () =>
@@ -14,10 +14,10 @@ const Submission = () => import("@/views/components/Submission/Index.vue")
 const HelpDoc = () => import("@/views/components/Help.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
 const AccountEditor = () => import("@/views/components/Account/Editor.vue")
-const NotFound = () => import("@/views/components/NotFound.vue")
-const ErrorPage = () => import("@/views/components/Error.vue")
+const NotFound = () => import("@/views/NotFound.vue")
+const Error = () => import("@/views/components/Error.vue")
 
-const Admin = () => import("@/views/AdminRoot.vue")
+const AdminRoot = () => import("@/views/AdminRoot.vue")
 const AdminOverview = () =>
   import("@/views/components/Admin/Overview/Index.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
@@ -39,7 +39,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/auth/:tab",
+      path: "/:catchAll(.*)",
+      name: "404",
+      meta: {
+        title: "404"
+      },
+      component: NotFound
+    },
+    {
+      path: "/auth/:tab(login|signup)",
       name: "auth",
       component: Auth,
       props: (route) => ({
@@ -49,8 +57,8 @@ const router = createRouter({
     {
       path: "/",
       name: "index",
-      redirect: "/problems",
-      component: Front,
+      redirect: { name: "problems" },
+      component: FrontRoot,
       children: [
         {
           path: "/problems",
@@ -69,11 +77,14 @@ const router = createRouter({
           component: ContestList
         },
         {
-          path: "/contests/:cid",
+          path: "/contests/:cid(\\d+)",
           name: "contest_problems",
+          meta: {
+            requiresAuth: true
+          },
           component: ContestProblemList,
           props: (route) => ({
-            cid: route.params.cid
+            cid: Number(route.params.cid)
           })
         },
         {
@@ -85,20 +96,20 @@ const router = createRouter({
           component: Scoreboard
         },
         {
-          path: "/scoreboard/:cid",
+          path: "/scoreboard/:cid(\\d+)",
           name: "scoreboard_contest",
           component: ScoreboardContest,
           props: (route) => ({
-            cid: route.params.cid
+            cid: Number(route.params.cid)
           })
         },
         {
-          path: "/submission/:pid",
+          path: "/submission/:pid(\\d+)/:cid(\\d+)?",
           name: "submission",
           component: Submission,
           props: (route) => ({
-            pid: route.params.pid,
-            cid: route.query.cid
+            pid: Number(route.params.pid),
+            cid: route.params.cid ? Number(route.params.cid) : undefined
           })
         },
         {
@@ -110,15 +121,19 @@ const router = createRouter({
           component: HelpDoc
         },
         {
-          path: "/account/:uid?",
+          path: "/account/:uid(\\d+)?",
           name: "account",
-          component: Account
+          component: Account,
+          props: (route) => ({
+            uid: route.params.uid ? Number(route.params.uid) : undefined
+          })
         },
         {
           path: "/account/edit",
           name: "edit_account",
           meta: {
-            title: "编辑个人信息"
+            title: "编辑个人信息",
+            requireAuth: true
           },
           component: AccountEditor
         },
@@ -128,23 +143,19 @@ const router = createRouter({
           meta: {
             title: "错误"
           },
-          component: ErrorPage
-        },
-        {
-          path: "/:catchAll(.*)",
-          name: "404",
-          meta: {
-            title: "404"
-          },
-          component: NotFound
+          component: Error
         }
       ]
     },
     {
       path: "/admin",
       name: "admin",
-      redirect: "/admin/overview",
-      component: Admin,
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true
+      },
+      redirect: { name: "admin_overview" },
+      component: AdminRoot,
       children: [
         {
           path: "overview",
@@ -170,22 +181,27 @@ const router = createRouter({
               component: ProblemAdmin
             },
             {
-              path: "edit/:id",
+              path: "edit/:id(\\d+)?",
               name: "edit_problem",
               meta: {
-                title: "编辑题目",
-                _title: "新建题目",
+                title: (route) => (route.params.id ? "编辑题目" : "新建题目"),
                 inBreadcrumb: true
               },
+              props: (route) => ({
+                id: route.params.id ? Number(route.params.id) : undefined
+              }),
               component: ProblemEditor
             },
             {
-              path: "data/:id",
+              path: "data/:id(\\d+)",
               name: "test_data",
               meta: {
                 title: "测试数据管理",
                 inBreadcrumb: true
               },
+              props: (route) => ({
+                id: Number(route.params.id)
+              }),
               component: TestData
             }
           ]
@@ -205,13 +221,15 @@ const router = createRouter({
               component: ContestAdmin
             },
             {
-              path: "edit/:id",
+              path: "edit/:id(\\d+)?",
               name: "edit_contest",
               meta: {
-                title: "编辑竞赛",
-                _title: "新建竞赛",
+                title: (route) => (route.params.id ? "编辑竞赛" : "新建竞赛"),
                 inBreadcrumb: true
               },
+              props: (route) => ({
+                id: route.params.id ? Number(route.params.id) : undefined
+              }),
               component: ContestEditor
             }
           ]

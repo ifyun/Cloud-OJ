@@ -1,7 +1,7 @@
 <template>
   <div class="contest-editor">
     <n-page-header class="page-header" @back="router.back()">
-      <template #title>{{ title }}</template>
+      <template #title>{{ headerTitle }}</template>
       <template #extra>
         <n-button
           v-if="showSaveButton"
@@ -86,13 +86,18 @@ import {
   useMessage
 } from "naive-ui"
 import { computed, onMounted, ref, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import {
+  type RouteLocationNormalizedGeneric,
+  useRoute,
+  useRouter
+} from "vue-router"
 import ProblemManage from "./ProblemManage.vue"
 
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
+const props = defineProps<{ id?: number }>()
 const contest = ref<Contest>(new Contest())
 const languageOptions = ref<Array<LanguageOption>>(LanguageOptions)
 const languages = ref<Array<number>>([])
@@ -130,13 +135,10 @@ const rules: FormRules = {
   }
 }
 
-const title = computed(() => {
+const headerTitle = computed(() => {
   if (create.value) {
-    return route.meta._title as string
-  }
-
-  if (typeof contest.value.contestId === "undefined") {
-    return ""
+    const t = route.meta.title as (r: RouteLocationNormalizedGeneric) => string
+    return t(route)
   } else {
     return contest.value.contestName
   }
@@ -161,14 +163,11 @@ watch(languages, (value) => {
 })
 
 onMounted(() => {
-  const reg = /^\d+$/
-  const id = route.params.id.toString()
-
-  if (id === "new") {
-    create.value = true
-  } else if (reg.test(id)) {
+  if (props.id) {
     loading.value = true
-    queryContest(Number(id))
+    queryContest(props.id)
+  } else {
+    create.value = true
   }
 })
 
@@ -212,19 +211,13 @@ function save() {
 
 <style scoped lang="scss">
 .contest-editor {
-  width: calc(100% - var(--layout-padding) * 2);
   padding: var(--layout-padding);
   display: flex;
+  flex: 1;
   flex-direction: column;
 
   .page-header {
     margin-bottom: 12px;
   }
-}
-</style>
-
-<style lang="scss">
-.contest-editor {
-  margin: 4px;
 }
 </style>

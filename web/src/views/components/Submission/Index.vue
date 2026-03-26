@@ -2,17 +2,17 @@
   <div class="submission">
     <Skeleton v-if="loading" />
     <div v-else class="content">
-      <n-tabs type="card">
+      <n-tabs type="card" style="flex: 1">
         <n-tab-pane
           name="problem"
           tab="题目描述"
           display-directive="show"
-          style="height: calc(100% - 54px)">
+          style="flex: 1; height: 0">
           <n-scrollbar>
             <n-h3 style="margin-bottom: 6px">
               {{ `${problem.problemId}.${problem.title}` }}
             </n-h3>
-            <n-space size="small">
+            <n-flex size="small">
               <n-tag type="success" size="small" round :bordered="false">
                 <template #icon>
                   <n-icon :component="HelpRound" />
@@ -37,7 +37,7 @@
                 </template>
                 输出限制 {{ problem.outputLimit }} MiB
               </n-tag>
-            </n-space>
+            </n-flex>
             <!-- 题目内容 -->
             <markdown-view
               :content="problem.description"
@@ -50,7 +50,7 @@
           name="solutions"
           tab="提交记录"
           display-directive="show"
-          style="height: calc(100% - 54px)">
+          style="flex: 1; height: 0">
           <n-scrollbar>
             <n-h3 style="margin-bottom: 6px">
               {{ `${problem.problemId}.${problem.title}` }}
@@ -65,7 +65,8 @@
         :theme="theme"
         :loading="disableSubmit"
         :available-languages="problem.languages"
-        @submit="submitClick" />
+        @submit="submitClick"
+        style="flex: 1" />
     </div>
   </div>
   <n-modal
@@ -93,11 +94,11 @@ import {
 } from "@vicons/material"
 import { throttle } from "lodash-es"
 import {
+  NFlex,
   NH3,
   NIcon,
   NModal,
   NScrollbar,
-  NSpace,
   NTabPane,
   NTabs,
   NTag,
@@ -111,9 +112,7 @@ import SolutionSingle from "./Solutions.vue"
 const store = useStore()
 const message = useMessage()
 
-const props = withDefaults(defineProps<{ pid: string; cid: string | null }>(), {
-  cid: null
-})
+const props = defineProps<{ pid: number; cid?: number }>()
 
 const loading = ref<boolean>(true)
 const showResult = ref<boolean>(false)
@@ -131,31 +130,16 @@ let contestId: number | null = null
 const submitClick = throttle(submit, 1000)
 
 onBeforeMount(() => {
-  const reg = /^\d+$/
-
-  if (props.cid != null && reg.test(props.cid)) {
-    contestId = Number(props.cid)
-  }
-
-  if (reg.test(props.pid)) {
-    problemId = Number(props.pid)
-    queryProblem()
-  } else {
-    store.app.setError({
-      status: 404,
-      error: "Not Found",
-      message: "找不到题目"
-    })
-  }
+  queryProblem()
 })
 
 /**
  * 获取题目数据
  */
 function queryProblem() {
-  if (contestId == null) {
+  if (!props.cid) {
     // 非竞赛题目
-    ProblemApi.getSingle(problemId!)
+    ProblemApi.getSingle(props.pid)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -168,7 +152,7 @@ function queryProblem() {
       })
   } else {
     // 竞赛题目
-    ContestApi.getProblem(contestId, problemId!)
+    ContestApi.getProblem(props.cid, props.pid)
       .then((data) => {
         setTitle(data.title)
         problem.value = data
@@ -222,34 +206,18 @@ function submit(data: SourceCode) {
 
 <style scoped lang="scss">
 .submission {
+  padding-top: calc(var(--layout-padding) * 2);
+  width: calc(100% - var(--layout-padding) * 4);
   height: calc(
     100vh - var(--layout-padding) *
-      4 - var(--header-height) - var(--footer-height)
+      2 - var(--header-height) - var(--footer-height)
   );
-  width: calc(100% - var(--layout-padding) * 4);
-  padding: calc(var(--layout-padding) * 2);
 
   .content {
     height: 100%;
     display: flex;
     flex-direction: row;
-
-    & > * {
-      flex: 1;
-      margin-left: 12px;
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
-
-    :deep(.n-scrollbar) {
-      .n-scrollbar-content {
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-      }
-    }
+    gap: 12px;
   }
 }
 </style>

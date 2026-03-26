@@ -1,7 +1,7 @@
 <template>
   <div class="markdown-editor">
     <toolbar style="margin-bottom: 2px" @click="toolbarClick" />
-    <div ref="editor" class="editor" />
+    <div ref="editor" class="editor"></div>
   </div>
 </template>
 

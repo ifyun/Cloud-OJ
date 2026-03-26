@@ -1,6 +1,6 @@
 <template>
-  <div class="contest-problem-tables">
-    <n-space vertical size="large">
+  <n-flex>
+    <n-flex vertical style="flex: 1; min-width: 0">
       <n-data-table
         :columns="columns1"
         :data="problems.data"
@@ -13,21 +13,22 @@
         @update:page="queryProblems">
         <template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
       </n-pagination>
-    </n-space>
-    <n-space vertical size="large">
+    </n-flex>
+    <n-flex vertical style="flex: 1; min-width: 0">
       <n-data-table :columns="columns2" :data="contestProblems" />
       <n-button
         type="primary"
         size="small"
         :disabled="!orderChanged"
-        @click="saveOrder">
+        @click="saveOrder"
+        style="align-self: flex-end">
         <template #icon>
           <n-icon :component="SaveRound" />
         </template>
         保存顺序
       </n-button>
-    </n-space>
-  </div>
+    </n-flex>
+  </n-flex>
 </template>
 
 <script setup lang="tsx">
@@ -43,9 +44,9 @@ import {
   NButton,
   NButtonGroup,
   NDataTable,
+  NFlex,
   NIcon,
   NPagination,
-  NSpace,
   NText,
   useDialog,
   useMessage
@@ -299,19 +300,3 @@ function remove(p: Problem) {
     })
 }
 </script>
-
-<style scoped lang="scss">
-.contest-problem-tables {
-  display: flex;
-  flex: 1;
-
-  > * {
-    flex: 1;
-    margin-left: 12px;
-
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-}
-</style>

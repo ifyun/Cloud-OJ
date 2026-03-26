@@ -235,7 +235,7 @@ const judgeData = [
 
   ul {
     margin: 0;
-    padding-left: 18px;
+    padding-left: 12px;
   }
 }
 </style>

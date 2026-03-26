@@ -27,9 +27,7 @@
               <playlist-add-round />
             </n-icon>
           </template>
-          <router-link :to="{ name: 'edit_contest', params: { id: 'new' } }">
-            创建竞赛
-          </router-link>
+          <router-link :to="{ name: 'edit_contest' }">创建竞赛</router-link>
         </n-button>
       </n-flex>
       <n-data-table
@@ -101,7 +99,11 @@ const message = useMessage()
 const dialog = useDialog()
 const notification = useNotification()
 
+let selectedContest: Contest | null
+let confirmDelete = ""
+
 const loading = ref<boolean>(true)
+const showOperations = ref<boolean>(false)
 const filter = ref<ContestFilter>({
   keyword: "",
   hideEnded: false
@@ -110,16 +112,10 @@ const pagination = ref({
   page: 1,
   pageSize: 15
 })
-
 const point = ref({
   x: 0,
   y: 0
 })
-
-const showOperations = ref<boolean>(false)
-
-let selectedContest: Contest | null
-let confirmDelete = ""
 
 const rowProps = (row: Contest): HTMLAttributes => {
   return {
@@ -168,7 +164,6 @@ const operations = [
   }
 ]
 
-// #region 表格列选项
 const contestColumns: DataTableColumns<Contest> = [
   {
     title: "状态",
@@ -219,7 +214,6 @@ const contestColumns: DataTableColumns<Contest> = [
     render: (row) => <NText>{calcTimeRange(row)}</NText>
   }
 ]
-// endregion
 
 const delRule = {
   required: true,

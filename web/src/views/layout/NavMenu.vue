@@ -1,5 +1,5 @@
 <template>
-  <n-flex size="large" align="center" class="top-nav">
+  <n-flex size="large" align="center" class="nav">
     <logo :size="40" />
     <div>
       <n-menu :value="routeName" mode="horizontal" :options="navMenuOptions" />
@@ -46,8 +46,8 @@ const navMenuOptions = [
 </script>
 
 <style scoped lang="scss">
-.top-nav {
-  height: calc(var(--header-height) - 1px);
+.nav {
+  height: 100%;
   padding: 0 calc(var(--layout-padding) * 2);
 }
 </style>

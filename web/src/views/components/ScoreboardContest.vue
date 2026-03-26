@@ -134,7 +134,7 @@ import {
 } from "vue"
 
 const props = defineProps<{
-  cid: string
+  cid: number
 }>()
 
 const store = useStore()
@@ -156,17 +156,8 @@ let contestId: number
 let timeout: number | undefined
 
 onMounted(() => {
-  const reg = /^\d+$/
-  if (reg.test(props.cid)) {
-    contestId = Number(props.cid)
-    queryRanking()
-  } else {
-    store.app.setError({
-      status: 404,
-      error: "Not Found",
-      message: "找不到竞赛"
-    })
-  }
+  contestId = Number(props.cid)
+  queryRanking()
 })
 
 onDeactivated(() => {

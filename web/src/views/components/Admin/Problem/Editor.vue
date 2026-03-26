@@ -1,7 +1,7 @@
 <template>
   <div class="problem-editor">
     <n-page-header class="page-header" @back="back">
-      <template #title>{{ title }}</template>
+      <template #title>{{ headerTitle }}</template>
       <template #extra>
         <n-flex size="small">
           <n-button type="primary" size="small" @click="handleSave">
@@ -107,7 +107,7 @@
         " />
     </n-flex>
   </div>
-  <n-drawer v-model:show="showHelp" :width="750" placement="right">
+  <n-drawer v-model:show="showHelp" :width="600" placement="right">
     <n-drawer-content
       title="Markdown 帮助"
       closable
@@ -127,13 +127,11 @@ import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem } from "@/api/type"
 import { MarkdownEditor, MarkdownView } from "@/components"
 import { useStore } from "@/store"
-import { setTitle } from "@/utils"
 import {
   HelpOutlineRound as HelpIcon,
   SaveOutlined as SaveIcon
 } from "@vicons/material"
 import {
-  type FormRules,
   NButton,
   NDrawer,
   NDrawerContent,
@@ -150,10 +148,15 @@ import {
   NSelect,
   NSpin,
   NTooltip,
-  useMessage
+  useMessage,
+  type FormRules
 } from "naive-ui"
 import { computed, inject, onMounted, ref, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import {
+  useRoute,
+  useRouter,
+  type RouteLocationNormalizedGeneric
+} from "vue-router"
 import MarkdownHelp from "./help.md?raw"
 
 const problemForm = ref<HTMLFormElement | null>(null)
@@ -163,6 +166,7 @@ const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
+const props = defineProps<{ id?: number }>()
 const problem = ref<Problem>(new Problem())
 const showHelp = ref<boolean>(false)
 const loading = ref<boolean>(false)
@@ -187,7 +191,6 @@ const ramOptions = [
   }
 ]
 
-/* 表单验证规则 */
 const rules: FormRules = {
   title: {
     required: true,
@@ -241,20 +244,13 @@ const helpDoc = computed(() => {
   return `\`\`\`\`markdown\n${MarkdownHelp}\n\`\`\`\`\n${MarkdownHelp}`
 })
 
-const title = computed<string>(() => {
+const headerTitle = computed<string>(() => {
   if (create.value) {
-    return route.meta._title as string
-  }
-
-  if (typeof problem.value.problemId === "undefined") {
-    return ""
+    const t = route.meta.title as (r: RouteLocationNormalizedGeneric) => string
+    return t(route)
   } else {
     return `${problem.value.problemId}. ${problem.value.title}`
   }
-})
-
-watch(title, (value) => {
-  setTitle(value)
 })
 
 watch(
@@ -265,18 +261,11 @@ watch(
 )
 
 onMounted(() => {
-  setTitle(route.meta.title as string)
-  document
-    .querySelector(".admin .n-scrollbar-content")
-    ?.classList.add("layout-max-height")
-  const reg = /^\d+$/
-  const id = route.params.id?.toString()
-
-  if (id && id === "new") {
-    create.value = true
-  } else if (id && reg.test(id)) {
+  if (props.id) {
     loading.value = true
-    queryProblem(Number(id))
+    queryProblem(props.id)
+  } else {
+    create.value = true
   }
 })
 
@@ -284,9 +273,6 @@ function back() {
   router.back()
 }
 
-/**
- * 显示/隐藏帮助
- */
 function toggleHelp() {
   showHelp.value = !showHelp.value
 }
@@ -321,9 +307,6 @@ function handleSave() {
   })
 }
 
-/**
- * 保存
- */
 function save() {
   loading.value = true
   ProblemApi.save(problem.value, create.value)

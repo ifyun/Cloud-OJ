@@ -20,7 +20,9 @@ const isDarkTheme = computed<boolean>({
     return store.app.theme != null
   },
   set: (value) => {
-    store.app.setTheme(value ? "dark" : "light")
+    const t = value ? "dark" : "light"
+    document.documentElement.style.colorScheme = t
+    store.app.setTheme(t)
   }
 })
 

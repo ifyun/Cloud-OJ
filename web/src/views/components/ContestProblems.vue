@@ -74,7 +74,7 @@ const router = useRouter()
 const message = useMessage()
 
 const props = defineProps<{
-  cid: string
+  cid: number
 }>()
 
 const loading = ref<boolean>(false)
@@ -135,16 +135,7 @@ const contestState = computed(() => {
 })
 
 onMounted(() => {
-  const reg = /^\d+$/
-  if (reg.test(props.cid)) {
-    queryContest(Number(props.cid))
-  } else {
-    store.app.setError({
-      status: 404,
-      error: "Not Found",
-      message: "找不到竞赛"
-    })
-  }
+  queryContest(props.cid)
 })
 
 function queryContest(cid: number) {

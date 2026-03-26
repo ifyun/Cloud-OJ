@@ -1,19 +1,22 @@
 <template>
   <n-layout position="absolute" :has-sider="true">
     <n-layout-sider
-      class="aside"
       collapse-mode="width"
       width="160"
       bordered
       :native-scrollbar="false"
-      :collapsed="collapsed">
+      :collapsed="collapsed"
+      style="z-index: 2">
       <div>
         <logo :collapsed="collapsed" style="height: var(--header-height)" />
-        <admin-navbar />
+        <admin-nav />
       </div>
     </n-layout-sider>
-    <n-layout style="min-width: 700px">
-      <n-layout-header class="header" position="absolute" bordered>
+    <n-layout>
+      <n-layout-header
+        position="absolute"
+        bordered
+        style="z-index: 1; height: var(--header-height)">
         <div class="admin-nav">
           <n-flex align="center" size="small">
             <n-button quaternary style="padding: 0 6px" @click="collapse">
@@ -45,15 +48,15 @@
         </div>
       </n-layout-header>
       <n-layout-content
-        class="main admin"
         position="absolute"
         :native-scrollbar="false"
-        content-style="display: flex; flex-direction: column">
-        <router-view v-slot="{ Component }">
-          <keep-alive :key="$route.path">
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
+        style="top: var(--header-height)"
+        :content-style="{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100%'
+        }">
+        <router-layout />
       </n-layout-content>
     </n-layout>
   </n-layout>
@@ -62,7 +65,7 @@
 <script setup lang="ts">
 import { Logo } from "@/components"
 import { useStore } from "@/store"
-import { AdminNavbar, ThemeSwitch, UserMenu } from "@/views/layout"
+import { AdminNav, RouterLayout, ThemeSwitch, UserMenu } from "@/views/layout"
 import { MenuOpenRound, RefreshRound } from "@vicons/material"
 import {
   NBreadcrumb,
@@ -95,15 +98,18 @@ function collapse() {
 </script>
 
 <style scoped lang="scss">
+.rotate {
+  transform: perspective(1px) rotateY(180deg);
+}
+
 .admin-nav {
   height: var(--header-height);
   padding: 0 var(--layout-padding);
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
-.rotate {
-  transform: perspective(1px) rotateY(180deg);
+:deep(.admin-wrap) {
+  padding: var(--layout-padding);
 }
 </style>

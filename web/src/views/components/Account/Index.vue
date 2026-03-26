@@ -1,6 +1,6 @@
 <template>
   <div class="wrap">
-    <n-card v-if="uid">
+    <n-card v-if="user.uid">
       <template #cover>
         <user-profile
           :user="user"
@@ -10,7 +10,7 @@
       <n-space vertical>
         <n-tabs type="line" :value="tab" @update:value="changeTab">
           <n-tab-pane name="profile" tab="概览">
-            <overview :uid="uid!" :show-timeline="isSelf" />
+            <overview :uid="user.uid!" :show-timeline="isSelf" />
           </n-tab-pane>
           <n-tab-pane
             v-if="isSelf"
@@ -26,48 +26,46 @@
 </template>
 
 <script setup lang="ts">
+import { UserApi } from "@/api/request"
+import { User } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, onBeforeMount, ref, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import Overview from "./Overview.vue"
 import SolutionList from "./Solutions.vue"
 import UserProfile from "./UserProfile.vue"
-import { UserApi } from "@/api/request"
-import { User } from "@/api/type"
 
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const uid = ref<number>()
+const props = defineProps<{ uid?: number }>()
 const user = ref<User>(new User())
 const tab = ref("profile")
 
 const isSelf = computed<boolean>(() => {
-  if (!store.user.isLoggedIn) {
+  if (store.user.isLoggedIn) {
+    return props.uid === undefined || store.user.userInfo!.uid! === props.uid
+  } else {
     return false
   }
+})
 
-  return store.user.userInfo!.uid! == uid.value
+watchEffect(() => {
+  if (isSelf.value) {
+    user.value.uid = store.user.userInfo!.uid!
+  } else {
+    user.value.uid = props.uid
+  }
+
+  if (!store.user.isLoggedIn && props.uid === undefined) {
+    router.replace({ name: "auth" })
+  }
 })
 
 onBeforeMount(() => {
-  const reg = /^\d+$/
-  if (route.params.uid && reg.test(route.params.uid.toString())) {
-    uid.value = Number(route.params.uid)
-  } else if (store.user.isLoggedIn) {
-    uid.value = store.user.userInfo!.uid!
-  } else {
-    // 未登录，uid 不是数字
-    store.app.setError({
-      status: 404,
-      error: "Not Found",
-      message: "找不到用户"
-    })
-  }
-
   if (
     isSelf.value &&
     route.query.tab &&
@@ -87,8 +85,7 @@ function changeTab(value: string) {
 }
 
 function getUserProfile() {
-  user.value.uid = uid.value
-  UserApi.getProfile(uid.value!)
+  UserApi.getProfile(user.value.uid!)
     .then((data) => {
       user.value = data
       if (isSelf.value) {

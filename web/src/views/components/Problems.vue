@@ -126,20 +126,22 @@ const problemColumns: DataTableColumns<Problem> = [
         return ""
       }
       const tags = row.category.split(",")
-      return tags.map((tag) => {
-        return (
-          <NTag
-            class="tag"
-            size="small"
-            type="primary"
-            round
-            bordered={false}
-            // @ts-ignore
-            onClick={() => tagClick(tag)}>
-            {tag}
-          </NTag>
-        )
-      })
+      return (
+        <NFlex align="center" justify="center" size="small">
+          {tags.map((tag) => (
+            <NTag
+              class="category-tag"
+              size="small"
+              type="primary"
+              round
+              bordered={false}
+              // @ts-ignore
+              onClick={() => tagClick(tag)}>
+              {tag}
+            </NTag>
+          ))}
+        </NFlex>
+      )
     }
   },
   {

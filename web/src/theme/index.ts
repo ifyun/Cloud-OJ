@@ -2,6 +2,9 @@ import type { GlobalThemeOverrides } from "naive-ui"
 
 const themeBase: GlobalThemeOverrides = {
   common: {
+    fontFamily: "sans-serif",
+    fontFamilyMono:
+      '"Maple Mono NF CN", "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace',
     primaryColor: "#18A058",
     primaryColorHover: "#36AD6A",
     primaryColorPressed: "#0C7A43",

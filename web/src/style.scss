@@ -1,8 +1,11 @@
 :root {
   --layout-padding: 12px;
-  --header-height: 57px;
+  --header-height: 55px;
   --footer-height: 55px;
   --primary-color: #18a058;
+  --code-font:
+    "Maple Mono NF CN", "JetBrains Mono", "Cascadia Code", "SFMono-Regular",
+    Consolas, monospace;
 }
 
 #app {
@@ -11,55 +14,7 @@
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
 
-  .header {
-    z-index: 1;
-  }
-
-  .aside {
-    z-index: 2;
-  }
-
-  nav[class="n-breadcrumb"] {
-    line-height: normal;
-  }
-
-  td[class="n-data-table-td"] {
-    vertical-align: middle;
-  }
-
-  .main {
-    &.admin {
-      top: var(--header-height);
-    }
-
-    .wrap {
-      width: calc(100% - var(--layout-padding) * 4);
-      max-width: 1200px;
-      padding: calc(var(--layout-padding) * 2) 0;
-    }
-
-    .admin-wrap {
-      padding: var(--layout-padding);
-    }
-  }
-
-  .n-scrollbar.global {
-    > .n-scrollbar-container {
-      > .n-scrollbar-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: calc(100vh - var(--header-height));
-      }
-    }
-  }
-
-  .input-prefix-icon {
-    margin-right: 4px;
-  }
-
-  .tag {
-    margin: 1px 3px;
+  .category-tag {
     cursor: pointer;
 
     &:hover {
@@ -74,14 +29,17 @@
 }
 
 .cm-editor {
-  font-family: v-mono, SFMono-Regular, Consolas, monospace;
-
   &.cm-focused {
     outline: none !important;
     box-shadow: none !important;
   }
 
   .cm-gutters {
+    font-family: var(--code-font);
     border: none !important;
+  }
+
+  .cm-content {
+    font-family: var(--code-font);
   }
 }

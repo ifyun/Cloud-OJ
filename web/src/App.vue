@@ -12,7 +12,9 @@
             <n-notification-provider>
               <n-global-style />
               <router-view v-if="show" v-slot="{ Component }">
-                <component :is="Component" />
+                <component
+                  :is="isForbidden ? Forbidden : Component"
+                  style="min-width: 900px" />
               </router-view>
             </n-notification-provider>
           </n-message-provider>
@@ -38,8 +40,9 @@ import {
   NNotificationProvider,
   zhCN
 } from "naive-ui"
-import { computed, nextTick, onMounted, provide, ref } from "vue"
+import { computed, nextTick, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import Forbidden from "./views/Forbidden.vue"
 
 const store = useStore()
 const route = useRoute()
@@ -49,6 +52,7 @@ const show = ref(true)
 const theme = computed(() => store.app.theme)
 const themeStr = computed(() => (store.app.theme === null ? "light" : "dark"))
 const isLoggedIn = computed(() => store.user.isLoggedIn)
+const isForbidden = ref<boolean>(false)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
   if (store.app.theme != null) {
@@ -73,10 +77,21 @@ function reload() {
 router.beforeEach(async (to, from) => {
   if (isLoggedIn.value) {
     // 已登录，检查是否有效
-    await checkToken()
+    if (
+      (await checkToken()) &&
+      to.matched.some((r) => r.meta.requiresAdmin) &&
+      store.user.userInfo?.role !== 0
+    ) {
+      // 无权限，取消导航
+      isForbidden.value = true
+      return false
+    } else {
+      isForbidden.value = false
+    }
   } else {
-    if (to.name === "edit_account" || to.path.includes("/admin")) {
-      await router.replace("/")
+    isForbidden.value = false
+    if (to.matched.some((r) => r.meta.requiresAuth)) {
+      await router.push({ name: "auth", params: { tab: "login" } })
     }
   }
 
@@ -91,47 +106,58 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to, from) => {
   const routes: Array<string> = []
-
+  // 设置页面标题
   if (route.meta.title) {
-    setTitle(route.meta.title as string)
+    const t =
+      typeof route.meta.title === "function"
+        ? route.meta.title(route)
+        : route.meta.title
+    setTitle(t)
   }
-
   // 跳转时清除当前页面的查询条件
   if (from.name && to.name !== from.name) {
     sessionStorage.removeItem("query")
   }
-
   // 为 Admin 页面生成面包屑
   route.matched.forEach((r) => {
     if (!r.meta.inBreadcrumb) {
       return
     }
 
-    if (
-      (r.name === "edit_problem" || r.name === "edit_contest") &&
-      route.params.id === "new"
-    ) {
-      routes.push(r.meta._title as string)
-    } else {
-      routes.push(r.meta.title as string)
+    const title = r.meta.title
+
+    if (title) {
+      routes.push(typeof title === "function" ? title(route) : title)
     }
   })
 
   store.app.setBreadcrumb(routes)
 })
 
-onMounted(() => {
-  console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone)
-})
-
 async function checkToken() {
   try {
     await AuthApi.verify()
+    return true
   } catch (error: any) {
     if (error.status === 401) {
       store.user.clearToken()
       await router.push({ name: "auth", params: { tab: "login" } })
     }
+
+    return false
   }
 }
 </script>
+
+<style lang="scss">
+.n-scrollbar.global {
+  > .n-scrollbar-container {
+    > .n-scrollbar-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: calc(100vh - var(--header-height));
+    }
+  }
+}
+</style>

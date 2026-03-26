@@ -148,7 +148,7 @@ const columns: DataTableColumns<JudgeResult> = [
     key: "title",
     render: (row) => (
       <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
-        <NButton text>
+        <NButton text strong>
           {row.problemId}.{row.title}
         </NButton>
       </RouterLink>
@@ -252,9 +252,9 @@ function dateFmt(time: number) {
   if (t.isSame(now, "day")) {
     return "今天"
   } else if (t.isSame(now, "year")) {
-    return t.format("M 月 DD")
+    return t.format("MM/DD")
   } else {
-    return t.format("YYYY 年 M 月 DD")
+    return t.format("YYYY/MM/DD")
   }
 }
 </script>

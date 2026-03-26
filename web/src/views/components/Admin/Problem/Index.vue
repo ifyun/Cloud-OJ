@@ -1,8 +1,8 @@
 <template>
   <div class="admin-wrap">
-    <n-space vertical size="large">
-      <n-space align="center" justify="space-between">
-        <n-space align="center">
+    <n-flex vertical size="large">
+      <n-flex align="center" justify="space-between">
+        <n-flex align="center">
           <n-input-group>
             <n-input
               v-model:value="filter.keyword"
@@ -12,7 +12,7 @@
               placeholder="输入题目名称、分类"
               @clear="search">
               <template #prefix>
-                <n-icon class="input-prefix-icon">
+                <n-icon>
                   <search-round />
                 </n-icon>
               </template>
@@ -26,8 +26,8 @@
               搜索题目
             </n-button>
           </n-input-group>
-        </n-space>
-        <n-space align="center" justify="end">
+        </n-flex>
+        <n-flex align="center" justify="end">
           <n-button-group>
             <n-button type="info" tertiary>
               <template #icon>
@@ -35,14 +35,13 @@
                   <add-icon />
                 </n-icon>
               </template>
-              <router-link
-                :to="{ name: 'edit_problem', params: { id: 'new' } }">
+              <router-link :to="{ name: 'edit_problem' }">
                 创建题目
               </router-link>
             </n-button>
           </n-button-group>
-        </n-space>
-      </n-space>
+        </n-flex>
+      </n-flex>
       <n-data-table
         :row-props="rowProps"
         :columns="problemColumns"
@@ -55,7 +54,7 @@
         @update:page="pageChange">
         <template #prefix="{ itemCount }">共 {{ itemCount }} 项</template>
       </n-pagination>
-    </n-space>
+    </n-flex>
   </div>
   <n-dropdown
     trigger="manual"
@@ -74,11 +73,11 @@ import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { useStore } from "@/store"
 import { renderIcon } from "@/utils"
 import {
+  PostAddRound as AddIcon,
   DeleteForeverRound as DelIcon,
   EditNoteRound as EditIcon,
   FolderZipRound as FolderIcon,
   ManageSearchRound,
-  PostAddRound as AddIcon,
   SearchRound
 } from "@vicons/material"
 import {
@@ -87,12 +86,12 @@ import {
   NButtonGroup,
   NDataTable,
   NDropdown,
+  NFlex,
   NFormItem,
   NIcon,
   NInput,
   NInputGroup,
   NPagination,
-  NSpace,
   NSwitch,
   NTag,
   useDialog,
@@ -188,7 +187,9 @@ const problemColumns: DataTableColumns<Problem> = [
     key: "title",
     render: (row) => (
       <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
-        <NButton text>{row.title}</NButton>
+        <NButton text strong={true}>
+          {row.title}
+        </NButton>
       </RouterLink>
     )
   },
@@ -201,18 +202,22 @@ const problemColumns: DataTableColumns<Problem> = [
         return ""
       }
       const tags = row.category.split(",")
-      return tags.map((tag) => (
-        <NTag
-          class="tag"
-          size="small"
-          type="primary"
-          round
-          bordered={false}
-          // @ts-ignore
-          onClick={() => tagClick(tag)}>
-          {tag}
-        </NTag>
-      ))
+      return (
+        <NFlex align="center" justify="center" size="small">
+          {tags.map((tag) => (
+            <NTag
+              class="category-tag"
+              size="small"
+              type="primary"
+              round
+              bordered={false}
+              // @ts-ignore
+              onClick={() => tagClick(tag)}>
+              {tag}
+            </NTag>
+          ))}
+        </NFlex>
+      )
     }
   },
   {
