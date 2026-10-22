@@ -29,7 +29,7 @@ import type { LanguageOption, SourceCode } from "@/type"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil } from "@/utils"
 import { closeBrackets } from "@codemirror/autocomplete"
-import { indentWithTab } from "@codemirror/commands"
+import { defaultKeymap, indentWithTab } from "@codemirror/commands"
 import { cpp } from "@codemirror/lang-cpp"
 import { go } from "@codemirror/lang-go"
 import { java } from "@codemirror/lang-java"
@@ -44,6 +44,7 @@ import { csharp, kotlin } from "@codemirror/legacy-modes/mode/clike"
 import { shell } from "@codemirror/legacy-modes/mode/shell"
 import { Compartment, type Extension } from "@codemirror/state"
 import {
+  dropCursor,
   EditorView,
   highlightActiveLine,
   keymap,
@@ -90,13 +91,14 @@ const cmExtensions: Extension = [
   [
     bracketMatching(),
     closeBrackets(),
+    dropCursor(),
     highlightActiveLine(),
     indentOnInput(),
     lineNumbers()
   ],
   langCompartment.of(langModes[0]),
   themeCompartment.of(cmLight),
-  keymap.of([indentWithTab])
+  keymap.of([indentWithTab, ...defaultKeymap])
 ]
 
 const props = withDefaults(
