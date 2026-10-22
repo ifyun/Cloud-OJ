@@ -1,29 +1,30 @@
 package cloud.oj.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class Results {
-    @JsonProperty("AC")
-    private Integer AC;
+public record Results(
+        @JsonProperty("AC")
+        int AC,
 
-    @JsonProperty("WA")
-    private Integer WA;
+        @JsonProperty("PA")
+        int PA,
 
-    @JsonProperty("CE")
-    private Integer CE;
+        @JsonProperty("WA")
+        int WA,
 
-    @JsonProperty("RE")
-    private Integer RE;
+        @JsonProperty("MLE")
+        int MLE,
 
-    @JsonProperty("MLE")
-    private Integer MLE;
+        @JsonProperty("TLE")
+        int TLE,
 
-    @JsonProperty("TLE")
-    private Integer TLE;
+        @JsonProperty("OLE")
+        int OLE,
 
-    private Integer total;
+        @JsonProperty("RE")
+        int RE,
+
+        @JsonProperty("CE")
+        int CE
+) {
 }

@@ -1,7 +1,7 @@
 <template>
-  <n-flex>
+  <n-flex style="min-width: 520px">
     <n-card v-for="(value, name) in data" :key="name" :title="QueueNames[name]">
-      <n-flex>
+      <n-flex align="center" justify="space-between">
         <table class="queue-info">
           <tbody>
             <tr>
@@ -32,16 +32,16 @@
           </tbody>
         </table>
         <queue-info-chart
-          :chart-name="name as string"
-          :data="value.messages_details.samples.slice(0, 8)" />
+          :data="value.messages_details.samples.slice(0, 8)"
+          style="flex: auto" />
       </n-flex>
     </n-card>
   </n-flex>
 </template>
 
 <script lang="ts" setup>
-import { NCard, NFlex } from "naive-ui"
 import type { QueuesInfo } from "@/api/type"
+import { NCard, NFlex } from "naive-ui"
 import QueueInfoChart from "./QueueInfoChart.vue"
 
 const QueueNames: { [name: string]: string } = {

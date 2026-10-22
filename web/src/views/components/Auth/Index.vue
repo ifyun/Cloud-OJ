@@ -46,6 +46,10 @@ import { useRouter } from "vue-router"
 import Login from "./Login.vue"
 import Signup from "./Signup.vue"
 
+defineOptions({
+  name: "AuthIndex"
+})
+
 const store = useStore()
 const router = useRouter()
 const checked = ref<boolean>(false)

@@ -6,8 +6,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
-
 @Repository
 @RequiredArgsConstructor
 public class SolutionRepo {
@@ -59,7 +57,12 @@ public class SolutionRepo {
                 where problem_id = :problemId
                 """;
         client.sql(sql).paramSource(solution).update(keyHolder);
-        solution.setId(Objects.requireNonNull(keyHolder.getKey()).toString());
+
+        if (keyHolder.getKey() == null) {
+            throw new RuntimeException("Solution insert failed.");
+        }
+
+        solution.setId(keyHolder.getKey().toString());
     }
 
     /**
@@ -94,8 +97,6 @@ public class SolutionRepo {
                     error_info = :errorInfo
                 where solution_id = :solutionId
                 """;
-        client.sql(sql)
-                .paramSource(solution)
-                .update();
+        client.sql(sql).paramSource(solution).update();
     }
 }

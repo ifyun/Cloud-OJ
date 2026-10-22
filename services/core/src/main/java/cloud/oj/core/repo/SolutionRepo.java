@@ -1,9 +1,13 @@
 package cloud.oj.core.repo;
 
+import cloud.oj.core.entity.LanguageUserUsage;
+import cloud.oj.core.entity.Results;
 import cloud.oj.core.entity.Solution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,12 +48,14 @@ public class SolutionRepo {
 
     /**
      * 根据 uid 和提交时间查询结果
+     * <p>隔离级别：读未提交</p>
      *
      * @param uid        用户 Id
      * @param time       UNIX 时间戳(13)
      * @param showPassed 是否查询通过的测试点
      * @return {@link Solution}
      */
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Optional<Solution> selectByUidAndTime(Integer uid, Long time, Boolean showPassed) {
         return client.sql("""
                         select state - 1                                      as state,
@@ -231,5 +237,45 @@ public class SolutionRepo {
         return client.sql("update solution set deleted = true where uid = :uid")
                 .param("uid", uid)
                 .update();
+    }
+
+    /**
+     * 结果统计
+     */
+    public Results resultAggrege() {
+        return client.sql("""
+                        select count(result = 'AC' or null)  as AC,
+                               count(result = 'PA' or null)  as PA,
+                               count(result = 'WA' or null)  as WA,
+                               count(result = 'TLE' or null) as TLE,
+                               count(result = 'MLE' or null) as MLE,
+                               count(result = 'OLE' or null) as OLE,
+                               count(result = 'RE' or null)  as RE,
+                               count(result = 'CE' or null)  as CE
+                        from (select result
+                              from solution
+                              where deleted = 0
+                                and contest_id is null
+                                and state = 'JUDGED'
+                              group by problem_id, uid, result) as unique_result
+                        """)
+                .query(Results.class)
+                .single();
+    }
+
+    /**
+     * 统计每种语言使用的用户数量
+     */
+    public List<LanguageUserUsage> languageAggrege() {
+        return client.sql("""
+                        select
+                            language,
+                            count(DISTINCT uid) AS users
+                        from solution
+                        group by language
+                        order by language
+                        """)
+                .query(LanguageUserUsage.class)
+                .list();
     }
 }

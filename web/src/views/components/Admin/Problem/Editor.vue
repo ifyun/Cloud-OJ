@@ -151,13 +151,13 @@ import {
   useMessage,
   type FormRules
 } from "naive-ui"
-import { computed, inject, onMounted, ref, watch } from "vue"
+import { computed, inject, onActivated, ref, watch } from "vue"
 import {
   useRoute,
   useRouter,
   type RouteLocationNormalizedGeneric
 } from "vue-router"
-import MarkdownHelp from "./help.md?raw"
+import MarkdownHelp from "./assets/help.md?raw"
 
 const problemForm = ref<HTMLFormElement | null>(null)
 
@@ -260,7 +260,7 @@ watch(
   }
 )
 
-onMounted(() => {
+onActivated(() => {
   if (props.id) {
     loading.value = true
     queryProblem(props.id)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-h3 strong style="margin-bottom: 16px">最近记录</n-h3>
+    <n-h3 strong style="margin-bottom: 12px">最近记录</n-h3>
     <n-empty v-if="solutions.total === 0" description="没有记录" />
     <n-timeline>
       <n-timeline-item
@@ -9,7 +9,7 @@
         :type="ResultTypes[s.result!]"
         :title="s.resultText"
         :time="time(s)"
-        line-type="dashed">
+        style="width: fit-content">
         <n-flex vertical size="small">
           <language-tag :language="s.language" />
           <router-link

@@ -62,7 +62,7 @@ import {
   NPagination,
   NTag
 } from "naive-ui"
-import { computed, nextTick, onMounted, ref } from "vue"
+import { computed, nextTick, onActivated, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -71,7 +71,7 @@ const router = useRouter()
 
 const pagination = ref({
   page: 1,
-  pageSize: 20
+  pageSize: 15
 })
 
 const loading = ref<boolean>(true)
@@ -162,7 +162,7 @@ const noContent = computed<boolean>(
   () => !loading.value && problems.value.total === 0
 )
 
-onMounted(() => {
+onActivated(() => {
   const { page = 1, keyword = "" } = route.query
   pagination.value.page = Number(page)
   filter.value.keyword = String(keyword)

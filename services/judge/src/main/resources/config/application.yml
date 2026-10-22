@@ -5,6 +5,9 @@ spring:
     active: dev
   application:
     name: judge
+  threads:
+    virtual:
+      enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver
@@ -19,10 +22,7 @@ spring:
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:admin}
     password: ${RABBIT_PASSWORD:admin}
-    listener:
-      simple:
-        prefetch: 1
-        acknowledge-mode: manual
+    publisher-confirm-type: simple
   jackson:
     default-property-inclusion: non_null
   cloud:

@@ -66,7 +66,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { onMounted, ref } from "vue"
+import { onActivated, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -163,7 +163,7 @@ const options = [
   }
 ]
 
-onMounted(() => {
+onActivated(() => {
   if (route.query.page) {
     pagination.value.page = Number(route.query.page)
   }
@@ -179,7 +179,7 @@ function search() {
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: { page }
   })
 

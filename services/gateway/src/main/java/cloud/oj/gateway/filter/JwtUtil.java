@@ -1,13 +1,13 @@
 package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.entity.User;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
@@ -63,8 +63,8 @@ public class JwtUtil {
     public static Integer getUid(String jwt) {
         // JWT 是 Base64Url 编码
         var base64 = jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.'))
-                .replaceAll("-", "+")
-                .replaceAll("_", "/");
+                .replace("-", "+")
+                .replace("_", "/");
 
         var payload = new String(Base64.getDecoder().decode(base64));
 

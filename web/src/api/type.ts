@@ -169,13 +169,13 @@ export type Page<T> = {
 export type SubmitData = {
   uid: number
   problemId: number
-  contestId: number | null
+  contestId?: number
   language: number
   sourceCode: string
   type: number
 }
 
-export class SolutionFilter {
+export type SolutionFilter = {
   pid?: number
   username?: string
   date?: number
@@ -205,26 +205,31 @@ export class JudgeResult {
   submitTime?: number
 }
 
-export type Language = {
+export type LanguageUsage = {
   count: number
   language: number
 }
 
+export type LanguageUserUsage = {
+  language: number
+  users: number
+}
+
 export type Results = {
   [key: string]: number
-  total: number
 }
 
 export class Overview {
-  preference: Array<Language> = []
+  preference: Array<LanguageUsage> = []
   results: Results = {
     AC: 0,
+    PA: 0,
     WA: 0,
     CE: 0,
     RE: 0,
     MLE: 0,
     TLE: 0,
-    total: 0
+    OLE: 0
   }
   heatmap: Array<{ timestamp: number; value: number }> = []
 }
@@ -250,11 +255,7 @@ export class Settings {
   autoDelSolutions?: boolean
 }
 
-export class Log {
-  instanceId: string = ""
-  level: string = ""
-  thread: string = ""
-  className: string = ""
-  message: string = ""
-  time: number = 0
+export type SolutionSummary = {
+  results: Results
+  language: LanguageUserUsage[]
 }

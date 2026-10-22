@@ -1,11 +1,11 @@
 package cloud.oj.gateway.filter;
 
 import cloud.oj.gateway.entity.UsernamePasswd;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * 认证转换器
@@ -27,7 +27,7 @@ public class AuthConverter implements AuthenticationConverter {
         try {
             if (contentType != null && contentType.contains("application/json")) {
                 var o = mapper.readValue(request.getInputStream(), UsernamePasswd.class);
-                return new UsernamePasswordAuthenticationToken(o.getUsername(), o.getPassword());
+                return new UsernamePasswordAuthenticationToken(o.username(), o.password());
             } else {
                 return null;
             }

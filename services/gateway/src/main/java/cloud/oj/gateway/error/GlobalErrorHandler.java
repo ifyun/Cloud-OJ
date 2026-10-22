@@ -1,7 +1,5 @@
 package cloud.oj.gateway.error;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -21,10 +20,11 @@ public class GlobalErrorHandler {
     private final ObjectMapper mapper;
 
     @ExceptionHandler(RuntimeException.class)
-    public void errorHandler(HttpServletRequest request, HttpServletResponse response, RuntimeException e)
+    public void errorHandler(HttpServletResponse response, RuntimeException e)
             throws IOException {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
         var msg = ExceptionUtils.getRootCause(e).getMessage();
+
         log.error(msg);
 
         if (e instanceof HttpServerErrorException) {
@@ -36,20 +36,14 @@ public class GlobalErrorHandler {
         }
 
         response.setCharacterEncoding("UTF-8");
+
         var writer = response.getWriter();
+        var body = mapper.writeValueAsString(new ErrorMessage(status, msg));
 
-        if (request.getHeader("Accept").equals("text/event-stream")) {
-            // 请求类型为 EventSource，发送一个 error 事件
-            response.setContentType("text/event-stream");
-            writer.print("event: error\n");
-            writer.print("data: " + msg + "\n\n");
-        } else {
-            var body = mapper.writeValueAsString(new ErrorMessage(status, msg));
-            response.setStatus(status.value());
-            response.setContentType("application/json");
-            writer.print(body);
-        }
+        response.setStatus(status.value());
+        response.setContentType("application/json");
 
+        writer.print(body);
         writer.flush();
         writer.close();
     }

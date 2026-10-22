@@ -66,7 +66,7 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { computed, onMounted, ref } from "vue"
+import { computed, onActivated, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const store = useStore()
@@ -134,7 +134,7 @@ const contestState = computed(() => {
   return contest.value == null ? null : stateTag(contest.value)
 })
 
-onMounted(() => {
+onActivated(() => {
   queryContest(props.cid)
 })
 

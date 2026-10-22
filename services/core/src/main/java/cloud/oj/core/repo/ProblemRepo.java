@@ -2,13 +2,12 @@ package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.DataConf;
 import cloud.oj.core.entity.Problem;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -110,18 +109,11 @@ public class ProblemRepo {
                         select * from data_conf where problem_id = :pid
                         """)
                 .param("pid", pid)
-                .query((rs, rowNum) -> {
-                    Map<String, Integer> conf;
-
-                    try {
-                        conf = mapper.readValue(rs.getString("conf"), new TypeReference<>() {
-                        });
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    return conf;
-                })
+                .query((rs, rowNum) -> mapper.readValue(
+                        rs.getString("conf"),
+                        new TypeReference<Map<String, Integer>>() {
+                        }
+                ))
                 .optional();
     }
 

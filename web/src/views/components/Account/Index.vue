@@ -9,7 +9,7 @@
       </template>
       <n-space vertical>
         <n-tabs type="line" :value="tab" @update:value="changeTab">
-          <n-tab-pane name="profile" tab="概览">
+          <n-tab-pane name="profile" tab="概览" display-directive="show">
             <overview :uid="user.uid!" :show-timeline="isSelf" />
           </n-tab-pane>
           <n-tab-pane
@@ -31,11 +31,15 @@ import { User } from "@/api/type"
 import { useStore } from "@/store"
 import { setTitle } from "@/utils"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
-import { computed, onBeforeMount, ref, watchEffect } from "vue"
+import { computed, onActivated, ref, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import Overview from "./Overview.vue"
 import SolutionList from "./Solutions.vue"
 import UserProfile from "./UserProfile.vue"
+
+defineOptions({
+  name: "AccountIndex"
+})
 
 const store = useStore()
 const route = useRoute()
@@ -65,7 +69,7 @@ watchEffect(() => {
   }
 })
 
-onBeforeMount(() => {
+onActivated(() => {
   if (
     isSelf.value &&
     route.query.tab &&
@@ -79,7 +83,7 @@ onBeforeMount(() => {
 
 function changeTab(value: string) {
   tab.value = value
-  router.push({
+  router.replace({
     query: { tab: value }
   })
 }

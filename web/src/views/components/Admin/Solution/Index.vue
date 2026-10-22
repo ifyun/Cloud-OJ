@@ -49,7 +49,19 @@
 </template>
 
 <script setup lang="tsx">
-import { nextTick, onMounted, ref } from "vue"
+import { SolutionApi } from "@/api/request"
+import {
+  ErrorMessage,
+  JudgeResult,
+  type Page,
+  type SolutionFilter
+} from "@/api/type"
+import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
+import { useStore } from "@/store"
+import { SearchRound } from "@vicons/material"
+import dayjs from "dayjs"
+import "dayjs/locale/zh-cn"
+import relativeTime from "dayjs/plugin/relativeTime"
 import {
   type DataTableColumns,
   NButton,
@@ -67,18 +79,15 @@ import {
   NText,
   useMessage
 } from "naive-ui"
+import { nextTick, onActivated, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
-import { SearchRound } from "@vicons/material"
-import { SolutionApi } from "@/api/request"
-import {
-  ErrorMessage,
-  JudgeResult,
-  type Page,
-  SolutionFilter
-} from "@/api/type"
-import dayjs from "dayjs"
-import { useStore } from "@/store"
-import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
+
+defineOptions({
+  name: "SolutionAdmin"
+})
+
+dayjs.extend(relativeTime)
+dayjs.locale("zh-cn")
 
 const route = useRoute()
 const router = useRouter()
@@ -97,7 +106,7 @@ const solutions = ref<Page<JudgeResult>>({
 
 const pagination = ref({
   page: 1,
-  pageSize: 20
+  pageSize: 15
 })
 
 const columns: DataTableColumns<JudgeResult> = [
@@ -119,6 +128,7 @@ const columns: DataTableColumns<JudgeResult> = [
     align: "center",
     render: (row) => (
       <ResultTag
+        key={row.result}
         class="resultTag"
         data={row}
         // @ts-ignore
@@ -181,10 +191,12 @@ const columns: DataTableColumns<JudgeResult> = [
     render: (row) => (
       <NPopover trigger="click" placement="left">
         {{
-          trigger: () => <NButton text>{dateFmt(row.submitTime!)}</NButton>,
+          trigger: () => (
+            <NButton text>{dayjs(row.submitTime!).fromNow()}</NButton>
+          ),
           default: () => (
             <NText italic={true}>
-              {dayjs(row.submitTime!).format("H:mm:ss")}
+              {dayjs(row.submitTime!).format("YYYY-MM-DD HH:mm:ss")}
             </NText>
           )
         }}
@@ -193,10 +205,9 @@ const columns: DataTableColumns<JudgeResult> = [
   }
 ]
 
-onMounted(() => {
-  if (route.query.page) {
-    pagination.value.page = Number(route.query.page)
-  }
+onActivated(() => {
+  const { page = 1 } = route.query
+  pagination.value.page = Number(page)
 
   filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
   querySolutions()
@@ -243,19 +254,6 @@ function pageChange(page: number) {
   })
 
   querySolutions()
-}
-
-function dateFmt(time: number) {
-  const now = dayjs()
-  const t = dayjs(time)
-
-  if (t.isSame(now, "day")) {
-    return "今天"
-  } else if (t.isSame(now, "year")) {
-    return t.format("MM/DD")
-  } else {
-    return t.format("YYYY/MM/DD")
-  }
 }
 </script>
 

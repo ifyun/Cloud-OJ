@@ -1,6 +1,7 @@
 package cloud.oj.judge.component;
 
 import cloud.oj.judge.config.AppConfig;
+import cloud.oj.judge.config.AsyncConfig;
 import cloud.oj.judge.constant.State;
 import cloud.oj.judge.entity.Problem;
 import cloud.oj.judge.entity.Result;
@@ -9,20 +10,20 @@ import cloud.oj.judge.error.UnsupportedLanguageError;
 import cloud.oj.judge.repo.ProblemRepo;
 import cloud.oj.judge.repo.ScoreboardRepo;
 import cloud.oj.judge.repo.SolutionRepo;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cloud.oj.judge.utils.Retryable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,11 +45,11 @@ public class Judgement {
 
     private final Compiler compiler;
 
-    private final HashMap<String, Integer> cpuMap;
-
     private final ObjectMapper objectMapper;
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
+
+    private final Retryable retryable;
 
     /**
      * 判题入口
@@ -101,14 +102,11 @@ public class Judgement {
         var contestId = solution.getContestId();
 
         var passRate = result.getPassRate();
+        var score = 0.0;
 
         if (Double.isNaN(passRate)) {
             passRate = 0d;
         }
-
-        // 查询历史提交中的最高分
-        var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
-        var score = 0.0;
 
         if (dataConf != null && result.getDetail() != null && !result.getDetail().isEmpty()) {
             // 根据通过的测试点计算分数
@@ -133,18 +131,19 @@ public class Judgement {
 
         // 更新排名
         // 本次得分不为 0 且历史最高分小于本次得分时才更新排名
+        var maxScore = solutionRepo.selectMaxScoreOfUser(uid, problemId, contestId);
         if (passRate > 0 && (maxScore == null || maxScore < solution.getScore())) {
             if (contestId == null) {
-                scoreboardRepo.update(uid, solution.getSubmitTime());
+                retryable.run(() -> scoreboardRepo.update(uid, solution.getSubmitTime()));
             } else {
-                scoreboardRepo.updateOfContest(contestId, uid, solution.getSubmitTime());
+                retryable.run(() -> scoreboardRepo.updateOfContest(contestId, uid, solution.getSubmitTime()));
             }
         } else {
             // 仅更新提交次数
             if (contestId == null) {
-                scoreboardRepo.incSubmitted(uid, solution.getSubmitTime());
+                retryable.run(() -> scoreboardRepo.incSubmitted(uid, solution.getSubmitTime()));
             } else {
-                scoreboardRepo.incSubmittedOfContest(uid, contestId, solution.getSubmitTime());
+                retryable.run(() -> scoreboardRepo.incSubmittedOfContest(uid, contestId, solution.getSubmitTime()));
             }
         }
     }
@@ -166,7 +165,7 @@ public class Judgement {
             var time = "--time=" + problem.getTimeout();
             var ram = "--ram=" + problem.getMemoryLimit();
             var output = "--output=" + problem.getOutputLimit();
-            var cpu = "--cpu=" + cpuMap.get(Thread.currentThread().getName());
+            var cpu = "--cpu=" + AsyncConfig.CPU_ID.get();
             var workdir = "--workdir=" + SOLUTION_DIR;
             var data = "--data=" + appConfig.getFileDir() + "data/" + solution.getProblemId();
             var cmd = switch (solution.getLanguage()) {

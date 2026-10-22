@@ -3,20 +3,20 @@ package cloud.oj.judge.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-@EnableAsync
 @Configuration
 public class AsyncConfig {
     private final static String THREAD_PREFIX = "JUDGE-";
+
+    public final static ThreadLocal<Integer> CPU_ID = new ThreadLocal<>();
 
     private final AppConfig appConfig;
 
@@ -34,8 +34,7 @@ public class AsyncConfig {
                 try {
                     executor.getQueue().put(r);
                 } catch (InterruptedException e) {
-                    log.error(e.getMessage());
-                    throw new RejectedExecutionException("Task " + r + " rejected");
+                    throw new RejectedExecutionException(r + " rejected: " + e.getMessage());
                 }
             }
         }
@@ -43,32 +42,30 @@ public class AsyncConfig {
 
     @Bean
     public Executor judgeExecutor() {
+        var counter = new AtomicInteger(0);
+        var cpus = appConfig.getCpus();
         var threads = appConfig.getCpus().size();
         var executor = new ThreadPoolTaskExecutor();
 
-        executor.setThreadNamePrefix(THREAD_PREFIX);
         executor.setCorePoolSize(threads);
         executor.setMaxPoolSize(threads);
         // 队列由 RabbitMQ 承担，容量设为 0 构造同步队列
         executor.setQueueCapacity(0);
         executor.setRejectedExecutionHandler(new BlockPolicy());
+        executor.setThreadFactory(r -> {
+            var t = new Thread(r);
+            var i = counter.getAndIncrement();
+
+            t.setName(THREAD_PREFIX + i);
+            // 将 CPU 与线程名称绑定
+            CPU_ID.set(cpus.get(i));
+            log.info("{} -> CPU-{}", t.getName(), i);
+
+            return t;
+        });
         executor.initialize();
+        executor.setPrestartAllCoreThreads(true);
 
-        return executor;
-    }
-
-    @Bean
-    public HashMap<String, Integer> cpus() {
-        var cpuMap = new HashMap<String, Integer>();
-        var cpuList = appConfig.getCpus();
-
-        // 将 CPU 与线程名称绑定
-        // 注意：线程池 ID 从 1 开始
-        for (int i = 0; i < cpuList.size(); i++) {
-            log.info("{} -> CPU-{}", THREAD_PREFIX + (i + 1), cpuList.get(i));
-            cpuMap.put(THREAD_PREFIX + (i + 1), cpuList.get(i));
-        }
-
-        return cpuMap;
+        return executor.getThreadPoolExecutor();
     }
 }

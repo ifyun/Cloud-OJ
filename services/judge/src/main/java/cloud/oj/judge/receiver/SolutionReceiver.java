@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * 消息接收(提交和判题)
@@ -32,25 +33,29 @@ public class SolutionReceiver {
     /**
      * 监听判题队列
      */
-    @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE, ackMode = "MANUAL", concurrency = "1")
+    @RabbitListener(queues = RabbitConfig.JUDGE_QUEUE, containerFactory = "judgeListenerFactory")
     public void handleJudgement(@Payload Solution solution, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
-        judgementEntry.judge(solution, () -> channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false));
+        try {
+            judgementEntry.judge(solution, () -> channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false));
+        } catch (RejectedExecutionException e) {
+            channel.basicNack((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false, true);
+            log.error("判题失败(已重新入队): {}", e.getMessage());
+        }
     }
 
     /**
      * 监听提交队列
      */
-    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE, ackMode = "MANUAL", concurrency = "2")
+    @RabbitListener(queues = RabbitConfig.SUBMIT_QUEUE, containerFactory = "submitListenerFactory")
     public void handleSubmission(@Payload SubmitData data, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
         try {
-            submitService.submit(data);
-            channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
+            submitService.submit(data, () -> channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false));
         } catch (Exception e) {
             // submit 失败，重新入队
-            log.error("提交失败(已重新入队): {}", e.getMessage());
             channel.basicNack((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false, true);
+            log.error("提交失败(已重新入队): {}", e.getMessage());
         }
     }
 }

@@ -1,4 +1,4 @@
-import { JudgeResult, type Page, SolutionFilter } from "@/api/type"
+import { JudgeResult, type Page, type SolutionFilter } from "@/api/type"
 import axios, { ApiPath, resolveError } from "@/api"
 
 const SolutionApi = {

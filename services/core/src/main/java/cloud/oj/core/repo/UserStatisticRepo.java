@@ -1,7 +1,7 @@
 package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.HeatmapData;
-import cloud.oj.core.entity.Language;
+import cloud.oj.core.entity.LanguageUsage;
 import cloud.oj.core.entity.Results;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -16,7 +16,7 @@ public class UserStatisticRepo {
 
     private final JdbcClient client;
 
-    public List<Language> selectLanguages(Integer uid) {
+    public List<LanguageUsage> selectLanguages(Integer uid) {
         return client.sql("""
                         select language, count(solution_id) as count
                         from solution
@@ -25,13 +25,13 @@ public class UserStatisticRepo {
                         group by language
                         """)
                 .param("uid", uid)
-                .query(Language.class)
+                .query(LanguageUsage.class)
                 .list();
     }
 
     public List<HeatmapData> selectHeatmap(Integer uid, Long start, Long end) {
+        // 一年内同一题目同一语言仅算一次
         return client.sql("""
-                        -- 一年内同一题目同一语言仅算一次
                         with yearly_ac as (
                             select problem_id,
                                    language,
@@ -61,16 +61,18 @@ public class UserStatisticRepo {
     public Results selectResults(Integer uid) {
         return client.sql("""
                         select count(result = 'AC' or null)  as AC,
+                               count(result = 'PA' or null)  as PA,
                                count(result = 'WA' or null)  as WA,
                                count(result = 'TLE' or null) as TLE,
                                count(result = 'MLE' or null) as MLE,
+                               count(result = 'OLE' or null) as OLE,
                                count(result = 'RE' or null)  as RE,
-                               count(result = 'CE' or null)  as CE,
-                               count(solution_id)            as total
+                               count(result = 'CE' or null)  as CE
                         from solution
                         where uid = :uid
+                          and deleted = 0
+                          and state = 'JUDGED'
                           and contest_id is null
-                          and result <> 'JUDGE_ERROR'
                         """)
                 .param("uid", uid)
                 .query(Results.class)

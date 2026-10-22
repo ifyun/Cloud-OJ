@@ -57,6 +57,8 @@ import { useStore } from "@/store"
 import { ramUsage, timeUsage } from "@/utils"
 import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
+import "dayjs/locale/zh-cn"
+import relativeTime from "dayjs/plugin/relativeTime"
 import {
   type DataTableColumns,
   NButton,
@@ -73,6 +75,9 @@ import {
 } from "naive-ui"
 import { nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
+
+dayjs.extend(relativeTime)
+dayjs.locale("zh-cn")
 
 const store = useStore()
 const route = useRoute()
@@ -122,6 +127,7 @@ const columns: DataTableColumns<JudgeResult> = [
     align: "center",
     render: (row) => (
       <ResultTag
+        key={row.result}
         class="resultTag"
         data={row}
         // @ts-ignore
@@ -177,10 +183,12 @@ const columns: DataTableColumns<JudgeResult> = [
     render: (row) => (
       <NPopover trigger="click" placement="left">
         {{
-          trigger: () => <NButton text>{date(row.submitTime!)}</NButton>,
+          trigger: () => (
+            <NButton text>{dayjs(row.submitTime!).fromNow()}</NButton>
+          ),
           default: () => (
-            <NText italic={true}>
-              {dayjs(row.submitTime!).format("H:mm:ss")}
+            <NText>
+              {dayjs(row.submitTime!).format("YYYY-MM-DD HH:mm:ss")}
             </NText>
           )
         }}
@@ -249,19 +257,6 @@ function search() {
   sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
-}
-
-function date(time: number) {
-  const now = dayjs()
-  const t = dayjs(time)
-
-  if (t.isSame(now, "day")) {
-    return "今天"
-  } else if (t.isSame(now, "year")) {
-    return t.format("M 月 DD")
-  } else {
-    return t.format("YYYY 年 M 月 DD")
-  }
 }
 </script>
 

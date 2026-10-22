@@ -1,9 +1,17 @@
 <template>
-  <div :id="chartName" class="chart" style="height: 125px; width: 700px" />
+  <div ref="chartElem" style="height: 125px"></div>
 </template>
 
 <script lang="ts" setup>
-import { type ComputedRef, inject, nextTick, onMounted, watch } from "vue"
+import {
+  type ComputedRef,
+  inject,
+  nextTick,
+  onActivated,
+  onDeactivated,
+  ref,
+  watch
+} from "vue"
 import type { EChartsType } from "echarts/core"
 import * as echarts from "echarts/core"
 import { GridComponent, type GridComponentOption } from "echarts/components"
@@ -17,6 +25,7 @@ type EChartsOption = echarts.ComposeOption<
 >
 
 let chart: EChartsType | null = null
+const chartElem = ref<HTMLElement | null>()
 const option: EChartsOption = {
   textStyle: {
     fontFamily: "v-sans, sans-serif"
@@ -25,8 +34,8 @@ const option: EChartsOption = {
   grid: {
     top: 10,
     bottom: 20,
-    left: 50,
-    right: 50
+    left: 30,
+    right: 30
   },
   axisPointer: {
     animation: false
@@ -61,11 +70,13 @@ const option: EChartsOption = {
 }
 
 const props = defineProps<{
-  chartName: string
   data: Array<{ sample: number; timestamp: number }>
 }>()
 
 const themeStr: ComputedRef<"light" | "dark"> | undefined = inject("themeStr")
+const observer = new ResizeObserver(() => {
+  chart?.resize()
+})
 
 watch(themeStr!, (val) => {
   nextTick(() => {
@@ -87,12 +98,18 @@ watch(
   }
 )
 
-onMounted(() => {
+onActivated(() => {
   initChart(themeStr!.value)
+  observer.observe(chartElem.value!)
+})
+
+onDeactivated(() => {
+  observer.disconnect()
+  chart?.dispose()
 })
 
 function initChart(theme: string | null) {
-  chart = echarts.init(document.getElementById(props.chartName), theme, {
+  chart = echarts.init(chartElem.value, theme, {
     renderer: "svg"
   })
   ;(option.series as any).data = resolveData()

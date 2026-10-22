@@ -211,7 +211,7 @@ public class FileService {
             throw new GenericException(HttpStatus.BAD_REQUEST, "不允许的图片格式");
         }
 
-        fileName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
+        fileName = UUID.randomUUID().toString().replace("-", "") + ext;
 
         try {
             Files.createDirectories(dir);

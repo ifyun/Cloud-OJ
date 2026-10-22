@@ -28,7 +28,7 @@ public class RankingService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public PageData<Ranking> getRanking(int page, int size, boolean admin) {
         var data = scoreboardRepo.selectAll(page, size, admin);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }

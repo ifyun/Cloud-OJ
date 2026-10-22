@@ -31,7 +31,7 @@ import { UserApi } from "@/api/request"
 import { ErrorMessage, Overview } from "@/api/type"
 import dayjs from "dayjs"
 import { NDivider, NFlex, NHeatmap, NText, useMessage } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import Languages from "./Languages.vue"
 import ResultsPanel from "./ResultsPanel.vue"
 import Timeline from "./Timeline.vue"
@@ -51,15 +51,19 @@ const timeRange = computed<string>(() => {
   return `${dayjs(start).format("YYYY/MM-DD")} ~ 今天`
 })
 
-onBeforeMount(() => {
-  loading.value = true
-  UserApi.getOverview(props.uid)
-    .then((data) => {
-      overview.value = data
-    })
-    .catch((err: ErrorMessage) => {
-      message.error(err.toString())
-    })
-    .finally(() => (loading.value = false))
-})
+watch(
+  () => props.uid,
+  (val) => {
+    loading.value = true
+    UserApi.getOverview(val)
+      .then((data) => {
+        overview.value = data
+      })
+      .catch((err: ErrorMessage) => {
+        message.error(err.toString())
+      })
+      .finally(() => (loading.value = false))
+  },
+  { immediate: true }
+)
 </script>

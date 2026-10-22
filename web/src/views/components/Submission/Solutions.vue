@@ -1,18 +1,20 @@
 <template>
   <n-flex vertical>
     <n-flex align="center">
+      <n-h3 style="margin: 0">
+        {{ `${problemId}.${title}` }}
+      </n-h3>
       <n-button
-        tertiary
-        round
+        text
+        type="primary"
         size="small"
         :loading="loading"
         @click="querySolutions">
         <template #icon>
           <n-icon :component="RefreshRound" />
         </template>
-        刷新
       </n-button>
-      <n-text>最近 15 次提交：</n-text>
+      <n-text>最近 10 次提交：</n-text>
     </n-flex>
     <empty-data v-if="solutions.total === 0" />
     <n-timeline v-else style="width: 400px; margin-left: 12px">
@@ -44,12 +46,6 @@
   </n-flex>
 </template>
 
-<script lang="tsx">
-export default {
-  name: "SolutionSingle"
-}
-</script>
-
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
@@ -65,6 +61,7 @@ import dayjs from "dayjs"
 import {
   NButton,
   NFlex,
+  NH3,
   NIcon,
   NText,
   NTimeline,
@@ -73,7 +70,10 @@ import {
 } from "naive-ui"
 import { onMounted, ref } from "vue"
 
-const props = defineProps<{ problemId: number }>()
+defineOptions({
+  name: "SolutionSingle"
+})
+const props = defineProps<{ problemId: number; title: string }>()
 
 const message = useMessage()
 const loading = ref<boolean>(true)
@@ -88,7 +88,7 @@ onMounted(() => {
 
 function querySolutions() {
   loading.value = true
-  UserApi.getSolutions(1, 15, 1, props.problemId.toString())
+  UserApi.getSolutions(1, 10, 1, props.problemId.toString())
     .then((data) => {
       solutions.value = data
     })

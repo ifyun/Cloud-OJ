@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.7</version>
+    <version>4.1.1</version>
     <relativePath/>
   </parent>
   <groupId>cloud.oj</groupId>
@@ -16,8 +16,8 @@
   <packaging>pom</packaging>
   <description>Cloud OJ Project</description>
   <properties>
-    <java.version>17</java.version>
-    <spring-cloud.version>2025.0.0</spring-cloud.version>
+    <java.version>21</java.version>
+    <spring-cloud.version>2025.1.2</spring-cloud.version>
   </properties>
   <modules>
     <module>core</module>
@@ -36,8 +36,13 @@
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.10</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>http-client</artifactId>
+        <version>5.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

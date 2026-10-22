@@ -49,13 +49,10 @@
           v-if="isLoggedIn"
           name="solutions"
           tab="提交记录"
-          display-directive="show"
+          display-directive="if"
           style="flex: 1; height: 0">
           <n-scrollbar>
-            <n-h3 style="margin-bottom: 6px">
-              {{ `${problem.problemId}.${problem.title}` }}
-            </n-h3>
-            <solution-single :problem-id="pid" />
+            <solution-single :problem-id="pid" :title="problem.title" />
           </n-scrollbar>
         </n-tab-pane>
       </n-tabs>
@@ -104,10 +101,14 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import { computed, inject, onBeforeMount, ref } from "vue"
+import { computed, inject, onActivated, ref } from "vue"
 import ResultDialog from "./ResultDialog.vue"
 import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
+
+defineOptions({
+  name: "Submission"
+})
 
 const store = useStore()
 const message = useMessage()
@@ -124,12 +125,9 @@ const submitTime = ref<number>(0)
 const theme = inject("themeStr") as "light" | "dark"
 const isLoggedIn = computed(() => store.user.isLoggedIn)
 
-let problemId: number | null = null
-let contestId: number | null = null
-
 const submitClick = throttle(submit, 1000)
 
-onBeforeMount(() => {
+onActivated(() => {
   queryProblem()
 })
 
@@ -183,8 +181,8 @@ function submit(data: SourceCode) {
 
   const submitData: SubmitData = {
     language: data.language,
-    problemId: problemId!,
-    contestId,
+    problemId: props.pid!,
+    contestId: props.cid,
     sourceCode: data.code.trim(),
     type: 0,
     uid: store.user.userInfo!.uid!

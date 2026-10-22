@@ -88,8 +88,12 @@ import {
   useModal,
   useNotification
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
+import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
+
+defineOptions({
+  name: "UserAdmin"
+})
 
 const store = useStore()
 const route = useRoute()
@@ -267,10 +271,9 @@ const columns: DataTableColumns<User> = [
   }
 ]
 
-onMounted(() => {
-  if (route.query.page) {
-    pagination.value.page = Number(route.query.page)
-  }
+onActivated(() => {
+  const { page = 1 } = route.query
+  pagination.value.page = Number(page)
 
   filter.value = JSON.parse(sessionStorage.getItem("query") ?? `{"type": 0}`)
   queryUsers()
@@ -286,7 +289,7 @@ function filterChange(value: number) {
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: {
       page
     }

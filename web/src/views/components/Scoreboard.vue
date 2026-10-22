@@ -36,7 +36,7 @@ import {
   NTag,
   NText
 } from "naive-ui"
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, onActivated, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 const store = useStore()
@@ -142,16 +142,15 @@ const rankingColumns: DataTableColumns<Ranking> = [
   }
 ]
 
-onBeforeMount(() => {
-  if ("page" in route.query) {
-    pagination.value.page = Number(route.query.page)
-  }
+onActivated(() => {
+  const { page = 1 } = route.query
+  pagination.value.page = Number(page)
 
   queryRankings()
 })
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: { page }
   })
 

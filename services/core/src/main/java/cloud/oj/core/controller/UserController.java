@@ -36,7 +36,7 @@ public class UserController {
             @RequestBody(required = false) UserFilter filter
     ) {
         var data = userService.getUsersByFilter(filter, page, limit);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }

@@ -28,7 +28,7 @@ public class ProblemController {
                                                           @RequestParam(defaultValue = "15") int size,
                                                           String keyword) {
         var data = problemService.getAllEnabled(uid, keyword, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }
@@ -41,7 +41,7 @@ public class ProblemController {
                                                     @RequestParam(defaultValue = "15") int size,
                                                     String keyword) {
         var data = problemService.getAll(keyword, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }

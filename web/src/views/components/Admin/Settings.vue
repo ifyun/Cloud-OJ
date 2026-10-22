@@ -71,12 +71,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "SystemSettings"
-}
-</script>
-
 <script setup lang="ts">
 import { SettingsApi } from "@/api/request"
 import { ErrorMessage, Settings } from "@/api/type"
@@ -93,10 +87,12 @@ import {
   useMessage
 } from "naive-ui"
 import { onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
+
+defineOptions({
+  name: "SystemSettings"
+})
 
 const store = useStore()
-const route = useRoute()
 const message = useMessage()
 
 const loading = ref<boolean>(true)

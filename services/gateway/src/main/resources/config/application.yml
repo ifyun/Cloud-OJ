@@ -5,6 +5,9 @@ spring:
     active: dev
   application:
     name: gateway
+  threads:
+    virtual:
+      enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver
@@ -59,4 +62,4 @@ management:
     health:
       show-details: always
 app:
-  token-valid-time: ${TOKEN_VALID_TIME:4}
+  token-valid-time: ${TOKEN_VALID_TIME:8}

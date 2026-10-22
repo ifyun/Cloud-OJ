@@ -127,8 +127,8 @@ import {
 import {
   computed,
   nextTick,
+  onActivated,
   onDeactivated,
-  onMounted,
   ref,
   shallowRef
 } from "vue"
@@ -155,8 +155,8 @@ const noRanking = computed<boolean>(
 let contestId: number
 let timeout: number | undefined
 
-onMounted(() => {
-  contestId = Number(props.cid)
+onActivated(() => {
+  contestId = props.cid
   queryRanking()
 })
 

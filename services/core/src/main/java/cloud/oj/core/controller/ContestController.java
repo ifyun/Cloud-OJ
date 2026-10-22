@@ -37,7 +37,7 @@ public class ContestController {
             @RequestParam(defaultValue = "15") Integer size
     ) {
         var data = contestService.getAllContest(filter, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }
@@ -52,7 +52,7 @@ public class ContestController {
             @RequestParam(defaultValue = "15") Integer size
     ) {
         var data = contestService.getAllContestAdmin(filter, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }
@@ -100,7 +100,7 @@ public class ContestController {
                                                              @RequestParam(defaultValue = "1") Integer page,
                                                              @RequestParam(defaultValue = "15") Integer size) {
         var data = contestService.getIdleProblems(cid, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }

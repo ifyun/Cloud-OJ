@@ -4,8 +4,10 @@ import cloud.oj.judge.config.RabbitConfig;
 import cloud.oj.judge.entity.Solution;
 import cloud.oj.judge.entity.SubmitData;
 import cloud.oj.judge.error.GenericException;
+import cloud.oj.judge.function.ThrowingRunnable;
 import cloud.oj.judge.repo.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmitService {
@@ -37,7 +42,7 @@ public class SubmitService {
      *
      * @param data    {@link SubmitData}
      * @param isAdmin 是否为管理员
-     * @return {@link Long} 提交时间(unix timestamp)
+     * @return {@link Long} 提交时间(Unix timestamp)
      */
     public Long submitCode(SubmitData data, boolean isAdmin) {
         data.setSubmitTime(System.currentTimeMillis());
@@ -81,7 +86,12 @@ public class SubmitService {
             }
         }
 
-        rabbitTemplate.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
+        rabbitTemplate.invoke(t -> {
+            t.convertAndSend(RabbitConfig.SUBMIT_QUEUE, data);
+            t.waitForConfirmsOrDie(1000);
+            return true;
+        });
+
         return data.getSubmitTime();
     }
 
@@ -90,7 +100,7 @@ public class SubmitService {
      * <p>隔离级别：读提交</p>
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void submit(SubmitData submitData) throws AmqpException {
+    public void submit(SubmitData submitData, ThrowingRunnable<IOException> onComplete) throws IOException, AmqpException {
         var solution = new Solution(
                 submitData.getUid(),
                 submitData.getProblemId(),
@@ -104,5 +114,6 @@ public class SubmitService {
         sourceRepo.insert(solution.getId(), submitData.getSourceCode());
         // 发送到判题队列
         rabbitTemplate.convertAndSend(judgeQueue.getName(), solution);
+        onComplete.run();
     }
 }

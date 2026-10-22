@@ -50,6 +50,7 @@ import {
   lineNumbers
 } from "@codemirror/view"
 import { SendRound } from "@vicons/material"
+import { throttle } from "lodash-es"
 import {
   NButton,
   NFlex,
@@ -59,7 +60,7 @@ import {
   NScrollbar,
   NSelect
 } from "naive-ui"
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onActivated, onMounted, ref, watch } from "vue"
 
 let cmView: EditorView
 
@@ -159,12 +160,26 @@ onMounted(() => {
   })
 })
 
-function submit() {
-  emit("submit", {
-    language: language.value,
-    code: cmView.state.doc.toString()
+onActivated(() => {
+  cmView?.dispatch({
+    changes: {
+      from: 0,
+      to: cmView.state.doc.length,
+      insert: ""
+    }
   })
-}
+})
+
+const submit = throttle(
+  () => {
+    emit("submit", {
+      language: language.value,
+      code: cmView.state.doc.toString()
+    })
+  },
+  1000,
+  { leading: true, trailing: false }
+)
 </script>
 
 <style scoped lang="scss">

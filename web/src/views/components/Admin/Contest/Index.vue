@@ -89,8 +89,12 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
+import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+
+defineOptions({
+  name: "ContestAdmin"
+})
 
 const store = useStore()
 const route = useRoute()
@@ -230,11 +234,9 @@ const contests = ref<Page<Contest>>({
   total: 0
 })
 
-onMounted(() => {
-  if (route.query.page) {
-    pagination.value.page = Number(route.query.page)
-  }
-
+onActivated(() => {
+  const { page = 1 } = route.query
+  pagination.value.page = Number(page)
   filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
 
   queryContests()
@@ -286,7 +288,7 @@ function search() {
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: { page }
   })
 

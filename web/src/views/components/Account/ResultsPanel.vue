@@ -1,77 +1,52 @@
 <template>
   <div>
-    <n-h3 strong>结果统计</n-h3>
-    <div style="display: flex">
-      <div style="display: flex; flex-direction: column">
-        <div
-          v-for="(color, index) in colors"
-          :key="index"
-          style="display: flex; align-items: center; margin-right: auto">
-          <div
-            :style="{
-              backgroundColor: color,
-              borderRadius: '4px',
-              width: '12px',
-              height: '12px',
-              marginRight: '4px'
-            }" />
-          <n-text style="font-size: small">
-            {{ names[index] }}
-          </n-text>
-        </div>
-      </div>
-      <n-progress
-        style="width: 150px; margin-left: 100px"
-        type="multiple-circle"
-        :stroke-width="4"
-        :circle-gap="0.5"
-        :color="colors"
-        :percentage="percentage">
-        <n-text style="font-size: small; text-align: center">
-          {{ acRate }}%<br />正确率
-        </n-text>
-      </n-progress>
-    </div>
+    <n-h3 strong style="margin-bottom: 12px">结果统计</n-h3>
+    <n-empty v-if="total === 0" description="没有记录" />
+    <n-flex v-else vertical :size="0">
+      <n-flex v-for="(v, index) in data" :key="index" align="center">
+        <n-text>{{ v.name }}</n-text>
+        <n-progress
+          type="line"
+          :show-indicator="false"
+          :color="v.color"
+          :percentage="v.percentage"
+          style="flex: auto; width: 0" />
+      </n-flex>
+      <n-text strong>正确率：{{ acRate }}%</n-text>
+    </n-flex>
   </div>
 </template>
 
 <script setup lang="ts">
 import { type Results } from "@/api/type"
-import { NH3, NProgress, NText } from "naive-ui"
+import { ResultColors, ResultNames } from "@/type"
+import { NEmpty, NFlex, NH3, NProgress, NText } from "naive-ui"
 import { computed } from "vue"
-
-const colors = [
-  "#18A058", // AC
-  "#F56C6C", // WA
-  "#EBB563", // TLE
-  "#409EFF", // MLE
-  "#707172", // RE
-  "#EEEDEF" // CE
-]
-
-const keys = ["AC", "WA", "TLE", "MLE", "RE", "CE"]
-const names = ["正确", "错误", "时间超限", "内存超限", "运行错误", "编译错误"]
 
 const props = defineProps<{
   data: Results
 }>()
 
-const percentage = computed(() => {
-  const arr: Array<number> = []
+const total = computed(() =>
+  Object.values(props.data).reduce((acc, cur) => acc + cur, 0)
+)
 
-  keys.forEach((key) => {
-    const p = (props.data[key] ?? 0) / props.data.total
-    arr.push(isNaN(p) ? 0 : p * 100)
+const data = computed(() => {
+  return Object.entries(props.data).map((v) => {
+    const p = v[1] / total.value
+    return {
+      name: ResultNames[v[0]],
+      color: ResultColors[v[0]],
+      percentage: isFinite(p) ? p * 100 : 0
+    }
   })
-
-  return arr
 })
 
 const acRate = computed(() => {
-  if (props.data.total === 0) {
+  if (total.value === 0) {
     return 0
   }
 
-  return Math.round((props.data["AC"] / props.data.total) * 100)
+  return Math.round((props.data["AC"] / total.value) * 100)
 })
 </script>

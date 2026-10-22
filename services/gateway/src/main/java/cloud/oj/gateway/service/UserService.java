@@ -4,6 +4,7 @@ import cloud.oj.gateway.entity.Role;
 import cloud.oj.gateway.entity.User;
 import cloud.oj.gateway.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +33,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
+    @NullMarked
     public UserDetails loadUserByUsername(String username) {
         var user = userRepo.findByUsername(username);
 

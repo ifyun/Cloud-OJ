@@ -52,12 +52,13 @@ public class AppConfig {
 
         // 只有一个元素，表示 CPU 数量
         if (cpuList.size() == 1) {
-            var count = cpuList.get(0);
-            cpus = new ArrayList<>(count);
+            int count = cpuList.getFirst();
 
             if (count >= availableCpus || count <= 0) {
                 count = availableCpus;
             }
+
+            cpus = new ArrayList<>(count);
 
             for (int i = 0; i < count; i++) {
                 cpus.add(i);

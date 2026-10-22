@@ -5,6 +5,6 @@ package cloud.oj.core.entity;
  */
 public record HeatmapData(
         Long timestamp,
-        Integer value
+        int value
 ) {
 }

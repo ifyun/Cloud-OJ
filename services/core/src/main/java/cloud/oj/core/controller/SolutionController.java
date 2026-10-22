@@ -3,6 +3,7 @@ package cloud.oj.core.controller;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
 import cloud.oj.core.entity.SolutionFilter;
+import cloud.oj.core.entity.SolutionSummary;
 import cloud.oj.core.service.SolutionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class SolutionController {
                                                      Integer filter,
                                                      String filterValue) {
         var data = solutionService.getSolutionsByUidAndFilter(uid, page, size, filter, filterValue);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }
@@ -44,7 +45,7 @@ public class SolutionController {
             @RequestBody(required = false) SolutionFilter filter
     ) {
         var data = solutionService.getSolutionsByAdmin(filter, page, size);
-        return data.getTotal() > 0 ?
+        return data.total() > 0 ?
                 ResponseEntity.ok(data) :
                 ResponseEntity.noContent().build();
     }
@@ -65,5 +66,10 @@ public class SolutionController {
     @GetMapping("{sid}")
     public ResponseEntity<Solution> getBySolutionByUser(@RequestHeader Integer uid, @PathVariable String sid) {
         return ResponseEntity.ok(solutionService.getSolutionByUser(uid, sid));
+    }
+
+    @GetMapping("admin/summary")
+    public SolutionSummary aggregation() {
+        return solutionService.summary();
     }
 }

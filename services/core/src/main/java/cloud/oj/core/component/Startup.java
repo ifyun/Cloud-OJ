@@ -3,6 +3,7 @@ package cloud.oj.core.component;
 import cloud.oj.core.config.AppConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.LivenessState;
@@ -31,7 +32,7 @@ public class Startup implements CommandLineRunner {
     private final JdbcTemplate jdbc;
 
     @Override
-    public void run(String... args) {
+    public void run(String @NonNull ... args) {
         AvailabilityChangeEvent.publish(context, LivenessState.BROKEN);
         cleanImages();
         AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);

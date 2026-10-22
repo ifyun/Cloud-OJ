@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     private String newUUID() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
@@ -57,6 +57,7 @@ public class AuthController {
         var user = (User) auth.getPrincipal();
         var secret = newUUID();
 
+        assert user != null;
         userService.updateSecret(user.getUid(), secret);
         user.setSecret(secret);
         String jwt = JwtUtil.createJwt(user, authoritiesString, tokenValidTime);

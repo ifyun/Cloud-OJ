@@ -5,6 +5,9 @@ spring:
     active: dev
   application:
     name: core
+  threads:
+    virtual:
+      enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver

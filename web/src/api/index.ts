@@ -34,8 +34,7 @@ const ApiPath = {
   PROFILE: "/api/core/user/profile",
   PROFILE_ADMIN: "/api/core/user/admin/profile",
   OVERVIEW: "/api/core/user/overview",
-  SETTINGS: "/api/core/settings",
-  LOG: "/api/core/log"
+  SETTINGS: "/api/core/settings"
 }
 
 function resolveError(error: any): ErrorMessage {

@@ -97,8 +97,12 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
+import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
+
+defineOptions({
+  name: "ProblemAdmin"
+})
 
 const store = useStore()
 const route = useRoute()
@@ -110,7 +114,7 @@ const loading = ref<boolean>(true)
 
 const pagination = ref({
   page: 1,
-  pageSize: 20
+  pageSize: 15
 })
 
 const problems = ref<Page<Problem>>({
@@ -252,7 +256,7 @@ const delRule = {
   }
 }
 
-onMounted(() => {
+onActivated(() => {
   const { page = 1, keyword = "" } = route.query
   pagination.value.page = Number(page)
   filter.value.keyword = String(keyword)
@@ -288,7 +292,7 @@ function operationSelect(key: string) {
 }
 
 function pageChange(page: number) {
-  router.push({
+  router.replace({
     query: { page }
   })
 
@@ -304,7 +308,7 @@ function search() {
   nextTick(() => {
     if (filter.value.keyword !== "") {
       pagination.value.page = 1
-      router.push({
+      router.replace({
         query: { keyword: filter.value.keyword, page: 1 }
       })
     }

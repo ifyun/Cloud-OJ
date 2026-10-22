@@ -21,7 +21,7 @@ public class RankingController {
     public ResponseEntity<?> getRanking(@RequestParam(defaultValue = "1") Integer page,
                                         @RequestParam(defaultValue = "15") Integer size) {
         var data = rankingService.getRanking(page, size, false);
-        return data.getTotal() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
@@ -31,7 +31,7 @@ public class RankingController {
     public ResponseEntity<?> getRankingAdmin(@RequestParam(defaultValue = "1") Integer page,
                                              @RequestParam(defaultValue = "15") Integer size) {
         var data = rankingService.getRanking(page, size, true);
-        return data.getTotal() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**

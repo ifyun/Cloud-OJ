@@ -1,22 +1,24 @@
 <template>
   <div class="admin-wrap">
     <n-flex vertical>
+      <solution-summary />
       <queues-info-view :data="queuesInfo" />
-      <service-log />
     </n-flex>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onDeactivated, onMounted, ref } from "vue"
-import QueuesInfoView from "./QueuesInfoView.vue"
-import ServiceLog from "./ServiceLog.vue"
+import { AdminApi } from "@/api/request"
+import { ErrorMessage, type QueuesInfo } from "@/api/type"
 import { NFlex, useMessage } from "naive-ui"
-import { useStore } from "@/store"
-import { type QueuesInfo } from "@/api/type"
-import { QueuesInfoPoller } from "@/api/request"
+import { onActivated, onDeactivated, ref } from "vue"
+import QueuesInfoView from "./QueuesInfoView.vue"
+import SolutionSummary from "./SolutionSummary.vue"
 
-const store = useStore()
+defineOptions({
+  name: "AdminIndex"
+})
+
 const message = useMessage()
 const queuesInfo = ref<QueuesInfo>({
   Submit: {
@@ -35,21 +37,20 @@ const queuesInfo = ref<QueuesInfo>({
   }
 })
 
-let poller: QueuesInfoPoller
+let timer: number
 
-onMounted(() => {
-  poller = new QueuesInfoPoller(
-    store.user.userInfo!.token,
-    (data) => {
-      queuesInfo.value = data
-    },
-    (error) => {
-      message.error(error)
-    }
-  )
+onActivated(() => {
+  getQueuesInfo()
 })
 
 onDeactivated(() => {
-  poller.close()
+  clearTimeout(timer)
 })
+
+function getQueuesInfo() {
+  AdminApi.getQueuesInfo()
+    .then((data) => (queuesInfo.value = data))
+    .catch((err: ErrorMessage) => message.error(err.toString()))
+    .finally(() => (timer = setTimeout(getQueuesInfo, 2500)))
+}
 </script>

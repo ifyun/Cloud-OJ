@@ -14,7 +14,7 @@ public class ScoreboardRepo {
      * 提交次数 +1
      *
      * @param uid  用户 Id
-     * @param time 更新时间(unix timestamp)
+     * @param time 更新时间(Unix timestamp)
      */
     public void incSubmitted(Integer uid, Long time) {
         var sql = """
@@ -35,7 +35,7 @@ public class ScoreboardRepo {
      *
      * @param uid  用户 Id
      * @param cid  竞赛 Id
-     * @param time 更新时间(unix timestamp)
+     * @param time 更新时间(Unix timestamp)
      */
     public void incSubmittedOfContest(Integer uid, Integer cid, Long time) {
         var sql = """
@@ -57,11 +57,11 @@ public class ScoreboardRepo {
      * 更新排名
      *
      * @param uid  用户 Id
-     * @param time 更新时间(unix timestamp)
+     * @param time 更新时间(Unix timestamp)
      */
     public void update(Integer uid, Long time) {
         var sql = """
-                replace into scoreboard(uid, committed, passed, score, update_time)
+                insert into scoreboard(uid, committed, passed, score, update_time)
                 select :uid                                          as uid,
                        sum(committed)                                as committed,
                        count((case when (pass_rate = 1) then 1 end)) as passed,
@@ -73,7 +73,12 @@ public class ScoreboardRepo {
                       from solution
                       where contest_id is null
                         and uid = :uid
-                      group by problem_id) as user_score;
+                      group by problem_id) as user_score
+                on duplicate key
+                    update committed = values(committed),
+                           passed = values(passed),
+                           score = values(score),
+                           update_time = values(update_time);
                 """;
         client.sql(sql)
                 .param("uid", uid)
@@ -86,11 +91,11 @@ public class ScoreboardRepo {
      *
      * @param cid  竞赛 Id
      * @param uid  用户 Id
-     * @param time 更新时间(unix timestamp)
+     * @param time 更新时间(Unix timestamp)
      */
     public void updateOfContest(Integer cid, Integer uid, Long time) {
         var sql = """
-                replace into scoreboard_contest(uid, contest_id, committed, passed, score, update_time)
+                insert into scoreboard_contest(uid, contest_id, committed, passed, score, update_time)
                 select :uid                                          as uid,
                        :cid                                          as contest_id,
                        sum(committed)                                as committed,
@@ -103,7 +108,12 @@ public class ScoreboardRepo {
                       from solution
                       where contest_id = :cid
                         and uid = :uid
-                      group by problem_id) as user_score;
+                      group by problem_id) as user_score
+                on duplicate key
+                    update committed = values(committed),
+                           passed = values(passed),
+                           score = values(score),
+                           update_time = values(update_time);
                 """;
         client.sql(sql)
                 .param("cid", cid)

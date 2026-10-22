@@ -47,6 +47,29 @@ export const LanguageColors: { [key: number]: string } = {
   8: "#00ADD8"
 }
 
+export const ResultColors: { [key: string]: string } = {
+  AC: "#22c55e",
+  PA: "#06b6d4",
+  WA: "#ef4444",
+  TLE: "#3b82f6",
+  MLE: "#8b5cf6",
+  OLE: "#f97316",
+  RE: "#b45309",
+  CE: "#64748b"
+}
+
+export const ResultNames: { [key: string]: string } = {
+  AC: "完全正确",
+  PA: "部分通过",
+  WA: "答案错误",
+  TLE: "时间超限",
+  MLE: "内存超限",
+  OLE: "输出超限",
+  RE: "运行错误",
+  CE: "编译错误",
+  IE: "内部错误"
+}
+
 export const ResultTypes: { [key: number]: any } = {
   0: "success",
   1: "warning",

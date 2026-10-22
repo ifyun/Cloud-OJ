@@ -47,7 +47,7 @@ public class ProblemService {
         }
 
         var data = problemRepo.selectAllEnabled(page, size, keyword);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         data.forEach(p -> solutionRepo.selectResult(uid, p.getProblemId())
                 .ifPresent((r) -> {
@@ -74,7 +74,7 @@ public class ProblemService {
         }
 
         var data = problemRepo.selectAll(page, size, keyword);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }

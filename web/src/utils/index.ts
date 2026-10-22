@@ -63,6 +63,5 @@ function ramUsage(val?: number): string {
 }
 
 export { default as LanguageUtil } from "./LanguageUtil"
-export { default as LogFormatter } from "./LogFormatter"
 export { setTitle, renderIcon, stateTag, timeUsage, ramUsage }
 export type { StateTag }

@@ -91,7 +91,7 @@ public class ContestService {
             data = contestRepo.selectAllStarted(filter, page, size);
         }
 
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }
@@ -111,7 +111,7 @@ public class ContestService {
         }
 
         var data = contestRepo.selectAll(filter, page, size, true);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }
@@ -191,7 +191,7 @@ public class ContestService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public PageData<Problem> getIdleProblems(Integer cid, Integer page, Integer size) {
         var data = contestRepo.selectIdleProblems(cid, page, size);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }

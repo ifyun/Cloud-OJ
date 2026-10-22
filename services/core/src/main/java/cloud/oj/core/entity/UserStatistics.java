@@ -9,6 +9,6 @@ import java.util.List;
 @Setter
 public class UserStatistics {
     private Results results;
-    private List<Language> preference;
+    private List<LanguageUsage> preference;
     private List<HeatmapData> heatmap;
 }

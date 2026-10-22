@@ -35,7 +35,7 @@ public class UserService {
     private static final Set<String> VALID_TIMEZONES = Set.of(TimeZone.getAvailableIDs());
 
     private String newUUID() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
@@ -53,7 +53,7 @@ public class UserService {
         }
 
         var data = userRepo.selectByFilter(filter, page, limit);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
     }

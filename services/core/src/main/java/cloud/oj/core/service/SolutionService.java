@@ -3,23 +3,20 @@ package cloud.oj.core.service;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
 import cloud.oj.core.entity.SolutionFilter;
+import cloud.oj.core.entity.SolutionSummary;
 import cloud.oj.core.error.GenericException;
 import cloud.oj.core.repo.SolutionRepo;
 import cloud.oj.core.repo.UserRepo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import tools.jackson.databind.ObjectMapper;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -27,9 +24,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SolutionService {
 
-    private static final int MAX_COUNT = 180;
-
-    private final PlatformTransactionManager transactionManager;
+    private static final int MAX_COUNT = 120;
 
     private final SolutionRepo solutionRepo;
 
@@ -55,7 +50,7 @@ public class SolutionService {
     public PageData<Solution> getSolutionsByUidAndFilter(Integer uid, Integer page, Integer size,
                                                          Integer filter, String filterValue) {
         var data = solutionRepo.selectAllByUid(uid, page, size, filter, filterValue);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
         return new PageData<>(data, total);
     }
 
@@ -78,12 +73,12 @@ public class SolutionService {
             }
 
             var data = solutionRepo.selectAllByFilter(uid.get(), filter.pid, filter.date, page, size);
-            var total = data.isEmpty() ? 0 : data.get(0)._total;
+            var total = data.isEmpty() ? 0 : data.getFirst()._total;
             return new PageData<>(data, total);
         }
 
         var data = solutionRepo.selectAllByFilter(null, filter.pid, filter.date, page, size);
-        var total = data.isEmpty() ? 0 : data.get(0)._total;
+        var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         data.forEach(s -> userRepo.selectById(s.getUid()).ifPresent(u -> {
             s.setUsername(u.getUsername());
@@ -124,60 +119,45 @@ public class SolutionService {
     /**
      * 根据 uid 和提交时间查询提交记录
      *
-     * <p>隔离级别：读未提交</p>
-     * <p>开启了新的线程，不可使用声明式事务</p>
-     *
      * @return {@link ServerSentEvent}
      */
     public SseEmitter getSolutionByUidAndTime(Integer uid, Long time) {
         var emitter = new SseEmitter(0L);
-        var executor = Executors.newSingleThreadExecutor();
         var settings = systemSettings.getSettings();
 
-        executor.execute(() -> {
+        Thread.ofVirtual().start(() -> {
             var count = 0;
-            var def = new DefaultTransactionDefinition();
-
-            def.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
-            var status = transactionManager.getTransaction(def);
 
             try {
                 while (true) {
-                    var result = solutionRepo.selectByUidAndTime(uid, time, settings.isShowPassedPoints());
-
-                    if (result.isEmpty()) {
-                        count += 1;
-                        continue;
-                    }
-
-                    var event = SseEmitter.event()
-                            .name("message")
-                            .data(objectMapper.writeValueAsString(result.get()));
-                    emitter.send(event);
-                    count += 1;
-
-                    if (result.get().getState() == 0) {
-                        // 已判题，结束 Event
-                        emitter.complete();
-                        break;
-                    }
-
                     if (count == MAX_COUNT) {
-                        var error = SseEmitter.event()
-                                .name("error")
-                                .data("轮询超时");
+                        var error = SseEmitter.event().name("err").data("轮询超时");
                         emitter.send(error);
                         emitter.complete();
                         break;
                     }
 
+                    var result = solutionRepo.selectByUidAndTime(uid, time, settings.isShowPassedPoints());
+
+                    if (result.isPresent()) {
+                        var event = SseEmitter.event()
+                                .name("message")
+                                .data(objectMapper.writeValueAsString(result.get()));
+                        emitter.send(event);
+
+                        if (result.get().getState() == 0) {
+                            // 已判题，结束 Event
+                            emitter.complete();
+                            break;
+                        }
+                    }
+
                     TimeUnit.MILLISECONDS.sleep(500);
+                    count += 1;
                 }
             } catch (Exception e) {
-                log.error(e.getMessage());
+                emitter.completeWithError(e);
             }
-
-            transactionManager.commit(status);
         });
 
         return emitter;
@@ -203,5 +183,13 @@ public class SolutionService {
         }
 
         return solution.get();
+    }
+
+    @Transactional
+    public SolutionSummary summary() {
+        var r = solutionRepo.resultAggrege();
+        var l = solutionRepo.languageAggrege();
+
+        return new SolutionSummary(r, l);
     }
 }

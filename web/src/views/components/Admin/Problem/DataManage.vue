@@ -130,9 +130,9 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { computed, nextTick, onBeforeMount, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onActivated, onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import SPJDeclare from "./spj.cpp?raw"
+import SPJDeclare from "./assets/spj.cpp?raw"
 
 let cmView: EditorView
 
@@ -315,17 +315,17 @@ watch(
   { immediate: true }
 )
 
-onBeforeMount(() => {
-  setTitle(route.meta.title as string)
-  queryData(props.id)
-})
-
 onMounted(() => {
   cmView = new EditorView({
     doc: SPJDeclare,
     parent: editor.value!,
     extensions: cmExtensions
   })
+})
+
+onActivated(() => {
+  setTitle(route.meta.title as string)
+  queryData(props.id)
 })
 
 function queryData(id: number) {
