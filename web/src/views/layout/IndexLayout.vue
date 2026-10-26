@@ -1,14 +1,17 @@
 <template>
   <n-layout position="absolute">
     <n-layout-header
-      position="static"
       bordered
-      style="height: var(--header-height)">
-      <nav-menu />
+      position="static"
+      style="
+        height: var(--header-height);
+        padding: 0 calc(var(--layout-padding) * 2);
+      ">
+      <index-navigation style="height: 100%" />
     </n-layout-header>
     <n-layout position="absolute" style="top: var(--header-height)">
       <n-scrollbar class="global">
-        <router-layout />
+        <router-wrapper />
         <n-layout-footer style="margin-top: auto">
           <bottom-info />
         </n-layout-footer>
@@ -18,7 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { BottomInfo, RouterLayout, NavMenu } from "@/views/layout"
+import { RouterWrapper } from "@/components"
+import { BottomInfo, IndexNavigation } from "@/views/layout/components"
 import { NLayout, NLayoutFooter, NLayoutHeader, NScrollbar } from "naive-ui"
 </script>
 

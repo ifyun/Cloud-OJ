@@ -14,6 +14,10 @@ import "./markdown.scss"
 import rehypeImage from "./plugin/rehype-image"
 import remarkContainer from "./plugin/remark-container"
 
+defineOptions({
+  name: "MarkdownView"
+})
+
 const props = defineProps<{
   content: string
   theme: "light" | "dark"

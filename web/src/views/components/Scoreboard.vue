@@ -22,22 +22,18 @@
 <script setup lang="tsx">
 import { RankingApi } from "@/api/request"
 import { ErrorMessage, type Page, Ranking } from "@/api/type"
-import { EmptyData, UserAvatar } from "@/components"
+import { EmptyData } from "@/components"
+import ScoreboardUser from "@/components/ScoreboardUser.vue"
 import { useStore } from "@/store"
-import { StarRound } from "@vicons/material"
 import {
   type DataTableColumns,
-  NBadge,
-  NButton,
   NDataTable,
   NFlex,
-  NIcon,
   NPagination,
-  NTag,
   NText
 } from "naive-ui"
 import { computed, onActivated, ref } from "vue"
-import { RouterLink, useRoute, useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const store = useStore()
 const route = useRoute()
@@ -69,51 +65,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
   {
     title: "用户",
     key: "name",
-    render: (row) => (
-      <NFlex align="center" size="small">
-        <NBadge color="transparent">
-          {{
-            default: () => (
-              <UserAvatar
-                size="large"
-                uid={row.uid!}
-                nickname={row.nickname}
-                hasAvatar={row.hasAvatar}
-              />
-            ),
-            value: () =>
-              row.star ? (
-                <NIcon component={StarRound} color="#f9a825" size="16" />
-              ) : (
-                ""
-              )
-          }}
-        </NBadge>
-        <NFlex vertical size={0}>
-          <NFlex size="small">
-            <RouterLink to={{ name: "account", params: { uid: row.uid } }}>
-              <NButton text strong>
-                {row.nickname}
-              </NButton>
-            </RouterLink>
-            {row.uid === store.user?.userInfo?.uid ? (
-              <NTag type="primary" size="small" round>
-                你自己
-              </NTag>
-            ) : (
-              ""
-            )}
-          </NFlex>
-          {row.username ? (
-            <NText depth="3" italic>
-              {row.realName}@{row.username}
-            </NText>
-          ) : (
-            ""
-          )}
-        </NFlex>
-      </NFlex>
-    )
+    render: (row) => <ScoreboardUser data={row} />
   },
   {
     title: "提交",

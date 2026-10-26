@@ -31,6 +31,7 @@
         </n-button>
       </n-flex>
       <n-data-table
+        size="small"
         :row-props="rowProps"
         :columns="contestColumns"
         :data="contests.data"
@@ -114,7 +115,7 @@ const filter = ref<ContestFilter>({
 })
 const pagination = ref({
   page: 1,
-  pageSize: 15
+  pageSize: 18
 })
 const point = ref({
   x: 0,

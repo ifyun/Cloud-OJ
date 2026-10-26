@@ -3,6 +3,12 @@
 </template>
 
 <script lang="ts" setup>
+import { LineChart, type LineSeriesOption } from "echarts/charts"
+import { GridComponent, type GridComponentOption } from "echarts/components"
+import type { EChartsType } from "echarts/core"
+import * as echarts from "echarts/core"
+import { UniversalTransition } from "echarts/features"
+import { SVGRenderer } from "echarts/renderers"
 import {
   type ComputedRef,
   inject,
@@ -12,12 +18,6 @@ import {
   ref,
   watch
 } from "vue"
-import type { EChartsType } from "echarts/core"
-import * as echarts from "echarts/core"
-import { GridComponent, type GridComponentOption } from "echarts/components"
-import { LineChart, type LineSeriesOption } from "echarts/charts"
-import { UniversalTransition } from "echarts/features"
-import { SVGRenderer } from "echarts/renderers"
 
 echarts.use([LineChart, SVGRenderer, UniversalTransition, GridComponent])
 type EChartsOption = echarts.ComposeOption<
@@ -75,7 +75,9 @@ const props = defineProps<{
 
 const themeStr: ComputedRef<"light" | "dark"> | undefined = inject("themeStr")
 const observer = new ResizeObserver(() => {
-  chart?.resize()
+  requestAnimationFrame(() => {
+    chart?.resize()
+  })
 })
 
 watch(themeStr!, (val) => {

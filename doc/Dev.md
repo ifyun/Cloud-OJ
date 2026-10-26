@@ -87,4 +87,4 @@ sudo echo -n "dotnet /usr/share/dotnet/sdk/$(dotnet --version)/Roslyn/bincore/cs
 
 4.创建运行时配置文件：
 
-将项目根目录中的 `dotnet.runtimeconfig.json` 复制到 `/etc` 目录，运行时配置文件将在判题时链接到工作目录。
+将项目根目录中的 `../dev/dotnet.runtimeconfig.json` 复制到 `/etc` 目录，运行时配置文件将在判题时链接到工作目录。

@@ -25,8 +25,8 @@ const routeName = computed(() => route.name?.toString())
 
 const menuOptions = [
   {
-    label: () => <RouterLink to={{ name: "admin_overview" }}>概览</RouterLink>,
-    key: "admin_overview",
+    label: () => <RouterLink to={{ name: "admin_index" }}>仪表板</RouterLink>,
+    key: "admin_index",
     icon: () => (
       <NIcon>
         <DashboardRound />

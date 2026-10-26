@@ -58,7 +58,7 @@ RUN curl -LJO https://packages.microsoft.com/config/debian/12/packages-microsoft
     && echo -n "/r:/usr/share/dotnet/sdk/$(dotnet --version)/ref/netstandard.dll " >> /bin/csc \
     && echo '"$@"' >> /bin/csc \
     && chmod +x /bin/csc
-COPY dotnet.runtimeconfig.json /etc/
+COPY dev/dotnet.runtimeconfig.json /etc/
 # Install Golang
 ADD .build/go1.25.4.linux-amd64.tar.gz /usr/local/
 RUN ln -s /usr/local/go/bin/go /usr/bin/go

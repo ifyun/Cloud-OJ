@@ -50,6 +50,7 @@
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
 import { EmptyData, LanguageTag } from "@/components"
+import { useActivated } from "@/composables"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import {
@@ -68,13 +69,13 @@ import {
   NTimelineItem,
   useMessage
 } from "naive-ui"
-import { onMounted, ref } from "vue"
+import { ref } from "vue"
 
 defineOptions({
   name: "SolutionSingle"
 })
-const props = defineProps<{ problemId: number; title: string }>()
 
+const props = defineProps<{ problemId: number; title: string }>()
 const message = useMessage()
 const loading = ref<boolean>(true)
 const solutions = ref<Page<JudgeResult>>({
@@ -82,7 +83,7 @@ const solutions = ref<Page<JudgeResult>>({
   total: 0
 })
 
-onMounted(() => {
+useActivated(() => {
   querySolutions()
 })
 

@@ -37,43 +37,8 @@
               <td class="table-rank">
                 <n-text>{{ user.rank }}</n-text>
               </td>
-              <!-- User -->
               <td class="table-user">
-                <n-flex size="small" align="center">
-                  <n-badge color="transparent">
-                    <user-avatar
-                      size="large"
-                      :uid="user.uid!"
-                      :nickname="user.nickname"
-                      :has-avatar="user.hasAvatar" />
-                    <template #value v-if="user.star">
-                      <n-icon
-                        :component="StarRound"
-                        color="#f9a825"
-                        size="16" />
-                    </template>
-                  </n-badge>
-                  <n-flex vertical :size="0">
-                    <n-flex>
-                      <RouterLink
-                        :to="{ name: 'account', params: { uid: user.uid } }">
-                        <n-button text strong>
-                          {{ user.nickname }}
-                        </n-button>
-                      </RouterLink>
-                      <n-tag
-                        v-if="user.uid === store.user?.userInfo?.uid"
-                        type="primary"
-                        size="small"
-                        round>
-                        你自己
-                      </n-tag>
-                    </n-flex>
-                    <n-text v-if="user.username" depth="3">
-                      {{ user.realName }}@{{ user.username }}
-                    </n-text>
-                  </n-flex>
-                </n-flex>
+                <scoreboard-user :data="user" />
               </td>
               <td class="table-badge">
                 <span class="badge">{{ user.badge }}</span>
@@ -108,22 +73,12 @@
 <script setup lang="ts">
 import { RankingApi } from "@/api/request"
 import { ErrorMessage, RankingContest } from "@/api/type"
-import { EmptyData, UserAvatar } from "@/components"
+import { EmptyData } from "@/components"
+import ScoreboardUser from "@/components/ScoreboardUser.vue"
 import { useStore } from "@/store"
 import { setTitle, type StateTag, stateTag } from "@/utils"
-import { StarRound } from "@vicons/material"
 import dayjs from "dayjs"
-import {
-  NBadge,
-  NButton,
-  NFlex,
-  NH4,
-  NIcon,
-  NTable,
-  NTag,
-  NText,
-  useThemeVars
-} from "naive-ui"
+import { NFlex, NH4, NIcon, NTable, NTag, NText, useThemeVars } from "naive-ui"
 import {
   computed,
   nextTick,
@@ -152,11 +107,9 @@ const noRanking = computed<boolean>(
   () => ranking.value != null && ranking.value.ranking?.length === 0
 )
 
-let contestId: number
 let timeout: number | undefined
 
 onActivated(() => {
-  contestId = props.cid
   queryRanking()
 })
 
@@ -166,7 +119,7 @@ onDeactivated(() => {
 
 function queryRanking() {
   loading.value = true
-  RankingApi.getContestRanking(contestId)
+  RankingApi.getContestRanking(props.cid)
     .then((data) => {
       setTitle(`${data.contest!.contestName} | 排名`)
       contestState.value = stateTag(data.contest!)

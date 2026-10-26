@@ -41,22 +41,16 @@ import {
   NText
 } from "naive-ui"
 import { computed, inject } from "vue"
-import { useRouter } from "vue-router"
-import { BottomInfo } from "./layout"
+import { BottomInfo } from "./layout/components"
 
 const props = defineProps<{
   error: ErrorMessage
 }>()
 
-const theme = inject("themeStr")
-const router = useRouter()
+const reload = inject("reload", () => {})
+const theme = inject<string>("themeStr")
+
 const errorText = computed(() => {
   return `${props.error.status}: ${props.error.message}`
 })
-
-const reload = inject("reload", () => {})
-
-function backToHome() {
-  router.replace("/")
-}
 </script>

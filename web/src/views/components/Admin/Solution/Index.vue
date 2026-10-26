@@ -34,6 +34,7 @@
       </n-flex>
       <!-- 数据 -->
       <n-data-table
+        size="small"
         :columns="columns"
         :data="solutions.data"
         :loading="loading" />
@@ -75,7 +76,6 @@ import {
   NInputNumber,
   NPagination,
   NPopover,
-  NTag,
   NText,
   useMessage
 } from "naive-ui"
@@ -106,7 +106,7 @@ const solutions = ref<Page<JudgeResult>>({
 
 const pagination = ref({
   page: 1,
-  pageSize: 15
+  pageSize: 18
 })
 
 const columns: DataTableColumns<JudgeResult> = [
@@ -142,15 +142,13 @@ const columns: DataTableColumns<JudgeResult> = [
     align: "right",
     width: 100,
     render: (row) => (
-      <NTag
-        round
-        checkable
-        size="small"
+      <NText
+        depth={3}
         style="cursor: pointer"
         // @ts-ignore
         onClick={() => querySolution(row.solutionId)}>
         {row.solutionId}
-      </NTag>
+      </NText>
     )
   },
   {

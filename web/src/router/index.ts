@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router"
 
-const RouterLayout = () => import("@/views/layout/RouterLayout.vue")
+const RouterWrapper = () => import("@/components/RouterWrapper.vue")
 const Auth = () => import("@/views/components/Auth/Index.vue")
-const FrontRoot = () => import("@/views/FrontRoot.vue")
+const IndexLayout = () => import("@/views/layout/IndexLayout.vue")
 const ProblemList = () => import("@/views/components/Problems.vue")
 const ContestList = () => import("@/views/components/Contests.vue")
 const ContestProblemList = () =>
@@ -16,9 +16,8 @@ const Account = () => import("@/views/components/Account/Index.vue")
 const AccountEditor = () => import("@/views/components/Account/Editor.vue")
 const NotFound = () => import("@/views/NotFound.vue")
 
-const AdminRoot = () => import("@/views/AdminRoot.vue")
-const AdminOverview = () =>
-  import("@/views/components/Admin/Overview/Index.vue")
+const AdminLayout = () => import("@/views/layout/AdminLayout.vue")
+const AdminIndex = () => import("@/views/components/Admin/Dashboard/Index.vue")
 const ProblemAdmin = () => import("@/views/components/Admin/Problem/Index.vue")
 const ProblemEditor = () =>
   import("@/views/components/Admin/Problem/Editor.vue")
@@ -57,7 +56,7 @@ const router = createRouter({
       path: "/",
       name: "index",
       redirect: { name: "problems" },
-      component: FrontRoot,
+      component: IndexLayout,
       children: [
         {
           path: "/problems",
@@ -145,17 +144,17 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true
       },
-      redirect: { name: "admin_overview" },
-      component: AdminRoot,
+      redirect: { name: "admin_index" },
+      component: AdminLayout,
       children: [
         {
           path: "overview",
-          name: "admin_overview",
+          name: "admin_index",
           meta: {
-            title: "概览",
+            title: "仪表板",
             inBreadcrumb: true
           },
-          component: AdminOverview
+          component: AdminIndex
         },
         {
           path: "problem",
@@ -164,7 +163,7 @@ const router = createRouter({
             title: "题目",
             inBreadcrumb: true
           },
-          component: RouterLayout,
+          component: RouterWrapper,
           children: [
             {
               path: "index",
@@ -204,7 +203,7 @@ const router = createRouter({
             title: "竞赛",
             inBreadcrumb: true
           },
-          component: RouterLayout,
+          component: RouterWrapper,
           children: [
             {
               path: "index",
@@ -232,7 +231,7 @@ const router = createRouter({
             title: "用户",
             inBreadcrumb: true
           },
-          component: RouterLayout,
+          component: RouterWrapper,
           children: [
             {
               path: "index",

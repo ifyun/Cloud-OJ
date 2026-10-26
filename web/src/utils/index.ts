@@ -53,9 +53,9 @@ function timeUsage(val?: number): string {
 function ramUsage(val?: number): string {
   if (val) {
     if (val >= 1024) {
-      return `${(val / 1024).toFixed(2)} MB`
+      return `${(val / 1024).toFixed(2)} MiB`
     } else {
-      return `${val} KB`
+      return `${val} KiB`
     }
   }
 

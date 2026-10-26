@@ -31,7 +31,7 @@
 import { AuthApi } from "@/api/request"
 import { Logo } from "@/components"
 import { useStore } from "@/store"
-import BottomInfo from "@/views/layout/BottomInfo.vue"
+import BottomInfo from "@/views/layout/components/BottomInfo.vue"
 import {
   NFlex,
   NLayout,

@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import { NIcon, NTag } from "naive-ui"
-import { type Component, onBeforeMount, ref, shallowRef } from "vue"
-import { CheckCircleFilled, ErrorRound, TimelapseRound } from "@vicons/material"
 import { JudgeResult } from "@/api/type"
 import { ResultTypes } from "@/type"
+import { CheckCircleFilled, ErrorRound, TimelapseRound } from "@vicons/material"
+import { NIcon, NTag } from "naive-ui"
+import { type Component, onBeforeMount, ref, shallowRef } from "vue"
 
 const props = defineProps<{
   data: JudgeResult

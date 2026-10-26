@@ -1,6 +1,10 @@
 .git/
 .assets/
 .github/
+.run
+doc
+docker
+
 **/.idea/
 **/.vscode/
 **/node_modules/
@@ -10,4 +14,3 @@
 
 **/.gitignore
 **/*.iml
-*.md

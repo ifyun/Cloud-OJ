@@ -34,5 +34,5 @@ import {
   NLayoutHeader,
   NText
 } from "naive-ui"
-import { BottomInfo } from "./layout"
+import { BottomInfo } from "./layout/components"
 </script>

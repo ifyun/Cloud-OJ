@@ -43,6 +43,7 @@
         </n-flex>
       </n-flex>
       <n-data-table
+        size="small"
         :row-props="rowProps"
         :columns="problemColumns"
         :data="problems.data"
@@ -114,7 +115,7 @@ const loading = ref<boolean>(true)
 
 const pagination = ref({
   page: 1,
-  pageSize: 15
+  pageSize: 18
 })
 
 const problems = ref<Page<Problem>>({

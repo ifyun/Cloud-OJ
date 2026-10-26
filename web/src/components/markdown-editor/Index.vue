@@ -33,15 +33,25 @@ import {
 import { nextTick, onMounted, ref, watch } from "vue"
 import Toolbar from "./Toolbar.vue"
 
-let cmView: EditorView
-const action = ApiPath.PROBLEM_IMAGE
+defineOptions({
+  name: "MarkdownEditor"
+})
 
+const props = withDefaults(
+  defineProps<{
+    readOnly: boolean
+    theme: "light" | "dark"
+    headers: Record<string, string>
+  }>(),
+  {
+    readOnly: false
+  }
+)
+const modelValue = defineModel<string>({ default: "" })
 const dialog = useDialog()
-
 const debouncedUpdate = debounce((doc) => {
   modelValue.value = doc
 }, 300)
-
 const readOnlyCompartment = new Compartment()
 const themeCompartment = new Compartment()
 const cmExtensions: Extension = [
@@ -54,24 +64,12 @@ const cmExtensions: Extension = [
     debouncedUpdate(update.state.doc.toString())
   })
 ]
-
-const editor = ref<HTMLDivElement | null>(null)
-
-const modelValue = defineModel<string>({ default: "" })
-const props = withDefaults(
-  defineProps<{
-    readOnly: boolean
-    theme: "light" | "dark"
-    headers: Record<string, string>
-  }>(),
-  {
-    readOnly: false
-  }
-)
-
+const action = ApiPath.PROBLEM_IMAGE
 const fileCount = ref<number>(0)
 const uploaded = ref<boolean>(false)
 const uploadRef = ref<UploadInst | null>(null)
+const editor = ref<HTMLDivElement | null>(null)
+let cmView: EditorView
 
 watch(
   () => props.readOnly,

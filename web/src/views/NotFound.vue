@@ -21,5 +21,5 @@
 import NotFoundIcon from "@/assets/404.svg?raw"
 import { Logo } from "@/components"
 import { NFlex, NLayout, NLayoutFooter, NLayoutHeader, NText } from "naive-ui"
-import { BottomInfo } from "./layout"
+import { BottomInfo } from "./layout/components"
 </script>

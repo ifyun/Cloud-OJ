@@ -1,8 +1,8 @@
 <template>
-  <n-flex size="large" align="center" class="nav">
+  <n-flex size="large" align="center">
     <logo :size="40" />
     <div>
-      <n-menu :value="routeName" mode="horizontal" :options="navMenuOptions" />
+      <n-menu :value="routeName" mode="horizontal" :options="options" />
     </div>
     <n-flex size="large" align="center" style="margin-left: auto">
       <theme-switch />
@@ -23,9 +23,9 @@ const route = useRoute()
 
 const routeName = computed(() => route.name?.toString())
 
-const navMenuOptions = [
+const options = [
   {
-    label: () => <RouterLink to={{ name: "problems" }}>📘 题目</RouterLink>,
+    label: () => <RouterLink to={{ name: "problems" }}>📒 题目</RouterLink>,
     key: "problems"
   },
   {
@@ -36,7 +36,7 @@ const navMenuOptions = [
   },
   {
     label: () => <RouterLink to={{ name: "scoreboard" }}>🎈 排名</RouterLink>,
-    key: "leaderboard"
+    key: "scoreboard"
   },
   {
     label: () => <RouterLink to={{ name: "help" }}>🛟 帮助</RouterLink>,
@@ -44,10 +44,3 @@ const navMenuOptions = [
   }
 ]
 </script>
-
-<style scoped lang="scss">
-.nav {
-  height: 100%;
-  padding: 0 calc(var(--layout-padding) * 2);
-}
-</style>

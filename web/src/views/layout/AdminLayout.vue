@@ -9,7 +9,7 @@
       style="z-index: 2">
       <div>
         <logo :collapsed="collapsed" style="height: var(--header-height)" />
-        <admin-nav />
+        <admin-navigation />
       </div>
     </n-layout-sider>
     <n-layout>
@@ -56,16 +56,20 @@
           flexDirection: 'column',
           minHeight: '100%'
         }">
-        <router-layout />
+        <router-wrapper />
       </n-layout-content>
     </n-layout>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import { Logo } from "@/components"
+import { Logo, RouterWrapper } from "@/components"
 import { useStore } from "@/store"
-import { AdminNav, RouterLayout, ThemeSwitch, UserMenu } from "@/views/layout"
+import {
+  AdminNavigation,
+  ThemeSwitch,
+  UserMenu
+} from "@/views/layout/components"
 import { MenuOpenRound, RefreshRound } from "@vicons/material"
 import {
   NBreadcrumb,

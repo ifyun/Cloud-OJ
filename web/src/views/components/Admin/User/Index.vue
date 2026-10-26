@@ -27,6 +27,7 @@
           </n-button>
         </n-input-group>
         <n-data-table
+          size="small"
           :row-props="rowProps"
           :columns="columns"
           :data="users.data"
@@ -118,7 +119,7 @@ const users = ref<Page<User>>({
 
 const pagination = ref({
   page: 1,
-  pageSize: 15
+  pageSize: 18
 })
 
 const point = ref({
@@ -155,17 +156,17 @@ const operations = [
   {
     key: "set_admin",
     label: () => (selectedUser!.role === 0 ? "取消管理员" : "设为管理员"),
-    icon: renderIcon(AdminIcon, "#409EFF")
+    icon: renderIcon(AdminIcon, "#409eff")
   },
   {
     key: "set_star",
     label: () => (selectedUser!.star ? "取消打星用户" : "设为打星用户"),
-    icon: renderIcon(StarRound, "#E6A23C")
+    icon: renderIcon(StarRound, "#efca44")
   },
   {
     key: "reset_passwd",
     label: "重置密码",
-    icon: renderIcon(LockResetRound, "#D03050")
+    icon: renderIcon(LockResetRound, "#d03050")
   }
 ]
 
@@ -210,7 +211,11 @@ const columns: DataTableColumns<User> = [
             {{
               default: () => row.nickname,
               icon: () =>
-                row.star ? <NIcon component={StarRound} color="#f9a825" /> : ""
+                row.star ? (
+                  <NIcon component={StarRound} size={24} color="#efca44" />
+                ) : (
+                  ""
+                )
             }}
           </NButton>
         </RouterLink>

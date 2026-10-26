@@ -86,7 +86,7 @@ import {
   NThing,
   useMessage
 } from "naive-ui"
-import { onMounted, ref } from "vue"
+import { onActivated, ref } from "vue"
 
 defineOptions({
   name: "SystemSettings"
@@ -98,7 +98,7 @@ const message = useMessage()
 const loading = ref<boolean>(true)
 const settings = ref<Settings>({})
 
-onMounted(() => {
+onActivated(() => {
   getSettings()
 })
 

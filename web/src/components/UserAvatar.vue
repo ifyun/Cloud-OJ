@@ -6,7 +6,7 @@
     :size="size"
     style="vertical-align: middle"
     @error="url = ''" />
-  <!-- 没有头像，使用昵称第一个字符作为头像 -->
+  <!-- 没有头像，使用昵称最后一个字符作为头像 -->
   <n-avatar
     v-else
     round
@@ -22,7 +22,7 @@ import { NAvatar } from "naive-ui"
 import { ref, watch } from "vue"
 
 interface Props {
-  uid: number
+  uid?: number
   nickname: string
   hasAvatar: boolean
   size: "small" | "medium" | "large" | number
