@@ -1,6 +1,6 @@
 # 设置开发环境
 
-判题程序需要 Linux 环境，建议使用 Debian。
+判题程序需要 Linux 环境，建议使用 Debian 13。
 
 使用 fnm 安装 Node.js：
 
@@ -31,23 +31,13 @@ ln -s /opt/cloud-oj ~/.local/cloud-oj
 
 C / C++ / Java / JS 环境已在前面的步骤中安装。
 
-### Kotlin Native
+### Kotlin
 
 ```bash
-curl -LJO https://github.com/JetBrains/kotlin/releases/download/v2.1.10/kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
-  && sudo tar -C /usr/local -xzf kotlin-native-prebuilt-linux-x86_64-2.1.10.tar.gz \
-    --transform 's/kotlin-native-prebuilt-linux-x86_64-2.1.10/kotlin/' \
-  && sudo ln -s /usr/local/kotlin/bin/kotlinc-native /usr/bin/kotlinc-native \
-  && sudo ln -s /usr/local/kotlin/bin/run_konan /usr/bin/run_konan
+curl -LJO https://github.com/JetBrains/kotlin/releases/download/v2.4.21/kotlin-compiler-2.4.21.zip \
+  && sudo unzip kotlin-compiler-2.4.21.zip -d /usr/local \
+  && sudo ln -s /usr/local/kotlinc/bin/kotlinc /usr/bin/kotlinc
 ```
-
-编译一个不存在的文件触发依赖下载：
-
-```bash
-sudo kotlinc-native nothing.kt
-```
-
-> Kotlin Native 依赖会下载到 `~` 目录，而 Judge Service 在 `root` 权限下运行，因此需要以 `root` 运行以上命令。
 
 ### Golang
 
@@ -64,7 +54,7 @@ C# 使用 `dotnet-sdk-8.0` 编译和运行。
 1.配置软件源：
 
 ```bash
-wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb \
+wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb \
   -O packages-microsoft-prod.deb \
   && sudo dpkg -i packages-microsoft-prod.deb \
   && rm packages-microsoft-prod.deb
@@ -87,4 +77,4 @@ sudo echo -n "dotnet /usr/share/dotnet/sdk/$(dotnet --version)/Roslyn/bincore/cs
 
 4.创建运行时配置文件：
 
-将项目根目录中的 `../dev/dotnet.runtimeconfig.json` 复制到 `/etc` 目录，运行时配置文件将在判题时链接到工作目录。
+将项目中的 `dev/dotnet.runtimeconfig.json` 复制到 `/etc` 目录，运行时配置文件将在判题时链接到工作目录。
