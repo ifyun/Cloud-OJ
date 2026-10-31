@@ -1,15 +1,18 @@
 .git/
 .assets/
 .github/
-.run
+.run/
+
 doc
 docker
+services/core/target/
+services/gateway/target/
+services/judge/target/
 
 **/.idea/
 **/.vscode/
 **/node_modules/
 **/dist/
-**/target/
 **/cmake-build-*/
 
 **/.gitignore

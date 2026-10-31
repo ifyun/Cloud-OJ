@@ -13,7 +13,7 @@
 import { AdminApi } from "@/api/request"
 import type { ErrorMessage, SolutionSummary } from "@/api/type"
 import { NCard, NFlex, useMessage } from "naive-ui"
-import { onActivated, ref } from "vue"
+import { onMounted, ref } from "vue"
 import LanguageUsageChart from "./LanguageUsageChart.vue"
 import ResultChart from "./ResultChart.vue"
 
@@ -32,7 +32,7 @@ const summary = ref<SolutionSummary>({
   language: []
 })
 
-onActivated(() => {
+onMounted(() => {
   AdminApi.getSolutionSummary()
     .then((data) => {
       summary.value = data

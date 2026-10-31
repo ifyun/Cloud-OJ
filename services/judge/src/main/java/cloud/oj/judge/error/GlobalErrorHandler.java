@@ -1,70 +1,44 @@
 package cloud.oj.judge.error;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.amqp.rabbit.core.AmqpNackReceivedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
-import tools.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalErrorHandler {
 
-    private final ObjectMapper mapper;
-
     @ExceptionHandler(RuntimeException.class)
-    public void otherErrorHandler(HttpServletRequest request, HttpServletResponse response, RuntimeException e)
-            throws IOException {
+    public ResponseEntity<?> handle0(RuntimeException e) {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
-        var msg = ExceptionUtils.getRootCause(e).getMessage();
-
-        if (e instanceof AsyncRequestTimeoutException) {
-            msg = ((AsyncRequestTimeoutException) e).getBody().getDetail();
-        }
-
+        var msg = e.getMessage();
         log.error(msg);
 
-        if (response.isCommitted()) {
-            return;
-        }
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, msg));
+    }
 
-        if (e instanceof GenericException) {
-            status = ((GenericException) e).getStatus();
-        }
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<?> handle1(GenericException e) {
+        var status = e.getStatus();
+        var msg = e.getMessage();
+        log.error(msg);
 
-        // RabbitMQ 队列拒绝提交
-        if (msg != null && msg.contains("nack")) {
-            status = HttpStatus.NOT_ACCEPTABLE;
-            msg = "队列已满";
-        }
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, msg));
+    }
 
-        response.setCharacterEncoding("UTF-8");
+    @ExceptionHandler(AmqpNackReceivedException.class)
+    public ResponseEntity<?> handle2(AmqpNackReceivedException e) {
+        log.error(e.getMessage());
+        var status = HttpStatus.NOT_ACCEPTABLE;
 
-        var writer = response.getWriter();
-        var accept = request.getHeader("Accept");
-
-        if (accept != null && accept.contains("text/event-stream")) {
-            // 请求类型为 EventSource，发送一个 error 事件
-            response.setStatus(status.value());
-            response.setContentType("text/event-stream");
-            writer.print("event: error\n");
-            writer.print("data: " + msg + "\n\n");
-        } else {
-            var body = mapper.writeValueAsString(new ErrorMessage(status, msg));
-            response.setStatus(status.value());
-            response.setContentType("application/json");
-            writer.print(body);
-        }
-
-        writer.flush();
-        writer.close();
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, "队列已满"));
     }
 }

@@ -13,8 +13,8 @@ import {
   type ComputedRef,
   inject,
   nextTick,
-  onActivated,
-  onDeactivated,
+  onMounted,
+  onUnmounted,
   ref,
   watch
 } from "vue"
@@ -100,12 +100,12 @@ watch(
   }
 )
 
-onActivated(() => {
+onMounted(() => {
   initChart(themeStr!.value)
   observer.observe(chartElem.value!)
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
   observer.disconnect()
   chart?.dispose()
 })

@@ -19,7 +19,7 @@ public class RankingController {
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getRanking(@RequestParam(defaultValue = "1") Integer page,
-                                        @RequestParam(defaultValue = "15") Integer size) {
+            @RequestParam(defaultValue = "15") Integer size) {
         var data = rankingService.getRanking(page, size, false);
         return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
@@ -29,7 +29,7 @@ public class RankingController {
      */
     @GetMapping(path = "admin", produces = "application/json")
     public ResponseEntity<?> getRankingAdmin(@RequestParam(defaultValue = "1") Integer page,
-                                             @RequestParam(defaultValue = "15") Integer size) {
+            @RequestParam(defaultValue = "15") Integer size) {
         var data = rankingService.getRanking(page, size, true);
         return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
@@ -46,7 +46,7 @@ public class RankingController {
     /**
      * 获取竞赛排行榜(管理员)
      */
-    @GetMapping(path = "admin/contest/{contestId}")
+    @GetMapping(path = "/contest/admin/{contestId}")
     public ResponseEntity<?> getRankingListAdmin(@PathVariable Integer contestId) {
         return ResponseEntity.ok(rankingService.getContestRanking(contestId, true));
     }

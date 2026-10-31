@@ -1,50 +1,45 @@
 package cloud.oj.gateway.error;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
-import tools.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalErrorHandler {
 
-    private final ObjectMapper mapper;
-
     @ExceptionHandler(RuntimeException.class)
-    public void errorHandler(HttpServletResponse response, RuntimeException e)
-            throws IOException {
+    public ResponseEntity<?> handle0(RuntimeException e) {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
-        var msg = ExceptionUtils.getRootCause(e).getMessage();
-
+        var msg = e.getMessage();
         log.error(msg);
 
-        if (e instanceof HttpServerErrorException) {
-            // eg: 503 Service Unavailable
-            status = (HttpStatus) ((HttpServerErrorException) e).getStatusCode();
-            msg = status.getReasonPhrase();
-        } else if (e instanceof GenericException) {
-            status = ((GenericException) e).getStatus();
-        }
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, msg));
+    }
 
-        response.setCharacterEncoding("UTF-8");
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<?> handle1(HttpServerErrorException e) {
+        var status = (HttpStatus) e.getStatusCode();
+        var msg = status.getReasonPhrase();
+        log.error(e.getMessage());
 
-        var writer = response.getWriter();
-        var body = mapper.writeValueAsString(new ErrorMessage(status, msg));
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, msg));
+    }
 
-        response.setStatus(status.value());
-        response.setContentType("application/json");
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<?> handle2(GenericException e) {
+        var status = e.getStatus();
+        var msg = e.getMessage();
+        log.error(msg);
 
-        writer.print(body);
-        writer.flush();
-        writer.close();
+        return ResponseEntity.status(status)
+                .body(new ErrorMessage(status, msg));
     }
 }

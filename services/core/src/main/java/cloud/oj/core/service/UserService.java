@@ -2,6 +2,7 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.*;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.query.UserFilter;
 import cloud.oj.core.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -147,7 +148,7 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserStatistics getOverview(Integer uid, String tz, Integer year) {
+    public UserStatistics getSummary(Integer uid, String tz, Integer year) {
         var timezone = Optional.ofNullable(tz)
                 .filter(VALID_TIMEZONES::contains)
                 .orElse("+08:00");

@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { ApiPath } from "@/api"
 import { NAvatar } from "naive-ui"
 import { ref, watch } from "vue"
 
@@ -38,7 +37,7 @@ const url = ref<string>("")
 watch(
   props,
   async (newValue) => {
-    url.value = `${ApiPath.AVATAR}/${newValue.uid}.jpg?t=${newValue.timestamp}`
+    url.value = `/api/core/file/img/avatar/${newValue.uid}.jpg?t=${newValue.timestamp}`
   },
   { immediate: true, deep: true }
 )

@@ -4,11 +4,11 @@
 
 ## 准备依赖
 
-在 `.build` 目录中放入以下文件：
+在 `.build` 目录中放入以下文件/目录：
 
-- `go1.25.4.linux-amd64.tar.gz`
-- `kotlinc-compiler-2.2.21`（解压自 `kotlinc-compiler-2.2.21.zip`）
-- `quickjs-linux-x86_64-2025-09-13`（解压自 `quickjs-linux-x86_64-2025-09-13.zip`）
+- `go1.27.3.linux-amd64.tar.gz`
+- `kotlinc`（解压自 `kotlin-compiler-2.4.21.zip`）
+- `qjs`（解压自 `quickjs-linux-x86_64-2026-06-04.zip`）
 
 ## 构建 Docker 镜像
 
@@ -60,7 +60,7 @@ docker compose up -d
 部分端口未映射到宿主机，如有必要可参考下表：
 
 | Service  | Port(s)     |
-|----------|-------------|
+| -------- | ----------- |
 | consul   | 8500        |
 | gateway  | 8080        |
 | core     | 8180        |

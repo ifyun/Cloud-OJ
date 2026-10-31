@@ -38,8 +38,8 @@
 
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
-import { ErrorMessage, UsernamePassword } from "@/api/type"
-import { useStore } from "@/store"
+import { ErrorMessage, type UsernamePassword } from "@/api/type"
+import { useUserStore } from "@/store/user"
 import { setTitle } from "@/utils"
 import { Lock as PasswordIcon, User as UserIcon } from "@vicons/fa"
 import { LogInRound as LoginIcon } from "@vicons/material"
@@ -55,7 +55,7 @@ import {
 import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
-const store = useStore()
+const userStore = useUserStore()
 const router = useRouter()
 const message = useMessage()
 
@@ -103,8 +103,8 @@ function login() {
       loading.value = true
       AuthApi.login(user.value)
         .then((token) => {
-          store.user.saveToken(token)
-          if (store.user.userInfo!.role == 1) {
+          userStore.saveToken(token)
+          if (userStore.info!.role == 1) {
             router.push({ name: "index" })
           } else {
             router.push({ name: "admin" })

@@ -301,7 +301,6 @@ RTN Runner::judge()
     char out_path[128]; // 用户输出文件路径
     char err_path[128]; // 错误输出文件路径
     sprintf(err_path, "%s/%s", work_dir, "stderr.txt");
-    config.std_err = open(err_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
     if (!input_files.empty() && !output_files.empty())
     {
@@ -317,6 +316,7 @@ RTN Runner::judge()
             config.in_fd = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_in = open(input_files[i].c_str(), O_RDONLY, 0644);
             config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            config.std_err = open(err_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             config.out_fd = open(out_path, O_RDONLY, 0644);
             config.ans_fd = open(output_files[i].c_str(), O_RDONLY, 0644);
             config.in->open(input_files[i], std::ios_base::in);
@@ -342,6 +342,7 @@ RTN Runner::judge()
         config.in_fd = open("/dev/null", O_RDONLY, 0644);
         config.std_in = open("/dev/null", O_RDONLY, 0644);
         config.std_out = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        config.std_err = open(err_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         config.out_fd = open(out_path, O_RDONLY, 0644);
         config.ans_fd = open(output_files[0].c_str(), O_RDONLY, 0644);
         config.in->open("/dev/null", std::ios_base::in);

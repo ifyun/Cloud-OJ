@@ -25,8 +25,8 @@ const routeName = computed(() => route.name?.toString())
 
 const menuOptions = [
   {
-    label: () => <RouterLink to={{ name: "admin_index" }}>仪表板</RouterLink>,
-    key: "admin_index",
+    label: () => <RouterLink to={{ name: "dashboard" }}>仪表板</RouterLink>,
+    key: "dashboard",
     icon: () => (
       <NIcon>
         <DashboardRound />
@@ -34,8 +34,8 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "problem_admin" }}>题目</RouterLink>,
-    key: "problem_admin",
+    label: () => <RouterLink to={{ name: "admin-problems" }}>题目</RouterLink>,
+    key: "admin-problems",
     icon: () => (
       <NIcon>
         <LocalLibraryRound />
@@ -43,8 +43,8 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "contest_admin" }}>竞赛</RouterLink>,
-    key: "contest_admin",
+    label: () => <RouterLink to={{ name: "admin-contests" }}>竞赛</RouterLink>,
+    key: "admin-contests",
     icon: () => (
       <NIcon>
         <SchoolRound />
@@ -52,8 +52,8 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "user_admin" }}>用户</RouterLink>,
-    key: "user_admin",
+    label: () => <RouterLink to={{ name: "admin-users" }}>用户</RouterLink>,
+    key: "admin-users",
     icon: () => (
       <NIcon>
         <PeopleAltRound />
@@ -61,8 +61,8 @@ const menuOptions = [
     )
   },
   {
-    label: () => <RouterLink to={{ name: "solution_admin" }}>提交</RouterLink>,
-    key: "solution_admin",
+    label: () => <RouterLink to={{ name: "admin-solutions" }}>提交</RouterLink>,
+    key: "admin-solutions",
     icon: () => (
       <NIcon>
         <CodeRound />

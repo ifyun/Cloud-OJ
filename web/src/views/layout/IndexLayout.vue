@@ -11,7 +11,9 @@
     </n-layout-header>
     <n-layout position="absolute" style="top: var(--header-height)">
       <n-scrollbar class="global">
-        <router-wrapper />
+        <router-view v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
         <n-layout-footer style="margin-top: auto">
           <bottom-info />
         </n-layout-footer>
@@ -21,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { RouterWrapper } from "@/components"
 import { BottomInfo, IndexNavigation } from "@/views/layout/components"
 import { NLayout, NLayoutFooter, NLayoutHeader, NScrollbar } from "naive-ui"
 </script>

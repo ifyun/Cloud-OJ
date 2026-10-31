@@ -12,8 +12,7 @@
         style="width: fit-content">
         <n-flex vertical size="small">
           <language-tag :language="s.language" />
-          <router-link
-            :to="{ name: 'submission', params: { pid: s.problemId } }">
+          <router-link :to="{ name: 'problem', params: { pid: s.problemId } }">
             <n-button text>
               {{ `${s.problemId}.${s.title}` }}
             </n-button>

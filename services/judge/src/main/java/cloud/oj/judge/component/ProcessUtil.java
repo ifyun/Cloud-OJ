@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ProcessUtil {
     public static void watchProcess(int seconds, Process process, AtomicBoolean timeout) {
-        final int[] time = {seconds};
-        new Thread(() -> {
+        final int[] time = { seconds };
+        Thread.ofVirtual().start(() -> {
             while (time[0] > 0) {
                 if (!process.isAlive()) {
                     // 进程已结束
@@ -32,6 +32,6 @@ public class ProcessUtil {
                 timeout.set(true);
                 process.destroyForcibly();
             }
-        }).start();
+        });
     }
 }

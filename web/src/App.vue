@@ -27,7 +27,6 @@
 
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
-import { useStore } from "@/store"
 import { themeBase, themeDark } from "@/theme"
 import { setTitle } from "@/utils"
 import Error from "@/views/Error.vue"
@@ -44,21 +43,26 @@ import {
 } from "naive-ui"
 import { computed, nextTick, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useAppStore } from "./store/app.ts"
+import { useFilterStore } from "./store/filter.ts"
+import { useUserStore } from "./store/user.ts"
 import Forbidden from "./views/Forbidden.vue"
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
+const filter = useFilterStore()
 const route = useRoute()
 const router = useRouter()
 
 const show = ref(true)
-const error = computed(() => store.app.error)
-const theme = computed(() => store.app.theme)
-const themeStr = computed(() => (store.app.theme === null ? "light" : "dark"))
-const isLoggedIn = computed(() => store.user.isLoggedIn)
+const error = computed(() => app.error)
+const theme = computed(() => app.theme)
+const themeStr = computed(() => (app.theme === null ? "light" : "dark"))
+const isLoggedIn = computed(() => user.isLoggedIn)
 const isForbidden = ref<boolean>(false)
 
 const themeOverrides = computed<GlobalThemeOverrides>(() => {
-  if (store.app.theme != null) {
+  if (app.theme != null) {
     return themeDark
   }
 
@@ -71,7 +75,7 @@ provide("themeStr", themeStr)
 // 刷新当前路由
 function reload() {
   if (error != null) {
-    store.app.setError(null)
+    app.setError(null)
   }
   show.value = false
   nextTick(() => {
@@ -86,7 +90,7 @@ router.beforeEach(async (to) => {
     if (
       (await checkToken()) &&
       to.matched.some((r) => r.meta.requiresAdmin) &&
-      store.user.userInfo?.role !== 0
+      user.info?.role !== 0
     ) {
       // 无权限，取消导航
       isForbidden.value = true
@@ -103,7 +107,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach((to, from) => {
-  store.app.setError(null)
+  app.setError(null)
   const routes: Array<string> = []
   // 设置页面标题
   if (route.meta.title) {
@@ -115,7 +119,7 @@ router.afterEach((to, from) => {
   }
   // 跳转时清除当前页面的查询条件
   if (from.name && to.name !== from.name) {
-    sessionStorage.removeItem("query")
+    filter.clear()
   }
   // 为 Admin 页面生成面包屑
   route.matched.forEach((r) => {
@@ -130,7 +134,7 @@ router.afterEach((to, from) => {
     }
   })
 
-  store.app.setBreadcrumb(routes)
+  app.setBreadcrumb(routes)
 })
 
 async function checkToken() {
@@ -139,7 +143,7 @@ async function checkToken() {
     return true
   } catch (error: any) {
     if (error.status === 401) {
-      store.user.clearToken()
+      user.clearToken()
       await router.push({ name: "auth", params: { tab: "login" } })
     }
 

@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "vmware.vscode-boot-dev-pack",
+    "vscjava.vscode-java-debug",
+    "vscjava.vscode-maven",
+    "vue.volar"
+  ]
+}

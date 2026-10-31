@@ -1,10 +1,10 @@
 package cloud.oj.core.service;
 
 import cloud.oj.core.entity.Contest;
-import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.query.ContestFilter;
 import cloud.oj.core.repo.ContestRepo;
 import cloud.oj.core.repo.InviteeRepo;
 import cloud.oj.core.repo.SolutionRepo;
@@ -189,8 +189,8 @@ public class ContestService {
      * @return {@link PageData} of {@link Problem}
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PageData<Problem> getIdleProblems(Integer cid, Integer page, Integer size) {
-        var data = contestRepo.selectIdleProblems(cid, page, size);
+    public PageData<Problem> getUnusedProblems(Integer cid, Integer page, Integer size) {
+        var data = contestRepo.selectUnusedProblems(cid, page, size);
         var total = data.isEmpty() ? 0 : data.getFirst()._total;
 
         return new PageData<>(data, total);
@@ -223,8 +223,7 @@ public class ContestService {
                 .ifPresent((r) -> {
                     p.setState(0);
                     p.setResult(r);
-                })
-        );
+                }));
 
         return problems;
     }

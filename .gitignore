@@ -4,5 +4,8 @@
 
 ### VS Code ###
 .vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/settings.json
 
 .build/

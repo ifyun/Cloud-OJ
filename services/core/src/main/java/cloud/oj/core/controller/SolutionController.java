@@ -2,8 +2,8 @@ package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
-import cloud.oj.core.entity.SolutionFilter;
 import cloud.oj.core.entity.SolutionSummary;
+import cloud.oj.core.query.SolutionFilter;
 import cloud.oj.core.service.SolutionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,31 +23,26 @@ public class SolutionController {
     /**
      * (User) 根据过滤条件获取提交记录
      */
-    @GetMapping
-    public ResponseEntity<PageData<Solution>> getAll(@RequestHeader Integer uid,
-                                                     @RequestParam(defaultValue = "1") int page,
-                                                     @RequestParam(defaultValue = "15") int size,
-                                                     Integer filter,
-                                                     String filterValue) {
-        var data = solutionService.getSolutionsByUidAndFilter(uid, page, size, filter, filterValue);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+    @RequestMapping(path = "query", method = { RequestMethod.GET, RequestMethod.POST })
+    public ResponseEntity<PageData<Solution>> getAll(
+            @RequestHeader Integer uid,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int size,
+            @RequestBody(required = false) SolutionFilter filter) {
+        var data = solutionService.getSolutionsByUidAndFilter(uid, page, size, filter);
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
      * (Admin) 根据过滤条件获取提交记录
      */
-    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "admin/query", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<PageData<Solution>> getAllByFilter(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size,
-            @RequestBody(required = false) SolutionFilter filter
-    ) {
+            @RequestBody(required = false) SolutionFilter filter) {
         var data = solutionService.getSolutionsByAdmin(filter, page, size);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     @GetMapping("admin/{sid}")

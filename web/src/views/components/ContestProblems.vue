@@ -50,7 +50,7 @@
 import { ContestApi } from "@/api/request"
 import { Contest, ErrorMessage, Problem } from "@/api/type"
 import { ResultTag } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
 import { LanguageUtil, setTitle, stateTag } from "@/utils"
 import { ArrowForwardRound } from "@vicons/material"
 import {
@@ -66,16 +66,16 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { computed, onActivated, ref } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useRouter } from "vue-router"
-
-const store = useStore()
-const router = useRouter()
-const message = useMessage()
 
 const props = defineProps<{
   cid: number
 }>()
+
+const app = useAppStore()
+const router = useRouter()
+const message = useMessage()
 
 const loading = ref<boolean>(false)
 const inputKey = ref<boolean>(false)
@@ -100,9 +100,10 @@ const columns: DataTableColumns<Problem> = [
     render: (row) => (
       <NButton
         text
+        strong
         onClick={() =>
           router.push({
-            name: "submission",
+            name: "problem",
             params: { pid: row.problemId },
             query: { cid: contest.value!.contestId }
           })
@@ -134,7 +135,7 @@ const contestState = computed(() => {
   return contest.value == null ? null : stateTag(contest.value)
 })
 
-onActivated(() => {
+watchEffect(() => {
   queryContest(props.cid)
 })
 
@@ -150,7 +151,7 @@ function queryContest(cid: number) {
       queryProblems(cid)
     })
     .catch((err) => {
-      store.app.setError(err)
+      app.setError(err)
     })
 }
 
@@ -164,7 +165,7 @@ function queryProblems(cid: number) {
       if (err.status === 402) {
         inputKey.value = true
       } else {
-        store.app.setError(err)
+        app.setError(err)
       }
     })
     .finally(() => {

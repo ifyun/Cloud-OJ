@@ -1,5 +1,13 @@
 <template>
-  <div class="text-logo">
+  <div
+    style="
+      font-weight: 500;
+      font-size: 24px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    ">
     <router-link :to="{ path: '/' }">
       <div v-if="collapsed">
         <span class="colored">C</span>
@@ -13,6 +21,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "AppLogo"
+})
+
 defineProps({
   collapsed: {
     type: Boolean,
@@ -21,23 +33,8 @@ defineProps({
 })
 </script>
 
-<script lang="ts">
-export default {
-  name: "AppLogo"
-}
-</script>
-
-<style scoped lang="scss">
-.text-logo {
-  font-weight: 500;
-  font-size: 24px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-
-  .colored {
-    color: var(--primary-color);
-  }
+<style scoped>
+.colored {
+  color: var(--primary-color);
 }
 </style>

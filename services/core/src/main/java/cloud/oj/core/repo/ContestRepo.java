@@ -1,9 +1,9 @@
 package cloud.oj.core.repo;
 
 import cloud.oj.core.entity.Contest;
-import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.Problem;
 import cloud.oj.core.entity.ProblemOrder;
+import cloud.oj.core.query.ContestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -41,12 +41,12 @@ public class ContestRepo {
      */
     public List<ProblemOrder> selectOrders(Integer cid) {
         return client.sql("""
-                        select problem_id,
-                               `order`
-                        from `contest-problem`
-                        where contest_id = :cid
-                        order by problem_id
-                        """)
+                select problem_id,
+                       `order`
+                from `contest-problem`
+                where contest_id = :cid
+                order by problem_id
+                """)
                 .param("cid", cid)
                 .query(ProblemOrder.class)
                 .list();
@@ -61,11 +61,11 @@ public class ContestRepo {
      */
     public Integer updateOrder(Integer cid, Integer pid, Integer order) {
         return client.sql("""
-                        update `contest-problem`
-                        set `order` = :order
-                        where contest_id = :cid
-                          and problem_id = :pid
-                        """)
+                update `contest-problem`
+                set `order` = :order
+                where contest_id = :cid
+                  and problem_id = :pid
+                """)
                 .param("order", order)
                 .param("cid", cid)
                 .param("pid", pid)
@@ -77,10 +77,10 @@ public class ContestRepo {
      */
     public Integer countProblems(Integer cid) {
         return client.sql("""
-                        select count(problem_id)
-                        from `contest-problem`
-                        where contest_id = :cid
-                        """)
+                select count(problem_id)
+                from `contest-problem`
+                where contest_id = :cid
+                """)
                 .param("cid", cid)
                 .query(Integer.class)
                 .single();
@@ -91,20 +91,20 @@ public class ContestRepo {
      */
     public Optional<Problem> selectProblem(Integer cid, Integer pid) {
         return client.sql("""
-                        select problem_id,
-                               title,
-                               description,
-                               timeout,
-                               memory_limit,
-                               output_limit,
-                               score,
-                               category,
-                               languages
-                        from contest_problem
-                        where contest_id = :cid
-                          and problem_id = :pid
-                          and start_at <= now()
-                        """)
+                select problem_id,
+                       title,
+                       description,
+                       timeout,
+                       memory_limit,
+                       output_limit,
+                       score,
+                       category,
+                       languages
+                from contest_problem
+                where contest_id = :cid
+                  and problem_id = :pid
+                  and start_at <= now()
+                """)
                 .param("cid", cid)
                 .param("pid", pid)
                 .query(Problem.class)
@@ -113,18 +113,18 @@ public class ContestRepo {
 
     public Optional<Contest> selectById(Integer cid) {
         return client.sql("""
-                        select contest_id,
-                               contest_name,
-                               start_at,
-                               end_at,
-                               if(start_at <= unix_timestamp(now()), true, false) as started,
-                               if(end_at <= unix_timestamp(now()), true, false)   as ended,
-                               languages,
-                               create_at
-                        from contest
-                        where contest_id = :cid
-                          and deleted = false
-                        """)
+                select contest_id,
+                       contest_name,
+                       start_at,
+                       end_at,
+                       if(start_at <= unix_timestamp(now()), true, false) as started,
+                       if(end_at <= unix_timestamp(now()), true, false)   as ended,
+                       languages,
+                       create_at
+                from contest
+                where contest_id = :cid
+                  and deleted = false
+                """)
                 .param("cid", cid)
                 .query(Contest.class)
                 .optional();
@@ -135,22 +135,22 @@ public class ContestRepo {
      */
     public List<Contest> selectAllStarted(ContestFilter filter, Integer page, Integer size) {
         return client.sql("""
-                        select count(*) over ()                              as _total,
-                               contest_id,
-                               contest_name,
-                               languages,
-                               start_at,
-                               end_at,
-                               if(start_at <= unix_timestamp(), true, false) as started,
-                               if(end_at <= unix_timestamp(), true, false)   as ended
-                        from contest
-                        where deleted = false
-                          and start_at <= unix_timestamp(now())
-                          and if(:hideEnded, end_at > unix_timestamp(now()), true)
-                          and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
-                        order by start_at desc, end_at
-                        limit :start, :count
-                        """)
+                select count(*) over ()                              as _total,
+                       contest_id,
+                       contest_name,
+                       languages,
+                       start_at,
+                       end_at,
+                       if(start_at <= unix_timestamp(), true, false) as started,
+                       if(end_at <= unix_timestamp(), true, false)   as ended
+                from contest
+                where deleted = false
+                  and start_at <= unix_timestamp(now())
+                  and if(:hideEnded, end_at > unix_timestamp(now()), true)
+                  and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
+                order by start_at desc, end_at
+                limit :start, :count
+                """)
                 .param("start", (page - 1) * size)
                 .param("count", size)
                 .param("hideEnded", filter.hideEnded)
@@ -164,23 +164,23 @@ public class ContestRepo {
      */
     public List<Contest> selectAll(ContestFilter filter, Integer page, Integer size, Boolean isAdmin) {
         return client.sql("""
-                        select count(*) over ()                              as _total,
-                               contest_id,
-                               contest_name,
-                               if(:admin, invite_key, null)                  as invite_key,
-                               languages,
-                               start_at,
-                               end_at,
-                               create_at,
-                               if(start_at <= unix_timestamp(), true, false) as started,
-                               if(end_at <= unix_timestamp(), true, false)   as ended
-                        from contest
-                        where deleted = false
-                          and if(:hideEnded, end_at > unix_timestamp(now()), true)
-                          and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
-                        order by start_at desc, end_at
-                        limit :start, :count
-                        """)
+                select count(*) over ()                              as _total,
+                       contest_id,
+                       contest_name,
+                       if(:admin, invite_key, null)                  as invite_key,
+                       languages,
+                       start_at,
+                       end_at,
+                       create_at,
+                       if(start_at <= unix_timestamp(), true, false) as started,
+                       if(end_at <= unix_timestamp(), true, false)   as ended
+                from contest
+                where deleted = false
+                  and if(:hideEnded, end_at > unix_timestamp(now()), true)
+                  and if(LENGTH(:keyword) > 0, contest_name like concat('%', :keyword, '%'), true)
+                order by start_at desc, end_at
+                limit :start, :count
+                """)
                 .param("admin", isAdmin)
                 .param("start", (page - 1) * size)
                 .param("count", size)
@@ -192,32 +192,32 @@ public class ContestRepo {
 
     public Integer insert(Contest contest) {
         return client.sql("""
-                        insert into contest(contest_name, invite_key, start_at, end_at, languages)
-                        values (:contestName, :inviteKey, :startAt, :endAt, :languages)
-                        """)
+                insert into contest(contest_name, invite_key, start_at, end_at, languages)
+                values (:contestName, :inviteKey, :startAt, :endAt, :languages)
+                """)
                 .paramSource(contest)
                 .update();
     }
 
     public Integer update(Contest contest) {
         return client.sql("""
-                        update contest
-                        set contest_name = :contestName,
-                            start_at     = :startAt,
-                            end_at       = :endAt,
-                            languages    = :languages
-                        where contest_id = :contestId
-                        """)
+                update contest
+                set contest_name = :contestName,
+                    start_at     = :startAt,
+                    end_at       = :endAt,
+                    languages    = :languages
+                where contest_id = :contestId
+                """)
                 .paramSource(contest)
                 .update();
     }
 
     public Integer delete(Integer cid) {
         return client.sql("""
-                        update contest
-                        set deleted = true
-                        where contest_id = :cid
-                        """)
+                update contest
+                set deleted = true
+                where contest_id = :cid
+                """)
                 .param("cid", cid)
                 .update();
     }
@@ -225,21 +225,21 @@ public class ContestRepo {
     /**
      * 分页查询可用题目
      */
-    public List<Problem> selectIdleProblems(Integer cid, Integer page, Integer size) {
+    public List<Problem> selectUnusedProblems(Integer cid, Integer page, Integer size) {
         return client.sql("""
-                        select count(*) over () as _total,
-                               p.problem_id,
-                               p.title,
-                               p.score
-                        from problem p
-                        where deleted = false
-                          and enable = false
-                          and problem_id
-                            not in
-                              (select problem_id from contest_problem where contest_id = :cid)
-                        order by problem_id
-                        limit :start, :count
-                        """)
+                select count(*) over () as _total,
+                       p.problem_id,
+                       p.title,
+                       p.score
+                from problem p
+                where deleted = false
+                  and enable = false
+                  and problem_id
+                    not in
+                      (select problem_id from contest_problem where contest_id = :cid)
+                order by problem_id
+                limit :start, :count
+                """)
                 .param("cid", cid)
                 .param("start", (page - 1) * size)
                 .param("count", size)
@@ -255,18 +255,18 @@ public class ContestRepo {
      */
     public List<Problem> selectProblems(Integer cid, Boolean onlyStarted) {
         return client.sql("""
-                        select contest_id,
-                               contest_name,
-                               start_at,
-                               end_at,
-                               problem_id,
-                               title,
-                               score
-                        from contest_problem
-                        where contest_id = :cid
-                          and if(:onlyStarted = true, start_at <= unix_timestamp(now()), true)
-                        order by `order`
-                        """)
+                select contest_id,
+                       contest_name,
+                       start_at,
+                       end_at,
+                       problem_id,
+                       title,
+                       score
+                from contest_problem
+                where contest_id = :cid
+                  and if(:onlyStarted = true, start_at <= unix_timestamp(now()), true)
+                order by `order`
+                """)
                 .param("cid", cid)
                 .param("onlyStarted", onlyStarted)
                 .query(Problem.class)
@@ -275,9 +275,9 @@ public class ContestRepo {
 
     public Integer addProblem(Integer cid, Integer pid) {
         return client.sql("""
-                        insert into `contest-problem`(contest_id, problem_id)
-                        values (:cid, :pid)
-                        """)
+                insert into `contest-problem`(contest_id, problem_id)
+                values (:cid, :pid)
+                """)
                 .param("cid", cid)
                 .param("pid", pid)
                 .update();
@@ -285,11 +285,11 @@ public class ContestRepo {
 
     public Integer removeProblem(Integer cid, Integer pid) {
         return client.sql("""
-                        delete
-                        from `contest-problem`
-                        where contest_id = :cid
-                          and problem_id = :pid
-                        """)
+                delete
+                from `contest-problem`
+                where contest_id = :cid
+                  and problem_id = :pid
+                """)
                 .param("cid", cid)
                 .param("pid", pid)
                 .update();

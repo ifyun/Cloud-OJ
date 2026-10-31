@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="tsx">
-import { ApiPath } from "@/api"
 import { closeBrackets } from "@codemirror/autocomplete"
 import { indentWithTab } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
@@ -30,7 +29,7 @@ import {
   type UploadInst,
   useDialog
 } from "naive-ui"
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import Toolbar from "./Toolbar.vue"
 
 defineOptions({
@@ -64,7 +63,6 @@ const cmExtensions: Extension = [
     debouncedUpdate(update.state.doc.toString())
   })
 ]
-const action = ApiPath.PROBLEM_IMAGE
 const fileCount = ref<number>(0)
 const uploaded = ref<boolean>(false)
 const uploadRef = ref<UploadInst | null>(null)
@@ -116,6 +114,10 @@ onMounted(() => {
     parent: editor.value!,
     extensions: cmExtensions
   })
+})
+
+onUnmounted(() => {
+  cmView.destroy()
 })
 
 function toolbarClick(key: string) {
@@ -244,10 +246,10 @@ function addImage(link: boolean) {
       content: () => (
         <NUpload
           ref={uploadRef}
-          action={action}
           headers={props.headers}
           showRetryButton={false}
           accept=".jpg,.png,.svg,.gif"
+          action="/api/core/file/img/problem"
           onChange={fileListChange}
           onFinish={uploadFinish}>
           <NUploadDragger>

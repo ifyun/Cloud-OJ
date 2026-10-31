@@ -16,7 +16,7 @@
           color="#efca44"
           :component="StarRound" />
         <n-tag
-          v-if="store.user.userInfo?.uid === data.uid"
+          v-if="user.info?.uid === data.uid"
           type="primary"
           size="small"
           round>
@@ -32,12 +32,12 @@
 
 <script setup lang="ts">
 import type { Ranking } from "@/api/type"
-import { useStore } from "@/store"
 import { StarRound } from "@vicons/material"
 import { NButton, NFlex, NIcon, NTag, NText } from "naive-ui"
 import UserAvatar from "./UserAvatar.vue"
+import { useUserStore } from "@/store/user.ts"
 
 defineProps<{ data: Ranking }>()
 
-const store = useStore()
+const user = useUserStore()
 </script>

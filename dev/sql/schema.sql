@@ -72,13 +72,13 @@ create table user
     nickname   char(16)                            not null,
     real_name  char(16)                            null,
     password   char(100)                           not null,
-    secret     char(36)                            not null comment '用于加密 JWT',
+    secret     char(36)                            not null,
     email      char(32)                            null,
     section    char(16)                            null,
     has_avatar tinyint(1) default 0                not null,
     star       tinyint(1) default 0                not null,
     role       int        default 1                not null,
-    create_at  bigint     default unix_timestamp() not null comment '秒级',
+    create_at  bigint     default unix_timestamp() not null,
     deleted    tinyint(1) default 0                not null,
     constraint idx_username unique (username),
     constraint idx_nickname unique (nickname)
@@ -87,7 +87,7 @@ create table user
 create index idx_real_name on user (real_name);
 create index idx_time on user (create_at);
 
-# 提交
+-- 提交
 create table solution
 (
     solution_id bigint unsigned primary key auto_increment                     not null,
@@ -114,14 +114,14 @@ create index idx_pid on solution (problem_id);
 create index idx_cid on solution (contest_id);
 create index idx_time on solution (submit_time desc);
 
-# 代码
+-- 代码
 create table source_code
 (
     solution_id bigint unsigned primary key not null,
     code        text                        not null
 );
 
-# 排名
+-- 排名
 create table scoreboard
 (
     uid         int primary key      not null,
@@ -134,7 +134,7 @@ create table scoreboard
 
 create index idx_score_time on scoreboard (score desc, update_time asc);
 
-# 竞赛排名
+-- 竞赛排名
 create table scoreboard_contest
 (
     uid         int                  not null,
@@ -156,6 +156,13 @@ create table settings
     show_all_contest    tinyint(1) default 0 not null,
     show_passed_points  tinyint(1) default 0 not null,
     auto_del_solutions  tinyint(1) default 0 not null
+);
+
+create table env
+(
+    id   int primary key not null,
+    lang char(16),
+    ver  char(128)
 );
 
 create view contest_problem as
@@ -186,7 +193,7 @@ ALTER TABLE solution
 ALTER TABLE user
     AUTO_INCREMENT = 100000;
 
-# 初始 ADMIN 用户
+-- 初始 ADMIN 用户
 INSERT INTO cloud_oj.user (uid, username, nickname, password, secret, role)
 VALUES (1, 'admin', '管理员', '$2a$10$i8D62CjX7/.z8juoUACG9ecqatDl9JkizB5XoA9UswPtb8WmnCAG6', '', 0);
 

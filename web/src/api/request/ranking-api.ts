@@ -1,56 +1,35 @@
-import axios, { ApiPath, resolveError } from "@/api"
+import useAxios from "@/api"
 import type { Page, Ranking, RankingContest } from "@/api/type"
-import { useStore } from "@/store"
+import { useUserStore } from "@/store/user"
 
 const RankingApi = {
-  get(page: number, size: number): Promise<Page<Ranking>> {
-    const userInfo = useStore().user.userInfo
-    const path =
-      userInfo == null || userInfo.role === 1
-        ? ApiPath.RANKING
-        : ApiPath.RANKING_ADMIN
-
-    return new Promise<Page<Ranking>>((resolve, reject) => {
-      axios({
-        url: path,
-        method: "GET",
-        params: {
-          page,
-          size
-        }
-      })
-        .then((res) => {
-          if (res.status === 200) {
-            resolve(res.data as Page<Ranking>)
-          } else {
-            resolve({ data: [], total: 0 })
-          }
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async get(page: number, size: number) {
+    const userInfo = useUserStore().info
+    const url = "/api/core/ranking/"
+    const path = userInfo == null || userInfo.role === 1 ? "" : "admin"
+    const res = await useAxios({
+      url: url + path,
+      method: "GET",
+      params: {
+        page,
+        size
+      }
     })
+
+    return (
+      res.status === 200 ? res.data : { data: [], total: 0 }
+    ) as Page<Ranking>
   },
-
-  getContestRanking(cid: number): Promise<RankingContest> {
-    const userInfo = useStore().user.userInfo
-    const path =
-      userInfo == null || userInfo.role === 1
-        ? ApiPath.CONTEST_RANKING
-        : ApiPath.CONTEST_RANKING_ADMIN
-
-    return new Promise<RankingContest>((resolve, reject) => {
-      axios({
-        url: `${path}/${cid}`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data as RankingContest)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async getContestRanking(cid: number) {
+    const userInfo = useUserStore().info
+    const url = "/api/core/ranking/contest"
+    const path = userInfo == null || userInfo.role === 1 ? "" : "admin"
+    const res = await useAxios({
+      url: `${url}/${path}/${cid}`,
+      method: "GET"
     })
+
+    return res.data as RankingContest
   }
 }
 

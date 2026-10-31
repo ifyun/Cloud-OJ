@@ -9,15 +9,12 @@
             style="width: 180px"
             @update:value="filterChange" />
           <n-input
-            v-model:value="filter.keyword"
+            v-model:value="filter.value"
             clearable
             show-count
             maxlength="15"
-            :disabled="filter.type === 0" />
-          <n-button
-            type="primary"
-            :disabled="filter.type === 0"
-            @click="search">
+            :disabled="disableFilter" />
+          <n-button type="primary" :disabled="disableFilter" @click="search">
             <template #icon>
               <n-icon>
                 <search-icon />
@@ -46,19 +43,22 @@
     trigger="manual"
     placement="bottom-start"
     :show-arrow="true"
-    :x="point.x"
-    :y="point.y"
+    :x="menuPoint.x"
+    :y="menuPoint.y"
     :options="operations"
-    :show="showOperations"
+    :show="menuVisible"
     :on-clickoutside="hideOperation"
     @select="operationSelect" />
 </template>
 
 <script setup lang="tsx">
 import { UserApi } from "@/api/request"
-import { ErrorMessage, type Page, User, UserFilter } from "@/api/type"
+import { ErrorMessage, type Page, User } from "@/api/type"
 import { UserAvatar } from "@/components"
-import { useStore } from "@/store"
+import { useContextMenu } from "@/composables"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
+import { useUserStore } from "@/store/user"
 import { renderIcon } from "@/utils"
 import {
   CalendarCheck as DateIcon,
@@ -89,14 +89,16 @@ import {
   useModal,
   useNotification
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { computed, type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 defineOptions({
   name: "UserAdmin"
 })
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
@@ -109,23 +111,22 @@ const filterOptions = [
   { label: "昵称", value: 2 }
 ]
 
-const filter = ref<UserFilter>({})
+const { filter } = storeToRefs(useFilterStore())
+const { menuVisible, menuPoint, openMenu } = useContextMenu()
+
 const loading = ref<boolean>(true)
-const showOperations = ref<boolean>(false)
 const users = ref<Page<User>>({
   data: [],
   total: 0
 })
-
 const pagination = ref({
   page: 1,
   pageSize: 18
 })
 
-const point = ref({
-  x: 0,
-  y: 0
-})
+const disableFilter = computed(
+  () => !filter.value.type || filter.value.type === 0
+)
 
 let selectedUser: User | undefined
 
@@ -136,17 +137,8 @@ const rowProps = (row: User): HTMLAttributes => {
         return
       }
 
-      e.preventDefault()
-      showOperations.value = false
-
-      nextTick().then(() => {
+      openMenu(e, () => {
         selectedUser = row
-        point.value = {
-          x: e.clientX,
-          y: e.clientY
-        }
-
-        showOperations.value = true
       })
     }
   }
@@ -219,7 +211,7 @@ const columns: DataTableColumns<User> = [
             }}
           </NButton>
         </RouterLink>
-        {row.uid === store.user.userInfo!.uid ? (
+        {row.uid === user.info!.uid ? (
           <NTag type="primary" size="small" round>
             你自己
           </NTag>
@@ -276,16 +268,15 @@ const columns: DataTableColumns<User> = [
   }
 ]
 
-onActivated(() => {
+onMounted(() => {
   const { page = 1 } = route.query
   pagination.value.page = Number(page)
 
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? `{"type": 0}`)
   queryUsers()
 })
 
 function filterChange(value: number) {
-  if (value == 0) {
+  if (value === 0) {
     nextTick(() => {
       filter.value.keyword = ""
       search()
@@ -295,16 +286,13 @@ function filterChange(value: number) {
 
 function pageChange(page: number) {
   router.replace({
-    query: {
-      page
-    }
+    query: { page }
   })
 
   queryUsers()
 }
 
 function search() {
-  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
@@ -320,7 +308,7 @@ function queryUsers() {
       users.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false
@@ -341,7 +329,7 @@ function updateUser() {
 }
 
 function hideOperation() {
-  showOperations.value = false
+  menuVisible.value = false
 }
 
 function operationSelect(key: string) {

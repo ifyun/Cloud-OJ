@@ -1,35 +1,22 @@
-import axios, { ApiPath, resolveError } from "@/api"
+import useAxios from "@/api"
 import { type QueuesInfo, type SolutionSummary } from "@/api/type"
 
 const AdminApi = {
-  getSolutionSummary(): Promise<SolutionSummary> {
-    return new Promise<SolutionSummary>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.SOLUTION_ADMIN}/summary`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async getSolutionSummary() {
+    const res = await useAxios({
+      url: "/api/core/solution/admin/summary",
+      method: "GET"
     })
-  },
 
-  getQueuesInfo() {
-    return new Promise<QueuesInfo>((resolve, reject) => {
-      axios({
-        url: ApiPath.QUEUE_INFO,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return res.data as SolutionSummary
+  },
+  async getQueuesInfo() {
+    const res = await useAxios({
+      url: "/api/judge/admin/queue_info",
+      method: "GET"
     })
+
+    return res.data as QueuesInfo
   }
 }
 

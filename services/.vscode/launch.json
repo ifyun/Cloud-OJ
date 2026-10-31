@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "core",
+      "request": "launch",
+      "mainClass": "cloud.oj.core.CoreApp",
+      "projectName": "core",
+      "vmArgs": ["-Xmx128m"]
+    },
+    {
+      "type": "java",
+      "name": "gateway",
+      "request": "launch",
+      "mainClass": "cloud.oj.gateway.GatewayApp",
+      "projectName": "gateway",
+      "vmArgs": ["-Xmx64m"]
+    }
+  ]
+}

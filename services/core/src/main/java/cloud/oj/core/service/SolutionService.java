@@ -2,9 +2,9 @@ package cloud.oj.core.service;
 
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Solution;
-import cloud.oj.core.entity.SolutionFilter;
 import cloud.oj.core.entity.SolutionSummary;
 import cloud.oj.core.error.GenericException;
+import cloud.oj.core.query.SolutionFilter;
 import cloud.oj.core.repo.SolutionRepo;
 import cloud.oj.core.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,9 @@ public class SolutionService {
     /**
      * 根据 uid 和过滤条件分页查询提交记录
      *
-     * <p>隔离级别：读未提交</p>
+     * <p>
+     * 隔离级别：读未提交
+     * </p>
      *
      * @param uid         用户 Id
      * @param page        页数
@@ -48,8 +50,12 @@ public class SolutionService {
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public PageData<Solution> getSolutionsByUidAndFilter(Integer uid, Integer page, Integer size,
-                                                         Integer filter, String filterValue) {
-        var data = solutionRepo.selectAllByUid(uid, page, size, filter, filterValue);
+            SolutionFilter filter) {
+        if (filter == null) {
+            filter = new SolutionFilter();
+        }
+
+        var data = solutionRepo.selectAllByUid(uid, page, size, filter);
         var total = data.isEmpty() ? 0 : data.getFirst()._total;
         return new PageData<>(data, total);
     }

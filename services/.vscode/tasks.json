@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "judge(sudo)",
+      "type": "shell",
+      "command": ["sudo", "mvn", "spring-boot:run"],
+      "options": {
+        "cwd": "${workspaceFolder}/judge",
+        "env": {
+          "MAVEN_OPTS": "-Xmx128m"
+        }
+      },
+      "isBackground": true
+    }
+  ]
+}

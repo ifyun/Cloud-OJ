@@ -32,7 +32,7 @@
 import { AuthApi } from "@/api/request"
 import { ErrorMessage } from "@/api/type"
 import { UserAvatar } from "@/components"
-import { useStore } from "@/store"
+import { useUserStore } from "@/store/user"
 import { renderIcon } from "@/utils"
 import { HouseUser } from "@vicons/fa"
 import {
@@ -51,17 +51,17 @@ import {
 import { computed } from "vue"
 import { RouterLink, useRouter } from "vue-router"
 
-const store = useStore()
+const user = useUserStore()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 
 const isLoggedIn = computed(() => {
-  return store.user.isLoggedIn
+  return user.isLoggedIn
 })
 
 const userInfo = computed(() => {
-  return store.user.userInfo
+  return user.info
 })
 
 const menuOptions = [
@@ -99,7 +99,7 @@ function logoff() {
       message.warning(err.toString())
     })
     .finally(() => {
-      store.user.clearToken()
+      user.clearToken()
       login()
     })
 }

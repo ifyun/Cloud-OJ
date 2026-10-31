@@ -35,7 +35,7 @@
                   <add-icon />
                 </n-icon>
               </template>
-              <router-link :to="{ name: 'edit_problem' }">
+              <router-link :to="{ name: 'edit-problem' }">
                 创建题目
               </router-link>
             </n-button>
@@ -60,10 +60,10 @@
   <n-dropdown
     trigger="manual"
     :show-arrow="true"
-    :x="point.x"
-    :y="point.y"
+    :x="menuPoint.x"
+    :y="menuPoint.y"
     :options="operations"
-    :show="showOperations"
+    :show="menuVisible"
     :on-clickoutside="hideOperation"
     @select="operationSelect" />
 </template>
@@ -71,7 +71,9 @@
 <script setup lang="tsx">
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, type Page, Problem } from "@/api/type"
-import { useStore } from "@/store"
+import { useContextMenu } from "@/composables"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
 import { renderIcon } from "@/utils"
 import {
   PostAddRound as AddIcon,
@@ -98,38 +100,32 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { type HTMLAttributes, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 defineOptions({
   name: "ProblemAdmin"
 })
 
-const store = useStore()
+const app = useAppStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 
+const { filter } = storeToRefs(useFilterStore())
+const { menuVisible, menuPoint, openMenu } = useContextMenu()
+
 const loading = ref<boolean>(true)
-
-const pagination = ref({
-  page: 1,
-  pageSize: 18
-})
-
 const problems = ref<Page<Problem>>({
   data: [],
   total: 0
 })
-
-const point = ref({
-  x: 0,
-  y: 0
+const pagination = ref({
+  page: 1,
+  pageSize: 18
 })
-
-const filter = ref({ keyword: "" })
-const showOperations = ref<boolean>(false)
 
 let selectedId: number | undefined
 let selectedTitle: string | undefined
@@ -143,18 +139,9 @@ const rowProps = (row: Problem): HTMLAttributes => {
         return
       }
 
-      e.preventDefault()
-      showOperations.value = false
-
-      nextTick().then(() => {
+      openMenu(e, () => {
         selectedId = row.problemId
         selectedTitle = row.title
-        point.value = {
-          x: e.clientX,
-          y: e.clientY
-        }
-
-        showOperations.value = true
       })
     }
   }
@@ -169,7 +156,7 @@ const operations = [
   },
   {
     label: "数据管理",
-    key: "test_data",
+    key: "test-data",
     icon: renderIcon(FolderIcon, "#18A058")
   },
   {
@@ -191,7 +178,7 @@ const problemColumns: DataTableColumns<Problem> = [
     title: "题目名称",
     key: "title",
     render: (row) => (
-      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+      <RouterLink to={{ name: "problem", params: { pid: row.problemId } }}>
         <NButton text strong={true}>
           {row.title}
         </NButton>
@@ -257,10 +244,9 @@ const delRule = {
   }
 }
 
-onActivated(() => {
-  const { page = 1, keyword = "" } = route.query
+onMounted(() => {
+  const { page = 1 } = route.query
   pagination.value.page = Number(page)
-  filter.value.keyword = String(keyword)
 
   queryProblems()
 })
@@ -269,7 +255,7 @@ onActivated(() => {
  * 关闭操作菜单
  */
 function hideOperation() {
-  showOperations.value = false
+  menuVisible.value = false
 }
 
 /**
@@ -279,10 +265,10 @@ function operationSelect(key: string) {
   hideOperation()
   switch (key) {
     case "edit":
-      router.push({ name: "edit_problem", params: { id: selectedId } })
+      router.push({ name: "edit-problem", params: { id: selectedId } })
       break
-    case "test_data":
-      router.push({ name: "test_data", params: { id: selectedId } })
+    case "test-data":
+      router.push({ name: "test-data", params: { id: selectedId } })
       break
     case "del":
       deleteProblem()
@@ -292,14 +278,6 @@ function operationSelect(key: string) {
   }
 }
 
-function pageChange(page: number) {
-  router.replace({
-    query: { page }
-  })
-
-  queryProblems()
-}
-
 function tagClick(tag: string) {
   filter.value.keyword = tag
   search()
@@ -307,15 +285,17 @@ function tagClick(tag: string) {
 
 function search() {
   nextTick(() => {
-    if (filter.value.keyword !== "") {
-      pagination.value.page = 1
-      router.replace({
-        query: { keyword: filter.value.keyword, page: 1 }
-      })
-    }
-
-    queryProblems()
+    pagination.value.page = 1
+    pageChange(1)
   })
+}
+
+function pageChange(page: number) {
+  router.replace({
+    query: { page }
+  })
+
+  queryProblems()
 }
 
 function deleteProblem() {
@@ -368,7 +348,7 @@ function queryProblems() {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

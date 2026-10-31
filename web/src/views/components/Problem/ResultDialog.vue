@@ -47,9 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import { ApiPath } from "@/api"
 import { ErrorMessage, JudgeResult } from "@/api/type"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
+import { useUserStore } from "@/store/user"
 import { ResultTypes } from "@/type"
 import { ramUsage, timeUsage } from "@/utils"
 import { NResult, NSpace, NTable, NText } from "naive-ui"
@@ -70,13 +70,13 @@ const props = defineProps<{
   submitTime: number
 }>()
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
 
 const error = ref<ErrorMessage | null>(null)
 const solution = ref<JudgeResult | null>(null)
 
-const darkTheme = computed(() => store.app.theme != null)
-
+const darkTheme = computed(() => app.theme != null)
 const result = computed<Result>(() => {
   const s = solution.value
 
@@ -115,9 +115,7 @@ onDeactivated(() => {
  */
 function fetchResult() {
   sse = new EventSource(
-    `${ApiPath.SOLUTION}/time/${props.submitTime}?token=${
-      store.user.userInfo!.token
-    }`
+    `/api/core/solution/time/${props.submitTime}?token=${user.info!.token}`
   )
 
   sse.onmessage = (event) => {

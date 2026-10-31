@@ -1,81 +1,37 @@
-import axios, { ApiPath, resolveError } from "@/api"
+import useAxios from "@/api"
 import type { UsernamePassword } from "@/api/type"
-import type { AxiosResponse } from "axios"
 
 /**
  * 授权验证接口
  */
 const AuthApi = {
-  /**
-   * 登录
-   */
-  login(user: UsernamePassword): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      axios({
-        url: ApiPath.LOGIN,
-        method: "POST",
-        data: JSON.stringify(user)
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async login(user: UsernamePassword) {
+    const res = await useAxios({
+      url: "/api/auth/login",
+      method: "POST",
+      data: JSON.stringify(user)
+    })
+    // JWT
+    return res.data as string
+  },
+  logoff() {
+    return useAxios({
+      url: "/api/auth/logoff",
+      method: "DELETE"
     })
   },
-
-  /**
-   * 登出
-   */
-  logoff(): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: ApiPath.LOGOFF,
-        method: "DELETE"
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async refreshToken() {
+    const res = await useAxios({
+      url: "/api/auth/refresh_token",
+      method: "GET"
     })
-  },
 
-  /**
-   * 刷新 Token
-   */
-  refresh_token(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      axios({
-        url: ApiPath.REFRESH_TOKEN,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
+    return res.data as string
   },
-
-  /**
-   * 验证 Token
-   */
-  verify(): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: ApiPath.VERIFY,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  verify() {
+    return useAxios({
+      url: "/api/auth/verify",
+      method: "GET"
     })
   }
 }

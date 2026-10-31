@@ -1,5 +1,5 @@
 <template>
-  <div class="submission">
+  <div class="problem">
     <Skeleton v-if="loading" />
     <div v-else class="content">
       <n-tabs type="card" style="flex: 1">
@@ -80,7 +80,8 @@
 import { ContestApi, JudgeApi, ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem, type SubmitData } from "@/api/type"
 import { CodeEditor, MarkdownView } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app.ts"
+import { useUserStore } from "@/store/user.ts"
 import { type SourceCode } from "@/type"
 import { setTitle } from "@/utils"
 import {
@@ -101,16 +102,17 @@ import {
   NTag,
   useMessage
 } from "naive-ui"
-import { computed, inject, onActivated, ref } from "vue"
+import { computed, inject, onMounted, ref } from "vue"
 import ResultDialog from "./ResultDialog.vue"
 import Skeleton from "./Skeleton.vue"
 import SolutionSingle from "./Solutions.vue"
 
 defineOptions({
-  name: "Submission"
+  name: "Problem"
 })
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
 const message = useMessage()
 
 const props = defineProps<{ pid: number; cid?: number }>()
@@ -123,11 +125,11 @@ const code = ref<string>("")
 const submitTime = ref<number>(0)
 
 const theme = inject("themeStr") as "light" | "dark"
-const isLoggedIn = computed(() => store.user.isLoggedIn)
+const isLoggedIn = computed(() => user.isLoggedIn)
 
 const submitClick = throttle(submit, 1000)
 
-onActivated(() => {
+onMounted(() => {
   queryProblem()
 })
 
@@ -143,7 +145,7 @@ function queryProblem() {
         problem.value = data
       })
       .catch((err: ErrorMessage) => {
-        store.app.setError(err)
+        app.setError(err)
       })
       .finally(() => {
         loading.value = false
@@ -156,7 +158,7 @@ function queryProblem() {
         problem.value = data
       })
       .catch((err: ErrorMessage) => {
-        store.app.setError(err)
+        app.setError(err)
       })
       .finally(() => {
         loading.value = false
@@ -168,7 +170,7 @@ function queryProblem() {
  * 提交代码
  */
 function submit(data: SourceCode) {
-  if (!store.user.isLoggedIn) {
+  if (!user.isLoggedIn) {
     message.warning("你必须先登录才能提交代码！")
     return
   }
@@ -185,7 +187,7 @@ function submit(data: SourceCode) {
     contestId: props.cid,
     sourceCode: data.code.trim(),
     type: 0,
-    uid: store.user.userInfo!.uid!
+    uid: user.info!.uid!
   }
 
   JudgeApi.submit(submitData)
@@ -203,7 +205,7 @@ function submit(data: SourceCode) {
 </script>
 
 <style scoped lang="scss">
-.submission {
+.problem {
   padding-top: calc(var(--layout-padding) * 2);
   width: calc(100% - var(--layout-padding) * 4);
   height: calc(

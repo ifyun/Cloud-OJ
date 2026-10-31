@@ -1,28 +1,20 @@
-import axios, { ApiPath, resolveError } from "@/api"
-import { Settings } from "@/api/type"
-import type { AxiosResponse } from "axios"
+import useAxios from "@/api"
+import type { Settings } from "@/api/type"
 
 const SettingsApi = {
-  get(): Promise<Settings> {
-    return new Promise<Settings>((resolve, reject) => {
-      axios({
-        url: ApiPath.SETTINGS,
-        method: "GET"
-      })
-        .then((res) => resolve(res.data))
-        .catch((error) => reject(resolveError(error)))
+  async get() {
+    const res = await useAxios({
+      url: "/api/core/settings",
+      method: "GET"
     })
-  },
 
-  save(settings: Settings): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: ApiPath.SETTINGS,
-        method: "PUT",
-        data: JSON.stringify(settings)
-      })
-        .then((res) => resolve(res))
-        .catch((error) => reject(resolveError(error)))
+    return res.data as Settings
+  },
+  save(settings: Settings) {
+    return useAxios({
+      url: "/api/core/settings",
+      method: "PUT",
+      data: JSON.stringify(settings)
     })
   }
 }

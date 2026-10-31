@@ -24,7 +24,7 @@ import { RankingApi } from "@/api/request"
 import { ErrorMessage, type Page, Ranking } from "@/api/type"
 import { EmptyData } from "@/components"
 import ScoreboardUser from "@/components/ScoreboardUser.vue"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
 import {
   type DataTableColumns,
   NDataTable,
@@ -32,10 +32,10 @@ import {
   NPagination,
   NText
 } from "naive-ui"
-import { computed, onActivated, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
+const app = useAppStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -94,7 +94,7 @@ const rankingColumns: DataTableColumns<Ranking> = [
   }
 ]
 
-onActivated(() => {
+onMounted(() => {
   const { page = 1 } = route.query
   pagination.value.page = Number(page)
 
@@ -115,7 +115,7 @@ function queryRankings() {
       rankings.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

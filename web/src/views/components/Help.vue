@@ -49,12 +49,12 @@
             </tr>
             <tr>
               <td>Kotlin</td>
-              <td>Kotlin 2.2.x</td>
+              <td>Kotlin 2.4.x</td>
               <td>生成 Java 17 字节码</td>
             </tr>
             <tr>
               <td>Go</td>
-              <td>go 1.25.x</td>
+              <td>go 1.27.x</td>
               <td>-</td>
             </tr>
           </tbody>
@@ -158,7 +158,6 @@ highlightJs.registerLanguage("js", js)
 highlightJs.registerLanguage("java", java)
 highlightJs.registerLanguage("kotlin", kotlin)
 
-// region 示例代码
 const cppSample = `#include <iostream>
 
 int main()
@@ -199,13 +198,9 @@ const kotlinSample = `fun main() {
     var arr = readln().split(" ").map { it.toInt() }
     println(arr[0] + arr[1])
 }`
-// endregion
 
 const judgeColumns = [
-  {
-    title: "状态",
-    key: "status"
-  },
+  { title: "状态", key: "status" },
   { title: "说明", key: "desc" }
 ]
 

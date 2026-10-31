@@ -1,4 +1,3 @@
-import { ApiPath } from "@/api"
 import type { Root } from "hast"
 import { visit } from "unist-util-visit"
 
@@ -19,7 +18,7 @@ export default function rehypeImage() {
         return
       }
 
-      node.properties.src = `${ApiPath.PROBLEM_IMAGE}/${url}`
+      node.properties.src = `/api/core/file/img/problem/${url}`
     })
   }
 }

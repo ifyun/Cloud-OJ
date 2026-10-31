@@ -5,8 +5,7 @@
         {{ `${data.problemId}.${data.title}` }}
       </template>
       <template #extra>
-        <router-link
-          :to="{ name: 'submission', params: { pid: data.problemId } }">
+        <router-link :to="{ name: 'problem', params: { pid: data.problemId } }">
           <n-button quaternary type="info">进入题目页面</n-button>
         </router-link>
       </template>

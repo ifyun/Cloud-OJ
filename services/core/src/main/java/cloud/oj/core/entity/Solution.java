@@ -10,10 +10,9 @@ import java.math.BigInteger;
 
 @Getter
 @Setter
-@SuppressWarnings("unused")
 public class Solution {
     @JsonIgnore
-    public static final String[] S = {"运行完成", "正在运行", "正在编译", "等待判题"};
+    public static final String[] S = { "运行完成", "正在运行", "正在编译", "等待判题" };
 
     @JsonIgnore
     public static final String[] R = {

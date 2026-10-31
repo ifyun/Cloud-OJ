@@ -6,13 +6,13 @@
 
 ```bash
 curl -o- https://fnm.vercel.app/install | bash
-fnm install 22
+fnm install 24
 ```
 
 使用包管理器安装 C / C++ / CMake / Java / Maven
 
 ```bash
-sudo apt install cmake build-essential openjdk-17-jdk-headless maven 
+sudo apt install cmake build-essential openjdk-17-jdk-headless maven
 ```
 
 创建必要的目录：
@@ -70,9 +70,11 @@ sudo apt-get update \
 3.创建单文件编译脚本：
 
 ```bash
-sudo echo -n "dotnet /usr/share/dotnet/sdk/$(dotnet --version)/Roslyn/bincore/csc.dll " > /bin/csc \
-  && echo -n "/r:/usr/share/dotnet/sdk/$(dotnet --version)/ref/netstandard.dll " >> /bin/csc \
-  && echo '"$@"' >> /bin/csc
+sudo tee /bin/csc > /dev/null <<EOF
+dotnet /usr/share/dotnet/sdk/\$(dotnet --version)/Roslyn/bincore/csc.dll \
+-r:/usr/share/dotnet/sdk/\$(dotnet --version)/ref/netstandard.dll \
+"\$@"
+EOF
 ```
 
 4.创建运行时配置文件：

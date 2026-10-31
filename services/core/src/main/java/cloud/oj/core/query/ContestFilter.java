@@ -1,4 +1,4 @@
-package cloud.oj.core.entity;
+package cloud.oj.core.query;
 
 public class ContestFilter {
     public String keyword = "";

@@ -61,7 +61,7 @@ import {
   NScrollbar,
   NSelect
 } from "naive-ui"
-import { nextTick, onActivated, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 
 let cmView: EditorView
 
@@ -162,14 +162,8 @@ onMounted(() => {
   })
 })
 
-onActivated(() => {
-  cmView?.dispatch({
-    changes: {
-      from: 0,
-      to: cmView.state.doc.length,
-      insert: ""
-    }
-  })
+onUnmounted(() => {
+  cmView.destroy()
 })
 
 const submit = throttle(

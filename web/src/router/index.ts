@@ -3,14 +3,13 @@ import { createRouter, createWebHistory } from "vue-router"
 const RouterWrapper = () => import("@/components/RouterWrapper.vue")
 const Auth = () => import("@/views/components/Auth/Index.vue")
 const IndexLayout = () => import("@/views/layout/IndexLayout.vue")
-const ProblemList = () => import("@/views/components/Problems.vue")
-const ContestList = () => import("@/views/components/Contests.vue")
-const ContestProblemList = () =>
-  import("@/views/components/ContestProblems.vue")
+const Problems = () => import("@/views/components/Problems.vue")
+const Contests = () => import("@/views/components/Contests.vue")
+const ContestProblems = () => import("@/views/components/ContestProblems.vue")
 const Scoreboard = () => import("@/views/components/Scoreboard.vue")
 const ScoreboardContest = () =>
   import("@/views/components/ScoreboardContest.vue")
-const Submission = () => import("@/views/components/Submission/Index.vue")
+const Problem = () => import("@/views/components/Problem/Index.vue")
 const HelpDoc = () => import("@/views/components/Help.vue")
 const Account = () => import("@/views/components/Account/Index.vue")
 const AccountEditor = () => import("@/views/components/Account/Editor.vue")
@@ -64,7 +63,7 @@ const router = createRouter({
           meta: {
             title: "题目"
           },
-          component: ProblemList
+          component: Problems
         },
         {
           path: "/contests",
@@ -72,15 +71,15 @@ const router = createRouter({
           meta: {
             title: "竞赛 & 练习"
           },
-          component: ContestList
+          component: Contests
         },
         {
           path: "/contests/:cid(\\d+)",
-          name: "contest_problems",
+          name: "contest-problems",
           meta: {
             requiresAuth: true
           },
-          component: ContestProblemList,
+          component: ContestProblems,
           props: (route) => ({
             cid: Number(route.params.cid)
           })
@@ -95,16 +94,16 @@ const router = createRouter({
         },
         {
           path: "/scoreboard/:cid(\\d+)",
-          name: "scoreboard_contest",
+          name: "contest-scoreboard",
           component: ScoreboardContest,
           props: (route) => ({
             cid: Number(route.params.cid)
           })
         },
         {
-          path: "/submission/:pid(\\d+)/:cid(\\d+)?",
-          name: "submission",
-          component: Submission,
+          path: "/problem/:pid(\\d+)/:cid(\\d+)?",
+          name: "problem",
+          component: Problem,
           props: (route) => ({
             pid: Number(route.params.pid),
             cid: route.params.cid ? Number(route.params.cid) : undefined
@@ -128,7 +127,7 @@ const router = createRouter({
         },
         {
           path: "/account/edit",
-          name: "edit_account",
+          name: "edit-account",
           meta: {
             title: "编辑个人信息",
             requireAuth: true
@@ -144,12 +143,12 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true
       },
-      redirect: { name: "admin_index" },
+      redirect: { name: "dashboard" },
       component: AdminLayout,
       children: [
         {
-          path: "overview",
-          name: "admin_index",
+          path: "dashboard",
+          name: "dashboard",
           meta: {
             title: "仪表板",
             inBreadcrumb: true
@@ -160,19 +159,19 @@ const router = createRouter({
           path: "problem",
           redirect: "/admin/problem/index",
           meta: {
-            title: "题目",
+            title: "题目管理",
             inBreadcrumb: true
           },
           component: RouterWrapper,
           children: [
             {
               path: "index",
-              name: "problem_admin",
+              name: "admin-problems",
               component: ProblemAdmin
             },
             {
               path: "edit/:id(\\d+)?",
-              name: "edit_problem",
+              name: "edit-problem",
               meta: {
                 title: (route) => (route.params.id ? "编辑题目" : "新建题目"),
                 inBreadcrumb: true
@@ -184,7 +183,7 @@ const router = createRouter({
             },
             {
               path: "data/:id(\\d+)",
-              name: "test_data",
+              name: "test-data",
               meta: {
                 title: "测试数据管理",
                 inBreadcrumb: true
@@ -200,19 +199,19 @@ const router = createRouter({
           path: "contest",
           redirect: "/admin/contest/index",
           meta: {
-            title: "竞赛",
+            title: "竞赛管理",
             inBreadcrumb: true
           },
           component: RouterWrapper,
           children: [
             {
               path: "index",
-              name: "contest_admin",
+              name: "admin-contests",
               component: ContestAdmin
             },
             {
               path: "edit/:id(\\d+)?",
-              name: "edit_contest",
+              name: "edit-contest",
               meta: {
                 title: (route) => (route.params.id ? "编辑竞赛" : "新建竞赛"),
                 inBreadcrumb: true
@@ -228,21 +227,21 @@ const router = createRouter({
           path: "user",
           redirect: "/admin/user/index",
           meta: {
-            title: "用户",
+            title: "用户管理",
             inBreadcrumb: true
           },
           component: RouterWrapper,
           children: [
             {
               path: "index",
-              name: "user_admin",
+              name: "admin-users",
               component: UserAdmin
             }
           ]
         },
         {
           path: "solution",
-          name: "solution_admin",
+          name: "admin-solutions",
           meta: {
             title: "提交记录",
             inBreadcrumb: true

@@ -29,10 +29,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
     logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "3"
+      driver: "local"
   core:
     image: cloud-oj:core
     depends_on:
@@ -51,10 +48,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWD}
     logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "3"
+      driver: "local"
   judge:
     image: cloud-oj:judge
     privileged: true
@@ -79,10 +73,7 @@ services:
       RABBIT_PASSWORD: ${RABBIT_PASSWD}
       JUDGE_CPUS: 1
     logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "3"
+      driver: "local"
   web:
     image: cloud-oj:web
     depends_on:

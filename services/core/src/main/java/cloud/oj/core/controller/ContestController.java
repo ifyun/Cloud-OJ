@@ -1,9 +1,9 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.Contest;
-import cloud.oj.core.entity.ContestFilter;
 import cloud.oj.core.entity.PageData;
 import cloud.oj.core.entity.Problem;
+import cloud.oj.core.query.ContestFilter;
 import cloud.oj.core.service.ContestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,64 +30,55 @@ public class ContestController {
     /**
      * 获取所有竞赛
      */
-    @RequestMapping(path = "queries", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "query", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<PageData<Contest>> getContests(
             @RequestBody(required = false) ContestFilter filter,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size
-    ) {
+            @RequestParam(defaultValue = "15") Integer size) {
         var data = contestService.getAllContest(filter, page, size);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
      * 获取所有竞赛(Admin)
      */
-    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "admin/query", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<PageData<Contest>> getContestsAdmin(
             @RequestBody(required = false) ContestFilter filter,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size
-    ) {
+            @RequestParam(defaultValue = "15") Integer size) {
         var data = contestService.getAllContestAdmin(filter, page, size);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
      * 从已开始的竞赛中获取题目
      */
-    @GetMapping(path = "problem")
+    @GetMapping(path = "problems")
     public ResponseEntity<List<Problem>> getProblemsOfStarted(@RequestHeader Integer uid, Integer cid) {
         var data = contestService.getProblemsOfContest(uid, cid, false);
-        return data.isEmpty() ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(data);
+        return data.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(data);
     }
 
-    @GetMapping(path = "admin/problem")
+    @GetMapping(path = "admin/problems")
     public ResponseEntity<List<Problem>> getProblems(Integer cid) {
         var data = contestService.getProblemsOfContest(null, cid, true);
-        return data.isEmpty() ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(data);
+        return data.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(data);
     }
 
     /**
      * 从已开始的竞赛中获取题目详情
      */
-    @GetMapping(path = "problem/{cid}/{pid}")
-    public ResponseEntity<Problem> getProblemInContest(@RequestHeader Integer uid,
-                                                       @PathVariable Integer cid,
-                                                       @PathVariable Integer pid) {
+    @GetMapping(path = "problem")
+    public ResponseEntity<Problem> getProblemInContest(
+            @RequestHeader Integer uid,
+            @RequestParam Integer cid,
+            @RequestParam Integer pid) {
         return ResponseEntity.ok(contestService.getProblem(uid, cid, pid));
     }
 
-    @PutMapping(path = "admin/problem/order/{cid}")
-    public ResponseEntity<?> changeOrders(@PathVariable Integer cid, @RequestBody List<Integer> problems) {
+    @PutMapping(path = "admin/problem/order")
+    public ResponseEntity<?> changeOrders(@RequestParam Integer cid, @RequestBody List<Integer> problems) {
         contestService.changeOrders(cid, problems);
         return ResponseEntity.ok().build();
     }
@@ -95,14 +86,13 @@ public class ContestController {
     /**
      * 获取可用题目
      */
-    @GetMapping("admin/problem_idle/{cid}")
-    public ResponseEntity<PageData<Problem>> getIdleProblems(@PathVariable Integer cid,
-                                                             @RequestParam(defaultValue = "1") Integer page,
-                                                             @RequestParam(defaultValue = "15") Integer size) {
-        var data = contestService.getIdleProblems(cid, page, size);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+    @GetMapping("admin/problem/unused")
+    public ResponseEntity<PageData<Problem>> getUnusedProblems(
+            @RequestParam Integer cid,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "15") Integer size) {
+        var data = contestService.getUnusedProblems(cid, page, size);
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
@@ -143,8 +133,8 @@ public class ContestController {
     /**
      * 向竞赛添加题目
      */
-    @PostMapping(path = "admin/problem/{cid}/{pid}")
-    public ResponseEntity<?> addProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+    @PostMapping(path = "admin/problem")
+    public ResponseEntity<?> addProblem(@RequestParam Integer cid, @RequestParam Integer pid) {
         contestService.addProblemToContest(cid, pid);
         return ResponseEntity.ok().build();
     }
@@ -152,8 +142,8 @@ public class ContestController {
     /**
      * 从竞赛移除题目
      */
-    @DeleteMapping(path = "admin/problem/{cid}/{pid}")
-    public ResponseEntity<?> removeProblem(@PathVariable Integer cid, @PathVariable Integer pid) {
+    @DeleteMapping(path = "admin/problem")
+    public ResponseEntity<?> removeProblem(@RequestParam Integer cid, @RequestParam Integer pid) {
         contestService.removeProblem(cid, pid);
         return ResponseEntity.noContent().build();
     }
@@ -161,8 +151,8 @@ public class ContestController {
     /**
      * 加入竞赛
      */
-    @PostMapping("/invitation/{cid}")
-    public ResponseEntity<?> inviteUser(@RequestHeader Integer uid, @PathVariable Integer cid, String key) {
+    @PostMapping("/join/{cid}")
+    public ResponseEntity<?> join(@RequestHeader Integer uid, @PathVariable Integer cid, String key) {
         contestService.inviteUserWithKey(cid, uid, key);
         return ResponseEntity.ok().build();
     }

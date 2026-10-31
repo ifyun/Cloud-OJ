@@ -12,9 +12,9 @@
           @update:value="filterChange"
           :options="filterOptions"
           style="width: 180px" />
-        <n-input v-model:value="filter.keyword" :disabled="filter.type === 0" />
+        <n-input v-model:value="filter.value" :disabled="disableFilter" />
         <n-button
-          :disabled="filter.type === 0"
+          :disabled="disableFilter"
           type="primary"
           secondary
           @click="search">
@@ -53,7 +53,8 @@ export default {
 import { UserApi } from "@/api/request"
 import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
 import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
 import { ramUsage, timeUsage } from "@/utils"
 import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
@@ -73,34 +74,35 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { nextTick, onMounted, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { computed, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 dayjs.extend(relativeTime)
 dayjs.locale("zh-cn")
 
-const store = useStore()
+const app = useAppStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
 const loading = ref<boolean>(true)
 const showSource = ref<boolean>(false)
-const pagination = ref({
-  page: 1,
-  pageSize: 15
-})
-
 const solutions = ref<Page<JudgeResult>>({
   data: [],
   total: 0
 })
-
+const pagination = ref({
+  page: 1,
+  pageSize: 15
+})
 const solution = ref<JudgeResult>(new JudgeResult())
-const filter = ref<{
-  type: number
-  keyword: string
-}>({ type: 0, keyword: "" })
+
+const { filter } = storeToRefs(useFilterStore())
+
+const disableFilter = computed(
+  () => !filter.value.type || filter.value.type === 0
+)
 
 const filterOptions = [
   { label: "关闭过滤", value: 0 },
@@ -139,7 +141,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "题名",
     key: "title",
     render: (row) => (
-      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+      <RouterLink to={{ name: "problem", params: { pid: row.problemId } }}>
         <NButton text>{row.title}</NButton>
       </RouterLink>
     )
@@ -202,7 +204,6 @@ onMounted(() => {
     pagination.value.page = Number(route.query.page)
   }
 
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? `{"type": 0}`)
   querySolutions()
 })
 
@@ -210,12 +211,12 @@ function querySolutions() {
   loading.value = true
   const { page, pageSize } = pagination.value
 
-  UserApi.getSolutions(page, pageSize, filter.value.type, filter.value.keyword)
+  UserApi.getSolutions(page, pageSize, filter.value)
     .then((data) => {
       solutions.value = data
     })
     .catch((err) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false
@@ -246,15 +247,14 @@ function pageChange(page: number) {
 
 function filterChange(value: number) {
   // 关闭过滤条件
-  if (value == 0) {
-    filter.value.keyword = ""
+  if (value === 0) {
+    filter.value.title = ""
     pagination.value.page = 1
     pageChange(1)
   }
 }
 
 function search() {
-  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
