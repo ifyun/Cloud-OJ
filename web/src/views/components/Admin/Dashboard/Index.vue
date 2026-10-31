@@ -11,7 +11,7 @@
 import { AdminApi } from "@/api/request"
 import { ErrorMessage, type QueuesInfo } from "@/api/type"
 import { NFlex, useMessage } from "naive-ui"
-import { onActivated, onDeactivated, ref } from "vue"
+import { onMounted, onUnmounted, ref } from "vue"
 import QueuesInfoView from "./QueuesInfoView.vue"
 import SolutionSummary from "./SolutionSummary.vue"
 
@@ -39,11 +39,11 @@ const queuesInfo = ref<QueuesInfo>({
 
 let timer: number
 
-onActivated(() => {
+onMounted(() => {
   getQueuesInfo()
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
   clearTimeout(timer)
 })
 

@@ -30,7 +30,7 @@ import {
   type UploadInst,
   useDialog
 } from "naive-ui"
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import Toolbar from "./Toolbar.vue"
 
 defineOptions({
@@ -116,6 +116,10 @@ onMounted(() => {
     parent: editor.value!,
     extensions: cmExtensions
   })
+})
+
+onUnmounted(() => {
+  cmView.destroy()
 })
 
 function toolbarClick(key: string) {

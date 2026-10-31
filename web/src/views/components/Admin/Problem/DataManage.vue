@@ -17,6 +17,7 @@
       <n-flex vertical size="large">
         <n-data-table
           v-if="problemData != null"
+          size="small"
           max-height="350"
           :loading="loading"
           :columns="columns"
@@ -87,8 +88,9 @@
 <script setup lang="tsx">
 import { ApiPath } from "@/api"
 import { ProblemApi } from "@/api/request"
-import { ErrorMessage, ProblemData, TestData } from "@/api/type"
-import { useStore } from "@/store"
+import { ErrorMessage, ProblemData, type TestData } from "@/api/type"
+import { useAppStore } from "@/store/app"
+import { useUserStore } from "@/store/user"
 import { cmDark, cmLight } from "@/theme/cm-theme"
 import { setTitle } from "@/utils"
 import { closeBrackets } from "@codemirror/autocomplete"
@@ -130,24 +132,26 @@ import {
   useDialog,
   useMessage
 } from "naive-ui"
-import { computed, nextTick, onActivated, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import SPJDeclare from "./assets/spj.cpp?raw"
 
 let cmView: EditorView
 
-const editor = ref<HTMLDivElement | null>(null)
 const action = ApiPath.TEST_DATA
 
-const store = useStore()
+const props = defineProps<{ id: number }>()
+
+const app = useAppStore()
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const dialog = useDialog()
 const message = useMessage()
 
-const props = defineProps<{ id: number }>()
 const loading = ref<boolean>(false)
 const problemData = ref<ProblemData | null>(null)
+const editor = ref<HTMLDivElement | null>(null)
 
 const themeCompartment = new Compartment()
 const cmExtensions: Extension = [
@@ -280,7 +284,7 @@ const title = computed(() => {
 
 const headers = computed(() => {
   return {
-    Authorization: `Baerer ${store.user.userInfo!.token}`
+    Authorization: `Bearer ${user.info!.token}`
   }
 })
 
@@ -303,7 +307,7 @@ const disableSaveConf = computed<boolean>(() => {
 })
 
 watch(
-  () => store.app.theme,
+  () => app.theme,
   (val) => {
     const t = val == null ? cmLight : cmDark
     nextTick(() => {
@@ -316,6 +320,9 @@ watch(
 )
 
 onMounted(() => {
+  setTitle(route.meta.title as string)
+  queryData(props.id)
+
   cmView = new EditorView({
     doc: SPJDeclare,
     parent: editor.value!,
@@ -323,9 +330,8 @@ onMounted(() => {
   })
 })
 
-onActivated(() => {
-  setTitle(route.meta.title as string)
-  queryData(props.id)
+onUnmounted(() => {
+  cmView.destroy()
 })
 
 function queryData(id: number) {
@@ -350,7 +356,7 @@ function queryData(id: number) {
 }
 
 function back() {
-  router.replace({ name: "problem_admin" })
+  router.replace({ name: "admin-problems" })
 }
 
 async function beforeUpload(options: { file: UploadFileInfo }) {
@@ -360,8 +366,9 @@ async function beforeUpload(options: { file: UploadFileInfo }) {
 
 function handleError(options: { event?: ProgressEvent }) {
   const res = (options.event?.target as XMLHttpRequest).response
-  if (res) {
-    const err = ErrorMessage.from(JSON.parse(res))
+
+  if (res.data) {
+    const err = ErrorMessage.from(JSON.parse(res.data))
     message.error(err.toString())
   }
 }

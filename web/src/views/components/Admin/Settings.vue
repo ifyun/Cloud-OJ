@@ -73,8 +73,8 @@
 
 <script setup lang="ts">
 import { SettingsApi } from "@/api/request"
-import { ErrorMessage, Settings } from "@/api/type"
-import { useStore } from "@/store"
+import { ErrorMessage, type Settings } from "@/api/type"
+import { useAppStore } from "@/store/app"
 import { SaveRound } from "@vicons/material"
 import {
   NButton,
@@ -86,19 +86,19 @@ import {
   NThing,
   useMessage
 } from "naive-ui"
-import { onActivated, ref } from "vue"
+import { onMounted, ref } from "vue"
 
 defineOptions({
   name: "SystemSettings"
 })
 
-const store = useStore()
+const app = useAppStore()
 const message = useMessage()
 
 const loading = ref<boolean>(true)
 const settings = ref<Settings>({})
 
-onActivated(() => {
+onMounted(() => {
   getSettings()
 })
 
@@ -108,7 +108,7 @@ function getSettings() {
       settings.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

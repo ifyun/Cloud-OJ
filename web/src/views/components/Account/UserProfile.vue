@@ -36,6 +36,6 @@ const router = useRouter()
 defineProps<{ user: User; showEdit: boolean }>()
 
 function edit() {
-  router.push({ name: "edit_account" })
+  router.push({ name: "edit-account" })
 }
 </script>

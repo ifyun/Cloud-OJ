@@ -51,14 +51,10 @@
 
 <script setup lang="tsx">
 import { SolutionApi } from "@/api/request"
-import {
-  ErrorMessage,
-  JudgeResult,
-  type Page,
-  type SolutionFilter
-} from "@/api/type"
+import { ErrorMessage, JudgeResult, type Page } from "@/api/type"
 import { LanguageTag, ResultTag, SourceCodeView } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
 import { SearchRound } from "@vicons/material"
 import dayjs from "dayjs"
 import "dayjs/locale/zh-cn"
@@ -79,7 +75,8 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { nextTick, onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
 defineOptions({
@@ -89,21 +86,20 @@ defineOptions({
 dayjs.extend(relativeTime)
 dayjs.locale("zh-cn")
 
+const app = useAppStore()
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
 const message = useMessage()
+
+const { filter } = storeToRefs(useFilterStore())
 
 const loading = ref<boolean>(true)
 const showSource = ref<boolean>(false)
-const filter = ref<SolutionFilter>({})
-
 const solution = ref<JudgeResult>(new JudgeResult())
 const solutions = ref<Page<JudgeResult>>({
   data: [],
   total: 0
 })
-
 const pagination = ref({
   page: 1,
   pageSize: 18
@@ -155,7 +151,7 @@ const columns: DataTableColumns<JudgeResult> = [
     title: "题目",
     key: "title",
     render: (row) => (
-      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+      <RouterLink to={{ name: "problem", params: { pid: row.problemId } }}>
         <NButton text strong>
           {row.problemId}.{row.title}
         </NButton>
@@ -203,11 +199,10 @@ const columns: DataTableColumns<JudgeResult> = [
   }
 ]
 
-onActivated(() => {
+onMounted(() => {
   const { page = 1 } = route.query
   pagination.value.page = Number(page)
 
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
   querySolutions()
 })
 
@@ -220,7 +215,7 @@ function querySolutions() {
       solutions.value = data
     })
     .catch((err) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false
@@ -239,16 +234,13 @@ function querySolution(sid: string) {
 }
 
 function search() {
-  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
 
 function pageChange(page: number) {
   router.replace({
-    query: {
-      page
-    }
+    query: { page }
   })
 
   querySolutions()

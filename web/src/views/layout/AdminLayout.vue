@@ -56,15 +56,17 @@
           flexDirection: 'column',
           minHeight: '100%'
         }">
-        <router-wrapper />
+        <router-view v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
       </n-layout-content>
     </n-layout>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import { Logo, RouterWrapper } from "@/components"
-import { useStore } from "@/store"
+import { Logo } from "@/components"
+import { useAppStore } from "@/store/app"
 import {
   AdminNavigation,
   ThemeSwitch,
@@ -84,20 +86,19 @@ import {
 } from "naive-ui"
 import { computed, inject } from "vue"
 
-const store = useStore()
+const app = useAppStore()
 
 const breadcrumb = computed(() => {
-  return store.app.breadcrumb
+  return app.breadcrumb
 })
-
 const collapsed = computed(() => {
-  return store.app.menuCollapsed
+  return app.menuCollapsed
 })
 
 const reload = inject("reload", () => {})
 
 function collapse() {
-  store.app.menuCollapse()
+  app.menuCollapse()
 }
 </script>
 

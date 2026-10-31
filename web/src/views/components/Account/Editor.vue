@@ -99,7 +99,8 @@
 import { AuthApi, UserApi } from "@/api/request"
 import { ErrorMessage, User } from "@/api/type"
 import { UserAvatar } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
+import { useUserStore } from "@/store/user"
 import { FileUploadOutlined, SaveRound } from "@vicons/material"
 import {
   type FormRules,
@@ -116,7 +117,8 @@ import {
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
-const store = useStore()
+const app = useAppStore()
+const userStore = useUserStore()
 const router = useRouter()
 const message = useMessage()
 
@@ -127,7 +129,7 @@ const user = ref<User>(new User())
 const t = ref<number>(Date.now())
 
 const userInfo = computed(() => {
-  return store.user.userInfo
+  return userStore.info
 })
 
 const rules: FormRules = {
@@ -202,7 +204,7 @@ onMounted(() => {
       user.value = data
     })
     .catch((err) => {
-      store.app.setError(err)
+      app.setError(err)
     })
 })
 
@@ -231,15 +233,10 @@ function back() {
   router.back()
 }
 
-function uploadFinish() {
-  t.value = Date.now()
-  refresh()
-}
-
 function refresh() {
-  AuthApi.refresh_token()
+  AuthApi.refreshToken()
     .then((token) => {
-      store.user.saveToken(token)
+      userStore.saveToken(token)
     })
     .catch((err: ErrorMessage) => {
       message.error(err.toString())

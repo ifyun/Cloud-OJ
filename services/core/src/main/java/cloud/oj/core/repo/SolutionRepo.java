@@ -3,6 +3,7 @@ package cloud.oj.core.repo;
 import cloud.oj.core.entity.LanguageUserUsage;
 import cloud.oj.core.entity.Results;
 import cloud.oj.core.entity.Solution;
+import cloud.oj.core.query.SolutionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -20,11 +21,11 @@ public class SolutionRepo {
 
     public Optional<Integer> selectResult(Integer uid, Integer pid) {
         return client.sql("""
-                        select min(result - 1)
-                        from solution
-                        where uid = :uid
-                          and problem_id = :pid
-                        """)
+                select min(result - 1)
+                from solution
+                where uid = :uid
+                  and problem_id = :pid
+                """)
                 .param("uid", uid)
                 .param("pid", pid)
                 .query(Integer.class)
@@ -33,12 +34,12 @@ public class SolutionRepo {
 
     public Optional<Integer> selectResultOfContest(Integer uid, Integer cid, Integer pid) {
         return client.sql("""
-                        select min(result - 1)
-                        from solution
-                        where uid = :uid
-                          and contest_id = :cid
-                          and problem_id = :pid
-                        """)
+                select min(result - 1)
+                from solution
+                where uid = :uid
+                  and contest_id = :cid
+                  and problem_id = :pid
+                """)
                 .param("uid", uid)
                 .param("cid", cid)
                 .param("pid", pid)
@@ -48,7 +49,9 @@ public class SolutionRepo {
 
     /**
      * 根据 uid 和提交时间查询结果
-     * <p>隔离级别：读未提交</p>
+     * <p>
+     * 隔离级别：读未提交
+     * </p>
      *
      * @param uid        用户 Id
      * @param time       UNIX 时间戳(13)
@@ -58,19 +61,19 @@ public class SolutionRepo {
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Optional<Solution> selectByUidAndTime(Integer uid, Long time, Boolean showPassed) {
         return client.sql("""
-                        select state - 1                                      as state,
-                               result - 1                                     as result,
-                               truncate(pass_rate, 2)                         as pass_rate,
-                               truncate(score, 2)                             as score,
-                               case when :showPassed = true then total end    as total,
-                               case when :showPassed = true then passed end   as passed,
-                               time,
-                               memory,
-                               error_info
-                        from solution
-                        where uid = :uid
-                          and submit_time = :time
-                        """)
+                select state - 1                                      as state,
+                       result - 1                                     as result,
+                       truncate(pass_rate, 2)                         as pass_rate,
+                       truncate(score, 2)                             as score,
+                       case when :showPassed = true then total end    as total,
+                       case when :showPassed = true then passed end   as passed,
+                       time,
+                       memory,
+                       error_info
+                from solution
+                where uid = :uid
+                  and submit_time = :time
+                """)
                 .param("uid", uid)
                 .param("time", time)
                 .param("showPassed", showPassed)
@@ -88,25 +91,25 @@ public class SolutionRepo {
      */
     public Optional<Solution> selectByUidAndSid(Integer uid, String sid, Boolean showPassed) {
         return client.sql("""
-                        select solution_id,
-                               problem_id,
-                               title,
-                               language,
-                               state - 1                                      as state,
-                               result - 1                                     as result,
-                               truncate(pass_rate, 2)                         as pass_rate,
-                               truncate(score, 2)                             as score,
-                               case when :showPassed = true then total end    as total,
-                               case when :showPassed = true then passed end   as passed,
-                               time,
-                               memory,
-                               submit_time,
-                               error_info
-                        from solution
-                        where solution_id = :sid
-                          and uid = :uid
-                          and deleted = 0
-                        """)
+                select solution_id,
+                       problem_id,
+                       title,
+                       language,
+                       state - 1                                      as state,
+                       result - 1                                     as result,
+                       truncate(pass_rate, 2)                         as pass_rate,
+                       truncate(score, 2)                             as score,
+                       case when :showPassed = true then total end    as total,
+                       case when :showPassed = true then passed end   as passed,
+                       time,
+                       memory,
+                       submit_time,
+                       error_info
+                from solution
+                where solution_id = :sid
+                  and uid = :uid
+                  and deleted = 0
+                """)
                 .param("uid", uid)
                 .param("sid", sid)
                 .param("showPassed", showPassed)
@@ -122,25 +125,25 @@ public class SolutionRepo {
      */
     public Optional<Solution> selectBySid(String sid) {
         return client.sql("""
-                        select solution_id,
-                               problem_id,
-                               uid,
-                               title,
-                               language,
-                               state - 1                                      as state,
-                               result - 1                                     as result,
-                               truncate(pass_rate, 2)                         as pass_rate,
-                               truncate(score, 2)                             as score,
-                               total,
-                               passed,
-                               time,
-                               memory,
-                               submit_time,
-                               error_info
-                        from solution
-                        where solution_id = :sid
-                          and deleted = 0
-                        """)
+                select solution_id,
+                       problem_id,
+                       uid,
+                       title,
+                       language,
+                       state - 1                                      as state,
+                       result - 1                                     as result,
+                       truncate(pass_rate, 2)                         as pass_rate,
+                       truncate(score, 2)                             as score,
+                       total,
+                       passed,
+                       time,
+                       memory,
+                       submit_time,
+                       error_info
+                from solution
+                where solution_id = :sid
+                  and deleted = 0
+                """)
                 .param("sid", sid)
                 .query(Solution.class)
                 .optional();
@@ -148,42 +151,42 @@ public class SolutionRepo {
 
     public Optional<String> selectSourceCode(String sid) {
         return client.sql("""
-                        select code
-                        from source_code
-                        where solution_id = :sid
-                        """)
+                select code
+                from source_code
+                where solution_id = :sid
+                """)
                 .param("sid", sid)
                 .query(String.class)
                 .optional();
     }
 
-    public List<Solution> selectAllByUid(Integer uid, Integer page, Integer size, Integer filter, String value) {
+    public List<Solution> selectAllByUid(Integer uid, Integer page, Integer size, SolutionFilter filter) {
         return client.sql("""
-                        select count(*) over ()       as _total,
-                               solution_id,
-                               problem_id,
-                               title,
-                               language,
-                               state - 1              as state,
-                               result - 1             as result,
-                               truncate(pass_rate, 2) as pass_rate,
-                               truncate(score, 2)     as score,
-                               time,
-                               memory,
-                               submit_time
-                        from solution
-                        where deleted = 0
-                          and uid = :uid
-                          and if(:filter = 1, problem_id = :value, true)
-                          and if(:filter = 2, title like concat('%', :value, '%'), true)
-                        order by submit_time desc
-                        limit :start, :count
-                        """)
+                select count(*) over ()       as _total,
+                       solution_id,
+                       problem_id,
+                       title,
+                       language,
+                       state - 1              as state,
+                       result - 1             as result,
+                       truncate(pass_rate, 2) as pass_rate,
+                       truncate(score, 2)     as score,
+                       time,
+                       memory,
+                       submit_time
+                from solution
+                where deleted = 0
+                  and uid = :uid
+                  and if(:filter = 1, problem_id = :value, true)
+                  and if(:filter = 2, title like concat('%', :value, '%'), true)
+                order by submit_time desc
+                limit :start, :count
+                """)
                 .param("uid", uid)
                 .param("start", (page - 1) * size)
                 .param("count", size)
-                .param("filter", filter)
-                .param("value", value)
+                .param("filter", filter.type)
+                .param("value", filter.value)
                 .query(Solution.class)
                 .list();
     }
@@ -197,26 +200,26 @@ public class SolutionRepo {
      */
     public List<Solution> selectAllByFilter(Integer uid, Integer pid, Long date, Integer page, Integer size) {
         return client.sql("""
-                        select count(*) over ()       as _total,
-                               solution_id,
-                               problem_id,
-                               title,
-                               language,
-                               state - 1              as state,
-                               result - 1             as result,
-                               truncate(pass_rate, 2) as pass_rate,
-                               truncate(score, 2)     as score,
-                               time,
-                               memory,
-                               submit_time
-                        from solution
-                        where deleted = 0
-                          and if(not isnull(:pid), problem_id = :pid, true)
-                          and if(not isnull(:uid), uid = :uid, true)
-                          and if(not isnull(:date), submit_time - :date between 0 and 86400000, true)
-                        order by submit_time desc
-                        limit :start, :count
-                        """)
+                select count(*) over ()       as _total,
+                       solution_id,
+                       problem_id,
+                       title,
+                       language,
+                       state - 1              as state,
+                       result - 1             as result,
+                       truncate(pass_rate, 2) as pass_rate,
+                       truncate(score, 2)     as score,
+                       time,
+                       memory,
+                       submit_time
+                from solution
+                where deleted = 0
+                  and if(not isnull(:pid), problem_id = :pid, true)
+                  and if(not isnull(:uid), uid = :uid, true)
+                  and if(not isnull(:date), submit_time - :date between 0 and 86400000, true)
+                order by submit_time desc
+                limit :start, :count
+                """)
                 .param("uid", uid)
                 .param("pid", pid)
                 .param("date", date)
@@ -244,21 +247,21 @@ public class SolutionRepo {
      */
     public Results resultAggrege() {
         return client.sql("""
-                        select count(result = 'AC' or null)  as AC,
-                               count(result = 'PA' or null)  as PA,
-                               count(result = 'WA' or null)  as WA,
-                               count(result = 'TLE' or null) as TLE,
-                               count(result = 'MLE' or null) as MLE,
-                               count(result = 'OLE' or null) as OLE,
-                               count(result = 'RE' or null)  as RE,
-                               count(result = 'CE' or null)  as CE
-                        from (select result
-                              from solution
-                              where deleted = 0
-                                and contest_id is null
-                                and state = 'JUDGED'
-                              group by problem_id, uid, result) as unique_result
-                        """)
+                select count(result = 'AC' or null)  as AC,
+                       count(result = 'PA' or null)  as PA,
+                       count(result = 'WA' or null)  as WA,
+                       count(result = 'TLE' or null) as TLE,
+                       count(result = 'MLE' or null) as MLE,
+                       count(result = 'OLE' or null) as OLE,
+                       count(result = 'RE' or null)  as RE,
+                       count(result = 'CE' or null)  as CE
+                from (select result
+                      from solution
+                      where deleted = 0
+                        and contest_id is null
+                        and state = 'JUDGED'
+                      group by problem_id, uid, result) as unique_result
+                """)
                 .query(Results.class)
                 .single();
     }
@@ -268,13 +271,13 @@ public class SolutionRepo {
      */
     public List<LanguageUserUsage> languageAggrege() {
         return client.sql("""
-                        select
-                            language,
-                            count(DISTINCT uid) AS users
-                        from solution
-                        group by language
-                        order by language
-                        """)
+                select
+                    language,
+                    count(DISTINCT uid) AS users
+                from solution
+                group by language
+                order by language
+                """)
                 .query(LanguageUserUsage.class)
                 .list();
     }

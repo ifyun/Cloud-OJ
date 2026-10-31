@@ -20,8 +20,8 @@ import {
   computed,
   inject,
   nextTick,
-  onActivated,
-  onDeactivated,
+  onMounted,
+  onUnmounted,
   ref,
   watch,
   type ComputedRef
@@ -123,14 +123,14 @@ watch(showChart, (val) => {
   }
 })
 
-onActivated(() => {
+onMounted(() => {
   if (showChart.value) {
     initChart(themeStr!.value)
     observer.observe(chartElem.value!)
   }
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
   chart?.dispose()
   observer.disconnect()
 })

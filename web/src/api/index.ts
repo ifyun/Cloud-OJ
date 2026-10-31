@@ -1,6 +1,6 @@
-import { useStore } from "@/store"
-import _axios, { AxiosError } from "axios"
+import axios, { AxiosError } from "axios"
 import { ErrorMessage } from "./type"
+import { useUserStore } from "@/store/user"
 
 const ApiPath = {
   LOGIN: "/api/auth/login",
@@ -53,18 +53,18 @@ function resolveError(error: any): ErrorMessage {
   } else if (err.request) {
     return new ErrorMessage(0, "请求失败")
   } else {
-    return new ErrorMessage(-1, err.message)
+    return new ErrorMessage(-1, "发生了错误")
   }
 }
 
-const axios = _axios.create()
+const useAxios = axios.create()
 
 // 请求拦截器
-axios.interceptors.request.use(
+useAxios.interceptors.request.use(
   (config) => {
-    const user = useStore().user
-    if (user.userInfo) {
-      config.headers.Authorization = `Baerer ${user.userInfo.token}`
+    const user = useUserStore()
+    if (user.info) {
+      config.headers.Authorization = `Bearer ${user.info.token}`
     }
 
     if (!config.headers["Content-Type"]) {
@@ -74,9 +74,14 @@ axios.interceptors.request.use(
     return config
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(resolveError(error))
   }
 )
 
-export default axios
-export { ApiPath, resolveError }
+useAxios.interceptors.response.use(
+  (res) => res,
+  (error) => Promise.reject(resolveError(error))
+)
+
+export default useAxios
+export { ApiPath }

@@ -1,44 +1,26 @@
-import { onActivated, onDeactivated, onMounted, onUnmounted } from "vue"
+import { nextTick, ref } from "vue"
 
-/**
- * 兼容不确定 keep-alive 是否生效的组件
- *
- * 例如可能使用 v-if 的组件
- *
- * @param enter 初始化
- * @param exit 退出
- */
-export function useActivated(
-  enter: () => void | Promise<void>,
-  exit?: () => void
-) {
-  let activated = true
-  let deactivated = false
-
-  onMounted(() => {
-    deactivated = false
-    enter()
+export function useContextMenu() {
+  const menuVisible = ref(false)
+  const menuPoint = ref({
+    x: 0,
+    y: 0
   })
 
-  onActivated(() => {
-    if (activated) {
-      activated = false
-      return
-    }
+  function openMenu(e: MouseEvent, onOpen: () => void) {
+    e.preventDefault()
+    menuVisible.value = false
 
-    enter()
-  })
-
-  if (exit) {
-    onDeactivated(() => {
-      exit()
+    nextTick(() => {
+      onOpen()
+      menuPoint.value = { x: e.clientX, y: e.clientY }
+      menuVisible.value = true
     })
+  }
 
-    onUnmounted(() => {
-      if (!deactivated) {
-        deactivated = true
-        exit()
-      }
-    })
+  return {
+    menuVisible,
+    menuPoint,
+    openMenu
   }
 }

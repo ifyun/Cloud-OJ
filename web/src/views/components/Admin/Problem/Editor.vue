@@ -126,7 +126,7 @@
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, Problem } from "@/api/type"
 import { MarkdownEditor, MarkdownView } from "@/components"
-import { useStore } from "@/store"
+import { useUserStore } from "@/store/user"
 import {
   HelpOutlineRound as HelpIcon,
   SaveOutlined as SaveIcon
@@ -151,7 +151,7 @@ import {
   useMessage,
   type FormRules
 } from "naive-ui"
-import { computed, inject, onActivated, ref, watch } from "vue"
+import { computed, inject, onMounted, ref, watch } from "vue"
 import {
   useRoute,
   useRouter,
@@ -159,18 +159,18 @@ import {
 } from "vue-router"
 import MarkdownHelp from "./assets/help.md?raw"
 
-const problemForm = ref<HTMLFormElement | null>(null)
+const props = defineProps<{ id?: number }>()
 
-const store = useStore()
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
-const props = defineProps<{ id?: number }>()
 const problem = ref<Problem>(new Problem())
 const showHelp = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const create = ref<boolean>(false)
+const problemForm = ref<HTMLFormElement | null>(null)
 
 const ramOptions = [
   {
@@ -236,7 +236,7 @@ const theme = inject("themeStr") as "light" | "dark"
 
 const headers = computed(() => {
   return {
-    Authorization: `Baerer ${store.user.userInfo!.token}`
+    Authorization: `Bearer ${user.info!.token}`
   }
 })
 
@@ -260,7 +260,7 @@ watch(
   }
 )
 
-onActivated(() => {
+onMounted(() => {
   if (props.id) {
     loading.value = true
     queryProblem(props.id)

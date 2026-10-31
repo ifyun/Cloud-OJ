@@ -89,7 +89,7 @@ const columns1: DataTableColumns<Problem> = [
         title: "题目名称",
         key: "title",
         render: (row) => (
-          <NButton text={true} onClick={() => toSubmission(row)}>
+          <NButton text={true} onClick={() => toProblem(row)}>
             {row.title}
           </NButton>
         )
@@ -139,7 +139,7 @@ const columns2: DataTableColumns<Problem> = [
         title: "题目名称",
         key: "title",
         render: (row) => (
-          <NButton text={true} onClick={() => toSubmission(row)}>
+          <NButton text={true} onClick={() => toProblem(row)}>
             {row.title}
           </NButton>
         )
@@ -254,8 +254,8 @@ function refresh() {
   queryProblems()
 }
 
-function toSubmission(p: Problem) {
-  router.push({ name: "submission", query: { problemId: p.problemId } })
+function toProblem(p: Problem) {
+  router.push({ name: "problem", query: { problemId: p.problemId } })
 }
 
 /**

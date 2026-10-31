@@ -1,14 +1,9 @@
 /**
  * 登录参数
  */
-export class UsernamePassword {
+export type UsernamePassword = {
   username: string
   password: string
-
-  constructor(username: string, password: string) {
-    this.username = username
-    this.password = password
-  }
 }
 
 export class User {
@@ -24,11 +19,6 @@ export class User {
   hasAvatar: boolean = false
   star: boolean = false
   createAt?: number
-}
-
-export class UserFilter {
-  type?: number
-  keyword?: string
 }
 
 /**
@@ -59,16 +49,16 @@ export class ErrorMessage {
   }
 
   static from(data: any): ErrorMessage {
-    const obj = new ErrorMessage(data.status, data.message)
+    const e = new ErrorMessage(data.status, data.message)
 
     if (!data.message) {
-      obj.message = data.error
+      e.message = data.error
     }
 
-    obj.error = data.error
-    obj.timestamp = data.timestamp
+    e.error = data.error
+    e.timestamp = data.timestamp
 
-    return obj
+    return e
   }
 
   toString() {
@@ -76,10 +66,10 @@ export class ErrorMessage {
   }
 }
 
-export class TestData {
-  fileName: string = ""
-  size: number = 0
-  score: number = 0
+export type TestData = {
+  fileName: string
+  size: number
+  score: number
 }
 
 export class ProblemData {
@@ -126,11 +116,6 @@ export class Contest {
   timeRange?: [number, number]
 }
 
-export class ContestFilter {
-  keyword?: string = ""
-  hideEnded: boolean = false
-}
-
 export class ScoreDetail {
   problemId?: number
   score?: number
@@ -175,12 +160,6 @@ export type SubmitData = {
   type: number
 }
 
-export type SolutionFilter = {
-  pid?: number
-  username?: string
-  date?: number
-}
-
 export class JudgeResult {
   solutionId?: string
   uid?: number
@@ -205,6 +184,13 @@ export class JudgeResult {
   submitTime?: number
 }
 
+export type Settings = {
+  alwaysShowRanking?: boolean
+  showAllContest?: boolean
+  showPassedPoints?: boolean
+  autoDelSolutions?: boolean
+}
+
 export type LanguageUsage = {
   count: number
   language: number
@@ -219,7 +205,7 @@ export type Results = {
   [key: string]: number
 }
 
-export class Overview {
+export class UserSummary {
   preference: Array<LanguageUsage> = []
   results: Results = {
     AC: 0,
@@ -248,14 +234,25 @@ export type QueuesInfo = {
   [name: string]: QueueInfo
 }
 
-export class Settings {
-  alwaysShowRanking?: boolean
-  showAllContest?: boolean
-  showPassedPoints?: boolean
-  autoDelSolutions?: boolean
-}
-
 export type SolutionSummary = {
   results: Results
   language: LanguageUserUsage[]
+}
+
+export type UserFilter = {
+  type?: number
+  value?: string
+}
+
+export type ContestFilter = {
+  keyword?: string
+  hideEnded: boolean
+}
+
+export type SolutionFilter = {
+  type?: number
+  pid?: number
+  value?: string
+  username?: string
+  date?: number
 }

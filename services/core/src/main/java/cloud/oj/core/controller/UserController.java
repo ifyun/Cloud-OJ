@@ -1,8 +1,8 @@
 package cloud.oj.core.controller;
 
 import cloud.oj.core.entity.User;
-import cloud.oj.core.entity.UserFilter;
 import cloud.oj.core.entity.UserStatistics;
+import cloud.oj.core.query.UserFilter;
 import cloud.oj.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,32 +21,30 @@ public class UserController {
      *
      * @param tz 时区
      */
-    @GetMapping(path = "overview")
-    public ResponseEntity<UserStatistics> getOverview(@RequestParam Integer uid, String tz, Integer year) {
-        return ResponseEntity.ok(userService.getOverview(uid, tz, year));
+    @GetMapping(path = "summary")
+    public ResponseEntity<UserStatistics> getSummary(@RequestParam Integer uid, String tz, Integer year) {
+        return ResponseEntity.ok(userService.getSummary(uid, tz, year));
     }
 
     /**
      * 根据过滤条件获取用户
      */
-    @RequestMapping(path = "admin/queries", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "admin/query", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<?> getUsers(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "15") Integer limit,
-            @RequestBody(required = false) UserFilter filter
-    ) {
+            @RequestBody(required = false) UserFilter filter) {
         var data = userService.getUsersByFilter(filter, page, limit);
-        return data.total() > 0 ?
-                ResponseEntity.ok(data) :
-                ResponseEntity.noContent().build();
+        return data.total() > 0 ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
 
     /**
      * 获取用户个人信息
      */
     @GetMapping(path = "profile")
-    public ResponseEntity<User> getUserInfo(@RequestHeader(name = "uid", required = false) Integer hUid,
-                                            @RequestParam Integer uid) {
+    public ResponseEntity<User> getUserInfo(
+            @RequestHeader(name = "uid", required = false) Integer hUid,
+            @RequestParam Integer uid) {
         var isSelf = uid.equals(hUid);
         return ResponseEntity.ok(userService.getUserInfo(uid, isSelf));
     }

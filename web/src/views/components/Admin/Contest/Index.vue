@@ -27,7 +27,7 @@
               <playlist-add-round />
             </n-icon>
           </template>
-          <router-link :to="{ name: 'edit_contest' }">创建竞赛</router-link>
+          <router-link :to="{ name: 'edit-contest' }">创建竞赛</router-link>
         </n-button>
       </n-flex>
       <n-data-table
@@ -48,18 +48,20 @@
   <n-dropdown
     trigger="manual"
     :show-arrow="true"
-    :x="point.x"
-    :y="point.y"
+    :x="menuPoint.x"
+    :y="menuPoint.y"
     :options="operations"
-    :show="showOperations"
+    :show="menuVisible"
     :on-clickoutside="hideOperation"
     @select="operationSelect" />
 </template>
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
-import { useStore } from "@/store"
+import { Contest, ErrorMessage, type Page } from "@/api/type"
+import { useContextMenu } from "@/composables"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
 import { LanguageOptions } from "@/type"
 import { LanguageUtil, renderIcon, stateTag } from "@/utils"
 import {
@@ -90,36 +92,31 @@ import {
   useMessage,
   useNotification
 } from "naive-ui"
-import { type HTMLAttributes, nextTick, onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { type HTMLAttributes, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 defineOptions({
   name: "ContestAdmin"
 })
 
-const store = useStore()
+let selectedContest: Contest | null
+let confirmDelete = ""
+
+const app = useAppStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
 const notification = useNotification()
 
-let selectedContest: Contest | null
-let confirmDelete = ""
+const { filter } = storeToRefs(useFilterStore())
+const { menuVisible, menuPoint, openMenu } = useContextMenu()
 
 const loading = ref<boolean>(true)
-const showOperations = ref<boolean>(false)
-const filter = ref<ContestFilter>({
-  keyword: "",
-  hideEnded: false
-})
 const pagination = ref({
   page: 1,
   pageSize: 18
-})
-const point = ref({
-  x: 0,
-  y: 0
 })
 
 const rowProps = (row: Contest): HTMLAttributes => {
@@ -129,18 +126,9 @@ const rowProps = (row: Contest): HTMLAttributes => {
         return
       }
 
-      e.preventDefault()
-      showOperations.value = false
-
-      nextTick().then(() => {
+      openMenu(e, () => {
         // 设置当前选中的竞赛
         selectedContest = row
-        point.value = {
-          x: e.clientX,
-          y: e.clientY
-        }
-
-        showOperations.value = true
       })
     }
   }
@@ -153,12 +141,12 @@ const operations = [
     icon: renderIcon(EditNoteRound, "#409EFF")
   },
   {
-    key: "show_key",
+    key: "show-key",
     label: "查看邀请码",
     icon: renderIcon(KeyRound, "#18A058")
   },
   {
-    key: "new_key",
+    key: "new-key",
     label: "重新生成邀请码",
     icon: renderIcon(RefreshRound, "#409EFF")
   },
@@ -235,28 +223,21 @@ const contests = ref<Page<Contest>>({
   total: 0
 })
 
-onActivated(() => {
+onMounted(() => {
   const { page = 1 } = route.query
   pagination.value.page = Number(page)
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
 
   queryContests()
 })
 
 function titleClick(e: MouseEvent, row: Contest) {
-  nextTick().then(() => {
+  openMenu(e, () => {
     selectedContest = row
-    point.value = {
-      x: e.clientX,
-      y: e.clientY
-    }
-
-    showOperations.value = true
   })
 }
 
 function hideOperation() {
-  showOperations.value = false
+  menuVisible.value = false
 }
 
 function operationSelect(key: string) {
@@ -264,14 +245,14 @@ function operationSelect(key: string) {
   switch (key) {
     case "edit":
       router.push({
-        name: "edit_contest",
+        name: "edit-contest",
         params: { id: selectedContest!.contestId }
       })
       break
-    case "show_key":
+    case "show-key":
       showInviteKey()
       break
-    case "new_key":
+    case "new-key":
       newInviteKey()
       break
     case "del":
@@ -283,7 +264,6 @@ function operationSelect(key: string) {
 }
 
 function search() {
-  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
@@ -304,7 +284,7 @@ function queryContests() {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

@@ -10,7 +10,7 @@
       <n-space vertical>
         <n-tabs type="line" :value="tab" @update:value="changeTab">
           <n-tab-pane name="profile" tab="概览" display-directive="show">
-            <overview :uid="user.uid!" :show-timeline="isSelf" />
+            <user-summary :uid="user.uid!" :show-timeline="isSelf" />
           </n-tab-pane>
           <n-tab-pane
             v-if="isSelf"
@@ -28,20 +28,22 @@
 <script setup lang="ts">
 import { UserApi } from "@/api/request"
 import { User } from "@/api/type"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app.ts"
+import { useUserStore } from "@/store/user.ts"
 import { setTitle } from "@/utils"
 import { NCard, NSpace, NTabPane, NTabs } from "naive-ui"
-import { computed, onActivated, ref, watchEffect } from "vue"
+import { computed, onMounted, ref, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import Overview from "./Overview.vue"
 import SolutionList from "./Solutions.vue"
+import UserSummary from "./Summary.vue"
 import UserProfile from "./UserProfile.vue"
 
 defineOptions({
   name: "AccountIndex"
 })
 
-const store = useStore()
+const app = useAppStore()
+const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -50,8 +52,8 @@ const user = ref<User>(new User())
 const tab = ref("profile")
 
 const isSelf = computed<boolean>(() => {
-  if (store.user.isLoggedIn) {
-    return props.uid === undefined || store.user.userInfo!.uid! === props.uid
+  if (userStore.isLoggedIn) {
+    return props.uid === undefined || userStore.info!.uid! === props.uid
   } else {
     return false
   }
@@ -59,17 +61,17 @@ const isSelf = computed<boolean>(() => {
 
 watchEffect(() => {
   if (isSelf.value) {
-    user.value.uid = store.user.userInfo!.uid!
+    user.value.uid = userStore.info!.uid!
   } else {
     user.value.uid = props.uid
   }
 
-  if (!store.user.isLoggedIn && props.uid === undefined) {
+  if (!userStore.isLoggedIn && props.uid === undefined) {
     router.replace({ name: "auth" })
   }
 })
 
-onActivated(() => {
+onMounted(() => {
   if (
     isSelf.value &&
     route.query.tab &&
@@ -99,7 +101,7 @@ function getUserProfile() {
       }
     })
     .catch((err) => {
-      store.app.setError(err)
+      app.setError(err)
     })
 }
 </script>

@@ -75,15 +75,15 @@ import { RankingApi } from "@/api/request"
 import { ErrorMessage, RankingContest } from "@/api/type"
 import { EmptyData } from "@/components"
 import ScoreboardUser from "@/components/ScoreboardUser.vue"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
 import { setTitle, type StateTag, stateTag } from "@/utils"
 import dayjs from "dayjs"
 import { NFlex, NH4, NIcon, NTable, NTag, NText, useThemeVars } from "naive-ui"
 import {
   computed,
   nextTick,
-  onActivated,
-  onDeactivated,
+  onMounted,
+  onUnmounted,
   ref,
   shallowRef
 } from "vue"
@@ -92,7 +92,7 @@ const props = defineProps<{
   cid: number
 }>()
 
-const store = useStore()
+const app = useAppStore()
 const themeVars = useThemeVars()
 
 const loading = ref<boolean>(true)
@@ -109,11 +109,11 @@ const noRanking = computed<boolean>(
 
 let timeout: number | undefined
 
-onActivated(() => {
+onMounted(() => {
   queryRanking()
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
   window.clearTimeout(timeout)
 })
 
@@ -133,7 +133,7 @@ function queryRanking() {
       })
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

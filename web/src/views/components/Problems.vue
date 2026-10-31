@@ -49,7 +49,9 @@ export default {
 import { ProblemApi } from "@/api/request"
 import { ErrorMessage, type Page, Problem } from "@/api/type"
 import { EmptyData, ResultTag } from "@/components"
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
+import { useUserStore } from "@/store/user"
 import { SearchRound } from "@vicons/material"
 import {
   type DataTableColumns,
@@ -62,19 +64,26 @@ import {
   NPagination,
   NTag
 } from "naive-ui"
-import { computed, nextTick, onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { computed, nextTick, onMounted, ref } from "vue"
 import { RouterLink, useRoute, useRouter } from "vue-router"
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
+const { filter } = storeToRefs(useFilterStore())
+
+const loading = ref<boolean>(true)
+const problems = ref<Page<Problem>>({
+  data: [],
+  total: 0
+})
 const pagination = ref({
   page: 1,
   pageSize: 15
 })
-
-const loading = ref<boolean>(true)
 
 /* 表格列配置 */
 const problemColumns: DataTableColumns<Problem> = [
@@ -99,7 +108,7 @@ const problemColumns: DataTableColumns<Problem> = [
     title: "题名",
     key: "title",
     render: (row) => (
-      <RouterLink to={{ name: "submission", params: { pid: row.problemId } }}>
+      <RouterLink to={{ name: "problem", params: { pid: row.problemId } }}>
         <NButton text={true} strong={true}>
           {row.title}
         </NButton>
@@ -107,9 +116,9 @@ const problemColumns: DataTableColumns<Problem> = [
     )
   },
   {
-    title: () => (store.user.isLoggedIn ? "提交状态" : ""),
+    title: () => (user.isLoggedIn ? "提交状态" : ""),
     key: "result",
-    width: store.user.isLoggedIn ? 100 : 0,
+    width: user.isLoggedIn ? 100 : 0,
     align: "center",
     render: (row) => {
       if (typeof row.result !== "undefined") {
@@ -151,32 +160,16 @@ const problemColumns: DataTableColumns<Problem> = [
   }
 ]
 
-const problems = ref<Page<Problem>>({
-  data: [],
-  total: 0
-})
-
-const filter = ref({ keyword: "" })
-
 const noContent = computed<boolean>(
   () => !loading.value && problems.value.total === 0
 )
 
-onActivated(() => {
-  const { page = 1, keyword = "" } = route.query
+onMounted(() => {
+  const { page = 1 } = route.query
   pagination.value.page = Number(page)
-  filter.value.keyword = String(keyword)
 
   queryProblems()
 })
-
-function pageChange(page: number) {
-  router.replace({
-    query: { page }
-  })
-
-  queryProblems()
-}
 
 function tagClick(tag: string) {
   filter.value.keyword = tag
@@ -185,14 +178,14 @@ function tagClick(tag: string) {
 
 function search() {
   nextTick(() => {
-    if (filter.value.keyword !== "") {
-      pagination.value.page = 1
-      router.replace({
-        query: { keyword: filter.value.keyword, page: 1 }
-      })
-    }
+    pagination.value.page = 1
+    pageChange(1)
+  })
+}
 
-    queryProblems()
+function pageChange(page: number) {
+  router.replace({
+    query: { page }
   })
 }
 
@@ -207,7 +200,7 @@ function queryProblems() {
       problems.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false

@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { AuthApi } from "@/api/request"
 import { Logo } from "@/components"
-import { useStore } from "@/store"
+import { useUserStore } from "@/store/user.ts"
 import BottomInfo from "@/views/layout/components/BottomInfo.vue"
 import {
   NFlex,
@@ -50,14 +50,14 @@ defineOptions({
   name: "AuthIndex"
 })
 
-const store = useStore()
+const user = useUserStore()
 const router = useRouter()
 const checked = ref<boolean>(false)
 
 withDefaults(defineProps<{ tab: string }>(), { tab: "login" })
 
 onBeforeMount(async () => {
-  if (store.user.userInfo != null) {
+  if (user.info != null) {
     try {
       await AuthApi.verify()
       await router.push({ name: "index" })

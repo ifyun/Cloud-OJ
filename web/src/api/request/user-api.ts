@@ -1,160 +1,108 @@
-import axios, { ApiPath, resolveError } from "@/api"
+import useAxios from "@/api"
 import {
   type JudgeResult,
-  type Overview,
   type Page,
+  type SolutionFilter,
   type User,
-  UserFilter
+  type UserFilter,
+  type UserSummary
 } from "@/api/type"
-import { useStore } from "@/store"
-import type { AxiosResponse } from "axios"
+import { useUserStore } from "@/store/user"
 
 const UserApi = {
-  /**
-   * 获取所有用户
-   */
-  getByFilter(
+  async getByFilter(
     page: number,
     size: number,
     filter: UserFilter | null = null
-  ): Promise<Page<User>> {
-    return new Promise<Page<User>>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.USER_ADMIN}/queries`,
-        method: "POST",
-        params: {
-          page,
-          size
-        },
-        data: JSON.stringify(filter)
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], count: 0 })
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  ) {
+    const res = await useAxios({
+      url: "/api/core/user/admin/query",
+      method: "POST",
+      params: {
+        page,
+        size
+      },
+      data: JSON.stringify(filter)
+    })
+
+    return (
+      res.status === 200 ? res.data : { data: [], count: 0 }
+    ) as Page<User>
+  },
+  save(user: User, create: boolean = false) {
+    return useAxios({
+      url: `/api/core/user/${create ? "" : "admin"}`,
+      method: create ? "POST" : "PUT",
+      data: JSON.stringify(user)
     })
   },
-
-  save(user: User, create: boolean = false): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: create ? ApiPath.USER : ApiPath.USER_ADMIN,
-        method: create ? "POST" : "PUT",
-        data: JSON.stringify(user)
-      })
-        .then((res) => resolve(res))
-        .catch((error) => reject(resolveError(error)))
+  update(user: User, admin: boolean = false) {
+    return useAxios({
+      url: `/api/core/user/${admin ? "admin" : "profile"}`,
+      method: "PUT",
+      data: JSON.stringify(user)
     })
   },
-
-  update(user: User, admin: boolean = false): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: admin ? ApiPath.USER_ADMIN : ApiPath.PROFILE,
-        method: "PUT",
-        data: JSON.stringify(user)
-      })
-        .then((res) => resolve(res))
-        .catch((error) => reject(resolveError(error)))
-    })
-  },
-
-  getProfile(uid: number): Promise<User> {
-    const userInfo = useStore().user.userInfo
+  async getProfile(uid: number) {
+    const userInfo = useUserStore().info
+    const url = "/api/core/user/"
     const path =
-      userInfo == null || userInfo.role === 1
-        ? ApiPath.PROFILE
-        : ApiPath.PROFILE_ADMIN
-
-    return new Promise<User>((resolve, reject) => {
-      axios({
-        url: path,
-        method: "GET",
-        params: {
-          uid
-        }
-      })
-        .then((res) => {
-          resolve(res.data as User)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+      userInfo == null || userInfo.role === 1 ? "profile" : "admin/profile"
+    const res = await useAxios({
+      url: url + path,
+      method: "GET",
+      params: {
+        uid
+      }
     })
-  },
 
-  getOverview(uid: number, year?: number) {
-    return new Promise<Overview>((resolve, reject) => {
-      axios({
-        url: ApiPath.OVERVIEW,
-        method: "GET",
-        params: {
-          uid,
-          year
-        }
-      })
-        .then((res) => {
-          resolve(res.data as Overview)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return res.data as User
+  },
+  async getSummary(uid: number, year?: number) {
+    const res = await useAxios({
+      url: "/api/core/user/summary",
+      method: "GET",
+      params: {
+        uid,
+        year
+      }
     })
-  },
 
-  getSolutions(
+    return res.data as UserSummary
+  },
+  async getSolutions(
     page: number,
     size: number,
-    filter: number | null = null,
-    filterValue: string | null = null
+    filter: SolutionFilter | null = null
   ) {
-    return new Promise<Page<JudgeResult>>((resolve, reject) => {
-      axios({
-        url: ApiPath.SOLUTION,
-        method: "GET",
-        params: {
-          page,
-          size,
-          filter,
-          filterValue
-        }
-      })
-        .then((res) => {
-          if (res.status === 200) {
-            resolve(res.data as Page<JudgeResult>)
-          } else {
-            resolve({ data: [], total: 0 })
-          }
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    const res = await useAxios({
+      url: "/api/core/solution/query",
+      method: "POST",
+      params: {
+        page,
+        size
+      },
+      data: filter
     })
-  },
 
-  getSolution(sid: string): Promise<JudgeResult> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${ApiPath.SOLUTION}/${sid}`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return (
+      res.status === 200 ? res.data : { data: [], total: 0 }
+    ) as Page<JudgeResult>
+  },
+  async getSolution(sid: string) {
+    const res = await useAxios({
+      url: `/api/core/solution/${sid}`,
+      method: "GET"
     })
-  },
 
-  updateAvatar(blob: Blob): Promise<AxiosResponse> {
+    return res.data as JudgeResult
+  },
+  updateAvatar(blob: Blob) {
     const form = new FormData()
     form.append("file", blob, "avatar")
 
-    return axios({
-      url: ApiPath.AVATAR,
+    return useAxios({
+      url: "/api/core/file/img/avatar",
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data"

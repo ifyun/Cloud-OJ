@@ -1,275 +1,145 @@
-import axios, { ApiPath, resolveError } from "@/api"
-import {
-  type Contest,
-  ContestFilter,
-  type Page,
-  type Problem
-} from "@/api/type"
-import { useStore } from "@/store"
-import type { AxiosResponse } from "axios"
+import useAxios from "@/api"
+import { type Contest, type Page, type Problem } from "@/api/type"
+import { useUserStore } from "@/store/user"
 
 const ContestApi = {
-  /**
-   * 使用邀请码加入竞赛
-   */
-  joinContest(cid: number, key: string): Promise<AxiosResponse> {
-    return new Promise<AxiosResponse>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_INVITATION}/${cid}`,
-        method: "POST",
-        params: {
-          key
-        }
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  joinContest(cid: number, key: string) {
+    return useAxios({
+      url: `/api/core/contest/join/${cid}`,
+      method: "POST",
+      params: {
+        key
+      }
     })
   },
-
-  /**
-   * 生成新邀请码
-   */
-  newInviteKey(cid: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_KEY}/${cid}`,
-        method: "PUT"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async newInviteKey(cid: number): Promise<string> {
+    const res = await useAxios({
+      url: `/api/core/contest/admin/key/${cid}`,
+      method: "PUT"
     })
-  },
 
-  /**
-   * 获取所有竞赛
-   */
-  getAll(
+    return res.data as string
+  },
+  async getAll(
     page: number,
     size: number,
-    filter: ContestFilter | null = null
-  ): Promise<Page<Contest>> {
-    const userInfo = useStore().user.userInfo
-    const path =
-      userInfo == null || userInfo.role === 1
-        ? ApiPath.CONTEST
-        : ApiPath.CONTEST_ADMIN
+    filter: { [key: string]: any } | null = null
+  ) {
+    const userInfo = useUserStore().info
+    const url = "/api/core/contest/"
+    const path = userInfo === null || userInfo.role === 1 ? "" : "admin"
+    const res = await useAxios({
+      url: `${url}/${path}/query`,
+      method: "POST",
+      params: {
+        page,
+        size
+      },
+      data: filter
+    })
 
-    return new Promise<Page<Contest>>((resolve, reject) => {
-      axios({
-        url: `${path}/queries`,
-        method: "POST",
-        params: {
-          page,
-          size
-        },
-        data: JSON.stringify(filter)
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], total: 0 })
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return (
+      res.status === 200 ? res.data : { data: [], total: 0 }
+    ) as Page<Contest>
+  },
+  async getProblemsFromStarted(cid: number) {
+    const res = await useAxios({
+      url: "/api/core/contest/problems",
+      method: "GET",
+      params: {
+        cid
+      }
+    })
+
+    return (res.status === 200 ? res.data : []) as Problem[]
+  },
+  async getProblems(cid: number) {
+    const res = await useAxios({
+      url: "/api/core/contest/admin/problems",
+      method: "GET",
+      params: {
+        cid
+      }
+    })
+
+    return (res.status === 200 ? res.data : []) as Problem[]
+  },
+  async getProblemsNotInContest(cid: number, page: number, size: number) {
+    const res = await useAxios({
+      url: "/api/core/contest/admin/problem/unused/",
+      method: "GET",
+      params: {
+        cid,
+        page,
+        size
+      }
+    })
+
+    return (
+      res.status === 200 ? res.data : { data: [], total: 0 }
+    ) as Page<Problem>
+  },
+  changeOrder(cid: number, problems: Array<number>) {
+    return useAxios({
+      url: "/api/core/contest/admin/problem/order",
+      method: "PUT",
+      params: {
+        cid
+      },
+      data: problems
     })
   },
+  async getProblem(cid: number, pid: number) {
+    const res = await useAxios({
+      url: "/api/core/contest/problem",
+      method: "GET",
+      params: {
+        cid,
+        pid
+      }
+    })
 
-  /**
-   * 获取已开始竞赛/作业中的题目
-   */
-  getProblemsFromStarted(cid: number): Promise<Array<Problem>> {
-    return new Promise<Array<Problem>>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_PROBLEM}`,
-        method: "GET",
-        params: {
-          cid
-        }
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : [])
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return res.data as Problem
+  },
+  async getById(cid: number): Promise<Contest> {
+    const res = await useAxios({
+      url: `/api/core/contest/${cid}`,
+      method: "GET"
+    })
+
+    return res.data as Contest
+  },
+  save(contest: Contest, create = false) {
+    return useAxios({
+      url: "/api/core/contest/admin",
+      method: create ? "POST" : "PUT",
+      data: contest
     })
   },
-
-  /**
-   * 获取竞赛中的所有题目
-   */
-  getProblems(cid: number): Promise<Array<Problem>> {
-    return new Promise<Array<Problem>>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem`,
-        method: "GET",
-        params: {
-          cid
-        }
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : [])
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  addProblem(cid: number, pid: number) {
+    return useAxios({
+      url: "/api/core/contest/admin/problem",
+      method: "POST",
+      params: {
+        cid,
+        pid
+      }
     })
   },
-
-  /**
-   * 获取不在指定竞赛中的所有题目
-   */
-  getProblemsNotInContest(
-    cid: number,
-    page: number,
-    size: number
-  ): Promise<Page<Problem>> {
-    return new Promise<Page<Problem>>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem_idle/${cid}`,
-        method: "GET",
-        params: {
-          page,
-          size
-        }
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], total: 0 })
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
-  },
-
-  /**
-   * 改变竞赛题目顺序
-   */
-  changeOrder(cid: number, problems: Array<number>): Promise<AxiosResponse> {
-    return new Promise<AxiosResponse>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_PROBLEM_ORDER}/${cid}`,
-        method: "PUT",
-        data: JSON.stringify(problems)
-      })
-        .then((res) => resolve(res))
-        .catch((error) => reject(resolveError(error)))
-    })
-  },
-
-  /**
-   * 获取竞赛中的指定题目
-   */
-  getProblem(cid: number, pid: number): Promise<Problem> {
-    return new Promise<Problem>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_PROBLEM}/${cid}/${pid}`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
-  },
-
-  /**
-   * 获取竞赛详细信息
-   */
-  getById(cid: number): Promise<Contest> {
-    return new Promise<Contest>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST}/${cid}`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
-  },
-
-  /**
-   * 保存/创建竞赛
-   */
-  save(contest: Contest, create = false): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: ApiPath.CONTEST_ADMIN,
-        method: create ? "POST" : "PUT",
-        data: JSON.stringify(contest)
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
-  },
-
-  /**
-   * 向竞赛添加题目
-   */
-  addProblem(cid: number, pid: number): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem/${cid}/${pid}`,
-        method: "POST"
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
-    })
-  },
-
-  /**
-   * 从竞赛中删除题目
-   */
   removeProblem(cid: number, pid: number) {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_ADMIN}/problem/${cid}/${pid}`,
-        method: "DELETE"
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return useAxios({
+      url: "/api/core/contest/admin/problem",
+      method: "DELETE",
+      params: {
+        cid,
+        pid
+      }
     })
   },
-
-  /**
-   * 删除竞赛
-   */
-  delete(cid: number): Promise<AxiosResponse> {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${ApiPath.CONTEST_ADMIN}/${cid}`,
-        method: "DELETE"
-      })
-        .then((res) => {
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  delete(cid: number) {
+    return useAxios({
+      url: `/api/core/contest/admin/${cid}`,
+      method: "DELETE"
     })
   }
 }

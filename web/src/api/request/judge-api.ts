@@ -1,28 +1,18 @@
-import axios, { ApiPath, resolveError } from "@/api"
+import useAxios, { ApiPath } from "@/api"
 import type { SubmitData } from "@/api/type"
-import { useStore } from "@/store"
+import { useUserStore } from "@/store/user"
 
 const JudgeApi = {
-  /**
-   * 提交代码
-   */
-  submit(data: SubmitData): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-      const role = useStore().user.userInfo!.role
-      const path = role === 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT
-
-      axios({
-        url: path,
-        method: "POST",
-        data: JSON.stringify(data, (_, v) => v ?? undefined)
-      })
-        .then((res) => {
-          resolve(res.data as number)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  async submit(data: SubmitData) {
+    const role = useUserStore().info!.role
+    const path = role === 1 ? ApiPath.SUBMIT : ApiPath.ADMIN_SUBMIT
+    const res = await useAxios({
+      url: path,
+      method: "POST",
+      data: JSON.stringify(data, (_, v) => v ?? undefined)
     })
+
+    return res.data as number
   }
 }
 

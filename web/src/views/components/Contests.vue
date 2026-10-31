@@ -45,8 +45,10 @@ export default {
 
 <script setup lang="tsx">
 import { ContestApi } from "@/api/request"
-import { Contest, ContestFilter, ErrorMessage, type Page } from "@/api/type"
-import { useStore } from "@/store"
+import { Contest, ErrorMessage, type Page } from "@/api/type"
+import { useAppStore } from "@/store/app"
+import { useFilterStore } from "@/store/filter"
+import { useUserStore } from "@/store/user"
 import { LanguageNames } from "@/type"
 import { LanguageUtil, stateTag } from "@/utils"
 import { SearchRound } from "@vicons/material"
@@ -66,28 +68,27 @@ import {
   NText,
   useMessage
 } from "naive-ui"
-import { onActivated, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const store = useStore()
+const app = useAppStore()
+const user = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 
-const pagination = ref({
-  page: 1,
-  pageSize: 15
-})
+const { filter } = storeToRefs(useFilterStore())
 
 const loading = ref<boolean>(true)
-const filter = ref<ContestFilter>({
-  keyword: "",
-  hideEnded: false
-})
 const selectedContest = ref<Contest | null>(null)
 const contests = ref<Page<Contest>>({
   data: [],
   total: 0
+})
+const pagination = ref({
+  page: 1,
+  pageSize: 15
 })
 
 const contestColumns: DataTableColumns<Contest> = [
@@ -163,17 +164,14 @@ const options = [
   }
 ]
 
-onActivated(() => {
-  if (route.query.page) {
-    pagination.value.page = Number(route.query.page)
-  }
+onMounted(() => {
+  const { page = 1 } = route.query
+  pagination.value.page = Number(page)
 
-  filter.value = JSON.parse(sessionStorage.getItem("query") ?? "{}")
   queryContests()
 })
 
 function search() {
-  sessionStorage.setItem("query", JSON.stringify(filter.value))
   pagination.value.page = 1
   pageChange(1)
 }
@@ -196,7 +194,7 @@ function queryContests() {
       contests.value = data
     })
     .catch((err: ErrorMessage) => {
-      store.app.setError(err)
+      app.setError(err)
     })
     .finally(() => {
       loading.value = false
@@ -212,9 +210,9 @@ function handleSelect(key: number) {
   }
 
   if (key === 1) {
-    if (store.user.isLoggedIn) {
+    if (user.isLoggedIn) {
       router.push({
-        name: "contest_problems",
+        name: "contest-problems",
         params: { cid: contestId }
       })
     } else {
@@ -222,7 +220,7 @@ function handleSelect(key: number) {
     }
   } else if (key === 2) {
     router.push({
-      name: "scoreboard_contest",
+      name: "contest-scoreboard",
       params: { cid: contestId }
     })
   }

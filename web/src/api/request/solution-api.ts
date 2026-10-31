@@ -1,44 +1,33 @@
+import useAxios from "@/api"
 import { JudgeResult, type Page, type SolutionFilter } from "@/api/type"
-import axios, { ApiPath, resolveError } from "@/api"
 
 const SolutionApi = {
-  getByFilter(
+  async getByFilter(
     page: number,
     size: number,
     filter: SolutionFilter | null = null
-  ): Promise<Page<JudgeResult>> {
-    return new Promise<Page<JudgeResult>>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.SOLUTION_ADMIN}/queries`,
-        method: "POST",
-        params: {
-          page,
-          size
-        },
-        data: JSON.stringify(filter)
-      })
-        .then((res) => {
-          resolve(res.status === 200 ? res.data : { data: [], count: 0 })
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+  ) {
+    const res = await useAxios({
+      url: "/api/core/solution/admin/query",
+      method: "POST",
+      params: {
+        page,
+        size
+      },
+      data: filter
     })
-  },
 
-  getById(sid: string): Promise<JudgeResult> {
-    return new Promise<JudgeResult>((resolve, reject) => {
-      axios({
-        url: `${ApiPath.SOLUTION_ADMIN}/${sid}`,
-        method: "GET"
-      })
-        .then((res) => {
-          resolve(res.data)
-        })
-        .catch((error) => {
-          reject(resolveError(error))
-        })
+    return (
+      res.status === 200 ? res.data : { data: [], count: 0 }
+    ) as Page<JudgeResult>
+  },
+  async getById(sid: string) {
+    const res = await useAxios({
+      url: `/api/core/solution/admin/${sid}`,
+      method: "GET"
     })
+
+    return res.data as JudgeResult
   }
 }
 

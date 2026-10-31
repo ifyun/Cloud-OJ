@@ -7,22 +7,22 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "@/store"
+import { useAppStore } from "@/store/app"
 import { DarkModeRound, LightModeRound } from "@vicons/material"
 import { NIcon, NSwitch } from "naive-ui"
 import { computed, type CSSProperties, type RendererNode } from "vue"
 
 let icon: RendererNode | null = null
 
-const store = useStore()
+const app = useAppStore()
 const isDarkTheme = computed<boolean>({
   get: () => {
-    return store.app.theme != null
+    return app.theme != null
   },
   set: (value) => {
     const t = value ? "dark" : "light"
     document.documentElement.style.colorScheme = t
-    store.app.setTheme(t)
+    app.setTheme(t)
   }
 })
 

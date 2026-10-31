@@ -85,7 +85,7 @@ import {
   NTransfer,
   useMessage
 } from "naive-ui"
-import { computed, onActivated, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import {
   type RouteLocationNormalizedGeneric,
   useRoute,
@@ -162,7 +162,7 @@ watch(languages, (value) => {
   contest.value.languages = LanguageUtil.toNumber(value)
 })
 
-onActivated(() => {
+onMounted(() => {
   if (props.id) {
     loading.value = true
     queryContest(props.id)
